@@ -28,6 +28,14 @@ import sultaBoxOpen from './assets/images/sulta_box_open_1780609104306.png';
 import sultaBoxesStack from './assets/images/sulta_boxes_stack_1780609121411.png';
 
 export default function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
+  );
+}
+
+function AppContent() {
   const { toast } = useToast();
   // Global States
   const [currentTab, setTab] = useState<string>('home');
@@ -378,7 +386,6 @@ export default function App() {
   const bestSellers = products.filter(p => p.isBestSeller).slice(0, 4);
 
   return (
-    <ToastProvider>
       <div className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
       
       {/* SCREEN 1: BRAND SPLASH SCREEN OVERLAY */}
@@ -1200,6 +1207,5 @@ export default function App() {
       </div>
 
     </div>
-    </ToastProvider>
   );
 }
