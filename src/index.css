@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  
+  --color-luxury-black: #0B0B0B;
+  --color-soft-pink: #DF8A9C;
+  --color-champagne-gold: #F6E7A6;
+  --color-off-white: #FAF4F5;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-off-white);
+  color: var(--color-luxury-black);
+  direction: rtl; /* Standard RTL configuration */
+  overflow-x: hidden;
+}
+
+/* Global override to shift literal grey-white classes to our warm luxury satin-blush shade */
+.bg-\[\#FAFAF7\], .bg-\[\#FAFAF8\] {
+  background-color: var(--color-off-white) !important;
+}
+
+/* Global override to shift literal light pink #F4B6C2 to our premium darker dusty rose #DF8A9C */
+.text-\[\#F4B6C2\] {
+  color: #DF8A9C !important;
+}
+.bg-\[\#F4B6C2\] {
+  background-color: #DF8A9C !important;
+}
+.hover\:bg-\[\#F4B6C2\]:hover {
+  background-color: #DF8A9C !important;
+}
+.hover\:text-\[\#F4B6C2\]:hover {
+  color: #DF8A9C !important;
+}
+.border-\[\#F4B6C2\] {
+  border-color: #DF8A9C !important;
+}
+.ring-\[\#F4B6C2\]\/30 {
+  --tw-ring-color: rgba(223, 138, 156, 0.3) !important;
+}
+.accent-\[\#F4B6C2\] {
+  accent-color: #DF8A9C !important;
+}
+.shadow-\[0_0_10px_\#F4B6C2\] {
+  box-shadow: 0 0 10px rgba(223, 138, 156, 0.5) !important;
+}
+.bg-\[\#F4B6C2\]\/15 {
+  background-color: rgba(223, 138, 156, 0.15) !important;
+}
+.border-\[\#F4B6C2\]\/30 {
+  border-color: rgba(223, 138, 156, 0.3) !important;
+}
+.hover\:border-\[\#F4B6C2\]\/30:hover {
+  border-color: rgba(223, 138, 156, 0.3) !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAFAF7;
+}
+::-webkit-scrollbar-thumb {
+  background: #0B0B0B;
+}
+
+/* Midnight Velvet Mode dynamic styling rules */
+.midnight-velvet-active {
+  background-color: #0b0b0b !important;
+  color: #FAFAF7 !important;
+}
+
+.midnight-velvet-active .bg-white {
+  background-color: #121212 !important;
+  border-color: #222222 !important;
+  color: #FAFAF7 !important;
+}
+
+.midnight-velvet-active .text-gray-900,
+.midnight-velvet-active .text-[#0B0B0B],
+.midnight-velvet-active .text-gray-800,
+.midnight-velvet-active .text-gray-700 {
+  color: #FAFAF7 !important;
+}
+
+.midnight-velvet-active .text-gray-500,
+.midnight-velvet-active .text-gray-600 {
+  color: #a1a1aa !important;
+}
+
+.midnight-velvet-active .border-gray-100,
+.midnight-velvet-active .border-gray-150,
+.midnight-velvet-active .border-gray-200 {
+  border-color: #1f1f1f !important;
+}
+
+.midnight-velvet-active .bg-[#FAFAF7],
+.midnight-velvet-active .bg-[#FAFAF8] {
+  background-color: #161616 !important;
+}
+
+/* Luxury transitions */
+.transition-luxury {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes float-bubble {
+  0% {
+    transform: translateY(110vh) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(50px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.animate-perfume-bubble {
+  animation: float-bubble 8s linear infinite;
+}
+
+@keyframes ribbon-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 182, 194, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px 5px rgba(244, 182, 194, 0.2);
+  }
+}
+
+.animate-ribbon-pulse {
+  animation: ribbon-pulse 3s infinite ease-in-out;
+}
+
+/* Premium Drawer & Toast slide animations */
+@keyframes slide-right-drawer {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-slide-right-drawer {
+  animation: slide-right-drawer 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+
