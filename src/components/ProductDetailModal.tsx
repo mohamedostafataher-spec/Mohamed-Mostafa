@@ -1216,7 +1216,7 @@ export default function ProductDetailModal({
               <div className="bg-[#FAFAF5] border border-[#E9DADA] rounded-2xl p-4 space-y-3.5 text-right mt-1 shadow-xs ring-1 ring-black/5 animate-fadeIn">
                 <div className="flex justify-between items-center border-b border-[#E9DADA]/60 pb-1.5 flex-row-reverse">
                   <div className="flex items-center gap-1.5 flex-row-reverse">
-                    <span className="text-xs font-serif font-black text-gray-900">مشاركة قطعة زيرِيا الفاخرة ✨</span>
+                    <span className="text-xs font-serif font-black text-gray-900">مشاركة قطعة SULTA الفاخرة ✨</span>
                     <Sparkles size={11} className="text-[#DF8A9C] animate-pulse" />
                   </div>
                   <button
@@ -1229,7 +1229,7 @@ export default function ProductDetailModal({
                 </div>
 
                 <p className="text-[10px] text-gray-600 font-sans leading-relaxed">
-                  شاركي فخامة وأناقة علامة زيرِيا لملابس النوم الراقية مع صديقاتكِ أو على حسابتكِ الاجتماعية بلمسة واحدة.
+                  شاركي فخامة وأناقة علامة SULTA لملابس النوم الراقية مع صديقاتكِ أو على حسابتكِ الاجتماعية بلمسة واحدة.
                 </p>
 
                 {/* Grid of sharing methods */}
@@ -1239,7 +1239,7 @@ export default function ProductDetailModal({
                     type="button"
                     onClick={() => {
                       const shareUrl = `${window.location.origin}?product=${product.id}`;
-                      const text = `شاهدت هذا التصميم الخيالي لبيجامات وملابس نوم زيرِيا الفاخرة ✨:
+                      const text = `شاهدت هذا التصميم الخيالي لبيجامات وملابس نوم SULTA الفاخرة ✨:
 🌸 الموديل: *${product.nameAr}*
 🎨 الألوان المتوفرة: ${product.colors.map(c => c.name).join(' - ')}
 💎 المقاسات المتوافرة: ${product.sizes.join(', ')}
@@ -1279,7 +1279,7 @@ ${shareUrl}`;
                 {/* Elegant Instagram / Stories sharing guide */}
                 <div className="bg-white/80 p-3 rounded-xl border border-[#DF8A9C]/15 space-y-2">
                   <div className="flex items-center gap-1.5 justify-end">
-                    <span className="text-[10px] font-black text-gray-900">نصيحة التألق من زيرِيا على انستغرام (Instagram) 📸</span>
+                    <span className="text-[10px] font-black text-gray-900">نصيحة التألق من SULTA على انستغرام (Instagram) 📸</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-[#DF8A9C]" />
                   </div>
                   
@@ -1291,7 +1291,7 @@ ${shareUrl}`;
                     <button
                       type="button"
                       onClick={() => {
-                        const caption = `بيجامة زيرِيا لملابس النوم الفاخرة ✨ تصاميم خيالية تجمع النعومة الفائقة والرقي الملكي 🌸. الموديل المفضل لدي: "${product.nameAr}". تدرجات الألوان الفاخرة متاحة الآن!`;
+                        const caption = `بيجامة SULTA لملابس النوم الفاخرة ✨ تصاميم خيالية تجمع النعومة الفائقة والرقي الملكي 🌸. الموديل المفضل لدي: "${product.nameAr}". تدرجات الألوان الفاخرة متاحة الآن!`;
                         navigator.clipboard.writeText(caption);
                         setCaptionCopied(true);
                         setTimeout(() => setCaptionCopied(false), 2500);

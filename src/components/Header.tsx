@@ -53,6 +53,7 @@ export default function Header({
     { id: 'new-arrivals', label: 'NEW ARRIVALS' },
     { id: 'blog', label: 'JOURNAL' },
     { id: 'about', label: 'ABOUT US' },
+    { id: 'track-order', label: 'TRACK ORDER' },
     { id: 'contact', label: 'CONTACT' },
     { id: 'dashboard', label: 'ADMIN' },
   ];
@@ -60,20 +61,29 @@ export default function Header({
   return (
     <header className="sticky top-0 z-50 bg-[#FAF5F0]/95 backdrop-blur-md shadow-sm transition-luxury">
       {/* Top Thin Announcement Bar */}
-      <div className="bg-[#FAF5F0] text-[#A44C5C] font-sans text-[10px] md:text-xs py-2 px-4 flex justify-center items-center flex-wrap gap-6 transition-all border-b border-[#A44C5C]/10">
-        <div className="flex items-center gap-2">
+      <div className="bg-[#FAF5F0] text-[#A44C5C] font-sans text-[10px] md:text-xs py-2.5 px-4 flex justify-between items-center transition-all border-b border-[#A44C5C]/10 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2 text-[10px] sm:text-xs">
           <Truck size={14} className="text-[#A44C5C]" />
-          <span className="tracking-wide">Free Shipping on Orders Over $150</span>
+          <span className="tracking-wide">SHIPPING WORLDWIDE | شحن سريع للدول العربية</span>
         </div>
-        <div className="hidden sm:block w-px h-3 bg-[#A44C5C]/30"></div>
-        <div className="hidden sm:flex items-center gap-2">
-          <RefreshCcw size={14} className="text-[#A44C5C]" />
-          <span className="tracking-wide">Easy Returns & Exchanges</span>
+        <div className="hidden lg:flex items-center gap-2 text-[10px] tracking-[0.25em] font-serif font-semibold">
+          <Sparkles size={11} className="text-[#DF8A9D] animate-pulse" />
+          <span>SULTA SLEEPWEAR COUTURE</span>
         </div>
-        <div className="hidden md:block w-px h-3 bg-[#A44C5C]/30"></div>
-        <div className="hidden md:flex items-center gap-2">
-          <Sparkles size={14} className="text-[#A44C5C]" />
-          <span className="tracking-wide">Exclusive Premium Quality</span>
+        <div className="flex items-center gap-2 md:gap-3 text-[10.5px]">
+          <span className="text-gray-400 font-sans hidden sm:inline">Delivering To:</span>
+          <button 
+            onClick={() => setCountry('SA')} 
+            className={`px-2 py-0.5 rounded transition-all flex items-center gap-1 ${country === 'SA' ? 'bg-[#A44C5C] text-[#FAF5F0] font-semibold' : 'opacity-60 hover:opacity-100 font-normal text-gray-700'}`}
+          >
+            <span>🇸🇦 SAR</span>
+          </button>
+          <button 
+            onClick={() => setCountry('EG')} 
+            className={`px-2 py-0.5 rounded transition-all flex items-center gap-1 ${country === 'EG' ? 'bg-[#A44C5C] text-[#FAF5F0] font-semibold' : 'opacity-60 hover:opacity-100 font-normal text-gray-700'}`}
+          >
+            <span>🇪🇬 EGP</span>
+          </button>
         </div>
       </div>
 

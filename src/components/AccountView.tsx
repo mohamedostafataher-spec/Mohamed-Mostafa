@@ -16,7 +16,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useToast } from './Toast';
-import { Order, Product, Country, Review } from "../types";
+import { Order, Product, Country, Review, OrderStatus } from "../types";
 import { jsPDF } from "jspdf";
 import { dbService } from "../services/db";
 import {
@@ -119,7 +119,7 @@ export default function AccountView({
   const [trackedOrder, setTrackedOrder] = useState<Order | null>(null);
 
   // Interactive Live tracking custom states
-  const [activeStepTab, setActiveStepTab] = useState<"pending" | "processing" | "shipped" | "delivered">("pending");
+  const [activeStepTab, setActiveStepTab] = useState<OrderStatus>("new");
   const [etaTimer, setEtaTimer] = useState(1455); // 24 mins and 15 seconds
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "user" | "driver"; text: string; time: string }>>([
     { sender: "driver", text: "مرحباً بكِ في خدمة التوصيل الراقي من SULTA. أنا كابتن سفيان، شحنتكِ الثمينة معي الآن وباتت في طريقها إليكِ! 🌸 هل أنتم متواجدون في المنزل لاستلامها؟", time: "الآن" }
@@ -417,7 +417,7 @@ export default function AccountView({
   // Order status helper translation
   const getStatusLabel = (status: Order["status"]) => {
     switch (status) {
-      case "pending":
+      case "new":
         return "قيد الانتظار لموافقة الإدارة";
       case "processing":
         return "يجري تجهيزها وتغليفها باهتمام 🌸";
@@ -430,7 +430,7 @@ export default function AccountView({
 
   const getStatusColor = (status: Order["status"]) => {
     switch (status) {
-      case "pending":
+      case "new":
         return "text-amber-500 bg-amber-50 border-amber-200";
       case "processing":
         return "text-purple-600 bg-purple-50 border-purple-200";
@@ -812,7 +812,7 @@ export default function AccountView({
                       </p>
                       <p className="text-[10px] text-gray-500 mt-0.5">
                         من{" "}
-                        {notif.oldStatus === "pending"
+                        {notif.oldStatus === "new"
                           ? "قيد الانتظار لموافقة الإدارة"
                           : notif.oldStatus === "processing"
                             ? "يجري تجهيزها وتغليفها باهتمام"
@@ -821,13 +821,13 @@ export default function AccountView({
                               : "تم التسليم بنجاح"}{" "}
                         ← إلى{" "}
                         <span className="font-bold text-[#DF8A9C]">
-                          {notif.newStatus === "pending"
+                          {notif.newStatus === "new"
                             ? "قيد الانتظار لموافقة الإدارة"
-                            : notif.newStatus === "processing"
-                              ? "يجري تجهيزها وتغليفها باهتمام"
-                              : notif.newStatus === "shipped"
-                                ? "تم الشحن مع المندوب الملكي"
-                                : "تم التسليم بنجاح"}
+                          : notif.newStatus === "processing"
+                            ? "يجري تجهيزها وتغليفها باهتمام"
+                            : notif.newStatus === "shipped"
+                              ? "تم الشحن مع المندوب الملكي"
+                              : "تم التسليم بنجاح"}
                         </span>
                       </p>
                     </div>
@@ -1144,10 +1144,10 @@ export default function AccountView({
 
                           {/* 1. Pending */}
                           <div
-                            className={`flex flex-col items-center gap-1.5 z-10 w-1/4 ${["pending", "processing", "shipped", "delivered"].includes(o.status) ? "text-[#0B0B0B]" : "text-gray-300"}`}
+                            className={`flex flex-col items-center gap-1.5 z-10 w-1/4 ${["new", "processing", "shipped", "delivered"].includes(o.status) ? "text-[#0B0B0B]" : "text-gray-300"}`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["pending", "processing", "shipped", "delivered"].includes(o.status) ? "bg-[#0B0B0B] border-[#0B0B0B] text-[#F6E7A6]" : "bg-white border-gray-200 text-gray-300"}`}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["new", "processing", "shipped", "delivered"].includes(o.status) ? "bg-[#0B0B0B] border-[#0B0B0B] text-[#F6E7A6]" : "bg-white border-gray-200 text-gray-300"}`}
                             >
                               <Clock size={14} />
                             </div>
@@ -1517,16 +1517,16 @@ export default function AccountView({
 
                       {/* STEP 1: Pending */}
                       <button
-                        onClick={() => setActiveStepTab("pending")}
+                        onClick={() => setActiveStepTab("new")}
                         className={`z-10 flex flex-row sm:flex-col items-center sm:text-center gap-3 sm:gap-0 sm:flex-1 w-full justify-start select-none cursor-pointer group focus:outline-none`}
                       >
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold font-sans shadow-md ring-4 ring-white shrink-0 sm:mb-2 transition-all ${
-                          activeStepTab === "pending" ? "bg-[#0B0B0B] text-[#F6E7A6] scale-110" : "bg-[#FAF4F5] text-[#DF8A9C]"
+                          activeStepTab === "new" ? "bg-[#0B0B0B] text-[#F6E7A6] scale-110" : "bg-[#FAF4F5] text-[#DF8A9C]"
                         }`}>
                           <Clock size={15} />
                         </div>
                         <div className="text-right sm:text-center font-sans">
-                          <span className={`font-bold block ${activeStepTab === "pending" ? "text-gray-950 font-black underline decoration-[#DF8A9C]" : "text-gray-600"}`}>
+                          <span className={`font-bold block ${activeStepTab === "new" ? "text-gray-950 font-black underline decoration-[#DF8A9C]" : "text-gray-600"}`}>
                             استلام واعتماد الطلبية
                           </span>
                           <span className="text-[9.5px] text-gray-400 block sm:mt-1 font-sans">
@@ -1543,7 +1543,7 @@ export default function AccountView({
                         <div
                           className={`w-9 h-9 rounded-full flex items-center justify-center font-bold font-sans ring-4 ring-white shrink-0 sm:mb-2 transition-all ${
                             activeStepTab === "processing" ? "bg-[#0B0B0B] text-[#F6E7A6] scale-110" :
-                            (trackedOrder.status !== "pending" ? "bg-[#FAF4F5] text-[#DF8A9C]" : "bg-gray-100 text-gray-400")
+                            (trackedOrder.status !== "new" ? "bg-[#FAF4F5] text-[#DF8A9C]" : "bg-gray-100 text-gray-400")
                           }`}
                         >
                           <Package size={15} />
@@ -1617,7 +1617,7 @@ export default function AccountView({
                     <div className="bg-[#FAFAF7] rounded-2xl p-4 md:p-5 border border-gray-150 text-right text-xs leading-relaxed text-gray-700 font-sans">
                       <div className="flex gap-2 items-center justify-end font-bold text-gray-900 mb-2 font-serif text-sm">
                         <span>تقرير حالة الخط المباشر ({
-                          activeStepTab === "pending" ? "الاعتماد والتوثيق" :
+                          activeStepTab === "new" ? "الاعتماد والتوثيق" :
                           activeStepTab === "processing" ? "الكي والتغليف الفاخر" :
                           activeStepTab === "shipped" ? "رحلة الشحن والتوصيل" :
                           "الاستلام الملكي والتقييم"
@@ -1625,7 +1625,7 @@ export default function AccountView({
                         <span className="text-base">💎</span>
                       </div>
                       <p className="text-right">
-                        {activeStepTab === "pending" && "تم استلام طلبيتكِ الفاخرة واعتمادها بنجاح في أنظمة SULTA المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
+                        {activeStepTab === "new" && "تم استلام طلبيتكِ الفاخرة واعتمادها بنجاح في أنظمة SULTA المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
                         {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الحرير الخالص لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط ساتان كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
                         {activeStepTab === "shipped" && "بشرى سارة! تم تسليم باقتك لـ SULTA Fast Express وهي بصحبة سفير توصيل الأناقة كابتن سفيان الآن. تم تحسين مسار الرحلة ذكياً للوصول في دقة فائقة، الجوال متاح لتسهيل الاتصال والوصول المباشر."}
                         {activeStepTab === "delivered" && "تم تسليم الطرد الملكي في منتهى الرقي. نتمنى لك دوماً تجربة نوم هانئة تملؤها السكينة والأناقة المفرطة مع منسوجات SULTA. سعدنا بثقتِك ونتشرف بزيارة تقيمية تذكرين فيها رأيك في القطعة!"}

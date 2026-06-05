@@ -118,10 +118,63 @@ export interface CartItem {
   quantity: number;
 }
 
+export type OrderStatus = 'new' | 'confirmed' | 'processing' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'returned';
+
+export interface InventoryLog {
+  id: string;
+  productId: string;
+  variant: string; // color-size
+  change: number;
+  reason: string;
+  date: string;
+  adminId: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  action: string;
+  details: string;
+  adminId: string;
+  date: string;
+}
+
+export type CouponType = 'percentage' | 'fixed' | 'free_shipping';
+
+export interface AdvancedCoupon {
+  id: string;
+  code: string;
+  type: CouponType;
+  value: number; // percentage or fixed amount
+  expirationDate?: string;
+  usageLimit?: number;
+  timesUsed: number;
+  minOrderValue?: number;
+  applicableCategories?: string[];
+  applicableCollections?: string[];
+  applicableProducts?: string[];
+  description: string;
+  active: boolean;
+}
+
+export type LoyaltyTier = 'silver' | 'gold' | 'platinum' | 'diamond';
+
+export interface CustomerProfile {
+  id: string;
+  email: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  loyaltyTier: LoyaltyTier;
+  points: number;
+  joinedAt: string;
+  totalSpent: number;
+}
+
 export interface Order {
   id: string;
   customerName: string;
   phone: string;
+  email?: string;
   country: Country;
   city: string;
   address: string;
@@ -130,6 +183,7 @@ export interface Order {
   giftCardTheme?: string;
   ribbon?: string;
   shippingFee?: number;
+  trackingNumber?: string;
   items: {
     productId: string;
     productName: string;
@@ -141,8 +195,24 @@ export interface Order {
   totalPrice: number;
   currency: Currency;
   paymentMethod: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  status: OrderStatus;
   date: string;
+}
+
+export type DiscountType = 'percentage' | 'fixed';
+
+export interface PromotionCampaign {
+  id: string;
+  name: string; // e.g. "Ramadan Sale" or "Flash Sale"
+  description: string;
+  discountType: DiscountType;
+  discountValue: number; // Percentage or fixed amount
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  applicableCategories?: string[];
+  bannerText?: string;
+  createdAt: string;
 }
 
 export interface DiscountCoupon {

@@ -264,6 +264,49 @@ export default function StoreView({
           </main>
 
         </div>
+        
+        {/* Related Products Engine */}
+        {products.length > 0 && (
+          <div className="mt-20 pt-16 border-t border-gray-200">
+            <h3 className="font-serif text-2xl text-center mb-10 text-[#0B0B0B]">محرك التوصيات الملكي (Trending Right Now ✨)</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+              {products.slice(0, 4).map(prod => {
+                const isFav = favorites.includes(prod.id);
+                const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
+                const currentPrice = country === 'EG' ? prod.priceEG : prod.priceSA;
+                
+                return (
+                  <div key={`trending-${prod.id}`} className="group cursor-pointer" onClick={() => onSelectProduct(prod)}>
+                    <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-4">
+                      <img
+                        src={prod.images[0]}
+                        alt={prod.nameEn || prod.nameAr}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 mix-blend-multiply"
+                        referrerPolicy="no-referrer"
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(prod.id);
+                        }}
+                        className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-sm hover:scale-110 transition-transform opacity-0 group-hover:opacity-100 z-10"
+                      >
+                        <Heart size={14} fill={isFav ? '#A44C5C' : 'none'} className={isFav ? 'text-[#A44C5C]' : 'text-gray-400'} />
+                      </button>
+                    </div>
+                    <div className="text-center">
+                      <h4 className="text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif mb-1">
+                        {prod.nameEn || prod.nameAr}
+                      </h4>
+                      <span className="font-sans font-medium text-xs text-[#A44C5C]">${currentPrice.toLocaleString()} {currencyLabel}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -96,6 +96,211 @@ if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
 export const supabase = supabaseInstance;
 
 // ==========================================
+// MOCK FALLBACK BOUTIQUE DATA (Match mockups exactly)
+// ==========================================
+
+export const MOCK_BOUTIQUE_CATEGORIES: Category[] = [
+  { id: 'sleepwear', name: 'Sleepwear', slug: 'sleepwear', imageUrl: 'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=600' },
+  { id: 'loungewear', name: 'Loungewear', slug: 'loungewear', imageUrl: 'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=600' },
+  { id: 'homewear', name: 'Homewear', slug: 'homewear', imageUrl: 'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=600' },
+  { id: 'collections', name: 'Collections', slug: 'collections', imageUrl: 'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=600' }
+];
+
+export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
+  {
+    id: 'satin-blush',
+    nameAr: 'طقم بيجامة ساتان روز الملكي متبلّش',
+    nameEn: 'Satin Blush Pajama Set',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم',
+    priceEG: 2700,
+    priceSA: 330,
+    descriptionAr: 'دللي حواسك مع طقم بيجامة الساتان الروز المصممة بعناية فائقة لتنساب بنعومة تامة كالحرير على البشرة.',
+    descriptionEn: 'Indulge in premium relaxation with our hand-tailored Satin Blush sleep set, curated uniquely for SULTA.',
+    fabricAr: 'حرير ساتان مبرد فاخر عالي الكثافة (بولي ساتان فائق النعومة)',
+    fabricEn: 'Premium high-density breathable cooling Satin (Polysatin composition)',
+    washInstructionsAr: 'غسيل يدوي بماء بارد ومساحيق غسيل رقيقة للمنسوجات الفاخرة.',
+    images: [
+      'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=800',
+      'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800'
+    ],
+    colors: [
+      { name: 'Rose', hex: '#DF8A9D' },
+      { name: 'Ivory', hex: '#FAF5F0' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    rating: 5,
+    reviewsCount: 128,
+    stock: 25,
+    sku: 'SLT-SAT-BLS',
+    featured: true,
+    status: 'active',
+    shortDescription: 'Satin Blush premium pajama set for brides and modern ladies.',
+    tags: ['Satin', 'Sleepwear', 'Pajamas', 'New Arrivals']
+  },
+  {
+    id: 'ivory-dream',
+    nameAr: 'طقم ساتان حلم العاج الكلاسيكي',
+    nameEn: 'Ivory Dream Pajama Set',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم',
+    priceEG: 2500,
+    priceSA: 310,
+    descriptionAr: 'كلاسيكية خالدة بلون العاج اللؤلؤي البديع. تتميز بياقة مفتوحة وأطراف مطرزة بدقة لخياطة راقية لا تزول.',
+    descriptionEn: 'A pristine luxury staple. Beautiful pearl ivory pajama set with detailed premium stitching and piping.',
+    fabricAr: 'حرير طبيعي معالج بالساتان فائق القوام',
+    fabricEn: 'Processed premium silk-satin blend with exquisite drape count',
+    washInstructionsAr: 'تنظيف جاف أو غسيل رقيق للغاية منفصلا.',
+    images: [
+      'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=800',
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=800'
+    ],
+    colors: [
+      { name: 'Pearl Ivory', hex: '#FAF5F0' },
+      { name: 'Gold', hex: '#DBC082' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    rating: 5,
+    reviewsCount: 96,
+    stock: 14,
+    sku: 'SLT-SAT-IVY',
+    featured: true,
+    status: 'active',
+    shortDescription: 'Elegant Ivory Dream pajamas with contract piping.',
+    tags: ['Ivory', 'Classic', 'Satin', 'Bridal']
+  },
+  {
+    id: 'soft-pink-cotton',
+    nameAr: 'طقم قطن مريح بلون وردي ناعم',
+    nameEn: 'Soft Pink Cotton Set',
+    category: 'loungewear',
+    categoryAr: 'ملابس استرخاء',
+    priceEG: 2400,
+    priceSA: 295,
+    descriptionAr: 'طقم مصنوع من قطن مصري نقي معالج بمرونة تامة للراحة في المنزل والتلذذ بنوم هانىء وراحة فائقة.',
+    descriptionEn: 'Experience pure cotton comfort. Exceptionally soft pink cotton lounge and sleep set.',
+    fabricAr: 'قطن طبيعي نقي 100٪ مع خيوط مرنة',
+    fabricEn: '100% long-staple egyptian organic cotton with gentle stretch',
+    washInstructionsAr: 'غسيل آلي بماء فاتر ولطيف.',
+    images: [
+      'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800',
+      'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=800'
+    ],
+    colors: [
+      { name: 'Soft Rose', hex: '#DF8A9D' },
+      { name: 'Lilac', hex: '#E2D1F9' }
+    ],
+    sizes: ['M', 'L', 'XL'],
+    isBestSeller: true,
+    rating: 5,
+    reviewsCount: 231,
+    stock: 45,
+    sku: 'SLT-COT-PNK',
+    featured: true,
+    status: 'active',
+    shortDescription: 'Supremely breathable soft pink cotton lounge set.',
+    tags: ['Cotton', 'Loungewear', 'Soft Pink']
+  },
+  {
+    id: 'midnight-elegance',
+    nameAr: 'طقم ساتان أناقة منتصف الليل الأسود',
+    nameEn: 'Midnight Elegance Set',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم',
+    priceEG: 2900,
+    priceSA: 355,
+    descriptionAr: 'الفخامة السوداء العميقة ببريق الساتان الساحر وطباعة دانتيل خفيفة. مصممة لتجربة ملكية مهيبة بالمنزل.',
+    descriptionEn: 'Enigmatic deep black satin with premium satin touch and subtle contrasts for a powerful elegant styling.',
+    fabricAr: 'ساتان العرائس الثقيل الإيطالي عالي الجاذبية',
+    fabricEn: 'Heavy bridal-weight premium satin with high luster finish',
+    washInstructionsAr: 'غسيل رقيق يدوي بماء بارد وبدون عصر مكثف.',
+    images: [
+      'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=800',
+      'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800'
+    ],
+    colors: [
+      { name: 'Midnight Black', hex: '#0B0B0B' },
+      { name: 'Deep Grey', hex: '#4A4A4A' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    rating: 5,
+    reviewsCount: 74,
+    stock: 19,
+    sku: 'SLT-SAT-MID',
+    featured: true,
+    status: 'active',
+    shortDescription: 'Deep lustrous black sleepwear set for high-end styling.',
+    tags: ['Satin', 'Midnight', 'Black', 'Best Sellers']
+  },
+  {
+    id: 'lavender-luxe',
+    nameAr: 'طقم ساتان اللافندر المترف للعرايس',
+    nameEn: 'Lavender Luxe Set',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم',
+    priceEG: 2650,
+    priceSA: 325,
+    descriptionAr: 'تمتعي باللون اللافندر الباريسي الآسر مع خامة خفيفة ناعمة تداعب الجسد مفعمة بالأنوثة الحالمة.',
+    descriptionEn: 'Dreamy shade of Parisian Lavender. High-end satin lounge set engineered with ultimate drape layout.',
+    fabricAr: 'حرير فيسكوز ساتان فائق النعومة والمطاطية الجانبية',
+    fabricEn: 'Viscose-silk satin blend with luxurious side-stretch and cooling comfort',
+    washInstructionsAr: 'تنظيف رقيق مع مسحوق غسيل سائل خاص بالحرير.',
+    images: [
+      'https://images.unsplash.com/photo-1562572159-4ebcd318f2dd?q=80&w=800',
+      'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=800'
+    ],
+    colors: [
+      { name: 'Lavender', hex: '#BDB2FF' },
+      { name: 'Ivory Pearl', hex: '#FAF5F0' }
+    ],
+    sizes: ['S', 'M', 'L'],
+    isBestSeller: true,
+    rating: 5,
+    reviewsCount: 112,
+    stock: 22,
+    sku: 'SLT-SAT-LAV',
+    featured: true,
+    status: 'active',
+    shortDescription: 'Dreamy Lavender satin bridal pajama set.',
+    tags: ['Lavender', 'Satin', 'Pajamas', 'Luxe']
+  },
+  {
+    id: 'rose-satin-boutique',
+    nameAr: 'طقم ساتان الورد الفاخر المزين بدانتيل',
+    nameEn: 'Rose Satin Set',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم',
+    priceEG: 1800,
+    priceSA: 220,
+    descriptionAr: 'قوام ساتان حريري خفيف يمنحك النعومة المطلقة التي تبحثين عنها مع كل لمسة.',
+    descriptionEn: 'Light fluid satin that feels incredible on your skin. Tailored meticulously.',
+    fabricAr: 'ساتان السلس الناعم المعالج ضد الكرمشة والكهرباء الساكنة',
+    fabricEn: 'Boutique anti-static ultra-smooth satin with lace highlights',
+    washInstructionsAr: 'يغسل يدويًا للحفاظ على الأطراف المزينة بالدانتيل رقيقًا.',
+    images: [
+      'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=800',
+      'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800'
+    ],
+    colors: [
+      { name: 'Satin Rose', hex: '#DF8A9D' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    rating: 5,
+    reviewsCount: 88,
+    stock: 30,
+    sku: 'SLT-SAT-RSE',
+    featured: true,
+    status: 'active',
+    shortDescription: 'Handcrafted rose satin set decorated with fine lace.',
+    tags: ['Lace', 'Satin', 'Rose']
+  }
+];
+
+// ==========================================
 // SULTA COUTURE SUPABASE CONNECTION
 // ==========================================
 
@@ -404,14 +609,22 @@ export const dbService = {
     _onError: (error: any) => void
   ): (() => void) => {
     supabase.from('categories').select('*').then(({ data }) => {
-      if (data) onSuccess(data.map(mapCategory));
+      if (data && data.length > 0) {
+        onSuccess(data.map(mapCategory));
+      } else {
+        onSuccess([]);
+      }
     });
 
     const channel = supabase
       .channel('public:categories')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, async () => {
         const { data } = await supabase.from('categories').select('*');
-        if (data) onSuccess(data.map(mapCategory));
+        if (data && data.length > 0) {
+          onSuccess(data.map(mapCategory));
+        } else {
+          onSuccess([]);
+        }
       })
       .subscribe();
 
@@ -501,14 +714,22 @@ export const dbService = {
     _onError: (error: any) => void
   ): (() => void) => {
     supabase.from('products').select('*').then(({ data }) => {
-      if (data) onSuccess(data.map(mapProduct));
+      if (data && data.length > 0) {
+        onSuccess(data.map(mapProduct));
+      } else {
+        onSuccess([]);
+      }
     });
 
     const channel = supabase
       .channel('public:products')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         const { data } = await supabase.from('products').select('*');
-        if (data) onSuccess(data.map(mapProduct));
+        if (data && data.length > 0) {
+          onSuccess(data.map(mapProduct));
+        } else {
+          onSuccess([]);
+        }
       })
       .subscribe();
 
@@ -752,13 +973,203 @@ export const dbService = {
     if (error) throw error;
   },
 
-  saveNewsletterSubscription: async (sub: NewsletterSubscription): Promise<void> => {
-    const { error } = await supabase.from('newsletter_subscriptions').insert([{
-      id: sub.id,
-      email: sub.email,
-      phone: sub.phone,
-      date: sub.date
-    }]);
+  // Log Activity
+  logActivity: async (action: string, details: string, adminId: string = 'system'): Promise<void> => {
+    try {
+      const log = {
+        id: `LOG-${Date.now()}`,
+        action,
+        details,
+        admin_id: adminId,
+        date: new Date().toISOString()
+      };
+      const { error } = await supabase.from('activity_logs').insert([log]);
+      if (error) throw error;
+    } catch {
+      // Fallback
+    }
+  },
+
+  subscribeActivityLogs: (
+    onSuccess: (logs: any[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('activity_logs').select('*').order('date', { ascending: false }).then(({ data }) => {
+      if (data) onSuccess(data);
+    });
+
+    const channel = supabase
+      .channel('public:activity_logs')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs' }, async () => {
+        const { data } = await supabase.from('activity_logs').select('*').order('date', { ascending: false });
+        if (data) onSuccess(data);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  },
+
+  // Inventory Management
+  updateInventory: async (productId: string, variant: string, change: number, reason: string): Promise<void> => {
+    try {
+      const log = {
+        id: `INV-${Date.now()}`,
+        product_id: productId,
+        variant,
+        change,
+        reason,
+        date: new Date().toISOString(),
+        admin_id: 'admin'
+      };
+      await supabase.from('inventory_logs').insert([log]);
+      await dbService.logActivity('UPDATE_INVENTORY', `Updated stock for ${productId} (${variant}) by ${change}. Reason: ${reason}`);
+    } catch { }
+  },
+
+  subscribeInventoryLogs: (
+    onSuccess: (logs: any[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('inventory_logs').select('*').order('date', { ascending: false }).then(({ data }) => {
+      if (data) onSuccess(data);
+    });
+    const channel = supabase.channel('public:inventory_logs').on('postgres_changes', { event: '*', schema: 'public', table: 'inventory_logs' }, async () => {
+        const { data } = await supabase.from('inventory_logs').select('*').order('date', { ascending: false });
+        if (data) onSuccess(data);
+    }).subscribe();
+    return () => supabase.removeChannel(channel);
+  },
+
+  // Advanced Coupons
+  subscribeAdvancedCoupons: (
+    onSuccess: (coupons: any[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('advanced_coupons').select('*').then(({ data }) => {
+      if (data) onSuccess(data);
+    });
+    const channel = supabase.channel('public:advanced_coupons').on('postgres_changes', { event: '*', schema: 'public', table: 'advanced_coupons' }, async () => {
+        const { data } = await supabase.from('advanced_coupons').select('*');
+        if (data) onSuccess(data);
+    }).subscribe();
+    return () => supabase.removeChannel(channel);
+  },
+
+  saveAdvancedCoupon: async (coupon: any): Promise<void> => {
+    const { error } = await supabase.from('advanced_coupons').upsert([coupon]);
     if (error) throw error;
-  }
+    await dbService.logActivity('SAVE_COUPON', `Saved coupon ${coupon.code}`);
+  },
+
+  deleteAdvancedCoupon: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('advanced_coupons').delete().eq('id', id);
+    if (error) throw error;
+    await dbService.logActivity('DELETE_COUPON', `Deleted coupon ${id}`);
+  },
+
+  saveNewsletterSubscription: async (sub: any): Promise<void> => {
+    try {
+      await supabase.from('newsletter_subs').upsert({
+        id: sub.id,
+        email: sub.email,
+        phone: sub.phone,
+        source: sub.source,
+        date: sub.date,
+        subscribed: sub.subscribed
+      });
+    } catch (e) {
+      console.warn("Newsletter Sub upsert fallback:", e);
+    }
+  },
+
+  // Promotions
+  subscribePromotions: (
+    onSuccess: (promotions: any[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('promotions').select('*').then(({ data }) => {
+      // mapping
+      if (data) onSuccess(data.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        discountType: p.discount_type,
+        discountValue: p.discount_value,
+        startDate: p.start_date,
+        endDate: p.end_date,
+        isActive: p.is_active,
+        applicableCategories: p.applicable_categories || [],
+        bannerText: p.banner_text,
+        createdAt: p.created_at
+      })));
+    });
+    const channel = supabase.channel('public:promotions').on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, async () => {
+        const { data } = await supabase.from('promotions').select('*');
+        if (data) onSuccess(data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          discountType: p.discount_type,
+          discountValue: p.discount_value,
+          startDate: p.start_date,
+          endDate: p.end_date,
+          isActive: p.is_active,
+          applicableCategories: p.applicable_categories || [],
+          bannerText: p.banner_text,
+          createdAt: p.created_at
+        })));
+    }).subscribe();
+    return () => supabase.removeChannel(channel);
+  },
+
+  savePromotion: async (promo: any): Promise<void> => {
+    const { error } = await supabase.from('promotions').upsert([{
+      id: promo.id,
+      name: promo.name,
+      description: promo.description,
+      discount_type: promo.discountType,
+      discount_value: promo.discountValue,
+      start_date: promo.startDate,
+      end_date: promo.endDate,
+      is_active: promo.isActive,
+      applicable_categories: promo.applicableCategories,
+      banner_text: promo.bannerText,
+      created_at: promo.createdAt
+    }]);
+    if (error) {
+      console.error(error);
+      throw error;
+    }
+    await dbService.logActivity('SAVE_PROMOTION', `Saved promotion ${promo.name}`);
+  },
+
+  deletePromotion: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('promotions').delete().eq('id', id);
+    if (error) throw error;
+    await dbService.logActivity('DELETE_PROMOTION', `Deleted promotion ${id}`);
+  },
+
+  // Customers (Profile & Loyalty)
+  subscribeCustomers: (
+    onSuccess: (customers: any[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('customers').select('*').then(({ data }) => {
+      if (data) onSuccess(data);
+    });
+    const channel = supabase.channel('public:customers').on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, async () => {
+        const { data } = await supabase.from('customers').select('*');
+        if (data) onSuccess(data);
+    }).subscribe();
+    return () => supabase.removeChannel(channel);
+  },
+
+  saveCustomer: async (customer: any): Promise<void> => {
+    const { error } = await supabase.from('customers').upsert([customer]);
+    if (error) throw error;
+    await dbService.logActivity('SAVE_CUSTOMER', `Saved customer ${customer.email || customer.id}`);
+  },
+
 };

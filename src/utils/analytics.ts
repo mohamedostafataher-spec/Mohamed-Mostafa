@@ -68,26 +68,15 @@ export const getProductAnalytics = (products: Product[], orders: Order[]): Produ
   });
 
   return products.map(product => {
-    // Deterministic seeding based on ID hash to ensure highly stable and realistic baseline charts
-    let seedBase = 0;
-    for (let i = 0; i < product.id.length; i++) {
-      seedBase += product.id.charCodeAt(i);
-    }
-
-    // Baseline Seed values
-    const seedViews = 150 + (seedBase % 120); // 150 to 270 views
-    const seedAdditions = Math.floor(seedViews * (0.12 + (seedBase % 8) / 100)); // 12% - 20% add to cart rate
-    const seedOrders = Math.floor(seedAdditions * (0.2 + (seedBase % 5) / 100)); // 20% - 25% purchase from additions
-
     // Live telemetry adjustments
     const liveViews = data[product.id]?.views || 0;
     const liveAdditions = data[product.id]?.cartAdditions || 0;
     const liveOrders = actualOrdersCountMap[product.id] || 0;
 
-    // Total final figures
-    const views = seedViews + liveViews;
-    const cartAdditions = seedAdditions + liveAdditions;
-    const ordersCount = seedOrders + liveOrders;
+    // Total final figures (Now reading exclusively from live database and telemetry)
+    const views = liveViews;
+    const cartAdditions = liveAdditions;
+    const ordersCount = liveOrders;
 
     // Conversion rate formula
     const conversionRate = views > 0 ? Number(((ordersCount / views) * 100).toFixed(1)) : 0;

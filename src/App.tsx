@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X } from 'lucide-react';
+import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe } from 'lucide-react';
 import { ToastProvider, useToast } from './components/Toast';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -17,6 +17,9 @@ import ReturnsExchanges from './components/ReturnsExchanges';
 import DatabaseTest from './components/DatabaseTest';
 import BlogView from './components/BlogView';
 import BlogPostView from './components/BlogPostView';
+import TrackOrder from './components/TrackOrder';
+import WhatsAppFloat from './components/WhatsAppFloat';
+import RibbonBowDivider from './components/RibbonBowDivider';
 
 import { dbService, supabase } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -119,6 +122,7 @@ function AppContent() {
     let unsubCategories: any = null;
     let unsubCollections: any = null;
     let unsubCMS: any = null;
+    let unsubPromotions: any = null;
 
     const initData = async () => {
       try {
@@ -145,6 +149,18 @@ function AppContent() {
         unsubCoupons = dbService.subscribeCoupons(
           (list) => setCoupons(list),
           (error) => console.error("Coupons error:", error)
+        );
+
+        // **. Live Sync Promotions
+        unsubPromotions = dbService.subscribePromotions(
+          (list) => {
+            const now = new Date();
+            const activePromo = list.find(p => p.isActive && new Date(p.startDate) <= now && new Date(p.endDate) >= now);
+            if (activePromo && activePromo.bannerText) {
+              setSettings(prev => prev ? { ...prev, promoBannerAr: activePromo.bannerText! } : prev);
+            }
+          },
+          () => {}
         );
 
         // 3. Live Sync Reviews
@@ -195,6 +211,7 @@ function AppContent() {
       if (typeof unsubCategories === 'function') unsubCategories();
       if (typeof unsubCollections === 'function') unsubCollections();
       if (typeof unsubCMS === 'function') unsubCMS();
+      if (typeof unsubPromotions === 'function') unsubPromotions();
     };
   }, []);
 
@@ -404,7 +421,7 @@ function AppContent() {
   };
 
   // Best sellers filter list on home
-  const bestSellers = products.filter(p => p.isBestSeller).slice(0, 4);
+  const bestSellers = products.filter(p => p.isBestSeller).slice(0, 6);
 
   return (
       <div className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
@@ -491,8 +508,17 @@ function AppContent() {
             />
 
             {/* BRAND LUXURY CATEGORIES GRID */}
-            <section className="py-20 bg-[#FAF5F0]">
+            <section className="py-16 bg-[#FAF5F0]">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <RibbonBowDivider />
+                <div className="text-center max-w-xl mx-auto mb-10 pb-2">
+                  <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-[#0B0B0B] font-light tracking-wide uppercase">
+                    SHOP BY CATEGORY | الأقسام الملكية
+                  </h3>
+                  <p className="text-[#A44C5C]/70 text-[10px] md:text-xs mt-1.5 font-serif italic tracking-widest">
+                    SELECT YOUR RETREAT
+                  </p>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-5xl mx-auto">
                   {categories.slice(0, 4).map((category) => (
                     <div
@@ -500,104 +526,136 @@ function AppContent() {
                       onClick={() => handleSelectCategoryHome(category.id)}
                       className="group flex flex-col items-center cursor-pointer text-center"
                     >
-                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-transparent group-hover:border-[#DF8A9D]/30 transition-all duration-500 mb-4 bg-[#DF8A9D]/10">
+                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-md group-hover:border-[#DF8A9D]/40 transition-all duration-500 mb-4 bg-white relative">
                         {category.imageUrl && (
                           <img
                             src={category.imageUrl}
                             alt={category.name}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 Mix-blend-multiply opacity-90"
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-90"
                             referrerPolicy="no-referrer"
                           />
                         )}
+                        <div className="absolute inset-0 bg-[#A44C5C]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      <h4 className="text-[#0B0B0B] font-serif tracking-widest text-sm uppercase">
-                        {category.name}
+                      <h4 className="text-[#0B0B0B] font-serif tracking-widest text-sm uppercase font-semibold">
+                        {category.name === 'sleepwear' ? 'Sleepwear / ملابس نوم' :
+                         category.name === 'loungewear' ? 'Loungewear / استرخاء' :
+                         category.name === 'homewear' ? 'Homewear / منزلي' :
+                         category.name === 'collections' ? 'Collections / التشكيلة' : category.name}
                       </h4>
-                      <span className="text-[#A44C5C] text-xs font-sans mt-1 group-hover:underline underline-offset-4">Shop Now</span>
+                      <span className="text-[#A44C5C] text-[11px] font-sans mt-1 group-hover:underline underline-offset-4 tracking-[0.2em] uppercase font-medium">Shop Now</span>
                     </div>
                   ))}
                 </div>
               </div>
             </section>
 
-            {/* FULL WIDTH LUXURIOUS BANNER */}
-            {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.active && (
-              <section className="relative py-24 md:py-32 overflow-hidden bg-[#DF8A9D]/20">
-                <div className="absolute inset-0 z-0 opacity-50">
-                  <img src={homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.imageUrl} className="w-full h-full object-cover grayscale mix-blend-overlay opacity-30" alt="luxury background"/>
-                </div>
-
-                <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-6">
-                  <span className="font-sans text-sm tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-2">
-                    <Sparkles size={14} />
-                    {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.subtitle || 'Because You Deserve'}
-                  </span>
-                  <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl font-normal text-[#A44C5C] tracking-wide leading-tight">
-                    {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.title || 'THE SOFTEST LIFE'}
-                  </h3>
-                  <div className="pt-8">
-                    <button
-                      onClick={() => setTab('store')}
-                      className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-10 py-4 rounded-full text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105"
-                    >
-                      {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.buttonText || 'SHOP THE COLLECTION'}
-                    </button>
+            {/* FULL WIDTH LUXURIOUS BANNER WITH FALLBACK */}
+            {(() => {
+              const bannerSection = homepageSections.find(s => s.section_key === 'middle_banner');
+              const bannerData = bannerSection?.content_json || {
+                active: true,
+                imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=1200',
+                subtitle: 'Because You Deserve',
+                title: 'THE SOFTEST LIFE',
+                buttonText: 'SHOP THE COLLECTION'
+              };
+              if (!bannerData.active) return null;
+              return (
+                <section className="relative py-24 md:py-32 overflow-hidden bg-[#DF8A9D]/20">
+                  <div className="absolute inset-0 z-0 opacity-50">
+                    <img 
+                      src={bannerData.imageUrl} 
+                      className="w-full h-full object-cover grayscale mix-blend-overlay opacity-30" 
+                      alt="luxury background"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
-                </div>
-              </section>
-            )}
+
+                  <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-6">
+                    <span className="font-sans text-sm tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-2 font-semibold">
+                      <Sparkles size={14} />
+                      {bannerData.subtitle}
+                    </span>
+                    <h3 className="font-serif text-4xl md:text-5xl lg:text-3xl xl:text-6xl font-normal text-[#A44C5C] tracking-wide leading-tight uppercase">
+                      {bannerData.title}
+                    </h3>
+                    <div className="pt-8">
+                      <button
+                        onClick={() => setTab('store')}
+                        className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-10 py-4 rounded-full text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105"
+                      >
+                        {bannerData.buttonText}
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              );
+            })()}
 
             {/* BEST SELLERS */}
             <section className="py-20 bg-[#FAF5F0]">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 
-                <div className="text-center max-w-xl mx-auto mb-16 flex items-center justify-center gap-4">
-                  <svg width="24" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#DF8A9D] opacity-60">
-                     <path d="M16 12C16 16.4183 12.4183 20 8 20C3.58172 20 0 16.4183 0 12C0 7.58172 3.58172 4 8 4C12.4183 4 16 7.58172 16 12Z" fill="currentColor"/>
-                     <path d="M40 12C40 16.4183 36.4183 20 32 20C27.5817 20 24 16.4183 24 12C24 7.58172 27.5817 4 32 4C36.4183 4 40 7.58172 40 12Z" fill="currentColor"/>
-                  </svg>
+                <RibbonBowDivider />
+
+                <div className="text-center max-w-xl mx-auto mb-16 flex flex-col items-center justify-center">
                   <h3 className="font-serif text-3xl md:text-4xl text-[#0B0B0B] font-medium tracking-widest uppercase">
                     BEST SELLERS
                   </h3>
-                  <svg width="24" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#DF8A9D] opacity-60">
-                     <path d="M16 12C16 16.4183 12.4183 20 8 20C3.58172 20 0 16.4183 0 12C0 7.58172 3.58172 4 8 4C12.4183 4 16 7.58172 16 12Z" fill="currentColor"/>
-                     <path d="M40 12C40 16.4183 36.4183 20 32 20C27.5817 20 24 16.4183 24 12C24 7.58172 27.5817 4 32 4C36.4183 4 40 7.58172 40 12Z" fill="currentColor"/>
-                  </svg>
+                  <p className="text-gray-400 text-xs mt-2 font-serif italic tracking-widest">
+                    Our Most Loved Gilded Sleepwear | الأكثر مبيعاً
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                  {bestSellers.length > 0 ? bestSellers.slice(0, 5).map((prod) => {
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                  {bestSellers.length > 0 ? bestSellers.map((prod) => {
                     const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
                     const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
 
                     return (
                       <div
                         key={prod.id}
-                        className="group flex flex-col h-full cursor-pointer relative"
+                        className="group flex flex-col h-full bg-white rounded-3xl p-4 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer"
                         onClick={() => handleSelectProduct(prod)}
                       >
-                        <div className="absolute top-3 right-3 z-10">
-                          <button onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} className="p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors text-gray-400 hover:text-[#DF8A9D]">
-                            <Heart size={16} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
+                        {/* Rating indicator */}
+                        <div className="absolute top-6 left-6 z-10 flex items-center gap-1 bg-white/80 backdrop-blur-xs px-2.5 py-1 rounded-full text-[10px] text-[#A44C5C] font-serif tracking-widest font-semibold border border-[#DF8A9D]/15">
+                          <Star size={10} className="fill-[#A44C5C] text-[#A44C5C]" />
+                          <span>{prod.rating || 5}</span>
+                        </div>
+                        
+                        {/* Favorite Button */}
+                        <div className="absolute top-6 right-6 z-10">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
+                            className="p-1.5 bg-white/90 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-[#DF8A9D] border border-gray-100"
+                          >
+                            <Heart size={14} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
                           </button>
                         </div>
 
-                        {/* Top click photo */}
-                        <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-lg mb-4">
+                        {/* Top Photo */}
+                        <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-2xl mb-4">
                           <img
                             src={prod.images[0]}
                             alt={prod.nameEn || prod.nameAr}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 mix-blend-multiply"
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
                             referrerPolicy="no-referrer"
                           />
                         </div>
 
                         {/* Text details bottom */}
-                        <div className="space-y-1 text-center">
-                          <h4 className="text-sm font-semibold text-[#0B0B0B] line-clamp-1 font-serif">
-                            {prod.nameEn || prod.nameAr}
+                        <div className="space-y-1.5 text-center mt-auto flex flex-col items-center">
+                          <span className="text-[9px] uppercase tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-[#FAF4F5] text-[#A44C5C] inline-block font-semibold">
+                            {prod.isBestSeller ? 'Best Seller' : 'New'}
+                          </span>
+                          <h4 className="text-xs sm:text-sm font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
+                            {country === 'EG' && prod.nameAr ? prod.nameAr : prod.nameEn}
                           </h4>
-                          <span className="font-sans font-medium text-[#A44C5C]">${priceVal.toLocaleString()}</span>
+                          <span className="font-sans font-semibold text-xs sm:text-sm text-[#A44C5C]">
+                            {priceVal.toLocaleString()} {currencyLabel}
+                          </span>
                         </div>
                       </div>
                     );
@@ -606,6 +664,9 @@ function AppContent() {
                       Products are currently being curated.
                     </div>
                   )}
+                </div>
+                <div className="mt-12">
+                  <RibbonBowDivider />
                 </div>
               </div>
             </section>
@@ -763,6 +824,11 @@ function AppContent() {
           <ContactUs settings={settings} />
         )}
 
+        {/* TRACK ORDER */}
+        {currentTab === 'track-order' && (
+          <TrackOrder />
+        )}
+
         {/* VIEW 6: ACCOUNT ACCOUNT SCREEN (حساب العميل والمفضلة) */}
         {currentTab === 'account' && (
           <AccountView
@@ -900,6 +966,7 @@ function AppContent() {
             <h4 className="font-serif font-semibold text-sm uppercase text-[#F6E7A6] tracking-wider">حقوق وبطاقات الدعم</h4>
             <div className="flex flex-col gap-2.5 items-start text-right">
               <button type="button" onClick={() => setTab('faq')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
+              <button type="button" onClick={() => setTab('track-order')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">تتبع طلبيتي ومسار المعالجة</button>
               <button type="button" onClick={() => setTab('returns')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">سياسة الاسترجاع في مصر والسعودية</button>
               <button type="button" onClick={() => setTab('sizes')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل المقاسات الرسمي</button>
               <span className="text-[#F4B6C2] font-semibold text-[10px]">تأمين كلي على الطلبيات المعبأة ورقياً</span>
@@ -1077,6 +1144,7 @@ function AppContent() {
         </button>
       </div>
 
+      <WhatsAppFloat number={settings?.whatsappNumber} />
     </div>
   );
 }

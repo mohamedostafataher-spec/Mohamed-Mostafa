@@ -15,7 +15,20 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   // Parse dynamic hero banners from Supabase table 'homepage_sections'
   const heroSection = homepageSections.find(s => s.section_key === 'hero_banners');
   const dynamicBanners = heroSection?.content_json?.banners || [];
-  const activeBanners = dynamicBanners.filter((b: any) => b.active !== false);
+  const dbActiveBanners = dynamicBanners.filter((b: any) => b.active !== false);
+  
+  const fallbackBanners = [
+    {
+      mediaUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png',
+      title: 'BECAUSE YOU DESERVE',
+      subtitle: 'THE SOFTEST LIFE',
+      description: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',
+      ctaText: 'DISCOVER THE COLLECTION | اكتشفي المجموعة',
+      mediaType: 'image'
+    }
+  ];
+
+  const activeBanners = dbActiveBanners.length > 0 ? dbActiveBanners : fallbackBanners;
 
   const slides = activeBanners.map((b: any) => ({
     url: b.mediaUrl || b.url,
