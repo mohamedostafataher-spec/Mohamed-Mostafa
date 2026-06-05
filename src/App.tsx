@@ -15,9 +15,11 @@ import Dashboard from './components/Dashboard';
 import Faq from './components/Faq';
 import ReturnsExchanges from './components/ReturnsExchanges';
 import DatabaseTest from './components/DatabaseTest';
+import BlogView from './components/BlogView';
+import BlogPostView from './components/BlogPostView';
 
 import { dbService, supabase } from './services/db';
-import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection } from './types';
+import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
 import { recordView, recordCartAddition } from './utils/analytics';
 
 // @ts-ignore
@@ -201,6 +203,7 @@ function AppContent() {
   
   // UI overlays states
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<DiscountCoupon | null>(null);
@@ -491,12 +494,7 @@ function AppContent() {
             <section className="py-20 bg-[#FAF5F0]">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-5xl mx-auto">
-                  {(categories.length > 0 ? categories : [
-                    { id: 'sleepwear', name: 'SLEEPWEAR', imageUrl: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=800' },
-                    { id: 'loungewear', name: 'LOUNGEWEAR', imageUrl: 'https://images.unsplash.com/photo-1515347619152-16e50e163c46?auto=format&fit=crop&q=80&w=800' },
-                    { id: 'homewear', name: 'HOMEWEAR', imageUrl: 'https://images.unsplash.com/photo-1542488856-11f62b083b8b?auto=format&fit=crop&q=80&w=800' },
-                    { id: 'collections', name: 'COLLECTIONS', imageUrl: 'https://images.unsplash.com/photo-1583391733958-69259253cb48?auto=format&fit=crop&q=80&w=800' }
-                  ]).slice(0, 4).map((category) => (
+                  {categories.slice(0, 4).map((category) => (
                     <div
                       key={category.id}
                       onClick={() => handleSelectCategoryHome(category.id)}
@@ -523,29 +521,31 @@ function AppContent() {
             </section>
 
             {/* FULL WIDTH LUXURIOUS BANNER */}
-            <section className="relative py-24 md:py-32 overflow-hidden bg-[#DF8A9D]/20">
-              <div className="absolute inset-0 z-0 opacity-50">
-                <img src="https://images.unsplash.com/photo-1583391733958-69259253cb48?auto=format&fit=crop&w=2000" className="w-full h-full object-cover grayscale mix-blend-overlay opacity-30" alt="luxury background"/>
-              </div>
-
-              <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-6">
-                <span className="font-sans text-sm tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-2">
-                  <Sparkles size={14} />
-                  Because You Deserve
-                </span>
-                <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl font-normal text-[#A44C5C] tracking-wide leading-tight">
-                  THE SOFTEST LIFE
-                </h3>
-                <div className="pt-8">
-                  <button
-                    onClick={() => setTab('store')}
-                    className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-10 py-4 rounded-full text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105"
-                  >
-                    SHOP THE COLLECTION
-                  </button>
+            {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.active && (
+              <section className="relative py-24 md:py-32 overflow-hidden bg-[#DF8A9D]/20">
+                <div className="absolute inset-0 z-0 opacity-50">
+                  <img src={homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.imageUrl} className="w-full h-full object-cover grayscale mix-blend-overlay opacity-30" alt="luxury background"/>
                 </div>
-              </div>
-            </section>
+
+                <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-6">
+                  <span className="font-sans text-sm tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-2">
+                    <Sparkles size={14} />
+                    {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.subtitle || 'Because You Deserve'}
+                  </span>
+                  <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl font-normal text-[#A44C5C] tracking-wide leading-tight">
+                    {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.title || 'THE SOFTEST LIFE'}
+                  </h3>
+                  <div className="pt-8">
+                    <button
+                      onClick={() => setTab('store')}
+                      className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-10 py-4 rounded-full text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105"
+                    >
+                      {homepageSections.find(s => s.section_key === 'middle_banner')?.content_json?.buttonText || 'SHOP THE COLLECTION'}
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {/* BEST SELLERS */}
             <section className="py-20 bg-[#FAF5F0]">
@@ -755,7 +755,7 @@ function AppContent() {
 
         {/* VIEW 4: ABOUT ABOUT DETAILS (من نحن) */}
         {currentTab === 'about' && (
-          <AboutUs />
+          <AboutUs homepageSections={homepageSections} />
         )}
 
         {/* VIEW 5: CONTACT CONTACT DETAILS (تواصل معنا) */}
@@ -786,6 +786,15 @@ function AppContent() {
         {/* VIEW 9: RETURNS & EXCHANGES POLICY (الاسترجاع والاستبدال) */}
         {currentTab === 'returns' && (
           <ReturnsExchanges />
+        )}
+
+        {/* VIEW 10: BLOG / JOURNAL (مجلة SULTA) */}
+        {currentTab === 'blog' && (
+          selectedBlogPost ? (
+            <BlogPostView post={selectedBlogPost} onBack={() => setSelectedBlogPost(null)} />
+          ) : (
+            <BlogView onReadPost={setSelectedBlogPost} />
+          )
         )}
 
         {/* VIEW 7: DASHBOARD SECURE SCREEN (لوحة الإدارة للبراند) */}
@@ -956,6 +965,7 @@ function AppContent() {
                 {[
                   { id: 'home', label: 'الرئيسية 🏠' },
                   { id: 'store', label: 'المتجر والكتالوج 🛍️' },
+                  { id: 'blog', label: 'المجلة (The Journal) 📰' },
                   { id: 'sizes', label: 'دليل المقاسات 📏' },
                   { id: 'about', label: 'رواد قصتنا وعن Sulta ✨' },
                   { id: 'faq', label: 'الأسئلة الشائعة للعرائس ❓' },

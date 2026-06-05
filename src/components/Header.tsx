@@ -51,6 +51,7 @@ export default function Header({
     { id: 'store', label: 'SHOP' },
     { id: 'collections', label: 'COLLECTIONS' },
     { id: 'new-arrivals', label: 'NEW ARRIVALS' },
+    { id: 'blog', label: 'JOURNAL' },
     { id: 'about', label: 'ABOUT US' },
     { id: 'contact', label: 'CONTACT' },
     { id: 'dashboard', label: 'ADMIN' },

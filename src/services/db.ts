@@ -1,4 +1,4 @@
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem } from '../types';
 import { createClient } from '@supabase/supabase-js';
 
 // --- ROBUST CONFIGURATION ---
@@ -217,6 +217,35 @@ function mapOrder(data: any): Order {
   };
 }
 
+function mapBlogPost(data: any): BlogPost {
+  return {
+    id: data.id,
+    title: data.title,
+    slug: data.slug,
+    content: data.content,
+    excerpt: data.excerpt,
+    imageUrl: data.image_url || data.imageUrl,
+    author: data.author,
+    category: data.category,
+    tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
+    publishedAt: data.published_at,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+    status: data.status || 'draft',
+    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(data.seo) : data.seo) : undefined
+  };
+}
+
+function mapFaqItem(data: any): FaqItem {
+  return {
+    id: data.id,
+    question: data.question,
+    answer: data.answer,
+    category: data.category || 'all',
+    orderIndex: Number(data.order_index ?? 0)
+  };
+}
+
 export const dbService = {
   supabase,
   
@@ -296,14 +325,78 @@ export const dbService = {
     }
   },
 
-  getFaqs: async (): Promise<any[]> => {
+  subscribeBlogPosts: (
+    onSuccess: (posts: BlogPost[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('blog_posts').select('*').order('created_at', { ascending: false }).then(({ data }) => {
+      if (data) onSuccess(data.map(mapBlogPost));
+    });
+
+    const channel = supabase
+      .channel('public:blog_posts')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'blog_posts' }, async () => {
+        const { data } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
+        if (data) onSuccess(data.map(mapBlogPost));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  },
+
+  saveBlogPost: async (post: BlogPost): Promise<void> => {
+    const { error } = await supabase
+      .from('blog_posts')
+      .upsert([{
+        id: post.id || undefined,
+        title: post.title,
+        slug: post.slug,
+        content: post.content,
+        excerpt: post.excerpt,
+        image_url: post.imageUrl,
+        author: post.author,
+        category: post.category,
+        tags: post.tags,
+        published_at: post.publishedAt,
+        status: post.status,
+        seo: post.seo ? JSON.stringify(post.seo) : null
+      }]);
+    if (error) throw error;
+  },
+
+  deleteBlogPost: async (postId: string): Promise<void> => {
+    const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
+    if (error) throw error;
+  },
+
+  getFaqs: async (): Promise<FaqItem[]> => {
     try {
-      const { data, error } = await supabase.from('faq').select('*').order('created_at', { ascending: true });
+      const { data, error } = await supabase.from('faq').select('*').order('order_index', { ascending: true });
       if (error) throw error;
-      return data || [];
+      return (data || []).map(mapFaqItem);
     } catch {
       return [];
     }
+  },
+
+  saveFaqItem: async (faq: FaqItem): Promise<void> => {
+    const { error } = await supabase
+      .from('faq')
+      .upsert([{
+        id: faq.id || undefined,
+        question: faq.question,
+        answer: faq.answer,
+        category: faq.category,
+        order_index: faq.orderIndex
+      }]);
+    if (error) throw error;
+  },
+
+  deleteFaqItem: async (faqId: string): Promise<void> => {
+    const { error } = await supabase.from('faq').delete().eq('id', faqId);
+    if (error) throw error;
   },
 
   subscribeCategories: (

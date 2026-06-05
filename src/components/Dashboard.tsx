@@ -4,6 +4,7 @@ import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Colle
 import { dbService, supabase } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
 import { generateProductContent, generateBlogDrafts, generateCategorySeo, calculateSeoScore } from '../utils/seoContentEngine';
+import AdminBlog from './AdminBlog';
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 interface DashboardProps {
@@ -81,7 +82,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
@@ -1093,6 +1094,16 @@ export default function Dashboard({
               <Activity size={16} />
               <span>مركز الأتمتة والـ SEO الملكي</span>
               <Sparkles size={12} className="animate-pulse text-[#F6E7A6]" />
+            </button>
+
+            <button
+              onClick={() => setActiveMenu('blog')}
+              className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
+                activeMenu === 'blog' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <PenTool size={16} />
+              <span>إدارة المدونة والمقالات</span>
             </button>
 
             <button
@@ -3744,6 +3755,12 @@ export default function Dashboard({
                   متصل وجاهز للإنتاج
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeMenu === 'blog' && (
+            <div className="animate-fade-in-rapid">
+              <AdminBlog />
             </div>
           )}
 

@@ -184,3 +184,33 @@ export interface Collection {
   createdAt?: string;
 }
 
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  imageUrl?: string;
+  author: string;
+  category: string;
+  tags?: string[];
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+  status: 'draft' | 'published';
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string;
+  };
+}
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  orderIndex: number;
+}
+
+

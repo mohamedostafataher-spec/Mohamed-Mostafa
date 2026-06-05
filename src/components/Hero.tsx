@@ -17,30 +17,15 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   const dynamicBanners = heroSection?.content_json?.banners || [];
   const activeBanners = dynamicBanners.filter((b: any) => b.active !== false);
 
-  // Fallback slide sets reflecting the NEW SULTA Brand Identity
-  const fallbackSlides = [
-    { 
-      url: 'https://images.unsplash.com/photo-1583391733958-69259253cb48?auto=format&fit=crop&q=80&w=2070', // Replace with SULTA asset via Supabase
-      alt: 'Sulta Luxury Sleepwear Collection',
-      title: 'CURATED LUXURY.',
-      subtitle: 'TIMELESS STYLE.\nYOUR RESET.',
-      description: 'Zero Effort. Full Comfort.',
-      ctaText: 'SHOP NOW',
-      mediaType: 'image'
-    }
-  ];
-
-  const slides = activeBanners.length > 0 
-    ? activeBanners.map((b: any) => ({
-        url: b.mediaUrl || b.url,
-        alt: b.title || 'Sulta Banner',
-        title: b.title || 'CURATED LUXURY.',
-        subtitle: b.subtitle || 'TIMELESS STYLE.\nYOUR RESET.',
-        description: b.description || 'Zero Effort. Full Comfort.',
-        ctaText: b.ctaText || 'SHOP NOW',
-        mediaType: b.mediaType || 'image'
-      }))
-    : fallbackSlides;
+  const slides = activeBanners.map((b: any) => ({
+    url: b.mediaUrl || b.url,
+    alt: b.title || 'Sulta Banner',
+    title: b.title || 'CURATED LUXURY.',
+    subtitle: b.subtitle || 'TIMELESS STYLE.\nYOUR RESET.',
+    description: b.description || 'Zero Effort. Full Comfort.',
+    ctaText: b.ctaText || 'SHOP NOW',
+    mediaType: b.mediaType || 'image'
+  }));
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -50,7 +35,9 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
     return () => clearInterval(interval);
   }, [slides.length]);
 
-  const currentSlideData = slides[currentSlide] || fallbackSlides[0];
+  const currentSlideData = slides[currentSlide];
+
+  if (!currentSlideData) return null; // No static fallbacks
 
   return (
     <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-start overflow-hidden bg-[#FAF5F0]">
