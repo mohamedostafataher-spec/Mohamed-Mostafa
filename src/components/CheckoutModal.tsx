@@ -205,7 +205,7 @@ export default function CheckoutModal({
           </h3>
           
           <p className="text-gray-550 text-xs font-sans max-w-md mx-auto leading-relaxed mb-6 font-medium">
-            يسعدنا جداً انضمامكِ لسيدات سولتا الأنيقات. يتم الآن تجهيز طلبيتكِ وتحضيرها يدوياً مع شريط مخملي فاخر وعناية فائقة تلبي ذوقكِ الرفيع.
+            يسعدنا جداً انضمامكِ لسيدات Sulta الأنيقات. يتم الآن تجهيز طلبيتكِ وتحضيرها يدوياً مع شريط مخملي فاخر وعناية فائقة تلبي ذوقكِ الرفيع.
           </p>
 
           {/* Core Invoice Summary Card */}
@@ -430,7 +430,7 @@ export default function CheckoutModal({
                     <span className="text-lg">✉️</span>
                   </div>
                   <p className="text-[10.5px] text-gray-500 leading-relaxed text-right font-sans">
-                    نحن في سولتا يسعدنا جداً صياغة رسائل التقدير الخاصة بكِ. اكتبِ هنا أي ملاحظات إضافية للتغليف أو رسالة إهداء معينة لحياكتها مع الصندوق الفاخر.
+                    نحن في Sulta يسعدنا جداً صياغة رسائل التقدير الخاصة بكِ. اكتبِ هنا أي ملاحظات إضافية للتغليف أو رسالة إهداء معينة لحياكتها مع الصندوق الفاخر.
                   </p>
                   <textarea
                     placeholder="مثال: يرجى كتابة 'إلى رفيقة دربي الفاتنة..' أو أي تفاصيل خاصة بالتغليف الساحر..."
@@ -470,10 +470,10 @@ export default function CheckoutModal({
                         <span className="text-[10px] text-gray-400 block mb-1.5 text-right font-medium">✨ كروت ومقترحات إهداء جاهزة للنسخ التلقائي:</span>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 justify-end select-none text-[10px]">
                           {[
-                            { id: 'wedding', label: 'زفاف مبارك 💍', text: 'ألف مبروك يا أجمل عروس، تتهنين بقطع سولتا الحريرية المترفة، دامت لياليكِ سعيدة ومفعمة بالحب والرقة! بكل مودة...' },
+                            { id: 'wedding', label: 'زفاف مبارك 💍', text: 'ألف مبروك يا أجمل عروس، تتهنين بقطع Sulta الحريرية المترفة، دامت لياليكِ سعيدة ومفعمة بالحب والرقة! بكل مودة...' },
                             { id: 'birthday', label: 'عيد ميلاد سعيد 🎂', text: 'كل عام وسنواتكِ تزداد نضارة وجمالاً بالملابس المنزلية المترفة! عيد ميلاد سعيد لقلبكِ النقي، ممتنة لوجودكِ...' },
-                            { id: 'thanks', label: 'شكر وامتنان 💖', text: 'تعبيراً عن امتناني الشديد وعميق تقديري، أهديكِ قطعة الدانتيل الراقية من سولتا كعلامة محبة وتقدير فخم...' },
-                            { id: 'love', label: 'حب ومودة 🌸', text: 'إلى من تملأ حياتي بالرقة والدفء، أهديكِ الصندوق المترف من سولتا ليخبركِ بمدى غلاوتكِ وحبي الممتد لكِ...' }
+                            { id: 'thanks', label: 'شكر وامتنان 💖', text: 'تعبيراً عن امتناني الشديد وعميق تقديري، أهديكِ قطعة الدانتيل الراقية من Sulta كعلامة محبة وتقدير فخم...' },
+                            { id: 'love', label: 'حب ومودة 🌸', text: 'إلى من تملأ حياتي بالرقة والدفء، أهديكِ الصندوق المترف من Sulta ليخبركِ بمدى غلاوتكِ وحبي الممتد لكِ...' }
                           ].map(item => (
                             <button
                               key={item.id}
@@ -578,7 +578,7 @@ export default function CheckoutModal({
                     <ShieldCheck className="text-[#DF8A9C]" size={15} />
                     <span className="text-xs font-bold text-gray-900">أمن الدفع وحرية التبديل</span>
                   </div>
-                  <p className="text-[10.5px] text-gray-500 leading-relaxed">عند اختيار الدفع عند الاستلام (COD)، لا توجد رسوم إضافية مخفية! يحق لكي تفقد البكج وصندوق الشحن مع مندوب سولتا قبل التوقيع للتسليم.</p>
+                  <p className="text-[10.5px] text-gray-500 leading-relaxed">عند اختيار الدفع عند الاستلام (COD)، لا توجد رسوم إضافية مخفية! يحق لكي تفقد البكج وصندوق الشحن مع مندوب Sulta قبل التوقيع للتسليم.</p>
                 </div>
               </div>
             )}
@@ -618,7 +618,7 @@ export default function CheckoutModal({
                 </div>
 
                 <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
-                  <p className="text-[11px] text-gray-800 leading-relaxed font-medium">✨ بمجرد النقر على "إتمام الطلب"، يحاك بكج الشراء بكل سر في ورش سولتا للساتان مع التغليف الفاخر وتوصيله مع مندوبنا المخصص.</p>
+                  <p className="text-[11px] text-gray-800 leading-relaxed font-medium">✨ بمجرد النقر على "إتمام الطلب"، يحاك بكج الشراء بكل سر في ورش Sulta للساتان مع التغليف الفاخر وتوصيله مع مندوبنا المخصص.</p>
                 </div>
               </div>
             )}
@@ -715,7 +715,7 @@ export default function CheckoutModal({
               )}
 
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">التعبئة وبكج سولتا الفاخر:</span>
+                <span className="text-gray-400">التعبئة وبكج Sulta الفاخر:</span>
                 <span className="text-emerald-500 font-bold font-sans">0.00 {currencyLabel} (مجاناً)</span>
               </div>
 

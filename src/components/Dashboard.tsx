@@ -446,7 +446,7 @@ export default function Dashboard({
     if (url) {
       setTempImageUrl(url);
     } else {
-      alert('فشل رفع الصورة. يرجى التأكد من إعدادات Storage في Supabase.');
+      alert('خطأ: راجع التخزين في Supabase');
     }
     setUploadingImage(false);
   };
@@ -527,7 +527,7 @@ export default function Dashboard({
       categoryAr: newProdCategory === 'satin' ? 'ساتان ملكي حريري' : newProdCategory === 'cotton' ? 'بيجامات قطن طبيعي' : newProdCategory === 'loungewear' ? 'لانج وير كوتور' : newProdCategory === 'dresses' ? 'فساتين نوم' : 'المجموعة الجديدة والتريند الأكثر مبيعاً بمصر والسعودية',
       priceEG: newProdPriceEG,
       priceSA: newProdPriceSA,
-      descriptionAr: newProdDescAr || 'قطعة حصرية فاخرة تمت حياكتها بعناية بمقاييس الجودة في معامل سولتا العالمية لتقديم أقصى درجات الفخامة لكي في منزلك.',
+      descriptionAr: newProdDescAr || 'قطعة حصرية فاخرة تمت حياكتها بعناية بمقاييس الجودة في معامل Sulta العالمية لتقديم أقصى درجات الفخامة لكي في منزلك.',
       descriptionEn: 'Luxury couture sleepwear meticulously tailored to provide comforting relaxation and sophisticated allure.',
       fabricAr: 'ساتان إيطالي ناعم وحريري مخملي',
       fabricEn: 'Silky Fine Italian Thread blend',
@@ -603,7 +603,7 @@ export default function Dashboard({
     const item: DiscountCoupon = {
       code: newCouponCode.trim().toUpperCase(),
       discountPercent: newCouponPercent,
-      description: newCouponDesc || 'خصم إضافي لزبائن ومحبي براند سولتا'
+      description: newCouponDesc || 'خصم إضافي لزبائن ومحبي براند Sulta'
     };
 
     const originalCoupons = [...coupons];
@@ -937,7 +937,7 @@ export default function Dashboard({
                   </ResponsiveContainer>
                 </div>
               </div>
-              <h3 className="font-serif text-lg font-light pb-2 border-b border-gray-150 text-[#0B0B0B]">مؤشرات وتقارير الأداء الفاخر من سولتا</h3>
+              <h3 className="font-serif text-lg font-light pb-2 border-b border-gray-150 text-[#0B0B0B]">مؤشرات وتقارير الأداء الفاخر من Sulta</h3>
               
               {/* KPIs top boxes */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

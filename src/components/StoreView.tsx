@@ -304,7 +304,7 @@ export default function StoreView({
       {/* Header Banner & Royal Search Dashboard */}
       <div className="text-center mb-10 max-w-2xl mx-auto relative">
         <h2 className="font-serif text-3xl md:text-5xl text-[#0B0B0B] font-light tracking-wide mb-2">
-          متجر سولتا الفاخر
+          Sulta Luxury Store
         </h2>
         <div className="w-12 h-[1px] bg-[#F4B6C2] mx-auto my-4" />
         <p className="text-gray-500 text-xs md:text-sm font-sans mb-6">
