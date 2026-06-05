@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy } from 'lucide-react';
 import { useToast } from './Toast';
-import { Product, Country, Review } from '../types';
+import { Product, Country, Review, Settings } from '../types';
 import { PACKAGING_INFO } from '../data';
 import { dbService } from '../services/db';
 
@@ -15,6 +15,7 @@ interface ProductDetailModalProps {
   favorites: string[];
   toggleFavorite: (productId: string) => void;
   reviews?: Review[];
+  settings?: Settings | null;
 }
 
 export default function ProductDetailModal({
@@ -27,6 +28,7 @@ export default function ProductDetailModal({
   favorites,
   toggleFavorite,
   reviews = [],
+  settings,
 }: ProductDetailModalProps) {
   const { toast } = useToast();
   const [activeImageIdx, setActiveImageIdx] = useState(0);
@@ -58,7 +60,7 @@ export default function ProductDetailModal({
     },
     {
       q: 'هل الدانتيل ناعم على الجسم أم يسبب حكة؟',
-      a: 'نصنع دانتيل سولتا من خيوط جيفنشي المريحة والخالية تماماً من البوليستر الخشن. ناعم جداً على البشرة الحساسة ومطاطي بلطف ✨.',
+      a: 'نصنع دانتيل Sulta من خيوط جيفنشي المريحة والخالية تماماً من البوليستر الخشن. ناعم جداً على البشرة الحساسة ومطاطي بلطف ✨.',
       date: 'منذ ٤ أيام',
       author: 'منى ع. (القاهرة)'
     }
@@ -206,8 +208,8 @@ export default function ProductDetailModal({
 
   // Prefilled WhatsApp order text builder
   const handleOrderWhatsApp = () => {
-    const phoneNumber = country === 'SA' ? '966500000000' : '201000000000';
-    const text = `مرحباً براند سولتا الفاخر 🌸، أريد طلب القطعة التالية:
+    const phoneNumber = '201110095403';
+    const text = `مرحباً براند Sulta الفاخر 🌸، أريد طلب القطعة التالية:
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}
 • المقاس المطلوب: ${selectedSz}
@@ -436,7 +438,7 @@ export default function ProductDetailModal({
                   <div className="text-center space-y-1">
                     <h5 className="text-[#F6E7A6] text-xs font-bold font-serif flex items-center justify-center gap-1.5">
                       <Sparkles size={11} className="text-[#DF8A9C]" />
-                      <span>ميكروسكوب أنسجة سولتا الفاخر 🔬</span>
+                      <span>ميكروسكوب أنسجة Sulta الفاخر 🔬</span>
                     </h5>
                     <p className="text-[10px] text-gray-450 max-w-xs mx-auto px-2">
                       مستوى تقريب نسيج الـ {product.fabricAr} بلون {selectedCol.name} المترف لرؤية جودة الغزل على الطبيعة.
@@ -731,7 +733,7 @@ export default function ProductDetailModal({
                   <Zap className="text-amber-600 shrink-0 mt-0.5 animate-bounce" size={15} />
                   <div>
                     <strong className="text-amber-900 text-xs">خياطة خاصة - المقاس واللون نفد مؤقتاً!</strong>
-                    <span className="text-[10px] text-gray-500 block leading-relaxed">بسبب الإقبال الشديد على هذا الموديل، نقوم بصنع دفعات جديدة بورش سولتا الفاخرة حالياً.</span>
+                    <span className="text-[10px] text-gray-500 block leading-relaxed">بسبب الإقبال الشديد على هذا الموديل، نقوم بصنع دفعات جديدة بورش Sulta الفاخرة حالياً.</span>
                   </div>
                 </div>
 
@@ -858,7 +860,7 @@ export default function ProductDetailModal({
                         <span className="text-[10px] text-gray-400 font-sans">بدقة %95 بضمان الاستبدال المجاني 🛡️</span>
                         <h6 className="font-bold text-gray-800 text-[11px] flex items-center gap-1">
                           <Sparkles size={11} className="text-[#DF8A9C]" />
-                          <span>مكتشف المقاس الذكي من سولتا</span>
+                          <span>مكتشف المقاس الذكي من Sulta</span>
                         </h6>
                       </div>
 
@@ -1029,7 +1031,7 @@ export default function ProductDetailModal({
                 <div className="space-y-1 text-right">
                   <p>توصيل سريع للقاهرة والإسكندرية في ٤٨ ساعة، بقية المحافظات خلال ٣-٤ أيام.</p>
                   <p>شحن ملكي لجميع مناطق الرياض، جدة، الشرقية خلال ٣ أيام عمل عبر أرامكس وسمسا.</p>
-                  <p className="text-[9px] text-[#DF8A9C] font-semibold">ضمانة سولتا: تبديل مقاسات مجاني ١٠٠% في حال عدم ملائمة مقاس البيجامة الموصى به.</p>
+                  <p className="text-[9px] text-[#DF8A9C] font-semibold">ضمانة Sulta: تبديل مقاسات مجاني ١٠٠% في حال عدم ملائمة مقاس البيجامة الموصى به.</p>
                 </div>
               )}
               {activeTab === 'reviews' && (
@@ -1088,7 +1090,7 @@ export default function ProductDetailModal({
                         </div>
                         <p className="font-semibold text-gray-800">« {q.q} »</p>
                         <div className="bg-[#FAF4F5] p-2 rounded-lg text-gray-700 space-y-0.5 border border-pink-50/70">
-                          <p className="font-bold text-[#DF8A9C]">الرد الملكي الافتراضي من مصفف سولتا ✨:</p>
+                          <p className="font-bold text-[#DF8A9C]">الرد الملكي الافتراضي من مصفف Sulta ✨:</p>
                           <p>{q.a}</p>
                         </div>
                       </div>
@@ -1152,7 +1154,7 @@ export default function ProductDetailModal({
               <Shield size={14} className="text-green-600 shrink-0 mt-0.5 animate-pulse" />
               <div>
                 <strong>🛡️ ضمان الملاءمة الذكية و المقاس الذهبي:</strong>
-                <p className="mt-0.5 text-gray-600">إذا اقترحت لكِ مرآة أو حاسبة مقاسات سولتا مقاساً ولم يكن مثالياً لكِ، فالاستبدال مجاني ١٠٠% مع مندوبنا بالمنزل دون تسديد أي رسوم شحن إضافية!</p>
+                <p className="mt-0.5 text-gray-600">إذا اقترحت لكِ مرآة أو حاسبة مقاسات Sulta مقاساً ولم يكن مثالياً لكِ، فالاستبدال مجاني ١٠٠% مع مندوبنا بالمنزل دون تسديد أي رسوم شحن إضافية!</p>
               </div>
             </div>
 
@@ -1319,7 +1321,7 @@ ${shareUrl}`;
             {matchedPairProduct && (
               <div className="bg-[#FAFAF7] border border-gray-150 rounded-2xl p-3 mb-2 text-right">
                 <span className="text-[9px] bg-[#0B0B0B] text-[#F6E7A6] px-2 py-0.5 rounded-full font-serif block w-fit mb-2">
-                  ✦ اقتران منسّق بالذكاء من سولتا
+                  ✦ اقتران منسّق بالذكاء من Sulta
                 </span>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-15 rounded-lg overflow-hidden border border-gray-150 bg-gray-100 shrink-0">
@@ -1365,8 +1367,8 @@ ${shareUrl}`;
                 type="button"
                 onClick={() => {
                   if (isCurrentConfigOutOfStock) {
-                    const phoneNumber = country === 'SA' ? '966500000000' : '201000000000';
-                    const text = `مرحباً براند سولتا الفاخر 🌸، أريد حجز مقاس مسبق (تحت الحياكة اليدوية):
+                    const phoneNumber = '201110095403';
+                    const text = `مرحباً براند Sulta الفاخر 🌸، أريد حجز مقاس مسبق (تحت الحياكة اليدوية):
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}
 • المقاس المطلوب: ${selectedSz}
@@ -1391,7 +1393,7 @@ ${shareUrl}`;
             {/* Credential Badge */}
             <p className="text-center text-[9px] text-gray-400 font-serif flex justify-center items-center gap-1 mt-1">
               <Shield size={9} className="text-gray-400" />
-              <span>تسوق آمن ومضمون من موقع سولتا لملابس النوم واللانجيري الفاخر.</span>
+              <span>تسوق آمن ومضمون من موقع Sulta لملابس النوم واللانجيري الفاخر.</span>
             </p>
 
           </div>

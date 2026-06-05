@@ -3,95 +3,97 @@ import { Award, Feather, Sparkles } from 'lucide-react';
 
 export default function AboutUs() {
   return (
-    <div className="bg-[#FAFAF7] py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        
-        {/* Story Intro */}
-        <div className="text-center mb-16">
-          <span className="font-serif italic text-xs tracking-[0.2em] text-gray-400 block mb-3 uppercase">
-            The Sulta Story • حكاية الأنوثة المترفة
-          </span>
-          <h2 className="font-serif text-3xl md:text-5xl font-light text-[#0B0B0B] tracking-wide mb-6">
-            من نحن وعالم سولتا
+    <div className="bg-white min-h-screen">
+      
+      {/* Hero Header */}
+      <div className="bg-[#FAF5F0] py-24 md:py-32 border-b border-[#DF8A9D]/20">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="font-serif text-4xl md:text-6xl font-light text-[#0B0B0B] tracking-wide mb-6 uppercase">
+            The Sulta House
           </h2>
-          <div className="w-16 h-0.5 bg-[#F4B6C2] mx-auto mb-6" />
+          <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mb-8" />
           <p className="font-serif italic text-lg md:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            "نؤمن في سولتا أن الراحة والأنوثة لا تتعارضان أبداً، بل يمتزجان ليصنعا لحظات تفيض بالدلال والترف في منزلك."
+            "We believe that comfort and elegance are never mutually exclusive. They blend to create moments that overflow with pampering and luxury in your own home."
           </p>
         </div>
+      </div>
 
-        {/* Magazine Style Grid Row 1 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-16">
-          <div className="order-2 md:order-1 space-y-4">
-            <h4 className="font-serif text-lg md:text-xl text-gray-900 font-bold tracking-wide">
-              البداية وشغف الأناقة المنزلية
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        
+        {/* Editorial Layout 1 */}
+        <div className="flex flex-col md:flex-row gap-16 items-center mb-24">
+          <div className="md:w-1/2 space-y-6 order-2 md:order-1">
+            <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-normal tracking-wider uppercase">
+              The Genesis of Comfort
             </h4>
             <p className="text-sm text-gray-600 leading-relaxed font-sans">
-              تأسست علامة <strong>SULTA</strong> لتصميم البيجامات الفاخرة لتكون ملاذاً هادئاً لكل امرأة تبحث عن التفرد حتى في أوقات نومها واستجمامها في المنزل. لقد لاحظنا غياب التصاميم التي تمزج حقاً بين الراحة القصوى الخالية من العيوب، والجاذبية الملكية الفائقة.
+              <strong>SULTA</strong> was founded to design luxury sleepwear that serves as a tranquil haven for every woman seeking uniqueness, even during her moments of rest and relaxation at home. We noticed the absence of designs that truly combine flawless ultimate comfort with supreme royal allure.
             </p>
             <p className="text-sm text-gray-600 leading-relaxed font-sans">
-              من هنا، انطلقت ورش عملنا لاختيار أرقى المنسوجات والساتان المطور بنعومة تضاهي الحرير الطبيعي، وخيوط الحرير الذهبية، والقطن المصري العضوي الذي تنام جودته الأعين الهانئة باطمئنان وتدوم جودته لسنوات طويلة.
+              From here, our workshops set out to select the finest textiles, developed satin with a softness rivaling natural silk, golden silk threads, and organic Egyptian cotton. Quality that ensures peaceful sleep and endures for years.
             </p>
           </div>
-          <div className="order-1 md:order-2 aspect-[4/3] rounded-3xl overflow-hidden bg-gray-100 shadow-md flex items-center justify-center p-8 text-center text-gray-300">
-            [مساحة مخصصة لصورة الاستوديو والأقمشة]
+          <div className="md:w-1/2 order-1 md:order-2 aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-[#FAF5F0] relative">
+            <img 
+              src="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=800" 
+              alt="Sulta Heritage" 
+              className="w-full h-full object-cover mix-blend-multiply opacity-90"
+              referrerPolicy="no-referrer"
+            />
           </div>
         </div>
 
-        {/* Magazine Style Grid Row 2 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-16">
-          <div className="aspect-[4/3] rounded-3xl overflow-hidden bg-gray-100 shadow-md flex items-center justify-center p-8 text-center text-gray-300">
-            [مساحة مخصصة لصورة التغليف الفاخر]
+        {/* Editorial Layout 2 */}
+        <div className="flex flex-col md:flex-row gap-16 items-center mb-24">
+          <div className="md:w-1/2 aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-[#FAF5F0] relative">
+            <img 
+              src="https://images.unsplash.com/photo-1542488856-11f62b083b8b?auto=format&fit=crop&q=80&w=800" 
+              alt="Sulta Vision" 
+              className="w-full h-full object-cover mix-blend-multiply opacity-90"
+              referrerPolicy="no-referrer"
+            />
           </div>
-          <div className="space-y-4">
-            <h4 className="font-serif text-lg md:text-xl text-gray-900 font-bold tracking-wide">
-              رؤيتنا ورسالتنا الملكية
+          <div className="md:w-1/2 space-y-6">
+            <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-normal tracking-wider uppercase">
+              Vision & Mission
             </h4>
             <p className="text-sm text-gray-600 leading-relaxed font-sans">
-              <strong>رؤيتنا:</strong> أن نقود عرش ملابس النوم واللانج وير الفاخر في منطقة الشرق الأوسط والعالم، لنكون العلامة الأولى التي تتبادر لذهن كل فتاة فخورة بأنوثتها وتبحث عن الدلال الهادئ.
+              <strong>Our Vision:</strong> To lead the throne of luxury sleepwear and loungewear, becoming the first brand that comes to the mind of every woman who is proud of her femininity and seeks quiet pampering.
             </p>
             <p className="text-sm text-gray-600 leading-relaxed font-sans">
-              <strong>رسالتنا:</strong> تصميم وصنع قطع تضاهي أرقى بيوت الكوتور الباريسية، وتقديمها في بكج مخملي فاخر يمنحك تجربة تسوق راقية لا تُنسى من اللحظة الأولى وحتى ارتدائها.
+              <strong>Our Mission:</strong> Designing and crafting pieces that rival the finest Parisian couture houses, presented in luxurious packaging that grants you an unforgettable, elevated shopping experience from the very first moment.
             </p>
           </div>
         </div>
 
-        {/* Core Pillars Icon Matrix */}
-        <div className="bg-[#0B0B0B] text-white rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#F6E7A6]/10 blur-2xl rounded-full" />
-          
-          <h4 className="font-serif text-xl tracking-wider text-[#F6E7A6] font-light text-center mb-10">
-            ركائز سولتا الذهبية الثلاث
+        {/* Pillars */}
+        <div className="bg-[#FAF5F0] py-20 px-8 text-center border-t border-[#DF8A9D]/20">
+          <h4 className="font-serif text-2xl tracking-widest text-[#0B0B0B] font-medium mb-16 uppercase">
+            The Golden Pillars
           </h4>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-[#FAFAF7]/10 flex items-center justify-center text-[#F4B6C2]">
-                <Feather size={20} />
-              </div>
-              <h5 className="font-semibold text-xs md:text-sm text-[#FAFAF7] tracking-wider">خفة منسوجات مطلقة</h5>
-              <p className="text-[11px] md:text-xs text-gray-400 max-w-[200px] leading-relaxed">
-                خامات معالجة ضد التوبر والحساسية توفر برودة مريحة في الصيف ودفئاً أنيقاً في الشتاء.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto">
+            <div className="flex flex-col items-center placeholder-gray-400 space-y-4">
+              <Feather size={28} className="text-[#A44C5C]" strokeWidth={1} />
+              <h5 className="font-serif font-semibold text-sm tracking-widest uppercase text-[#0B0B0B]">Absolute Lightness</h5>
+              <p className="text-xs text-gray-500 font-sans leading-relaxed">
+                Treated fabrics offering comfortable coolness in summer and elegant warmth in winter.
               </p>
             </div>
 
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-[#FAFAF7]/10 flex items-center justify-center text-[#F6E7A6]">
-                <Award size={20} />
-              </div>
-              <h5 className="font-semibold text-xs md:text-sm text-[#FAFAF7] tracking-wider">لمسات كوتور يدوية</h5>
-              <p className="text-[11px] md:text-xs text-gray-400 max-w-[200px] leading-relaxed">
-                أزرار لؤلؤية طبيعية وخياطة مزدوجة بالحرير لضمان تفرد ملمس الخياطة وعدم ضيقها.
+            <div className="flex flex-col items-center placeholder-gray-400 space-y-4">
+              <Award size={28} className="text-[#A44C5C]" strokeWidth={1} />
+              <h5 className="font-serif font-semibold text-sm tracking-widest uppercase text-[#0B0B0B]">Couture Touch</h5>
+              <p className="text-xs text-gray-500 font-sans leading-relaxed">
+                Natural pearl buttons and double silk stitching ensuring unique texture and unmatched longevity.
               </p>
             </div>
 
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-[#FAFAF7]/10 flex items-center justify-center text-white">
-                <Sparkles size={20} />
-              </div>
-              <h5 className="font-semibold text-xs md:text-sm text-[#FAFAF7] tracking-wider">صناعة ذكريات الدلال</h5>
-              <p className="text-[11px] md:text-xs text-gray-400 max-w-[200px] leading-relaxed">
-                التغليف الفاخر والاهتمام بأدق التفاصيل يمنحك إحساس الأميرات في كل شحنة.
+            <div className="flex flex-col items-center placeholder-gray-400 space-y-4">
+              <Sparkles size={28} className="text-[#A44C5C]" strokeWidth={1} />
+              <h5 className="font-serif font-semibold text-sm tracking-widest uppercase text-[#0B0B0B]">Unforgettable Memories</h5>
+              <p className="text-xs text-gray-500 font-sans leading-relaxed">
+                Luxury packaging and attention to detail give you a princess-like feeling with every order.
               </p>
             </div>
           </div>

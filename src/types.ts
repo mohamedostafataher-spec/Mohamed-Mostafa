@@ -67,6 +67,11 @@ export interface Product {
   colors: { name: string; hex: string }[];
   sizes: string[];
   isBestSeller?: boolean;
+  featured?: boolean;
+  status?: 'active' | 'draft' | 'archived';
+  sku?: string;
+  salePriceEG?: number;
+  salePriceSA?: number;
   rating: number;
   reviewsCount: number;
   stock: number;
@@ -170,3 +175,12 @@ export interface InStockAlert {
   emailOrPhone: string;
   date: string;
 }
+
+export interface Collection {
+  id: string;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  createdAt?: string;
+}
+

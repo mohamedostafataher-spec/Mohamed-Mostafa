@@ -17,7 +17,7 @@ import ReturnsExchanges from './components/ReturnsExchanges';
 import DatabaseTest from './components/DatabaseTest';
 
 import { dbService, supabase } from './services/db';
-import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription } from './types';
+import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection } from './types';
 import { recordView, recordCartAddition } from './utils/analytics';
 
 // @ts-ignore
@@ -89,6 +89,8 @@ function AppContent() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [homepageSections, setHomepageSections] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
 
   // Auto-open product detail page when deep-linked with ?product=ID or ?p=ID
@@ -113,6 +115,8 @@ function AppContent() {
     let unsubReviews: any = null;
     let unsubOrders: any = null;
     let unsubCategories: any = null;
+    let unsubCollections: any = null;
+    let unsubCMS: any = null;
 
     const initData = async () => {
       try {
@@ -158,6 +162,18 @@ function AppContent() {
           (list) => setCategories(list),
           (error) => console.error("Categories error:", error)
         );
+
+        // 6. Live Sync Collections
+        unsubCollections = dbService.subscribeCollections(
+          (list) => setCollections(list),
+          (error) => console.error("Collections error:", error)
+        );
+
+        // 7. Live Sync Homepage CMS sections
+        unsubCMS = dbService.subscribeHomepageSections(
+          (list) => setHomepageSections(list),
+          (error) => console.error("CMS sections sync error:", error)
+        );
       } catch (err) {
         console.error("Critical initialization error:", err);
         setAuthLoading(false);
@@ -175,6 +191,8 @@ function AppContent() {
       if (typeof unsubReviews === 'function') unsubReviews();
       if (typeof unsubOrders === 'function') unsubOrders();
       if (typeof unsubCategories === 'function') unsubCategories();
+      if (typeof unsubCollections === 'function') unsubCollections();
+      if (typeof unsubCMS === 'function') unsubCMS();
     };
   }, []);
 
@@ -462,362 +480,202 @@ function AppContent() {
             {/* HERO PROMOTIONS BOX */}
             <Hero
               settings={settings}
+              homepageSections={homepageSections}
               onExplore={() => setTab('store')}
               onDiscoverNew={() => {
                 setTab('store');
-                // Could pre-apply category filter
               }}
             />
 
-            {/* BRAND VALUE FEATURES GRID */}
-            <Features />
-
-            {/* CATEGORIES GRID BLOCK (قسم التصنيفات) */}
-            <section className="py-16 bg-white">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div className="text-center max-w-xl mx-auto mb-12">
-                  <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-[#0B0B0B] font-light">
-                    فئات المجموعات الملكية
-                  </h3>
-                  <div className="w-16 h-0.5 bg-[#F4B6C2] mx-auto mt-4" />
-                  <p className="text-gray-400 text-[10px] font-serif uppercase tracking-widest mt-2">
-                    Discover Velvet Luxury Categories
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {/* BRAND LUXURY CATEGORIES GRID */}
+            <section className="py-20 bg-[#FAF5F0]">
+              <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-5xl mx-auto">
                   {(categories.length > 0 ? categories : [
-                    { id: 'satin', name: 'ساتان ملكي' },
-                    { id: 'cotton', name: 'قطن مصري' },
-                    { id: 'loungewear', name: 'لانج وير' },
-                    { id: 'dresses', name: 'فساتين نوم' }
-                  ]).slice(0, 5).map((category) => (
+                    { id: 'sleepwear', name: 'SLEEPWEAR', imageUrl: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=800' },
+                    { id: 'loungewear', name: 'LOUNGEWEAR', imageUrl: 'https://images.unsplash.com/photo-1515347619152-16e50e163c46?auto=format&fit=crop&q=80&w=800' },
+                    { id: 'homewear', name: 'HOMEWEAR', imageUrl: 'https://images.unsplash.com/photo-1542488856-11f62b083b8b?auto=format&fit=crop&q=80&w=800' },
+                    { id: 'collections', name: 'COLLECTIONS', imageUrl: 'https://images.unsplash.com/photo-1583391733958-69259253cb48?auto=format&fit=crop&q=80&w=800' }
+                  ]).slice(0, 4).map((category) => (
                     <div
                       key={category.id}
                       onClick={() => handleSelectCategoryHome(category.id)}
-                      className="group relative h-80 rounded-2xl overflow-hidden cursor-pointer shadow-xs border border-gray-100 flex flex-col justify-end p-4 text-center transition-all duration-500 hover:scale-103 bg-[#0B0B0B]"
+                      className="group flex flex-col items-center cursor-pointer text-center"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
-                      {category.imageUrl && (
-                        <img
-                          src={category.imageUrl}
-                          alt={category.name}
-                          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80"
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                      <div className="relative z-20 space-y-1">
-                        <h4 className="text-white font-serif text-sm md:text-base font-bold tracking-wide">
-                          {category.name}
-                        </h4>
-                        <span className="text-[#F6E7A6]/80 text-[10px] font-serif uppercase tracking-wider block">
-                          {category.slug}
-                        </span>
+                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-transparent group-hover:border-[#DF8A9D]/30 transition-all duration-500 mb-4 bg-[#DF8A9D]/10">
+                        {category.imageUrl && (
+                          <img
+                            src={category.imageUrl}
+                            alt={category.name}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 Mix-blend-multiply opacity-90"
+                            referrerPolicy="no-referrer"
+                          />
+                        )}
                       </div>
+                      <h4 className="text-[#0B0B0B] font-serif tracking-widest text-sm uppercase">
+                        {category.name}
+                      </h4>
+                      <span className="text-[#A44C5C] text-xs font-sans mt-1 group-hover:underline underline-offset-4">Shop Now</span>
                     </div>
                   ))}
                 </div>
-
               </div>
             </section>
 
-            {/* BEST SELLERS HIGHLIGHTS (الأكثر مبيعاً للبراند) */}
-            <section className="py-16 bg-[#FAFAF7]">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* FULL WIDTH LUXURIOUS BANNER */}
+            <section className="relative py-24 md:py-32 overflow-hidden bg-[#DF8A9D]/20">
+              <div className="absolute inset-0 z-0 opacity-50">
+                <img src="https://images.unsplash.com/photo-1583391733958-69259253cb48?auto=format&fit=crop&w=2000" className="w-full h-full object-cover grayscale mix-blend-overlay opacity-30" alt="luxury background"/>
+              </div>
+
+              <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-6">
+                <span className="font-sans text-sm tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-2">
+                  <Sparkles size={14} />
+                  Because You Deserve
+                </span>
+                <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl font-normal text-[#A44C5C] tracking-wide leading-tight">
+                  THE SOFTEST LIFE
+                </h3>
+                <div className="pt-8">
+                  <button
+                    onClick={() => setTab('store')}
+                    className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-10 py-4 rounded-full text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105"
+                  >
+                    SHOP THE COLLECTION
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* BEST SELLERS */}
+            <section className="py-20 bg-[#FAF5F0]">
+              <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 
-                <div className="text-center max-w-xl mx-auto mb-12">
-                  <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-[#0B0B0B] font-light">
-                    الأكثر مبيعاً وجاذبية
+                <div className="text-center max-w-xl mx-auto mb-16 flex items-center justify-center gap-4">
+                  <svg width="24" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#DF8A9D] opacity-60">
+                     <path d="M16 12C16 16.4183 12.4183 20 8 20C3.58172 20 0 16.4183 0 12C0 7.58172 3.58172 4 8 4C12.4183 4 16 7.58172 16 12Z" fill="currentColor"/>
+                     <path d="M40 12C40 16.4183 36.4183 20 32 20C27.5817 20 24 16.4183 24 12C24 7.58172 27.5817 4 32 4C36.4183 4 40 7.58172 40 12Z" fill="currentColor"/>
+                  </svg>
+                  <h3 className="font-serif text-3xl md:text-4xl text-[#0B0B0B] font-medium tracking-widest uppercase">
+                    BEST SELLERS
                   </h3>
-                  <div className="w-16 h-0.5 bg-[#F4B6C2] mx-auto mt-4" />
-                  <p className="text-gray-400 text-[10px] font-serif uppercase tracking-widest mt-2">
-                    Lustrous Silks & Royal Choice Favorites
-                  </p>
+                  <svg width="24" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#DF8A9D] opacity-60">
+                     <path d="M16 12C16 16.4183 12.4183 20 8 20C3.58172 20 0 16.4183 0 12C0 7.58172 3.58172 4 8 4C12.4183 4 16 7.58172 16 12Z" fill="currentColor"/>
+                     <path d="M40 12C40 16.4183 36.4183 20 32 20C27.5817 20 24 16.4183 24 12C24 7.58172 27.5817 4 32 4C36.4183 4 40 7.58172 40 12Z" fill="currentColor"/>
+                  </svg>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                  {bestSellers.map((prod) => {
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                  {bestSellers.length > 0 ? bestSellers.slice(0, 5).map((prod) => {
                     const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
                     const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
 
                     return (
                       <div
                         key={prod.id}
-                        className="group bg-white rounded-2xl overflow-hidden hover:shadow-lg transition-all border border-gray-100 flex flex-col justify-between h-full relative"
+                        className="group flex flex-col h-full cursor-pointer relative"
+                        onClick={() => handleSelectProduct(prod)}
                       >
                         <div className="absolute top-3 right-3 z-10">
-                          <span className="bg-[#0B0B0B] text-[#F6E7A6] text-[9px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-full border border-yellow-200">
-                            BEST SELLER ★
-                          </span>
+                          <button onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} className="p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors text-gray-400 hover:text-[#DF8A9D]">
+                            <Heart size={16} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
+                          </button>
                         </div>
 
                         {/* Top click photo */}
-                        <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 cursor-pointer" onClick={() => handleSelectProduct(prod)}>
+                        <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-lg mb-4">
                           <img
                             src={prod.images[0]}
-                            alt={prod.nameAr}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                            alt={prod.nameEn || prod.nameAr}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 mix-blend-multiply"
                             referrerPolicy="no-referrer"
                           />
-                          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span className="bg-white text-gray-900 border text-xs px-4 py-2 rounded-full font-medium shadow-md">عرض التفاصيل</span>
-                          </div>
                         </div>
 
                         {/* Text details bottom */}
-                        <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
-                          <div>
-                            <span className="text-[10px] text-gray-400 uppercase tracking-widest block">{prod.categoryAr}</span>
-                            <h4 className="text-xs md:text-sm font-semibold text-[#0B0B0B] line-clamp-1 hover:text-[#F4B6C2] transition-colors cursor-pointer" onClick={() => handleSelectProduct(prod)}>
-                              {prod.nameAr}
-                            </h4>
-                          </div>
-
-                          <div className="flex items-center justify-between gap-1.5 pt-3 border-t border-gray-50">
-                            <span className="font-sans font-bold text-gray-900">{priceVal.toLocaleString()} {currencyLabel}</span>
-                            <button
-                              onClick={() => handleAddToCart(prod, prod.colors[0], prod.sizes[0] || 'S')}
-                              className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors flex items-center gap-1.5"
-                            >
-                              <span>السلة</span>
-                              <ShoppingBag size={11} />
-                            </button>
-                          </div>
+                        <div className="space-y-1 text-center">
+                          <h4 className="text-sm font-semibold text-[#0B0B0B] line-clamp-1 font-serif">
+                            {prod.nameEn || prod.nameAr}
+                          </h4>
+                          <span className="font-sans font-medium text-[#A44C5C]">${priceVal.toLocaleString()}</span>
                         </div>
-
                       </div>
                     );
-                  })}
-                </div>
-
-                <div className="text-center mt-12">
-                  <button
-                    onClick={() => setTab('store')}
-                    className="border border-[#0B0B0B] text-[#0B0B0B] hover:bg-[#0B0B0B] hover:text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest transition-all duration-300 font-sans"
-                  >
-                    تصفحي كامل المتجر والقطع الفريدة
-                  </button>
-                </div>
-
-              </div>
-            </section>
-
-            {/* FULL WIDTH LUXURIOUS BANNER (بانر إعلاني فاخر) */}
-            <section className="relative py-24 md:py-36 overflow-hidden bg-black text-white">
-              <div className="absolute inset-0 z-0">
-                <div className="absolute inset-0 bg-[#0B0B0B]/85 z-10" />
-                <div
-                  className="w-full h-full bg-[#FAFAF7] bg-opacity-10"
-                />
-              </div>
-
-              <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-6">
-                <span className="font-serif italic text-xs tracking-[0.25em] text-[#F6E7A6] uppercase">Sulta High Couture Sleepwear • صمم ليدوم</span>
-                <h3 className="font-serif text-3xl md:text-5xl lg:text-6xl font-light text-white tracking-wide leading-tight">
-                  مصممة لليالٍ أكثر راحة وأناقة لتبهج روحك الجميلة
-                </h3>
-                <p className="max-w-xl mx-auto text-gray-400 text-sm leading-relaxed font-sans">
-                  من التصميم الباريسي والفرنسي وحتى اختيار أنسجة الحرير الكلاسيكية وتغليفها بالصندوق المخملي الفاخر، رعاية كاملة تضفي حكايا الدفء والتجرد على ليلتك.
-                </p>
-                <div className="pt-4">
-                  <button
-                    onClick={() => setTab('store')}
-                    className="bg-[#FAFAF7] text-[#0B0B0B] hover:bg-[#F6E7A6] hover:text-[#0B0B0B] px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105"
-                  >
-                    اكتشفي التشكيلة الآن
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            {/* ART OF PACKAGING PRESENTATION SECTION */}
-            <section className="py-16 bg-white">
-              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                  
-                  <div className="space-y-6 text-center md:text-right">
-                    <span className="font-serif text-xs text-gray-400 block tracking-widest uppercase mb-1">Couture Packaging Masterpiece • فن التغليف الفاخر</span>
-                    <h3 className="font-serif text-2xl md:text-4xl font-light text-[#0B0B0B] leading-snug">
-                      صندوق أسود مطفي مع ترف ذهبي ملكي وتغليف يدوي فاخر
-                    </h3>
-                    <div className="w-12 h-0.5 bg-[#F4B6C2] mx-auto md:mx-0 mt-3" />
-                    
-                    <p className="text-gray-500 text-sm leading-relaxed font-sans mt-4">
-                      في سولتا، لا ينتهي شغفنا بصنع القطع فحسب؛ بل نحيك لحظات المفاجأة الأولى بكل حب. يصل لكل عميل صندوق أسود مطفي متين محفور عليه اسم <strong>SULTA</strong> بحبر ذهبي مع باقة شريط مخملي وردي رائع.
-                    </p>
-
-                    <p className="text-gray-500 text-sm leading-relaxed font-sans">
-                      يُحفظ ورق الحرير الحاوي للقطع بعناية فائقة لضمان النعومة واللمعان، وتحمل كل علبة بطاقة شكر خطية مضافة لتقدير حضورك الراقي معنا.
-                    </p>
-
-                    <div className="flex gap-4 items-center justify-center md:justify-start pt-2 select-none">
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-[#FAFAF7] px-3.5 py-1.5 rounded-full border">
-                        <Box size={14} className="text-[#F4B6C2]" />
-                        <span>تغليف يدوي فاخر</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-[#FAFAF7] px-3.5 py-1.5 rounded-full border">
-                        <ShieldCheck size={14} className="text-[#F6E7A6]" />
-                        <span>ورق شكر داخلي بخصوصية</span>
-                      </div>
+                  }) : (
+                    <div className="col-span-full text-center text-gray-500 py-10 font-serif">
+                      Products are currently being curated.
                     </div>
-                  </div>
-
-                  <div className="flex flex-col gap-4 w-full">
-                    {/* Main Active Premium Image Frame */}
-                    <div className="relative rounded-3xl overflow-hidden aspect-[4/3] bg-gray-50 border border-gray-100 shadow-md group">
-                      <img 
-                        src={boxImages[activeBoxImg].url} 
-                        alt={boxImages[activeBoxImg].title} 
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover transition-all duration-500 scale-100 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4 select-none">
-                        <span className="text-white font-sans text-xs font-medium tracking-wide">
-                          {boxImages[activeBoxImg].title}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {/* Gallery Carousel Thumbnails */}
-                    <div className="grid grid-cols-3 gap-3 select-none" dir="rtl">
-                      {boxImages.map((bImg, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveBoxImg(idx)}
-                          className={`relative rounded-2xl overflow-hidden aspect-[4/3] border-2 bg-gray-50 cursor-pointer transition-all ${
-                            activeBoxImg === idx
-                              ? 'border-[#DF8A9C] ring-2 ring-pink-150 scale-95'
-                              : 'border-transparent opacity-75 hover:opacity-100 hover:scale-102'
-                          }`}
-                        >
-                          <img 
-                            src={bImg.url} 
-                            alt={bImg.title} 
-                            referrerPolicy="no-referrer" 
-                            className="w-full h-full object-cover" 
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            </section>
-
-            {/* CUSTOMER TESTIMONIALS (آراء العملاء) */}
-            <section className="py-16 bg-[#FAFAF7] border-t border-gray-100">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div className="text-center max-w-xl mx-auto mb-12">
-                  <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-[#0B0B0B] font-light">
-                    آراء سيدات SULTA المفعمة بالرضا
-                  </h3>
-                  <div className="w-16 h-0.5 bg-[#F4B6C2] mx-auto mt-4" />
-                  <p className="text-gray-400 text-[10px] font-serif uppercase tracking-widest mt-2">
-                    Verified Customer Encounters
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {reviews.length === 0 ? (
-                    <div className="col-span-full text-center py-12 bg-white rounded-3xl border border-gray-100">
-                      <span className="text-4xl text-gray-300 block mb-3">💭</span>
-                      <h4 className="font-serif text-lg text-[#0B0B0B] mb-2">لا توجد آراء مسجلة حتى اللحظة</h4>
-                      <p className="text-xs text-gray-400 max-w-sm mx-auto font-sans">
-                        عُملائنا الجدد، رأيكم يهمنا. شاركونا تجربتكم الفاخرة لتظهر هنا قريباً!
-                      </p>
-                    </div>
-                  ) : (
-                    reviews.map((rev) => (
-                      <div
-                        key={rev.id}
-                        className="bg-white border border-gray-200/60 rounded-3xl p-6 shadow-xs space-y-4 flex flex-col justify-between"
-                      >
-                        <p className="text-gray-600 text-xs md:text-sm italic leading-relaxed font-sans">
-                          "{rev.comment}"
-                        </p>
-
-                        <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
-                          {rev.avatar ? (
-                            <img
-                              src={rev.avatar}
-                              alt={rev.username}
-                              className="w-10 h-10 rounded-full object-cover border"
-                              referrerPolicy="no-referrer"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-100 border flex items-center justify-center text-gray-500 font-bold text-lg">
-                              {rev.username.charAt(0)}
-                            </div>
-                          )}
-                          <div className="text-xs font-sans">
-                            <h5 className="font-bold text-gray-900">{rev.username}</h5>
-                            <span className="text-gray-400 block text-[9px]">{rev.country === 'SA' ? 'المملكة العربية السعودية' : 'جمهورية مصر العربية'}</span>
-                            <div className="flex gap-0.5 text-yellow-400 mt-0.5">
-                              {Array.from({ length: rev.rating }).map((_, i) => (
-                                <span key={i}>★</span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
                   )}
                 </div>
-
               </div>
             </section>
 
-            {/* INSTAGRAM GALLERY SECTION REMOVED (No fake social posts) */}
+            {/* TRUST BUILDING BADGES */}
+            <section className="py-12 bg-[#FAF5F0] border-t border-[#A44C5C]/10 border-b">
+              <div className="max-w-7xl mx-auto px-4">
+                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-[#A44C5C]/10">
+                    <div className="px-4 flex items-center justify-center gap-4">
+                       <ShieldCheck className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
+                       <div className="text-left">
+                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Secure Checkout</h5>
+                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Your data is protected</p>
+                       </div>
+                    </div>
+                    <div className="px-4 flex items-center justify-center gap-4">
+                       <Globe className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
+                       <div className="text-left">
+                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Worldwide Shipping</h5>
+                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Fast & reliable delivery</p>
+                       </div>
+                    </div>
+                    <div className="px-4 flex items-center justify-center gap-4">
+                       <Star className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
+                       <div className="text-left">
+                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Premium Quality</h5>
+                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Designed for comfort</p>
+                       </div>
+                    </div>
+                    <div className="px-4 flex items-center justify-center gap-4">
+                       <Heart className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
+                       <div className="text-left">
+                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Made With Love</h5>
+                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">For your best moments</p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+            </section>
 
-            {/* NEWSLETTER JOIN SECTION (قسم الاشتراك بالبريد والجوال) */}
-            <section className="py-16 bg-[#0B0B0B] text-white">
-              <div className="max-w-xl mx-auto px-4 text-center space-y-6">
+            {/* NEWSLETTER JOIN SECTION */}
+            <section className="py-24 bg-[#0B0B0B] text-[#FAF5F0]">
+              <div className="max-w-xl mx-auto px-6 text-center space-y-6">
                 
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mx-auto text-[#F6E7A6]">
-                  <Mail size={18} />
-                </div>
-
-                <h3 className="font-serif text-2xl md:text-4xl font-light text-white tracking-wide">
-                  انضمي إلى عالم SULTA الراقي
+                <h3 className="font-serif text-3xl md:text-5xl font-light tracking-wide text-[#FAF5F0]">
+                  JOIN SULTA
                 </h3>
-                <p className="text-gray-400 text-xs font-sans max-w-sm mx-auto leading-relaxed">
-                  سجلي بريدك الإلكتروني لتكوني أول المستلمات لكتالوجات الأزياء الملكية الجديدة وكوبونات التوصيل المجاني طيلة العام.
+                <p className="font-sans text-sm tracking-wide text-[#FAF5F0]/70 uppercase">
+                  Subscribe to receive updates, access to exclusive deals, and more.
                 </p>
 
                 {subscribeSuccess ? (
-                  <div className="bg-white/10 p-4 rounded-xl border border-white/20 text-[#25D366] text-xs font-semibold font-sans">
-                    تم تسجيل اشتراكك بكل رقي! تفحصي هاتفك وبريدك لتلقي المزايا قريباً جداً 🌸
+                  <div className="bg-[#DF8A9D]/20 p-4 rounded-none border border-[#DF8A9D]/30 text-[#DF8A9D] text-sm font-sans tracking-widest uppercase">
+                    Thank you for subscribing.
                   </div>
                 ) : (
-                  <form onSubmit={handleSubscribe} className="space-y-3 font-sans">
-                    <div className="flex flex-col sm:flex-row gap-2.5">
-                      <input
-                        type="email"
-                        placeholder="أدخلي بريدك الإلكتروني هنا"
-                        value={subscribeEmail}
-                        onChange={(e) => setSubscribeEmail(e.target.value)}
-                        className="flex-1 text-xs border border-white/10 rounded-lg px-4 py-2.5 bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#F4B6C2]"
-                        required
-                      />
-                      <input
-                        type="tel"
-                        placeholder="رقم هاتف الجوال (اختياري)"
-                        value={subscribePhone}
-                        onChange={(e) => setSubscribePhone(e.target.value)}
-                        className="flex-1 text-xs text-left border border-white/10 rounded-lg px-4 py-2.5 bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#F4B6C2]"
-                        dir="ltr"
-                      />
-                    </div>
+                  <form onSubmit={handleSubscribe} className="pt-6 font-sans flex flex-col sm:flex-row gap-0 max-w-md mx-auto">
+                    <input
+                      type="email"
+                      placeholder="ENTER YOUR EMAIL ADDRESS"
+                      value={subscribeEmail}
+                      onChange={(e) => setSubscribeEmail(e.target.value)}
+                      className="flex-1 text-xs border-b border-[#FAF5F0]/30 px-2 py-4 bg-transparent text-[#FAF5F0] placeholder-[#FAF5F0]/50 focus:outline-none focus:border-[#DF8A9D] transition-colors uppercase tracking-widest text-center sm:text-left"
+                      required
+                    />
                     <button
                       type="submit"
-                      className="w-full bg-[#F4B6C2] text-white hover:bg-white hover:text-black font-semibold text-xs py-2.5 rounded-lg transition-colors"
+                      className="bg-transparent text-[#FAF5F0] hover:text-[#DF8A9D] font-bold text-xs px-6 py-4 transition-colors uppercase tracking-widest border-b border-[#FAF5F0]/30 hover:border-[#DF8A9D]"
                     >
-                      مشاركة العضوية الفخرية
+                      SUBSCRIBE
                     </button>
                   </form>
                 )}
@@ -847,50 +705,50 @@ function AppContent() {
 
         {/* VIEW 3: SIZE GUIDE PAGE */}
         {currentTab === 'sizes' && (
-          <div className="max-w-4xl mx-auto px-4 py-16 font-sans text-xs md:text-sm text-gray-700 leading-relaxed">
-            <h2 className="font-serif text-2xl md:text-4xl font-light text-center text-[#0B0B0B] mb-2">دليل المقاسات في بيت الأزياء SULTA</h2>
-            <div className="w-12 h-0.5 bg-[#F4B6C2] mx-auto mt-4 mb-8" />
+          <div className="max-w-4xl mx-auto px-6 py-24 font-sans text-xs md:text-sm text-gray-700 leading-relaxed bg-[#FAF5F0] my-10 rounded-sm">
+            <h2 className="font-serif text-3xl md:text-5xl font-light text-center text-[#0B0B0B] mb-2 uppercase tracking-wide">Size Guide</h2>
+            <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mt-6 mb-10" />
             
-            <p className="text-center max-w-xl mx-auto text-gray-400 text-xs mb-8">
-              نحن ندرك مدى أهمية ملاءمة ملابس النوم ومطابقتها الطبيعية لحجم الجسد لتنعمي بالراحة القصوى دون تكتيل. يرجى مراجعة الجدول التفصيلي التالي لطلب دقيق وعصري.
+            <p className="text-center max-w-xl mx-auto text-gray-500 font-sans text-sm mb-12">
+              We understand how important the fit of sleepwear is to your ultimate comfort. Please review the detailed chart below to ensure a precise, elegant fit.
             </p>
 
-            <div className="border border-gray-200 rounded-3xl overflow-hidden bg-white shadow-xs max-w-2xl mx-auto mb-8">
+            <div className="border border-[#DF8A9D]/20 rounded-sm overflow-hidden bg-white shadow-sm max-w-2xl mx-auto mb-10">
               <table className="w-full text-center border-collapse text-xs md:text-sm">
-                <thead className="bg-[#0B0B0B] text-white">
-                  <tr>
-                    <th className="p-3">دوم المقاس</th>
-                    <th className="p-3">محيط الصدر (Inches)</th>
-                    <th className="p-3">محيط الورك (Inches)</th>
-                    <th className="p-3">أوزان مناسبة تقريبياً</th>
+                <thead className="bg-[#0B0B0B] text-[#FAF5F0]">
+                  <tr className="font-serif tracking-widest uppercase text-[10px]">
+                    <th className="p-4 font-normal">Size</th>
+                    <th className="p-4 font-normal">Bust (Inches)</th>
+                    <th className="p-4 font-normal">Hip (Inches)</th>
+                    <th className="p-4 font-normal">Approx. Weight</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-150">
-                  <tr>
-                    <td className="p-3 font-bold bg-[#FAFAF7]">XS / S</td>
-                    <td className="p-3 font-sans">32" - 34"</td>
-                    <td className="p-3 font-sans">34" - 36"</td>
-                    <td className="p-3">45 - 58 كجم</td>
+                <tbody className="divide-y divide-[#DF8A9D]/10">
+                  <tr className="group hover:bg-[#FAF5F0]/50 transition-colors">
+                     <td className="p-4 font-serif font-bold text-[#A44C5C]">XS / S</td>
+                    <td className="p-4 font-sans text-gray-600">32" - 34"</td>
+                    <td className="p-4 font-sans text-gray-600">34" - 36"</td>
+                    <td className="p-4 text-gray-500">45 - 58 kg</td>
                   </tr>
-                  <tr>
-                    <td className="p-3 font-bold bg-[#FAFAF7]">M / L</td>
-                    <td className="p-3 font-sans">36" - 38"</td>
-                    <td className="p-3 font-sans">38" - 41"</td>
-                    <td className="p-3">60 - 75 كجم</td>
+                  <tr className="group hover:bg-[#FAF5F0]/50 transition-colors">
+                     <td className="p-4 font-serif font-bold text-[#A44C5C]">M / L</td>
+                    <td className="p-4 font-sans text-gray-600">36" - 38"</td>
+                    <td className="p-4 font-sans text-gray-600">38" - 41"</td>
+                    <td className="p-4 text-gray-500">60 - 75 kg</td>
                   </tr>
-                  <tr>
-                    <td className="p-3 font-bold bg-[#FAFAF7]">XL</td>
-                    <td className="p-3 font-sans">40" - 42"</td>
-                    <td className="p-3 font-sans">43" - 45"</td>
-                    <td className="p-3">78 - 95 كجم</td>
+                   <tr className="group hover:bg-[#FAF5F0]/50 transition-colors">
+                     <td className="p-4 font-serif font-bold text-[#A44C5C]">XL</td>
+                    <td className="p-4 font-sans text-gray-600">40" - 42"</td>
+                    <td className="p-4 font-sans text-gray-600">43" - 45"</td>
+                    <td className="p-4 text-gray-500">78 - 95 kg</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 p-5 rounded-2xl text-gray-800 max-w-xl mx-auto text-xs space-y-1">
-              <strong>💡 نصيحة مصممي سولتا لكي:</strong>
-              <p>إذا كنت تقعين بين مقاسين، نوصي دوماً باختيار المقاس الأكبر لملابس النوم لتأمين تمدد مريح ومناسب للحركة أثناء النوم والاسترخاء المنزلي.</p>
+            <div className="bg-[#FAF5F0] border border-[#DF8A9D]/30 p-6 rounded-sm text-center max-w-xl mx-auto text-xs space-y-2">
+               <strong className="font-serif uppercase tracking-widest text-[#A44C5C] block mb-2">Designer's Tip:</strong>
+               <p className="text-gray-500">If you fall between sizes, we always recommend choosing the larger size for sleepwear to ensure comfortable stretch and ease of movement during sleep and home relaxation.</p>
             </div>
           </div>
         )}
@@ -945,6 +803,9 @@ function AppContent() {
             setSettings={setSettings}
             categories={categories}
             setCategories={setCategories}
+            collections={collections}
+            setCollections={setCollections}
+            homepageSections={homepageSections}
           />
         )}
 
@@ -1096,7 +957,7 @@ function AppContent() {
                   { id: 'home', label: 'الرئيسية 🏠' },
                   { id: 'store', label: 'المتجر والكتالوج 🛍️' },
                   { id: 'sizes', label: 'دليل المقاسات 📏' },
-                  { id: 'about', label: 'رواد قصتنا وعن سولتا ✨' },
+                  { id: 'about', label: 'رواد قصتنا وعن Sulta ✨' },
                   { id: 'faq', label: 'الأسئلة الشائعة للعرائس ❓' },
                   { id: 'returns', label: 'سياسة الاسترجاع والتبديل 🔄' },
                 ].map((item) => {

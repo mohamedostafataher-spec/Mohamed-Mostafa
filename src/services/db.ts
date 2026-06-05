@@ -1,4 +1,4 @@
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection } from '../types';
 import { createClient } from '@supabase/supabase-js';
 
 // --- ROBUST CONFIGURATION ---
@@ -108,6 +108,15 @@ function mapCategory(data: any): Category {
   };
 }
 
+function mapCollection(data: any): Collection {
+  return {
+    id: data.id,
+    name: data.name,
+    description: data.description || '',
+    imageUrl: data.image_url || data.imageUrl
+  };
+}
+
 function mapSettings(data: any): Settings {
   return {
     siteName: data.site_name,
@@ -154,7 +163,16 @@ function mapProduct(data: any): Product {
     isBestSeller: !!data.is_best_seller,
     rating: Number(data.rating ?? 5),
     reviewsCount: Number(data.reviews_count ?? 0),
-    stock: Number(data.stock ?? 0)
+    stock: Number(data.stock ?? 0),
+    sku: data.sku || undefined,
+    salePriceEG: data.sale_price_eg ? Number(data.sale_price_eg) : (data.sale_price ? Number(data.sale_price) : undefined),
+    salePriceSA: data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined),
+    featured: !!data.featured,
+    status: data.status || 'active',
+    shortDescription: data.short_description || undefined,
+    tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
+    collection: data.collection || undefined,
+    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(data.seo) : data.seo) : undefined
   };
 }
 
@@ -326,6 +344,65 @@ export const dbService = {
     if (error) throw error;
   },
 
+  subscribeCollections: (
+    onSuccess: (collections: Collection[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('collections').select('*').then(({ data }) => {
+      if (data) onSuccess(data.map(mapCollection));
+    });
+
+    const channel = supabase
+      .channel('public:collections')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'collections' }, async () => {
+        const { data } = await supabase.from('collections').select('*');
+        if (data) onSuccess(data.map(mapCollection));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  },
+
+  saveCollection: async (collection: Collection): Promise<void> => {
+    const { error } = await supabase
+      .from('collections')
+      .upsert([{
+        id: collection.id || undefined,
+        name: collection.name,
+        description: collection.description,
+        image_url: collection.imageUrl
+      }]);
+    if (error) throw error;
+  },
+
+  deleteCollection: async (collectionId: string): Promise<void> => {
+    const { error } = await supabase.from('collections').delete().eq('id', collectionId);
+    if (error) throw error;
+  },
+
+  subscribeHomepageSections: (
+    onSuccess: (sections: any[]) => void, 
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('homepage_sections').select('*').then(({ data }) => {
+      if (data) onSuccess(data);
+    });
+
+    const channel = supabase
+      .channel('public:homepage_sections')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'homepage_sections' }, async () => {
+        const { data } = await supabase.from('homepage_sections').select('*');
+        if (data) onSuccess(data);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  },
+
   subscribeProducts: (
     onSuccess: (products: Product[]) => void, 
     _onError: (error: any) => void
@@ -460,14 +537,51 @@ export const dbService = {
         colors: product.colors,
         sizes: product.sizes,
         is_best_seller: product.isBestSeller,
+        featured: product.featured || false,
+        status: product.status || 'active',
+        sku: product.sku || null,
+        sale_price: product.salePriceSA || product.salePriceEG || null,
+        sale_price_sa: product.salePriceSA || null,
+        sale_price_eg: product.salePriceEG || null,
+        stock_quantity: product.stock,
         rating: product.rating,
         reviews_count: product.reviewsCount,
         stock: product.stock,
+        short_description: product.shortDescription || null,
+        tags: product.tags || [],
+        collection: product.collection || null,
         name: product.nameEn,
         slug: product.id.toLowerCase().replace(/\s+/g, '-'),
-        description: product.descriptionEn
+        description: product.descriptionEn,
+        seo: product.seo ? JSON.stringify(product.seo) : null
       }]);
     if (error) throw error;
+  },
+
+  getHomepageSections: async (): Promise<any[]> => {
+    try {
+      const { data, error } = await supabase.from('homepage_sections').select('*');
+      if (error) throw error;
+      return data || [];
+    } catch (err) {
+      console.warn("Homepage sections fetch failed, using memory", err);
+      return [];
+    }
+  },
+
+  saveHomepageSection: async (sectionKey: string, contentJson: any, active: boolean = true): Promise<boolean> => {
+    try {
+      const { error } = await supabase.from('homepage_sections').upsert([{
+        section_key: sectionKey,
+        content_json: contentJson,
+        active: active
+      }], { onConflict: 'section_key' });
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("Failed to save homepage section to DB:", err);
+      return false;
+    }
   },
 
   deleteProduct: async (productId: string): Promise<void> => {

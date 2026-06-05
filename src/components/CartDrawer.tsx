@@ -99,7 +99,7 @@ export default function CartDrawer({
                 <span className="text-5xl mb-4">🛒</span>
                 <h4 className="font-serif text-lg font-light text-[#0B0B0B] mb-2">حقيبتك المترفة فارغة حالياً</h4>
                 <p className="text-gray-400 text-xs font-sans max-w-xs leading-relaxed mb-6">
-                  استكشفي تشكيلات سولتا المميزة وضعي لمسات الدلال الخاصة بك في السلة لتظهر هنا.
+                  استكشفي تشكيلات Sulta المميزة وضعي لمسات الدلال الخاصة بك في السلة لتظهر هنا.
                 </p>
                 <button
                   onClick={onClose}

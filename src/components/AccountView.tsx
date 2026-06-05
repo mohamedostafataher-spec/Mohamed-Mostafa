@@ -688,7 +688,7 @@ export default function AccountView({
             >
               <span className="flex items-center gap-2.5">
                 <Crown size={16} className="text-yellow-400" />
-                <span>نقاط وولاء سولتا</span>
+                <span>نقاط وولاء Sulta</span>
               </span>
               <span className="bg-amber-100 text-amber-800 text-[9px] font-sans px-2 py-0.5 rounded-full">
                 0 ن
@@ -901,7 +901,7 @@ export default function AccountView({
                     0
                   </strong>
                   <span className="text-[10px] text-gray-400 block mt-1 font-sans">
-                    نقاط سولتا الذهبية ✦
+                    نقاط Sulta الذهبية ✦
                   </span>
                 </div>
               </div>
@@ -910,7 +910,7 @@ export default function AccountView({
               <div className="space-y-3">
                 <h4 className="font-serif text-lg font-light text-[#0B0B0B] pb-2 border-b border-gray-100 flex items-center justify-between">
                   <span className="text-xs text-gray-400 font-sans">
-                    تدرج مستويات ونقاط نادي سولتا للتسوق
+                    تدرج مستويات ونقاط نادي Sulta للتسوق
                   </span>
                   <span>تدرج فئات العضوية الملكية 👑</span>
                 </h4>
@@ -1027,7 +1027,7 @@ export default function AccountView({
           {activeTab === "orders" && (
             <div>
               <h3 className="font-serif text-lg font-light text-[#0B0B0B] pb-3 border-b border-gray-100 mb-6 flex justify-between items-center">
-                <span>مشترياتك الفخمة من سولتا</span>
+                <span>مشترياتك الفخمة من Sulta</span>
                 <span className="text-xs bg-[#FAF4F5] text-[#DF8A9C] px-3 py-1 rounded-full font-sans font-bold">
                   {completedOrdersCount} طلبيات مكتملة
                 </span>
@@ -1435,7 +1435,7 @@ export default function AccountView({
                         className="accent-[#F4B6C2]"
                       />
                       <span>
-                        استلام منشورات كتالوج سولتا الفخرية عبر البريد
+                        استلام منشورات كتالوج Sulta الفخرية عبر البريد
                         الإلكتروني
                       </span>
                     </label>

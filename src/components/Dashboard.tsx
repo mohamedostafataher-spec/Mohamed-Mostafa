@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart } from 'lucide-react';
-import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate } from '../types';
+import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection } from '../types';
 import { dbService, supabase } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
 import { generateProductContent, generateBlogDrafts, generateCategorySeo, calculateSeoScore } from '../utils/seoContentEngine';
@@ -19,6 +19,9 @@ interface DashboardProps {
   setSettings: React.Dispatch<React.SetStateAction<Settings | null>>;
   categories: any[];
   setCategories: React.Dispatch<React.SetStateAction<any[]>>;
+  collections?: Collection[];
+  setCollections?: React.Dispatch<React.SetStateAction<Collection[]>>;
+  homepageSections?: any[];
 }
 
 const getStatusBadge = (status: Order['status']) => {
@@ -63,7 +66,10 @@ export default function Dashboard({
   settings,
   setSettings,
   categories,
-  setCategories
+  setCategories,
+  collections = [],
+  setCollections,
+  homepageSections = []
 }: DashboardProps) {
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -75,7 +81,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
@@ -96,12 +102,82 @@ export default function Dashboard({
   const [isSavingCMS, setIsSavingCMS] = useState(false);
   const [cmsSuccessMessage, setCmsSuccessMessage] = useState('');
 
+  // Editing Product State
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  // Custom Categories States
+  const [newCatName, setNewCatName] = useState('');
+  const [newCatSlug, setNewCatSlug] = useState('');
+  const [newCatImage, setNewCatImage] = useState('');
+  const [uploadingCatImage, setUploadingCatImage] = useState(false);
+
+  // Custom Collections States
+  const [newColName, setNewColName] = useState('');
+  const [newColDesc, setNewColDesc] = useState('');
+  const [newColImage, setNewColImage] = useState('');
+  const [uploadingColImage, setUploadingColImage] = useState(false);
+
+  // Media Library Assets
+  const [mediaAssets, setMediaAssets] = useState<string[]>([
+    "https://images.unsplash.com/photo-1631857455684-a54a2f03665f?auto=format&fit=crop&q=80&w=1200",
+    "https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=1200",
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800",
+    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800"
+  ]);
+  const [uploadingMediaFile, setUploadingMediaFile] = useState(false);
+
   // Sync CMS states when settings load
   useEffect(() => {
     if (settings?.promoBannerAr) {
       setBannerText(settings.promoBannerAr);
     }
   }, [settings?.promoBannerAr]);
+
+  const [bannersList, setBannersList] = useState<any[]>([]);
+  const [bestSellersCms, setBestSellersCms] = useState({ title: '', subtitle: '' });
+
+  useEffect(() => {
+    const heroSec = homepageSections?.find(s => s.section_key === 'hero_banners');
+    if (heroSec?.content_json?.banners) {
+      setBannersList(heroSec.content_json.banners);
+    } else {
+      setBannersList([
+        { 
+          id: 'slide-1',
+          mediaUrl: 'https://images.unsplash.com/photo-1631857455684-a54a2f03665f?auto=format&fit=crop&q=80&w=1200', 
+          title: 'SULTA',
+          subtitle: 'Where Comfort Meets Elegance',
+          description: 'مجموعة بيجامات نوم ولانج وير مصممة خصيصاً لتمنحك الراحة الكاملة والأنوثة المستحقة تليق بك وبأدق تفاصيل ليلتك الهادئة والراقية بأرقى الخامات المرموقة.',
+          ctaText: 'تسوقي المجموعة الآن',
+          mediaType: 'image',
+          active: true
+        },
+        { 
+          id: 'slide-2',
+          mediaUrl: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=1200', 
+          title: 'SLEEPWEAR',
+          subtitle: 'Exquisite Silk Satin Comfort',
+          description: 'طواقم فاخرة من الحرير الطبيعي والدانتيل، مصممة بدقة لتلبي أعلى تطلعاتك وتزين خلوتك المنزلية بجمالية ساحرة.',
+          ctaText: 'اكتشفي تشكيلة العرائس',
+          mediaType: 'image',
+          active: true
+        }
+      ]);
+    }
+
+    const bsSec = homepageSections?.find(s => s.section_key === 'best_sellers');
+    if (bsSec?.content_json) {
+      setBestSellersCms({
+        title: bsSec.content_json.title || 'الأكثر مبيعاً وجاذبية',
+        subtitle: bsSec.content_json.subtitle || 'Lustrous Silks & Royal Choice Favorites'
+      });
+    } else {
+      setBestSellersCms({
+        title: 'الأكثر مبيعاً وجاذبية',
+        subtitle: 'Lustrous Silks & Royal Choice Favorites'
+      });
+    }
+  }, [homepageSections]);
 
   const handleSaveSetting = async (key: keyof Settings, value: string) => {
     setIsSavingCMS(true);
@@ -394,6 +470,40 @@ export default function Dashboard({
     setIsSavingCMS(false);
   };
 
+  const handleSaveHeroSlider = async () => {
+    setIsSavingCMS(true);
+    setCmsSuccessMessage('');
+    try {
+      const ok = await dbService.saveHomepageSection('hero_banners', { banners: bannersList });
+      if (ok) {
+        setCmsSuccessMessage('تم تحديث سلايدر الواجهة والأناقة بنجاح في قاعدة البيانات ومزامنته فوراً! ✨');
+        setTimeout(() => setCmsSuccessMessage(''), 3000);
+      } else {
+        alert('خطأ أثناء رفع السلايدر لقاعدة البيانات.');
+      }
+    } catch (err) {
+      alert('فشل حفظ السلايدر.');
+    }
+    setIsSavingCMS(false);
+  };
+
+  const handleSaveBestSellersTheme = async () => {
+    setIsSavingCMS(true);
+    setCmsSuccessMessage('');
+    try {
+      const ok = await dbService.saveHomepageSection('best_sellers', bestSellersCms);
+      if (ok) {
+        setCmsSuccessMessage('تم تحديث عناوين قسم الفخامة (أكثر المبيعات) فورياً! ⚜️');
+        setTimeout(() => setCmsSuccessMessage(''), 3000);
+      } else {
+        alert('حدث خطأ أثناء ترسيخ العناوين بالخادم.');
+      }
+    } catch (err) {
+      alert('تعذر الحفظ.');
+    }
+    setIsSavingCMS(false);
+  };
+
   const adminEmails = [
     'mohamedostafataher@gmail.com', // Your email
     // Add other admin emails here
@@ -445,10 +555,57 @@ export default function Dashboard({
     const url = await dbService.uploadImage(file);
     if (url) {
       setTempImageUrl(url);
+      setMediaAssets(prev => [url, ...prev]);
     } else {
       alert('خطأ: راجع التخزين في Supabase');
     }
     setUploadingImage(false);
+  };
+
+  const handleCatImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCatImage(true);
+    const url = await dbService.uploadImage(file);
+    if (url) {
+      setNewCatImage(url);
+      setMediaAssets(prev => [url, ...prev]);
+    } else {
+      alert('خطأ في الرفع لمخدم سوبابيس');
+    }
+    setUploadingCatImage(false);
+  };
+
+  const handleColImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingColImage(true);
+    const url = await dbService.uploadImage(file);
+    if (url) {
+      setNewColImage(url);
+      setMediaAssets(prev => [url, ...prev]);
+    } else {
+      alert('خطأ في الرفع لمخدم سوبابيس');
+    }
+    setUploadingColImage(false);
+  };
+
+  const handleMediaAssetUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingMediaFile(true);
+    let count = 0;
+    for (let i = 0; i < files.length; i++) {
+      const url = await dbService.uploadImage(files[i]);
+      if (url) {
+        setMediaAssets(prev => [url, ...prev]);
+        count++;
+      }
+    }
+    if (count > 0) {
+      alert(`تم تحميل ${count} ملف بنجاح وإضافته إلى المكتبة المرئية للفخامة!`);
+    }
+    setUploadingMediaFile(false);
   };
 
   // Input states for adding coupon
@@ -509,6 +666,57 @@ export default function Dashboard({
     } catch (err) {
       console.error("Failed to update product stock in DB:", err);
       setProducts(products); // fallback to original
+    }
+  };
+
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCatName) return alert('الرجاء كتابة اسم القسم الراقي.');
+    const slug = newCatSlug.trim() || newCatName.trim().toLowerCase().replace(/\s+/g, '-');
+    const newCat: Category = {
+      id: `CAT-${slug.toUpperCase()}`,
+      name: newCatName,
+      slug: slug,
+      imageUrl: newCatImage || 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633'
+    };
+    try {
+      await dbService.saveCategory(newCat);
+      setNewCatName('');
+      setNewCatSlug('');
+      setNewCatImage('');
+      alert('تم حفظ وتنشيط القسم الملكي بنجاح!');
+    } catch (err) {
+      alert('فشل حفظ القسم في قاعدة بيانات سوبابيس.');
+    }
+  };
+
+  const handleCreateCollection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newColName) return alert('الرجاء كتابة اسم التشكيلة الفاخرة.');
+    const newCol: Collection = {
+      id: `COL-${Math.floor(100 + Math.random() * 900)}`,
+      name: newColName,
+      description: newColDesc,
+      imageUrl: newColImage || 'https://images.unsplash.com/photo-1612817288484-6f916006741a'
+    };
+    try {
+      await dbService.saveCollection(newCol);
+      setNewColName('');
+      setNewColDesc('');
+      setNewColImage('');
+      alert('تم ضخ التشكيلة الفاخرة وحفظها بنجاح!');
+    } catch (err) {
+      alert('فشل حفظ التشكيلة في سوبابيس.');
+    }
+  };
+
+  const handleDeleteCollection = async (id: string) => {
+    if (!confirm('هل أنت متأكدة من حذف هذه التشكيلة نهائياً؟')) return;
+    try {
+      await dbService.deleteCollection(id);
+      alert('تم حذف التشكيلة بنجاح.');
+    } catch (err) {
+      alert('فشل حذف التشكيلة.');
     }
   };
 
@@ -847,6 +1055,26 @@ export default function Dashboard({
             </button>
 
             <button
+              onClick={() => setActiveMenu('collections')}
+              className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
+                activeMenu === 'collections' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <Palette size={16} />
+              <span>إدارة التشكيلات (Collections)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveMenu('media')}
+              className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
+                activeMenu === 'media' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <Upload size={16} />
+              <span>المكتبة المرئية (Media Library)</span>
+            </button>
+
+            <button
               onClick={() => setActiveMenu('shipping')}
               className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
                 activeMenu === 'shipping' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
@@ -1011,7 +1239,7 @@ export default function Dashboard({
             return (
               <div className="space-y-8 animate-fade-in text-right" dir="rtl">
                 <div className="border-b border-gray-150 pb-4">
-                  <h3 className="font-serif text-xl font-light text-[#0B0B0B]">تحليل كفاءة وأداء منتجات سولتا كوتور 👑</h3>
+                  <h3 className="font-serif text-xl font-light text-[#0B0B0B]">تحليل كفاءة وأداء منتجات Sulta كوتور 👑</h3>
                   <p className="text-[11px] text-gray-500 mt-1 font-sans">
                     مؤشرات تفصيلية حيّة ومخططات بيانية دقيقة تقيس رغبات واهتمامات العملاء ومعدلات الشراء.
                   </p>
@@ -1267,7 +1495,7 @@ export default function Dashboard({
                       <div className="space-y-5 animate-fade-in text-right">
                         <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-300/20 text-right space-y-1">
                           <h5 className="text-[11px] font-bold text-amber-900 flex items-center justify-end gap-1.5">
-                            <span>محرك التنبؤ بالمبيعات الموسمية لسولتا 🔮📉</span>
+                            <span>محرك التنبؤ بالمبيعات الموسمية لـ Sulta 🔮📉</span>
                           </h5>
                           <p className="text-[10px] text-gray-500 leading-relaxed font-sans">
                             يقوم النظام بتحليل دورات الطلبيات التاريخية ومقارنتها بمؤشرات الطلب وتصنيفات السلع الأكثر رواجاً (Best Sellers). يدمج النموذج معادلات النمو مع معاملات موسمية مخصصة لملابس النوم الملكية في مصر والسعودية.
@@ -1448,7 +1676,7 @@ export default function Dashboard({
                       <div className="space-y-4 animate-fade-in text-right">
                         <div className="bg-purple-50/30 p-4 rounded-2xl border border-purple-300/15 text-right space-y-1">
                           <h5 className="text-[11px] font-bold text-purple-900 flex items-center justify-end gap-1.5">
-                            <span>مستشار سولتا الذكي للتنشيط التجاري ⚡💡</span>
+                            <span>مستشار Sulta الذكي للتنشيط التجاري ⚡💡</span>
                           </h5>
                           <p className="text-[10px] text-gray-500 leading-relaxed font-sans">
                             يقوم النظام بمطابقة نسب المخزون بمعدلات السحب ومقتنيات سلات العميلات غير المكتملة وتوليد حلول ذكية لزيادة عوائد المبيعات التراكمية.
@@ -1690,7 +1918,7 @@ export default function Dashboard({
                         <td colSpan={7} className="p-8 text-center text-gray-400">
                           <span className="text-3xl block mb-2">🛍️</span>
                           <span className="block font-serif text-sm">المستودع خالي من المنتجات حالياً</span>
-                          <span className="block text-[10px]">استخدم النموذج أعلاه لضخ أول منتجات براند سولتا</span>
+                          <span className="block text-[10px]">استخدم النموذج أعلاه لضخ أول منتجات براند Sulta</span>
                         </td>
                       </tr>
                     ) : (
@@ -2040,9 +2268,15 @@ export default function Dashboard({
           )}
 
           {activeMenu === 'content' && (
-            <div className="space-y-6">
-              <h3 className="font-serif text-lg font-light pb-2 border-b border-gray-150 text-[#0B0B0B]">إدارة المحتوى وواجهة المتجر (CMS)</h3>
-              
+            <div className="space-y-8 animate-fade-in-rapid" dir="rtl">
+              <div className="border-b border-gray-150 pb-4">
+                <h3 className="font-serif text-2xl font-light text-[#0B0B0B] flex items-center gap-2">
+                  <LayoutTemplate className="text-[#F4B6C2]" size={24} />
+                  مركز إدارة المحتوى ومرونة واجهة SULTA (CMS)
+                </h3>
+                <p className="text-gray-400 text-xs mt-1">تعديل شريط العناوين، صور وسلايدرات البانر التفاعلية، ومعلومات الأقسام الملكية في سوبابيس.</p>
+              </div>
+
               {cmsSuccessMessage && (
                 <div className="bg-green-50 text-green-700 p-4 rounded-xl border border-green-100 text-sm font-bold flex items-center gap-2">
                   <Check size={16} />
@@ -2050,104 +2284,329 @@ export default function Dashboard({
                 </div>
               )}
 
-              <div className="bg-[#FAFAF7] border border-gray-100 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Palette className="text-[#c5a059]" size={20} />
-                  <h4 className="font-semibold text-sm">تعديل شريط الإعلانات العلوي</h4>
+              {/* 1. TOP ANNOUNCEMENT BAR */}
+              <div className="bg-[#FAFAF7] border border-gray-200 rounded-3xl p-6 space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <Palette className="text-[#F4B6C2]" size={20} />
+                  <h4 className="font-serif text-lg font-light text-[#0B0B0B]">شريط الإعلانات العلوي للمتجر</h4>
                 </div>
-                <div className="space-y-3">
+                <p className="text-gray-400 text-xs">الشريط الذهبي الصغير المتحرك في أعلى كافة صفحات موقع SULTA للخصومات أو الإعلانات الكبرى.</p>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
                   <input 
                     type="text" 
                     value={bannerText}
                     onChange={(e) => setBannerText(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#c5a059]" 
-                    placeholder="أدخل رسالة الإعلان هنا..." 
+                    className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]" 
+                    placeholder="شحن ملكي سريع ومجاني..." 
                   />
                   <button 
                     onClick={handleSaveBanner}
                     disabled={isSavingCMS}
-                    className="bg-[#0B0B0B] text-[#F6E7A6] px-4 py-2 rounded-lg text-xs hover:bg-[#111] disabled:opacity-50 flex items-center gap-2"
+                    className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#1C1C1E] px-6 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 inline-flex items-center justify-center gap-2"
                   >
-                    {isSavingCMS ? 'جاري الحفظ...' : 'تحديث وتزامن رسالة الإشعار'}
+                    {isSavingCMS ? '⏳' : '✨'}
+                    <span>تحديث وتزامن شريط الإعلانات</span>
                   </button>
                 </div>
               </div>
 
-              <div className="bg-[#FAFAF7] border border-gray-100 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <LayoutTemplate className="text-[#c5a059]" size={20} />
-                  <h4 className="font-semibold text-sm">أقسام الصفحة الرئيسية</h4>
+              {/* 2. DYNAMIC HERO SLIDER BANNERS MANAGEMENT SYSTEM */}
+              <div className="bg-[#FAFAF7] border border-gray-200 rounded-3xl p-6 space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="text-[#F4B6C2]" size={20} />
+                    <h4 className="font-serif text-lg font-light text-[#0B0B0B]">سلايدرات البانر الرئيسي التفاعلي (Hero Banners)</h4>
+                  </div>
+                  <button
+                    onClick={handleSaveHeroSlider}
+                    disabled={isSavingCMS}
+                    className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#1C1C1E] px-6 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 inline-flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  >
+                    💾 حفظ وتفعيل سلايدر الجبهة الأمامية ✨
+                  </button>
                 </div>
                 
-                <div className="space-y-4 mb-6 pt-4 border-t border-gray-100">
-                  <h5 className="font-bold text-xs uppercase text-gray-500 mb-2">إعدادات القسم الأمامي (Hero)</h5>
-                  <div className="space-y-3">
-                    <div>
-                         <label className="text-xs text-gray-400 block mb-1">العبارة المصغرة العلوية</label>
-                         <input 
-                           type="text" 
-                           onClick={(e) => {
-                             const newVal = prompt('تحديث العبارة العلوية:', settings?.heroMiniAlertAr || 'اصدارات الموسم الجديد متوفرة الآن حصرية');
-                             if (newVal !== null) {
-                               handleSaveSetting('heroMiniAlertAr', newVal);
-                             }
-                           }}
-                           readOnly
-                           value={settings?.heroMiniAlertAr || 'اصدارات الموسم الجديد متوفرة الآن حصرية'}
-                           className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-[#c5a059]" 
-                         />
+                <p className="text-gray-400 text-xs">صممي سلايدر الواجهة الرئيسية بالفيديو أو الصور، وعدلي المسميات وأزرار التنقل والترتيب لتعكس علامتك الفخمة.</p>
+
+                <div className="space-y-6">
+                  {bannersList.map((banner, idx) => (
+                    <div key={banner.id || idx} className="bg-white border border-gray-150 rounded-2xl p-5 space-y-4 shadow-xs relative">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-3 border-gray-100 gap-2">
+                        <span className="font-serif font-semibold text-xs text-gray-700">شريحة البانر الرئيسية #{idx + 1}</span>
+                        <div className="flex items-center gap-3">
+                          {/* Active Selector */}
+                          <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-gray-500">
+                            <input
+                              type="checkbox"
+                              checked={banner.active !== false}
+                              onChange={(e) => {
+                                const checkedVal = e.target.checked;
+                                setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, active: checkedVal } : b));
+                              }}
+                              className="rounded border-gray-300 text-pink-500 focus:ring-pink-300 w-3.5 h-3.5 cursor-pointer"
+                            />
+                            <span>نشطة ومعلنة</span>
+                          </label>
+
+                          {/* Order actions Up/Down */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (idx === 0) return;
+                              const updated = [...bannersList];
+                              const temp = updated[idx];
+                              updated[idx] = updated[idx - 1];
+                              updated[idx - 1] = temp;
+                              setBannersList(updated);
+                            }}
+                            className="bg-gray-50 hover:bg-gray-100 p-1.5 rounded border border-gray-200 text-xs"
+                            title="نقل لأعلى"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (idx === bannersList.length - 1) return;
+                              const updated = [...bannersList];
+                              const temp = updated[idx];
+                              updated[idx] = updated[idx + 1];
+                              updated[idx + 1] = temp;
+                              setBannersList(updated);
+                            }}
+                            className="bg-gray-50 hover:bg-gray-100 p-1.5 rounded border border-gray-200 text-xs"
+                            title="نقل لأسفل"
+                          >
+                            ▼
+                          </button>
+
+                          {/* Delete Item */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (bannersList.length <= 1) return alert('يجب الإبقاء على شريحة واحدة على الأقل بالمعرض لحماية المظهر.');
+                              if (confirm('هل تودين إلقاء واستبعاد هذه الشريحة نهائياً؟')) {
+                                setBannersList(prev => prev.filter((_, i) => i !== idx));
+                              }
+                            }}
+                            className="text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-lg border border-red-200 transition-colors cursor-pointer"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Content Form Block */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Column 1 - Media Asset info */}
+                        <div className="space-y-3 md:col-span-1">
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-gray-500 font-bold block">نوع الملف</label>
+                            <select
+                              value={banner.mediaType || 'image'}
+                              onChange={(e) => {
+                                const selectedType = e.target.value;
+                                setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, mediaType: selectedType } : b));
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-[#0B0B0B]"
+                            >
+                              <option value="image">صورة (Image)</option>
+                              <option value="video">فيديو (Video MP4)</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-gray-500 font-bold block">رابط محتوى البانر</label>
+                            <input
+                              type="text"
+                              value={banner.mediaUrl || ''}
+                              onChange={(e) => {
+                                const inputUrl = e.target.value;
+                                setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, mediaUrl: inputUrl } : b));
+                              }}
+                              placeholder="رابط الصورة أو الفيديو..."
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-[#0B0B0B] outline-none"
+                            />
+                          </div>
+
+                          {/* File Uploader integration */}
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/*,video/*"
+                              id={`banners-file-picker-${idx}`}
+                              className="hidden"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setUploadingMediaFile(true);
+                                const url = await dbService.uploadImage(file);
+                                if (url) {
+                                  setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, mediaUrl: url } : b));
+                                  alert('تم تحميل ميديا البانر بنجاح وتلقيم الشافرة!');
+                                } else {
+                                  alert('فشل الرفع.');
+                                }
+                                setUploadingMediaFile(false);
+                              }}
+                            />
+                            <label
+                              htmlFor={`banners-file-picker-${idx}`}
+                              className="w-full inline-flex items-center justify-center gap-1.5 bg-gray-50 border border-gray-200 hover:border-[#F4B6C2] px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                            >
+                              <Upload size={12} />
+                              {"تحميل واستبدال الميديا الحالية ⚜️"}
+                            </label>
+                          </div>
+
+                          {/* Quick thumbnail Preview */}
+                          {banner.mediaUrl && (
+                            <div className="w-full h-24 rounded-xl overflow-hidden border bg-gray-50 aspect-video relative">
+                              {banner.mediaType === 'video' ? (
+                                <video src={banner.mediaUrl} className="w-full h-full object-cover" muted loop />
+                              ) : (
+                                <img src={banner.mediaUrl} className="w-full h-full object-cover" />
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Column 2 & 3 - Titles and labels */}
+                        <div className="space-y-3 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-gray-500 font-bold block">العنوان العريض المميز Title</label>
+                            <input
+                              type="text"
+                              value={banner.title || ''}
+                              onChange={(e) => {
+                                const valStr = e.target.value;
+                                setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, title: valStr } : b));
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-[#0B0B0B]"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-gray-500 font-bold block">العنوان الفرعي المائل Subtitle</label>
+                            <input
+                              type="text"
+                              value={banner.subtitle || ''}
+                              onChange={(e) => {
+                                const valStr = e.target.value;
+                                setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, subtitle: valStr } : b));
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-[#0B0B0B]"
+                            />
+                          </div>
+
+                          <div className="space-y-1 sm:col-span-2">
+                            <label className="text-[10px] text-gray-500 font-bold block">وصف البانر التعريفي (الفقرة الإجرائية)</label>
+                            <textarea
+                              value={banner.description || ''}
+                              onChange={(e) => {
+                                const valStr = e.target.value;
+                                setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, description: valStr } : b));
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-[#0B0B0B] min-h-[60px]"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-gray-500 font-bold block">نص زر الدعوة للإجراء CTA Button Text</label>
+                            <input
+                              type="text"
+                              value={banner.ctaText || 'تسوقي المجموعة الآن'}
+                              onChange={(e) => {
+                                const valStr = e.target.value;
+                                setBannersList(prev => prev.map((b, i) => i === idx ? { ...b, ctaText: valStr } : b));
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-[#0B0B0B]"
+                            />
+                          </div>
+                        </div>
+
+                      </div>
                     </div>
-                    <div>
-                         <label className="text-xs text-gray-400 block mb-1">العنوان الفرعي (Subtitle)</label>
-                         <input 
-                           type="text" 
-                           onClick={(e) => {
-                             const newVal = prompt('تحديث العنوان الفرعي:', settings?.heroSubtitleAr || 'Where Comfort Meets Elegance');
-                             if (newVal !== null) {
-                               handleSaveSetting('heroSubtitleAr', newVal);
-                             }
-                           }}
-                           readOnly
-                           value={settings?.heroSubtitleAr || 'Where Comfort Meets Elegance'}
-                           className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-[#c5a059]" 
-                         />
-                    </div>
-                    <div>
-                         <label className="text-xs text-gray-400 block mb-1">الوصف أسفل العنوان</label>
-                         <textarea 
-                           onClick={(e) => {
-                             const newVal = prompt('تحديث الوصف:', settings?.heroDescriptionAr || 'مجموعة نوم ولانج وير مصممة خصيصاً...');
-                             if (newVal !== null) {
-                               handleSaveSetting('heroDescriptionAr', newVal);
-                             }
-                           }}
-                           readOnly
-                           value={settings?.heroDescriptionAr || 'مجموعة نوم ولانج وير مصممة خصيصاً لتمنحك الراحة الكاملة والأنوثة المستحقة تليق بك وبأدق تفاصيل ليلتك الهادئة والراقية بأرقى الخامات الإيطالية.'}
-                           className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-[#c5a059] min-h-[80px]" 
-                         />
-                    </div>
+                  ))}
+                  
+                  {/* Append new banner slide button */}
+                  <div className="flex justify-start">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBannersList(prev => [
+                          ...prev,
+                          {
+                            id: `banner-${Date.now()}`,
+                            mediaUrl: 'https://images.unsplash.com/photo-1631857455684-a54a2f03665f?auto=format&fit=crop&q=80&w=1200',
+                            title: 'SULTA COUTURE',
+                            subtitle: 'Luxury Loungewear Choice',
+                            description: 'صُنعت تصاميمنا الفاخرة لتغمر تفاصيل ليلتك بالنعومة الساحرة والترف والجمال.',
+                            ctaText: 'تسوقي الآن',
+                            mediaType: 'image',
+                            active: true
+                          }
+                        ]);
+                        alert('تم إدراج شريحة إضافية جديدة لمجموعتك! يمكنك ملء تفاصيلها وحفظ وتحديث السلايدر.');
+                      }}
+                      className="px-5 py-2 bg-white border border-gray-200 text-[#0B0B0B] hover:text-[#F4B6C2] rounded-xl text-xs font-semibold hover:border-pink-300 transition-colors select-none"
+                    >
+                      ➕ إضافة شريحة إعلانية جديدة للسلايدر
+                    </button>
                   </div>
                 </div>
+              </div>
+
+              {/* 3. BEST SELLERS TITLES THEMING */}
+              <div className="bg-[#FAFAF7] border border-gray-200 rounded-3xl p-6 space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <LayoutTemplate className="text-[#F4B6C2]" size={20} />
+                    <h4 className="font-serif text-lg font-light text-[#0B0B0B]">قسم المنتجات الأكثر مبيعاً (Best Sellers Headers)</h4>
+                  </div>
+                  <button
+                    onClick={handleSaveBestSellersTheme}
+                    disabled={isSavingCMS}
+                    className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#1C1C1E] px-6 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                  >
+                    💾 حفظ عناوين المبيعات
+                  </button>
+                </div>
+                <p className="text-gray-400 text-xs">عدلي عناوين القسم الرئيسي للقطع والمجموعات الأكثر طلباً وجاذبية على الصفحة الأولى للموقع.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center">
-                    <div>
-                      <h5 className="font-bold text-xs uppercase text-gray-500">التشكيلة الجديدة (New Arrivals)</h5>
-                      <span className="text-[10px] text-green-500 font-bold mt-1 block">مرتبط بالمنتجات مباشرة</span>
-                    </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-500 font-bold block">عنوان القسم الرئيسي (بالعربية)</label>
+                    <input
+                      type="text"
+                      value={bestSellersCms.title}
+                      onChange={(e) => setBestSellersCms(prev => ({ ...prev, title: e.target.value }))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-[#0B0B0B] outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-500 font-bold block">العنوان الفرعي الصغير (بالإنجليزية للبراند الفاخر)</label>
+                    <input
+                      type="text"
+                      value={bestSellersCms.subtitle}
+                      onChange={(e) => setBestSellersCms(prev => ({ ...prev, subtitle: e.target.value }))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-[#0B0B0B] outline-none"
+                    />
                   </div>
                 </div>
               </div>
 
               {/* SULTA OFFLINE SEO & CONTENT ENGINE */}
-              <div className="bg-[#FAFAF7] border border-gray-100 rounded-2xl p-6 space-y-4">
+              <div className="bg-[#FAFAF7] border border-gray-150 rounded-2xl p-6 space-y-4">
                 <div className="flex items-center gap-3 mb-2 border-b border-gray-150 pb-4">
                   <div className="w-8 h-8 rounded-lg bg-pink-50 text-pink-500 flex items-center justify-center">
                     <Sparkles size={16} />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-gray-900">محرك المحتوى والـ SEO التلقائي (Offline-First)</h4>
-                    <p className="text-[10px] text-gray-500 font-sans mt-1">توليد نصوص تسويقية فاخرة ومعززات محركات البحث بدون استدعاء واجهات برمجة خارجية.</p>
+                    <h4 className="font-semibold text-sm text-gray-900">محرك المحتوى والـ SEO التلقائي للعلامة (Offline-First)</h4>
+                    <p className="text-[10px] text-gray-500 font-sans mt-0.5">توليد نصوص تسويقية فاخرة ومعززات محركات البحث بدون استدعاء واجهات برمجة خارجية.</p>
                   </div>
                 </div>
 
@@ -2157,7 +2616,7 @@ export default function Dashboard({
                     onClick={() => alert("سيتم توليد وصف للمنتجات والأدلة التعريفية لجميع القطع بناءً على المواصفات الأساسية.")}
                     className="p-3 bg-white border border-gray-200 hover:border-[#DF8A9C] rounded-xl text-right transition-colors cursor-pointer"
                   >
-                    <span className="block text-xs font-bold mb-1">توليد أوصاف المنتجات (Bulk)</span>
+                    <span className="block text-xs font-bold mb-1 col-span-full">توليد أوصاف المنتجات (Bulk)</span>
                     <span className="block text-[9px] text-gray-400 font-sans">توليد الوصف القصير والطويل لكل منتج (عربي/إنجليزي)</span>
                   </button>
 
@@ -2365,7 +2824,7 @@ export default function Dashboard({
                     
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-gray-100">
                       <div>
-                        <h4 className="font-serif text-sm font-bold text-[#0B0B0B]">سجل أرشفة وجرد الـ SEO لجميع قطع سولتا</h4>
+                        <h4 className="font-serif text-sm font-bold text-[#0B0B0B]">سجل أرشفة وجرد الـ SEO لجميع قطع Sulta</h4>
                         <p className="text-gray-400 text-[10px] font-sans mt-0.5">افحصي أو صححي يدوياً جميع العناوين المكتوبة، الأوصاف، الكلمات المستهدفة والترميز الهيكلي.</p>
                       </div>
 
@@ -2943,6 +3402,318 @@ export default function Dashboard({
                 </div>
               )}
 
+            </div>
+          )}
+
+          {activeMenu === 'categories' && (
+            <div className="space-y-8 animate-fade-in-rapid" dir="rtl">
+              <div className="border-b border-gray-150 pb-4">
+                <h3 className="font-serif text-2xl font-light text-[#0B0B0B] flex items-center gap-2">
+                  <LayoutTemplate className="text-[#F4B6C2]" size={24} />
+                  إدارة الأقسام والتصنيفات للعلامة الفاخرة (Categories)
+                </h3>
+                <p className="text-gray-400 text-xs mt-1">أضيفي أو عدلي أقسام بيجامات الحرير، سليب وير، واللانج وير المعروضة على المتجر.</p>
+              </div>
+
+              {/* Form to Create Category */}
+              <form onSubmit={handleCreateCategory} className="bg-[#FAFAF7] border border-gray-200 rounded-3xl p-6 space-y-4">
+                <h4 className="font-serif text-sm font-semibold text-gray-800">إضافة قسم منزلي فاخر جديد</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم القسم (مثال: ملابس الحرير الفاخرة)</label>
+                    <input
+                      type="text"
+                      value={newCatName}
+                      onChange={(e) => setNewCatName(e.target.value)}
+                      placeholder="بيجامات نوم قطنية.."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">رمز العنوان Slug (بالإنكليزية - مثال: silk-satin)</label>
+                    <input
+                      type="text"
+                      value={newCatSlug}
+                      onChange={(e) => setNewCatSlug(e.target.value)}
+                      placeholder="silk-satin"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">صورة واجهة القسم أو البانر المرجعي</label>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <input
+                      type="text"
+                      value={newCatImage}
+                      onChange={(e) => setNewCatImage(e.target.value)}
+                      placeholder="رابط الصورة المباشر أو ارفعي ملفاً..."
+                      className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] outline-none"
+                    />
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="cat-image-file"
+                        onChange={handleCatImageUpload}
+                        className="hidden"
+                      />
+                      <label 
+                        htmlFor="cat-image-file"
+                        className="inline-flex items-center gap-1.5 justify-center bg-white border border-gray-200 text-[#0B0B0B] hover:text-[#F4B6C2] px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                      >
+                        <Upload size={14} />
+                        {uploadingCatImage ? 'جاري رفع الملف...' : 'تحميل صورة القسم ⚜️'}
+                      </label>
+                    </div>
+                  </div>
+                  {newCatImage && (
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 mt-2">
+                      <img src={newCatImage} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="bg-[#0B0B0B] hover:bg-[#1C1C1E] text-[#F6E7A6] hover:text-white px-8 py-2.5 rounded-xl text-xs font-bold transition-all hover:scale-102"
+                  >
+                    تفعيل وإطلاق القسم الجديد ✨
+                  </button>
+                </div>
+              </form>
+
+              {/* Category Grid Card Shelf */}
+              <div className="space-y-4">
+                <h4 className="font-serif text-sm font-semibold text-gray-800">الأقسام الحالية المعلنة على المتجر ({categories.length})</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {categories.map((cat) => (
+                    <div key={cat.id} className="group bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between h-64 relative">
+                      <img 
+                        src={cat.imageUrl} 
+                        alt={cat.name} 
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-75"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
+                      
+                      <div className="absolute top-4 right-4 z-20">
+                        <button
+                          onClick={() => handleDeleteCategory(cat.id)}
+                          className="bg-black/80 hover:bg-red-600 text-white hover:text-white p-2.5 rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+
+                      <div className="relative z-20 mt-auto p-5 text-white select-none">
+                        <span className="text-[10px] uppercase font-mono tracking-widest text-[#F6E7A6] block mb-1">ID: {cat.id}</span>
+                        <h5 className="font-serif text-lg font-light tracking-wide">{cat.name}</h5>
+                        <p className="text-[10px] text-gray-300 font-sans mt-0.5">Slug Link: /{cat.slug}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeMenu === 'collections' && (
+            <div className="space-y-8 animate-fade-in-rapid" dir="rtl">
+              <div className="border-b border-gray-150 pb-4">
+                <h3 className="font-serif text-2xl font-light text-[#0B0B0B] flex items-center gap-2">
+                  <Palette className="text-[#F4B6C2]" size={24} />
+                  إدارة المجموعات الحصرية والتشكيلات الحالية للعلامة (Collections)
+                </h3>
+                <p className="text-gray-400 text-xs mt-1">نظم المنتجات في مجموعات مخصصة تظهر للعملاء بشكل منفصل ومميز.</p>
+              </div>
+
+              {/* Form to Create Collection */}
+              <form onSubmit={handleCreateCollection} className="bg-[#FAFAF7] border border-gray-200 rounded-3xl p-6 space-y-4">
+                <h4 className="font-serif text-sm font-semibold text-gray-800">صياغة تشكيلة أو ألبوم مبيعات جديد</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم التشكيلة (مثال: طاقم استرخاء الحرير الأرجواني)</label>
+                    <input
+                      type="text"
+                      value={newColName}
+                      onChange={(e) => setNewColName(e.target.value)}
+                      placeholder="تشكيلة العرائس دبي 2026..."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">وصف موجز للمجموعة الحصرية</label>
+                    <input
+                      type="text"
+                      value={newColDesc}
+                      onChange={(e) => setNewColDesc(e.target.value)}
+                      placeholder="أرقى تصاميم التول المزين بالدانتيل الحريري اللامع..."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">الصورة الرئيسية لألبوم التشكيلة</label>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <input
+                      type="text"
+                      value={newColImage}
+                      onChange={(e) => setNewColImage(e.target.value)}
+                      placeholder="رابط الصورة أو ارفعي ملفاً لمخدم سوبابيس..."
+                      className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] outline-none"
+                    />
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="col-image-file"
+                        onChange={handleColImageUpload}
+                        className="hidden"
+                      />
+                      <label 
+                        htmlFor="col-image-file"
+                        className="inline-flex items-center gap-1.5 justify-center bg-white border border-gray-200 text-[#0B0B0B] hover:text-[#F4B6C2] px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                      >
+                        <Upload size={14} />
+                        {uploadingColImage ? 'جاري رفع الملف...' : 'تحميل صورة التشكيلة ⚜️'}
+                      </label>
+                    </div>
+                  </div>
+                  {newColImage && (
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 mt-2">
+                      <img src={newColImage} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="bg-[#0B0B0B] hover:bg-[#1C1C1E] text-[#F6E7A6] hover:text-white px-8 py-2.5 rounded-xl text-xs font-bold transition-all hover:scale-102"
+                  >
+                    حفظ وإشهار المجموعة الملكية ⚜️
+                  </button>
+                </div>
+              </form>
+
+              {/* Collections Grid Shelf */}
+              <div className="space-y-4">
+                <h4 className="font-serif text-sm font-semibold text-gray-800">الألبومات الحالية النشطة ({collections.length})</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {collections.map((col) => (
+                    <div key={col.id} className="group bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between h-72 relative">
+                      <img 
+                        src={col.imageUrl} 
+                        alt={col.name} 
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-102 transition-transform duration-700 brightness-75"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10" />
+                      
+                      <div className="absolute top-4 right-4 z-20">
+                        <button
+                          onClick={() => handleDeleteCollection(col.id)}
+                          className="bg-black/80 hover:bg-red-600 text-white hover:text-white p-2.5 rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+
+                      <div className="relative z-20 mt-auto p-6 text-white select-none">
+                        <span className="text-[10px] uppercase font-mono tracking-widest text-[#F6E7A6] block mb-1">COLLECTION CODE: {col.id}</span>
+                        <h5 className="font-serif text-2xl font-light tracking-wide">{col.name}</h5>
+                        {col.description && <p className="text-xs text-gray-300 font-sans mt-1 max-w-md leading-relaxed">{col.description}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeMenu === 'media' && (
+            <div className="space-y-8 animate-fade-in-rapid" dir="rtl">
+              <div className="border-b border-gray-150 pb-4">
+                <h3 className="font-serif text-2xl font-light text-[#0B0B0B] flex items-center gap-2">
+                  <Upload className="text-[#F4B6C2]" size={24} />
+                  مكتبة الوسائط والملفات لعلامة SULTA المرئية (Media Library)
+                </h3>
+                <p className="text-gray-400 text-xs mt-1">رفع الصور والملفات وحفظها في سوبابيس لتسهيل استعمالها بالمنتجات والبانرات الحركية.</p>
+              </div>
+
+              {/* Mass Media Drag & Drop simulator uploader box */}
+              <div className="border-2 border-dashed border-gray-200 rounded-3xl p-8 bg-[#FAFAF7] text-center hover:border-[#F4B6C2] transition-colors relative">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,video/*"
+                  id="media-mass-file"
+                  onChange={handleMediaAssetUpload}
+                  className="hidden"
+                />
+                <label htmlFor="media-mass-file" className="cursor-pointer block space-y-4">
+                  <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center border text-[#F4B6C2] mx-auto shadow-xs">
+                    <Upload size={24} className="animate-bounce" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif text-sm font-semibold text-gray-800">تحميل ملفات صور أو عروض فيديو دفعة واحدة</h4>
+                    <p className="text-gray-400 text-xs mt-1">اضغط للتصفح من حاسوبك، سيتم الرفع آلياً لمسرعات سوبابيس وسيرفرات التخزين الفوري.</p>
+                  </div>
+                  <span className="inline-block px-5 py-2 rounded-xl bg-white border border-gray-200 text-xs text-[#0B0B0B] hover:text-[#F4B6C2] font-semibold transition-colors">
+                    {uploadingMediaFile ? 'تحميل ومعالجة الملفات...' : 'تصفح ورفع الملفات الآن'}
+                  </span>
+                </label>
+              </div>
+
+              {/* Saved Media Grid */}
+              <div className="space-y-4">
+                <h4 className="font-serif text-sm font-semibold text-gray-800">الملفات والصور المتاحة للنسخ والتوظيف ({mediaAssets.length})</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-5">
+                  {mediaAssets.map((assetUrl, idx) => (
+                    <div key={idx} className="group bg-white rounded-2xl overflow-hidden border border-gray-150 p-2 flex flex-col justify-between h-56 hover:shadow-md transition-all relative">
+                      <div className="w-full h-36 bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
+                        {assetUrl.endsWith('.mp4') ? (
+                          <video src={assetUrl} className="w-full h-full object-cover" controls />
+                        ) : (
+                          <img src={assetUrl} className="w-full h-full object-cover animate-fade-in" />
+                        )}
+                      </div>
+                      
+                      <div className="pt-2 flex items-center justify-between gap-1.5 select-none">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(assetUrl);
+                            alert('تم نسخ رابط الملف الفاخر بنجاح! يمكنك الآن لصقه في صور المعرض أو البانرات ⚜️');
+                          }}
+                          className="bg-black hover:bg-[#1C1C1E] text-[#F6E7A6] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 w-full text-center justify-center cursor-pointer transition-colors"
+                        >
+                          <Link size={12} />
+                          <span>نسخ الرابط</span>
+                        </button>
+                        
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm('هل ترغبين في إزالة هذا الملف من المعرض المؤقت للذاكرة؟')) {
+                              setMediaAssets(prev => prev.filter(item => item !== assetUrl));
+                            }
+                          }}
+                          className="bg-red-50 hover:bg-red-100 text-red-500 p-1.5 rounded-lg border border-red-200 cursor-pointer transition-colors"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

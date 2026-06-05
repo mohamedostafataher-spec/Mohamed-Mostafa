@@ -144,7 +144,7 @@ At SULTA, we believe sleepwear is the most precious garment a woman wears in her
 
   // --- FAQ & Schema ---
   const faqs = [
-    { q: "ما هي خامات هذا المنتج؟", a: `يتم تصنيع ${nameAr} من ${fabricAr} الفاخر المخصص لماركة سولتا.` },
+    { q: "ما هي خامات هذا المنتج؟", a: `يتم تصنيع ${nameAr} من ${fabricAr} الفاخر المخصص لماركة Sulta.` },
     { q: "هل يتوفر شحن للسعودية؟", a: "نعم، نشحن لجميع مدن المملكة العربية السعودية ومصر مع توفير خدمة الدفع عند الاستلام." },
     { q: "كيف أختار المقاس المناسب؟", a: "يمكنكِ استخدام حاسبة المقاسات الذكية في صفحة المنتج لضمان الملاءمة المثالية." }
   ];
@@ -174,7 +174,7 @@ At SULTA, we believe sleepwear is the most precious garment a woman wears in her
       keywords: keywordsAr,
       shortDescription: shortDescriptionAr,
       fullDescription: fullDescriptionAr,
-      altText: `طقم ${nameAr} من سولتا - ملابس نوم فاخرة`
+      altText: `طقم ${nameAr} من Sulta - ملابس نوم فاخرة`
     },
     en: {
       seoTitle: seoTitleEn,
