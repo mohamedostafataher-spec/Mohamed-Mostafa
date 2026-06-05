@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
@@ -35,9 +36,9 @@ async function startServer() {
     }
 
     try {
-      // Using gemini-2.5-flash-image for standard image generation as per skill guidelines
+      // Using gemini-2.0-flash which is the recommended model for Interactions
       const interaction = await ai.interactions.create({
-        model: 'gemini-2.5-flash-image',
+        model: 'gemini-2.0-flash',
         input: "A high-end, luxury close-up of folded silk satin sleepwear in a soft champagne color, with an elegant rose gold SULTA logo visible on a ribbon, cinematic lighting, 8k resolution, minimalist aesthetic.",
         response_modalities: ['image'],
         generation_config: {
@@ -76,14 +77,75 @@ async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: "spa",
+      appType: "custom", // Use 'custom' to handle the main HTML response manually
     });
+    
     app.use(vite.middlewares);
+
+    // Dynamic SEO middleware for development
+    app.use("*", async (req, res, next) => {
+      const url = req.originalUrl;
+      // Skip API if not handled by previous routes, and skip anything that looks like a file
+      if (url.startsWith('/api') || url.includes('.')) {
+        return next();
+      }
+
+      try {
+        const indexPath = path.resolve(__dirname, 'index.html');
+        if (!fs.existsSync(indexPath)) {
+           console.error("index.html not found in dev at:", indexPath);
+           return next();
+        }
+        
+        let html = fs.readFileSync(indexPath, 'utf-8');
+        // Transform the index.html for Vite features (client script injection)
+        html = await vite.transformIndexHtml(url, html);
+        
+        const seo = {
+          title: "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة",
+          description: "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من الساتان الإيطالي والحرير الطبيعي. تجربة ملكية تبدأ من اختيارك.",
+          image: "/src/assets/images/hero_sleepwear_luxury_1780620325112.png"
+        };
+
+        const finalHtml = html
+          .replace(/__TITLE__/g, seo.title)
+          .replace(/__DESCRIPTION__/g, seo.description)
+          .replace(/__IMAGE__/g, seo.image);
+          
+        res.status(200).set({ 'Content-Type': 'text/html' }).end(finalHtml);
+      } catch (e) {
+        vite.ssrFixStacktrace(e as Error);
+        next(e);
+      }
+    });
+
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, { index: false }));
+    
     app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      try {
+        const indexPath = path.join(distPath, 'index.html');
+        if (!fs.existsSync(indexPath)) {
+          return res.status(404).send("Index file not found");
+        }
+        let html = fs.readFileSync(indexPath, 'utf-8');
+        
+        const seo = {
+          title: "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة",
+          description: "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من الساتان الإيطالي والحرير الطبيعي. تجربة ملكية تبدأ من اختيارك.",
+          image: "/src/assets/images/hero_sleepwear_luxury_1780620325112.png"
+        };
+
+        const finalHtml = html
+          .replace(/__TITLE__/g, seo.title)
+          .replace(/__DESCRIPTION__/g, seo.description)
+          .replace(/__IMAGE__/g, seo.image);
+          
+        res.status(200).set({ 'Content-Type': 'text/html' }).send(finalHtml);
+      } catch (e) {
+        res.status(500).send("Error loading page");
+      }
     });
   }
 

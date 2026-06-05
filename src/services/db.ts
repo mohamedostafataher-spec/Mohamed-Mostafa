@@ -1172,4 +1172,64 @@ export const dbService = {
     await dbService.logActivity('SAVE_CUSTOMER', `Saved customer ${customer.email || customer.id}`);
   },
 
+  // Seed Data if DB is empty
+  seedInitialData: async (): Promise<void> => {
+    try {
+      const { count } = await supabase.from('products').select('*', { count: 'exact', head: true });
+      if (count === 0) {
+        console.log("DB is empty, seeding initial boutique data...");
+        // Seed Categories
+        for (const cat of MOCK_BOUTIQUE_CATEGORIES) {
+          await dbService.saveCategory(cat);
+        }
+        // Seed Products
+        for (const prod of MOCK_BOUTIQUE_PRODUCTS) {
+          await dbService.saveProduct(prod);
+        }
+        // Seed Settings
+        await dbService.updateSettings({
+          siteName: 'SULTA ATELIER',
+          promoBannerAr: 'خصم ٢٠٪ بمناسبة الافتتاح - ابدئي رحلتك الملكية اليوم',
+          heroSubtitleAr: 'THE SOFTEST LIFE',
+          heroDescriptionAr: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',
+          whatsapp: '+966500000000',
+          instagram: 'sulta.atelier',
+          defaultShippingFee: 35
+        });
+        
+        // Seed Features Section
+        const featuresContent = {
+          qualities: [
+            { title: 'شحن ملكي فائق السرعة', desc: 'توصيل مخصص لباب المنزل مغلّف بصندوق هدايا أسود ووردي فاخر بعناية.' },
+            { title: 'سداد مشفر آمن بالكامل', desc: 'ندعم بوابات دفع Apple Pay وSTC Pay ومدى والفيزا وفوري بكل سلاسة.' },
+            { title: 'خامات إيطالية وعضوية عريقة', desc: 'ساتان معالج حرارياً بنعومة تضاهي الغيوم، قطن مصري نقي طويل التيلة.' }
+          ],
+          unboxing: {
+            title: 'تجربة فتح الصندوق الملكي',
+            description: '"لأنكِ لستِ مجرد عميلة، بل ملكة متوجة في مملكتك الخاصة.. صممنا بكج SULTA ليمنحكِ شعور الفخامة منذ اللحظة الأولى لوصوله."',
+            bullet1: 'تغليف حريري يحمي رقة الملابس الملكية',
+            bullet2: 'عطر الدار الفاخر يفوح مع كل قطعة'
+          }
+        };
+        await dbService.saveHomepageSection('features_list', featuresContent);
+
+        // Seed Hero Banners
+        const heroContent = {
+          banners: [
+            {
+              mediaUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png',
+              title: 'BECAUSE YOU DESERVE',
+              subtitle: 'THE SOFTEST LIFE',
+              description: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',
+              ctaText: 'DISCOVER THE COLLECTION | اكتشفي المجموعة',
+              active: true
+            }
+          ]
+        };
+        await dbService.saveHomepageSection('hero_banners', heroContent);
+      }
+    } catch (err) {
+      console.error("Seeding failed:", err);
+    }
+  },
 };

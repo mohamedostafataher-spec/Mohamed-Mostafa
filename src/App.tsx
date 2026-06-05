@@ -138,6 +138,9 @@ function AppContent() {
 
     const initData = async () => {
       try {
+        // Seed initial data if needed
+        await dbService.seedInitialData();
+        
         // Auth Session Sync
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
@@ -717,41 +720,8 @@ function AppContent() {
               </div>
             </section>
 
-            {/* TRUST BUILDING BADGES */}
-            <section className="py-12 bg-[#FAF5F0] border-t border-[#A44C5C]/10 border-b">
-              <div className="max-w-7xl mx-auto px-4">
-                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-[#A44C5C]/10">
-                    <div className="px-4 flex items-center justify-center gap-4">
-                       <ShieldCheck className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
-                       <div className="text-left">
-                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Secure Checkout</h5>
-                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Your data is protected</p>
-                       </div>
-                    </div>
-                    <div className="px-4 flex items-center justify-center gap-4">
-                       <Globe className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
-                       <div className="text-left">
-                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Worldwide Shipping</h5>
-                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Fast & reliable delivery</p>
-                       </div>
-                    </div>
-                    <div className="px-4 flex items-center justify-center gap-4">
-                       <Star className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
-                       <div className="text-left">
-                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Premium Quality</h5>
-                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Designed for comfort</p>
-                       </div>
-                    </div>
-                    <div className="px-4 flex items-center justify-center gap-4">
-                       <Heart className="text-[#A44C5C] shrink-0" size={32} strokeWidth={1} />
-                       <div className="text-left">
-                          <h5 className="font-serif text-sm text-[#0B0B0B] uppercase tracking-wider">Made With Love</h5>
-                          <p className="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">For your best moments</p>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-            </section>
+            {/* FEATURES & UNBOXING (DYNAMIC FROM SUPABASE) */}
+            <Features homepageSections={homepageSections} />
 
             {/* NEWSLETTER JOIN SECTION */}
             <section className="py-24 bg-[#0B0B0B] text-[#FAF5F0]">

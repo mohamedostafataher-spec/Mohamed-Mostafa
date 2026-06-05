@@ -9,6 +9,7 @@ import AdminInventory from './AdminInventory';
 import AdminCoupons from './AdminCoupons';
 import AdminActivityLogs from './AdminActivityLogs';
 import AdminPromotions from './AdminPromotions';
+import AdminHomepage from './AdminHomepage';
 
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
@@ -87,7 +88,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
@@ -1162,13 +1163,13 @@ export default function Dashboard({
             </button>
 
             <button
-              onClick={() => setActiveMenu('content')}
+              onClick={() => setActiveMenu('homepage')}
               className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
-                activeMenu === 'content' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
+                activeMenu === 'homepage' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
               }`}
             >
               <LayoutTemplate size={16} />
-              <span>إدارة المحتوى (CMS)</span>
+              <span>إدارة محتوى الواجهة (CMS)</span>
             </button>
 
             <button
@@ -2656,6 +2657,13 @@ export default function Dashboard({
               </div>
             );
           })()}
+
+
+          {activeMenu === 'homepage' && (
+            <div className="space-y-8 animate-fade-in-rapid" dir="rtl">
+              <AdminHomepage />
+            </div>
+          )}
 
           {activeMenu === 'content' && (
             <div className="space-y-8 animate-fade-in-rapid" dir="rtl">

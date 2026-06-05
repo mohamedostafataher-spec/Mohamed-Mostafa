@@ -1,9 +1,17 @@
 import React from 'react';
-import { Truck, ShieldCheck, RefreshCw, Globe, Sparkles, HeartHandshake } from 'lucide-react';
+import { Truck, ShieldCheck, RefreshCw, Globe, Sparkles, HeartHandshake, Heart } from 'lucide-react';
 import RibbonBowDivider from './RibbonBowDivider';
 
-export default function Features() {
-  const qualities = [
+interface FeaturesProps {
+  homepageSections?: any[];
+}
+
+export default function Features({ homepageSections = [] }: FeaturesProps) {
+  // Parse dynamic features from Supabase
+  const featuresSection = homepageSections.find(s => s.section_key === 'features_list');
+  const dynamicContent = featuresSection?.content_json;
+
+  const defaultQualities = [
     {
       icon: <Truck size={22} className="text-[#A44C5C]" />,
       title: 'شحن ملكي فائق السرعة',
@@ -36,6 +44,18 @@ export default function Features() {
     }
   ];
 
+  const qualities = dynamicContent?.qualities?.map((q: any, idx: number) => ({
+    ...q,
+    icon: defaultQualities[idx % defaultQualities.length].icon
+  })) || defaultQualities;
+
+  const unboxing = dynamicContent?.unboxing || {
+    title: 'تجربة فتح الصندوق الملكي',
+    description: '"لأنكِ لستِ مجرد عميلة، بل ملكة متوجة في مملكتك الخاصة.. صممنا بكج SULTA ليمنحكِ شعور الفخامة منذ اللحظة الأولى لوصوله."',
+    bullet1: 'تغليف حريري يحمي رقة الملابس الملكية',
+    bullet2: 'عطر الدار الفاخر يفوح مع كل قطعة'
+  };
+
   return (
     <section className="bg-[#FAF4F5] py-16 border-y border-[#DF8A9D]/15 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,7 +70,7 @@ export default function Features() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
-          {qualities.map((item, idx) => (
+          {qualities.map((item: any, idx: number) => (
             <div
               key={idx}
               className="group flex flex-col items-center text-center p-6 bg-white rounded-3xl transition-all duration-300 border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 hover:shadow-lg hover:scale-[1.01] cursor-default"
@@ -77,18 +97,18 @@ export default function Features() {
                 ✦ Unboxing the Dream ✦
               </span>
               <h3 className="font-serif text-3xl md:text-5xl text-[#0B0B0B] font-light leading-tight">
-                تجربة فتح الصندوق الملكي
+                {unboxing.title}
               </h3>
               <p className="text-gray-500 text-sm md:text-base leading-relaxed font-serif italic">
-                "لأنكِ لستِ مجرد عميلة، بل ملكة متوجة في مملكتك الخاصة.. صممنا بكج SULTA ليمنحكِ شعور الفخامة منذ اللحظة الأولى لوصوله."
+                {unboxing.description}
               </p>
               <ul className="space-y-4 pt-4">
                 <li className="flex items-center gap-3 justify-end text-[#0B0B0B] text-sm font-medium">
-                  <span>تغليف حريري يحمي رقة الملابس الملكية</span>
+                  <span>{unboxing.bullet1}</span>
                   <div className="w-1.5 h-1.5 rounded-full bg-[#DF8A9D]" />
                 </li>
                 <li className="flex items-center gap-3 justify-end text-[#0B0B0B] text-sm font-medium">
-                  <span>عطر الدار الفاخر يفوح مع كل قطعة</span>
+                  <span>{unboxing.bullet2}</span>
                   <div className="w-1.5 h-1.5 rounded-full bg-[#DF8A9D]" />
                 </li>
               </ul>
