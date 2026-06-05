@@ -27,10 +27,7 @@ import { recordView, recordCartAddition } from './utils/analytics';
 
 // @ts-ignore
 import sultaBoxClosed from './assets/images/sulta_box_closed_1780609086750.png';
-// @ts-ignore
 import sultaBoxOpen from './assets/images/sulta_box_open_1780609104306.png';
-// @ts-ignore
-import sultaBoxesStack from './assets/images/sulta_boxes_stack_1780609121411.png';
 
 export default function App() {
   return (
@@ -53,8 +50,7 @@ function AppContent() {
 
   const boxImages = [
     { url: sultaBoxClosed, title: 'الصندوق الملكي المغلق' },
-    { url: sultaBoxOpen, title: 'الفخامة من الداخل' },
-    { url: sultaBoxesStack, title: 'تشكيلة صناديق الهدايا' }
+    { url: sultaBoxOpen, title: 'الفخامة من الداخل' }
   ];
 
   // Optimized Splash Loading Timer
@@ -555,7 +551,7 @@ function AppContent() {
               const bannerSection = homepageSections.find(s => s.section_key === 'middle_banner');
               const bannerData = bannerSection?.content_json || {
                 active: true,
-                imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=1200',
+                imageUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png',
                 subtitle: 'Because You Deserve',
                 title: 'THE SOFTEST LIFE',
                 buttonText: 'SHOP THE COLLECTION'

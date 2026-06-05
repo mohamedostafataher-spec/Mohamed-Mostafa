@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2 } from 'lucide-react';
 import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection } from '../types';
 import { dbService, supabase } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
@@ -102,6 +102,16 @@ export default function Dashboard({
   const [newProdDescAr, setNewProdDescAr] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [editProdNameAr, setEditProdNameAr] = useState('');
+  const [editProdNameEn, setEditProdNameEn] = useState('');
+  const [editProdPriceEG, setEditProdPriceEG] = useState(0);
+  const [editProdPriceSA, setEditProdPriceSA] = useState(0);
+  const [editProdStock, setEditProdStock] = useState(0);
+  const [editProdDescAr, setEditProdDescAr] = useState('');
+  const [editProdVideo, setEditProdVideo] = useState('');
+  const [editProdImages, setEditProdImages] = useState<string[]>([]);
+  const [uploadingEditImage, setUploadingEditImage] = useState(false);
 
   // CMS States
   const [bannerText, setBannerText] = useState(settings?.promoBannerAr || '✨ شحن ملكي مجاني وسريع للمملكة ومصر ✨ جودة تليق بكِ');
@@ -125,10 +135,9 @@ export default function Dashboard({
 
   // Media Library Assets
   const [mediaAssets, setMediaAssets] = useState<string[]>([
-    "https://images.unsplash.com/photo-1631857455684-a54a2f03665f?auto=format&fit=crop&q=80&w=1200",
-    "https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=1200",
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800"
+    "/src/assets/images/hero_sleepwear_luxury_1780620325112.png",
+    "/src/assets/images/sulta_box_closed_1780609086750.png",
+    "/src/assets/images/sulta_box_open_1780609104306.png"
   ]);
   const [uploadingMediaFile, setUploadingMediaFile] = useState(false);
 
@@ -150,7 +159,7 @@ export default function Dashboard({
       setBannersList([
         { 
           id: 'slide-1',
-          mediaUrl: 'https://images.unsplash.com/photo-1631857455684-a54a2f03665f?auto=format&fit=crop&q=80&w=1200', 
+          mediaUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png', 
           title: 'SULTA',
           subtitle: 'Where Comfort Meets Elegance',
           description: 'مجموعة بيجامات نوم ولانج وير مصممة خصيصاً لتمنحك الراحة الكاملة والأنوثة المستحقة تليق بك وبأدق تفاصيل ليلتك الهادئة والراقية بأرقى الخامات المرموقة.',
@@ -160,7 +169,7 @@ export default function Dashboard({
         },
         { 
           id: 'slide-2',
-          mediaUrl: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=1200', 
+          mediaUrl: '/src/assets/images/sulta_box_closed_1780609086750.png', 
           title: 'SLEEPWEAR',
           subtitle: 'Exquisite Silk Satin Comfort',
           description: 'طواقم فاخرة من الحرير الطبيعي والدانتيل، مصممة بدقة لتلبي أعلى تطلعاتك وتزين خلوتك المنزلية بجمالية ساحرة.',
@@ -546,16 +555,24 @@ export default function Dashboard({
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setUploadingImage(true);
-    const url = await dbService.uploadImage(file);
-    if (url) {
-      setTempImageUrl(url);
-      setMediaAssets(prev => [url, ...prev]);
+    let successUrls: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const url = await dbService.uploadImage(files[i]);
+      if (url) {
+        successUrls.push(url);
+        setMediaAssets(prev => [url, ...prev]);
+      }
+    }
+
+    if (successUrls.length > 0) {
+      setUploadedImages(prev => [...prev, ...successUrls]);
+      setTempImageUrl(successUrls[0]);
     } else {
-      alert('خطأ: راجع التخزين في Supabase');
+      alert('خطأ في الرفع لكافة الصور المحددة في سوبابيس');
     }
     setUploadingImage(false);
   };
@@ -675,7 +692,7 @@ export default function Dashboard({
       id: `CAT-${slug.toUpperCase()}`,
       name: newCatName,
       slug: slug,
-      imageUrl: newCatImage || 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633'
+      imageUrl: newCatImage || '/src/assets/images/hero_sleepwear_luxury_1780620325112.png'
     };
     try {
       await dbService.saveCategory(newCat);
@@ -695,7 +712,7 @@ export default function Dashboard({
       id: `COL-${Math.floor(100 + Math.random() * 900)}`,
       name: newColName,
       description: newColDesc,
-      imageUrl: newColImage || 'https://images.unsplash.com/photo-1612817288484-6f916006741a'
+      imageUrl: newColImage || '/src/assets/images/sulta_box_closed_1780609086750.png'
     };
     try {
       await dbService.saveCollection(newCol);
@@ -738,7 +755,7 @@ export default function Dashboard({
       fabricAr: 'ساتان إيطالي ناعم وحريري مخملي',
       fabricEn: 'Silky Fine Italian Thread blend',
       washInstructionsAr: 'غسيل يدوي أو غسيل جاف فقط، لا تستخدمي المبيضات لتألق يدوم طويلاً.',
-      images: tempImageUrl ? [tempImageUrl] : ['https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=800'],
+      images: uploadedImages.length > 0 ? uploadedImages : (tempImageUrl ? [tempImageUrl] : ['/src/assets/images/hero_sleepwear_luxury_1780620325112.png']),
       video: newProdVideo.trim() || undefined,
       colors: [
         { name: 'وردي ناعم', hex: '#F4B6C2' },
@@ -794,12 +811,66 @@ export default function Dashboard({
       setNewProdDescAr('');
       setNewProdVideo('');
       setTempImageUrl('');
+      setUploadedImages([]);
       alert('تم ضخ القطعة الراقية لـ SULTA وتوليد بيانات الـ SEO ومحركات البحث كاملة بنجاح وتخزينها في سوبابيس!');
     } catch (err) {
       console.error("Failed to insert product in DB:", err);
       setProducts(originalProducts);
       alert('فشل ضخ المنتج إلى سوبابيس. يرجى تكرار المحاولة لاحقاً.');
     }
+  };
+
+  const handleUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    if (!editProdNameAr || !editProdNameEn) return alert('الرجاء تعبئة الأسماء للقطعة الفاخرة.');
+
+    const updatedProduct: Product = {
+      ...editingProduct,
+      nameAr: editProdNameAr,
+      nameEn: editProdNameEn,
+      priceEG: editProdPriceEG,
+      priceSA: editProdPriceSA,
+      stock: editProdStock,
+      descriptionAr: editProdDescAr,
+      video: editProdVideo.trim() || undefined,
+      images: editProdImages.length > 0 ? editProdImages : (editingProduct.images || [])
+    };
+
+    const originalProducts = [...products];
+    setProducts(prev => prev.map(p => p.id === editingProduct.id ? updatedProduct : p));
+
+    try {
+      await dbService.saveProduct(updatedProduct);
+      setEditingProduct(null);
+      alert('تم تحديث القطعة الراقية لـ SULTA وحفظ التغيرات بنجاح في قاعدة البيانات سوبابيس!');
+    } catch (err) {
+      console.error("Failed to update product in DB:", err);
+      setProducts(originalProducts);
+      alert('فشل تحديث القطعة الراقية في سوبابيس. يرجى تكرار المحاولة لاحقاً.');
+    }
+  };
+
+  const handleEditImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingEditImage(true);
+    let successUrls: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const url = await dbService.uploadImage(files[i]);
+      if (url) {
+        successUrls.push(url);
+        setMediaAssets(prev => [url, ...prev]);
+      }
+    }
+
+    if (successUrls.length > 0) {
+      setEditProdImages(prev => [...prev, ...successUrls]);
+    } else {
+      alert('خطأ في الرفع لكافة الصور المحددة في سوبابيس');
+    }
+    setUploadingEditImage(false);
   };
 
   // Coupon actions with real Supabase connection
@@ -2010,25 +2081,48 @@ export default function Dashboard({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-gray-400 block font-bold">صور القطعة والمعرض المرئي *</label>
-                  <div className="flex items-center gap-4">
-                    <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-[#F4B6C2] transition-colors bg-white group">
+                  <label className="text-gray-400 block font-bold">صور القطعة والمعرض المرئي * (يمكنك تحديد صور متعددة)</label>
+                  <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-thin">
+                    <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-[#F4B6C2] transition-colors bg-white group shrink-0">
                       <div className="flex flex-col items-center justify-center">
                         {uploadingImage ? (
                           <div className="w-6 h-6 border-2 border-[#F4B6C2] border-t-transparent rounded-full animate-spin" />
                         ) : (
                           <>
                             <Upload className="w-6 h-6 text-gray-300 group-hover:text-[#F4B6C2] mb-1" />
-                            <p className="text-[8px] text-gray-400">ارفع صورة</p>
+                            <p className="text-[8px] text-gray-400">ارفع صور</p>
                           </>
                         )}
                       </div>
-                      <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} />
+                      <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} multiple />
                     </label>
-                    {tempImageUrl && (
-                      <div className="relative w-32 h-32 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                        <img src={tempImageUrl} className="w-full h-full object-cover" alt="Preview" />
-                        <button onClick={() => setTempImageUrl('')} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+
+                    {uploadedImages.map((imgUrl, srcIdx) => (
+                      <div key={srcIdx} className="relative w-32 h-32 rounded-2xl overflow-hidden border border-gray-150 bg-white shadow-sm shrink-0">
+                        <img src={imgUrl} className="w-full h-full object-cover" alt={`Preview ${srcIdx + 1}`} referrerPolicy="no-referrer" />
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setUploadedImages(prev => prev.filter((_, i) => i !== srcIdx));
+                            if (tempImageUrl === imgUrl) {
+                              setTempImageUrl(uploadedImages.filter((_, i) => i !== srcIdx)[0] || '');
+                            }
+                          }}
+                          className="absolute top-1.5 right-1.5 bg-red-500 hover:bg-red-650 text-white p-1 rounded-full shadow-lg cursor-pointer transition-colors"
+                        >
+                          <Trash2 size={10} />
+                        </button>
+                      </div>
+                    ))}
+
+                    {uploadedImages.length === 0 && tempImageUrl && (
+                      <div className="relative w-32 h-32 rounded-2xl overflow-hidden border border-gray-150 bg-white shadow-sm shrink-0">
+                        <img src={tempImageUrl} className="w-full h-full object-cover" alt="Preview" referrerPolicy="no-referrer" />
+                        <button 
+                          type="button" 
+                          onClick={() => setTempImageUrl('')} 
+                          className="absolute top-1.5 right-1.5 bg-red-500 hover:bg-red-650 text-white p-1 rounded-full shadow-lg cursor-pointer transition-colors"
+                        >
                           <Trash2 size={10} />
                         </button>
                       </div>
@@ -2087,6 +2181,25 @@ export default function Dashboard({
                           <td className="p-3 text-center">
                             <div className="flex items-center justify-center gap-3">
                               <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingProduct(p);
+                                  setEditProdNameAr(p.nameAr);
+                                  setEditProdNameEn(p.nameEn);
+                                  setEditProdPriceEG(p.priceEG);
+                                  setEditProdPriceSA(p.priceSA);
+                                  setEditProdStock(p.stock);
+                                  setEditProdDescAr(p.descriptionAr);
+                                  setEditProdVideo(p.video || '');
+                                  setEditProdImages(p.images || []);
+                                }}
+                                className="text-blue-500 hover:text-[#0B0B0B] text-xs transition-colors cursor-pointer"
+                                title="تعديل تفاصيل القطعة والصور"
+                              >
+                                <Edit2 size={14} className="mx-auto" />
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => {
                                   const content = generateProductContent(p);
                                   alert(`تم توليد نصوص الـ SEO بنجاح:\n\nالعنوان (SEO): ${content.ar.seoTitle}\nالكلمات المفتاحية: ${content.ar.keywords}\nتحديث الوصف (عربي): ${content.ar.shortDescription}\n\nسيتم حفظها في قاعدة البيانات تلقائياً.`);
@@ -2097,6 +2210,7 @@ export default function Dashboard({
                                 <Sparkles size={14} className="mx-auto" />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => handleDeleteProduct(p.id)}
                                 className="text-red-500 hover:text-red-700 text-xs transition-colors"
                                 title="حذف المنتج من المتجر"
@@ -2111,6 +2225,158 @@ export default function Dashboard({
                   </tbody>
                 </table>
               </div>
+
+              {/* SULTA Premium Product Edit Modal */}
+              {editingProduct && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fadeIn">
+                  <div className="bg-[#FAFAF7] border border-gray-200 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl text-right font-sans text-xs space-y-4">
+                    <div className="flex justify-between items-center border-b border-gray-150 pb-3 flex-row-reverse">
+                      <h4 className="text-sm font-serif font-black text-gray-900 flex items-center gap-1.5 flex-row-reverse">
+                        <Edit2 size={14} className="text-[#F4B6C2]" />
+                        تعديل قطعة ونوافذ العرض: {editingProduct.id}
+                      </h4>
+                      <button 
+                        type="button" 
+                        onClick={() => setEditingProduct(null)}
+                        className="text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg text-[10px] cursor-pointer"
+                      >
+                        إغلاق ✕
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleUpdateProduct} className="space-y-4 text-right">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-gray-400 block mb-1">الاسم بالعربية *</label>
+                          <input
+                            type="text"
+                            value={editProdNameAr}
+                            onChange={(e) => setEditProdNameAr(e.target.value)}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="text-gray-400 block mb-1">الاسم بالإنجليزية *</label>
+                          <input
+                            type="text"
+                            value={editProdNameEn}
+                            onChange={(e) => setEditProdNameEn(e.target.value)}
+                            className="w-full border border-gray-200 rounded-lg px-3.5 py-2 bg-white focus:outline-none text-left"
+                            dir="ltr"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-gray-400 block mb-1">السعر في مصر (EGP) *</label>
+                          <input
+                            type="number"
+                            value={editProdPriceEG}
+                            onChange={(e) => setEditProdPriceEG(Number(e.target.value))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="text-gray-400 block mb-1">السعر في السعودية (SAR) *</label>
+                          <input
+                            type="number"
+                            value={editProdPriceSA}
+                            onChange={(e) => setEditProdPriceSA(Number(e.target.value))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="text-gray-400 block mb-1">المستودع والمخزون الحالي *</label>
+                          <input
+                            type="number"
+                            value={editProdStock}
+                            onChange={(e) => setEditProdStock(Number(e.target.value))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-gray-400 block mb-1">الوصف بالعربية للتصاميم المعروضة</label>
+                        <textarea
+                          placeholder="اكتبي مميزات القصة، الدانتيل، الأزرار من أرقى اللؤلؤ..."
+                          value={editProdDescAr}
+                          onChange={(e) => setEditProdDescAr(e.target.value)}
+                          className="w-full border border-gray-200 rounded-lg px-3.5 py-2 bg-white focus:outline-none text-right h-16"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-gray-400 block mb-1">رابط الفيديو (اختياري)</label>
+                        <input
+                          type="text"
+                          placeholder="رابط يوتيوب أو فيديو مباشر mp4..."
+                          value={editProdVideo}
+                          onChange={(e) => setEditProdVideo(e.target.value)}
+                          className="w-full border border-gray-200 rounded-lg px-3.5 py-2 bg-white focus:outline-none text-left"
+                          dir="ltr"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-gray-400 block font-bold">صور المعرض الحالي والجديد (اضف صور جديدة لرفعها لـ Supabase)</label>
+                        <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-thin">
+                          <label className="flex flex-col items-center justify-center w-28 h-28 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-[#F4B6C2] transition-colors bg-white group shrink-0">
+                            <div className="flex flex-col items-center justify-center">
+                              {uploadingEditImage ? (
+                                <div className="w-5 h-5 border-2 border-[#F4B6C2] border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <>
+                                  <Upload className="w-5 h-5 text-gray-300 group-hover:text-[#F4B6C2] mb-1" />
+                                  <p className="text-[7px] text-gray-400">ارفع صور</p>
+                                </>
+                              )}
+                            </div>
+                            <input type="file" className="hidden" accept="image/*" onChange={handleEditImageUpload} disabled={uploadingEditImage} multiple />
+                          </label>
+
+                          {editProdImages.map((imgUrl, idx) => (
+                            <div key={idx} className="relative w-28 h-28 rounded-2xl overflow-hidden border border-gray-150 bg-white shadow-sm shrink-0">
+                              <img src={imgUrl} className="w-full h-full object-cover" alt={`Edit Preview ${idx + 1}`} referrerPolicy="no-referrer" />
+                              <button 
+                                type="button"
+                                onClick={() => setEditProdImages(prev => prev.filter((_, i) => i !== idx))}
+                                className="absolute top-1 right-1 bg-red-500 hover:bg-red-650 text-white p-1 rounded-full shadow-lg cursor-pointer transition-colors"
+                              >
+                                <Trash2 size={8} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end gap-3 pt-3 border-t border-gray-150">
+                        <button 
+                          type="button" 
+                          onClick={() => setEditingProduct(null)}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg cursor-pointer"
+                        >
+                          إلغاء
+                        </button>
+                        <button 
+                          type="submit" 
+                          disabled={uploadingEditImage || uploadingImage}
+                          className={`bg-[#0B0B0B] text-[#F6E7A6] px-5 py-2 rounded-lg transition-colors flex items-center gap-1.5 ${uploadingEditImage || uploadingImage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#F4B6C2] hover:text-white'}`}
+                        >
+                          <Sparkles size={11} />
+                          {uploadingEditImage ? 'جاري رفع الصور...' : 'حفظ التغييرات في سوبابيس ✨'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
 
             </div>
           )}

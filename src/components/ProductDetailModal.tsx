@@ -224,6 +224,31 @@ export default function ProductDetailModal({
     window.open(url, '_blank');
   };
 
+  // Web Share API handler with elegant fallback
+  const handleShareClick = async () => {
+    const shareUrl = `${window.location.origin}?product=${product.id}`;
+    const shareTitle = `تصاميم ملابس نوم SULTA الفاخرة - ${product.nameAr}`;
+    const shareText = `شاهدت هذا التصميم الخيالي لبيجامات وملابس نوم SULTA الفاخرة ✨\nالموديل: "${product.nameAr}" 🌸\nنسيج مريح ينبض بالنعومة والرقي الملوكي الحقيقي!`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        toast('تمت المشاركة الملكية بنجاح! 🌸', 'success');
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.warn('Web Share failed, opening panel instead:', err);
+          setIsSharePanelOpen(!isSharePanelOpen);
+        }
+      }
+    } else {
+      setIsSharePanelOpen(!isSharePanelOpen);
+    }
+  };
+
   // Color Accuracy description selector
   const getColorAccuracyDescription = () => {
     switch (calibratedSkin) {
@@ -1198,7 +1223,7 @@ export default function ProductDetailModal({
               {/* Luxury Share Button representing Zoria / SULTA sleepwear */}
               <button
                 type="button"
-                onClick={() => setIsSharePanelOpen(!isSharePanelOpen)}
+                onClick={handleShareClick}
                 className={`p-3 rounded-xl transition-all border cursor-pointer flex items-center justify-center gap-1.5 ${
                   isSharePanelOpen 
                     ? "bg-[#DF8A9C] text-white border-[#DF8A9C] font-semibold" 
