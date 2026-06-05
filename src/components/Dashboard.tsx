@@ -629,6 +629,36 @@ export default function Dashboard({
   const [newCouponPercent, setNewCouponPercent] = useState(15);
   const [newCouponDesc, setNewCouponDesc] = useState('');
 
+  const handleProductVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingMediaFile(true);
+    const url = await dbService.uploadImage(file);
+    if (url) {
+      setNewProdVideo(url);
+      alert('تم رفع الفيديو بنجاح!');
+    } else {
+      alert('فشل رفع الفيديو.');
+    }
+    setUploadingMediaFile(false);
+  };
+
+  const handleEditProductVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingMediaFile(true);
+    const url = await dbService.uploadImage(file);
+    if (url) {
+      setEditProdVideo(url);
+      alert('تم رفع الفيديو بنجاح!');
+    } else {
+      alert('فشل رفع الفيديو.');
+    }
+    setUploadingMediaFile(false);
+  };
+
   // Calculations for Admin KPIs
   const totalOrdersAmountEGP = orders
     .filter(o => o.currency === 'EGP')
@@ -2069,15 +2099,27 @@ export default function Dashboard({
                     />
                   </div>
                   <div>
-                    <label className="text-gray-400 block mb-1">رابط الفيديو (اختياري)</label>
-                    <input
-                      type="text"
-                      placeholder="رابط يوتيوب أو فيديو مباشر mp4..."
-                      value={newProdVideo}
-                      onChange={(e) => setNewProdVideo(e.target.value)}
-                      className="w-full border border-gray-200 rounded-lg px-3.5 py-2 bg-white focus:outline-none text-left"
-                      dir="ltr"
-                    />
+                    <label className="text-gray-400 block mb-1">فيديو المنتج (رابط أو رفع ملف) 🎥</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="رابط يوتيوب أو فيديو مباشر..."
+                        value={newProdVideo}
+                        onChange={(e) => setNewProdVideo(e.target.value)}
+                        className="flex-1 border border-gray-200 rounded-lg px-3.5 py-2 bg-white focus:outline-none text-left"
+                        dir="ltr"
+                      />
+                      <label className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg border-2 border-dashed border-[#A44C5C]/20 text-[#A44C5C] hover:bg-gray-100 transition-colors cursor-pointer">
+                        <input 
+                          type="file" 
+                          accept="video/*" 
+                          className="hidden" 
+                          onChange={handleProductVideoUpload}
+                          disabled={uploadingMediaFile}
+                        />
+                        {uploadingMediaFile ? <div className="w-4 h-4 border-2 border-[#A44C5C] border-t-transparent rounded-full animate-spin" /> : <Upload size={16} />}
+                      </label>
+                    </div>
                   </div>
                 </div>
 
@@ -2314,15 +2356,27 @@ export default function Dashboard({
                       </div>
 
                       <div>
-                        <label className="text-gray-400 block mb-1">رابط الفيديو (اختياري)</label>
-                        <input
-                          type="text"
-                          placeholder="رابط يوتيوب أو فيديو مباشر mp4..."
-                          value={editProdVideo}
-                          onChange={(e) => setEditProdVideo(e.target.value)}
-                          className="w-full border border-gray-200 rounded-lg px-3.5 py-2 bg-white focus:outline-none text-left"
-                          dir="ltr"
-                        />
+                        <label className="text-gray-400 block mb-1">فيديو المنتج (رابط أو رفع ملف) 🎥</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="رابط يوتيوب أو فيديو مباشر..."
+                            value={editProdVideo}
+                            onChange={(e) => setEditProdVideo(e.target.value)}
+                            className="flex-1 border border-gray-200 rounded-lg px-3.5 py-2 bg-white focus:outline-none text-left"
+                            dir="ltr"
+                          />
+                          <label className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg border-2 border-dashed border-[#A44C5C]/20 text-[#A44C5C] hover:bg-gray-100 transition-colors cursor-pointer">
+                            <input 
+                              type="file" 
+                              accept="video/*" 
+                              className="hidden" 
+                              onChange={handleEditProductVideoUpload}
+                              disabled={uploadingMediaFile}
+                            />
+                            {uploadingMediaFile ? <div className="w-4 h-4 border-2 border-[#A44C5C] border-t-transparent rounded-full animate-spin" /> : <Upload size={16} />}
+                          </label>
+                        </div>
                       </div>
 
                       <div className="space-y-2">

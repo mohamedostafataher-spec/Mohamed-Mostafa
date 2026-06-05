@@ -308,6 +308,8 @@ function mapCategory(data: any): Category {
   return {
     id: data.id,
     name: data.name,
+    nameAr: data.name_ar || data.nameAr || '',
+    nameEn: data.name_en || data.nameEn || '',
     slug: data.slug,
     imageUrl: data.image_url || data.imageUrl
   };
@@ -462,12 +464,13 @@ export const dbService = {
         .upload(fileName, file);
 
       if (error) throw error;
+      if (!data) throw new Error("Upload response was empty (data is null)");
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: publicData } = supabase.storage
         .from('products')
         .getPublicUrl(data.path);
 
-      return publicUrl;
+      return publicData?.publicUrl || null;
     } catch (err) {
       console.error("Error uploading image to Supabase Storage:", err);
       return null;

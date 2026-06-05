@@ -34,8 +34,8 @@ export default function StoreView({
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
   const displayCategories = [
-    { id: 'all', name: 'ALL COLLECTIONS' },
-    ...categories.map(c => ({ id: c.id, name: (c.name || '').toUpperCase() }))
+    { id: 'all', name: 'كل المجموعات' },
+    ...categories.map(c => ({ id: c.id, name: (c.nameAr || c.name || '').toUpperCase() }))
   ];
 
   const filteredProducts = useMemo(() => {
@@ -74,28 +74,28 @@ export default function StoreView({
       <div className="bg-[#FAF5F0] py-16 md:py-24 border-b border-[#DF8A9D]/20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="font-serif text-3xl md:text-5xl font-light text-[#0B0B0B] mb-4 tracking-wide uppercase">
-            The Essentials
+            الأساسيات الفاخرة
           </h2>
           <p className="font-sans text-sm md:text-base text-gray-500 max-w-xl mx-auto mb-10">
-            Curated collection of the finest luxury sleepwear and loungewear. Discover what makes Sulta an international icon.
+            مجموعة مختارة من أرقى ملابس النوم والملابس المنزلية الفاخرة. اكتشفي ما يجعل "سُلْطَة" أيقونة عالمية في عالم الأناقة المنزلية.
           </p>
 
-          <div className="relative max-w-xl mx-auto">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          <div className="relative max-w-xl mx-auto" dir="rtl">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
               <Search size={18} />
             </span>
             <input
               type="text"
-              placeholder="Search by color, fabric, or collection..."
+              placeholder="ابحثي باللون، القماش، أو المجموعة..."
               value={searchQuery}
               onChange={(e) => onSearchQueryChange && onSearchQueryChange(e.target.value)}
-              className="w-full bg-white border border-[#DF8A9D]/30 focus:border-[#A44C5C] focus:ring-1 focus:ring-[#A44C5C] rounded-full pl-12 pr-12 py-3.5 text-sm text-[#0B0B0B] placeholder-gray-400 tracking-wide font-sans focus:outline-none transition-all shadow-sm"
+              className="w-full bg-white border border-[#DF8A9D]/30 focus:border-[#A44C5C] focus:ring-1 focus:ring-[#A44C5C] rounded-full pr-12 pl-12 py-3.5 text-sm text-[#0B0B0B] placeholder-gray-400 tracking-wide font-sans focus:outline-none transition-all shadow-sm text-right"
             />
             {searchQuery && (
               <button
                 onClick={() => onClearSearch && onClearSearch()}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#0B0B0B] transition-colors"
-                title="Clear Search"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#0B0B0B] transition-colors"
+                title="مسح البحث"
               >
                 <X size={16} />
               </button>
@@ -106,34 +106,34 @@ export default function StoreView({
 
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-8 md:py-12">
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 py-4 mb-8">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-4 mb-8" dir="rtl">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className="md:hidden flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#0B0B0B] hover:text-[#A44C5C] transition-colors"
             >
               <Filter size={16} />
-              Filters
+              الفلاتر
             </button>
             <span className="text-xs font-sans text-gray-400 uppercase tracking-widest hidden md:block">
-              {filteredProducts.length} Results
+              {filteredProducts.length} نتيجة
             </span>
           </div>
 
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#0B0B0B]">
-            <span className="hidden sm:block text-gray-400 font-sans">Sort By:</span>
+            <span className="hidden sm:block text-gray-400 font-sans">ترتيب حسب:</span>
             <div className="relative">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none bg-transparent pr-6 focus:outline-none cursor-pointer hover:text-[#A44C5C] transition-colors pb-1 border-b border-transparent hover:border-[#A44C5C]"
+                className="appearance-none bg-transparent pl-6 focus:outline-none cursor-pointer hover:text-[#A44C5C] transition-colors pb-1 border-b border-transparent hover:border-[#A44C5C]"
               >
-                <option value="newest">Newest</option>
-                <option value="bestseller">Best Sellers</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
+                <option value="newest">الأحدث</option>
+                <option value="bestseller">الأكثر مبيعاً</option>
+                <option value="price-low">السعر: من الأقل للأعلى</option>
+                <option value="price-high">السعر: من الأعلى للأقل</option>
               </select>
-              <ChevronDown size={14} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
+              <ChevronDown size={14} className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
             </div>
           </div>
         </div>
@@ -141,17 +141,17 @@ export default function StoreView({
         <div className="flex flex-col md:flex-row gap-12">
           
           {/* Desktop Filter Sidebar */}
-          <aside className={`w-full md:w-64 shrink-0 transition-all ${isFilterOpen ? 'block' : 'hidden md:block'}`}>
+          <aside className={`w-full md:w-64 shrink-0 transition-all ${isFilterOpen ? 'block' : 'hidden md:block'}`} dir="rtl">
             <div className="sticky top-24 space-y-10">
               
               <div>
-                <h4 className="font-serif text-sm font-semibold tracking-widest uppercase mb-4 text-[#0B0B0B] border-b border-gray-100 pb-2">Collections</h4>
+                <h4 className="font-serif text-sm font-semibold tracking-widest uppercase mb-4 text-[#0B0B0B] border-b border-gray-100 pb-2">التصنيفات</h4>
                 <ul className="space-y-3 font-sans text-sm">
                   {displayCategories.map(cat => (
                     <li key={cat.id}>
                       <button
                         onClick={() => { setSelectedCategory(cat.id); setIsFilterOpen(false); }}
-                        className={`text-left w-full hover:text-[#A44C5C] transition-colors uppercase tracking-wider text-xs ${selectedCategory === cat.id ? 'text-[#A44C5C] font-semibold' : 'text-gray-500'}`}
+                        className={`text-right w-full hover:text-[#A44C5C] transition-colors uppercase tracking-wider text-xs ${selectedCategory === cat.id ? 'text-[#A44C5C] font-semibold' : 'text-gray-500'}`}
                       >
                         {cat.name}
                       </button>
@@ -237,7 +237,7 @@ export default function StoreView({
                             }}
                             className="w-full bg-[#0B0B0B]/90 backdrop-blur-sm text-[#FAF5F0] py-4 text-xs font-semibold tracking-widest uppercase hover:bg-[#A44C5C] transition-colors flex items-center justify-center gap-2"
                           >
-                            <ShoppingBag size={14} /> Add To Bag
+                            <ShoppingBag size={14} /> أضيفي للحقيبة
                           </button>
                         </div>
                       </div>
@@ -268,7 +268,7 @@ export default function StoreView({
         {/* Related Products Engine */}
         {products.length > 0 && (
           <div className="mt-20 pt-16 border-t border-gray-200">
-            <h3 className="font-serif text-2xl text-center mb-10 text-[#0B0B0B]">محرك التوصيات الملكي (Trending Right Now ✨)</h3>
+            <h3 className="font-serif text-2xl text-center mb-10 text-[#0B0B0B]">الموديلات الأكثر طلباً الآن ✨</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
               {products.slice(0, 4).map(prod => {
                 const isFav = favorites.includes(prod.id);

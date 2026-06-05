@@ -36,7 +36,13 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
   const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
   const standardPosts = filteredPosts.slice(1);
 
-  const categories = ['all', 'editorial', 'tips', 'fabric', 'news'];
+  const categories = [
+    { id: 'all', label: 'الكل' },
+    { id: 'editorial', label: 'افتتاحيات' },
+    { id: 'tips', label: 'نصائح' },
+    { id: 'fabric', label: 'الأقمشة' },
+    { id: 'news', label: 'أخبار' }
+  ];
 
   return (
     <div className="bg-[#FAF5F0] min-h-screen pt-24 pb-20 font-sans">
@@ -44,27 +50,27 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
         
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
           <h2 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] tracking-widest uppercase">
-            The Journal
+            المجلة
           </h2>
           <p className="text-sm text-gray-500 font-sans max-w-md mx-auto">
-            Discover styling tips, editorial shoots, fabric care guides, and the latest from the world of SULTA.
+            اكتشفي نصائح التنسيق، جلسات التصوير الافتتاحية، أدلة العناية بالأقمشة، وأحدث أخبار عالم "سُلْطَة".
           </p>
         </div>
 
         {/* Filters & Search */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-16">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-16" dir="rtl">
           <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 scrollbar-none">
             {categories.map(cat => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
                 className={`uppercase tracking-widest text-[10px] font-bold px-4 py-2 rounded-full whitespace-nowrap transition-colors border ${
-                  activeCategory === cat 
+                  activeCategory === cat.id 
                   ? 'bg-[#0B0B0B] text-[#F6E7A6] border-[#0B0B0B]' 
                   : 'bg-transparent text-gray-500 border-gray-300 hover:border-[#A44C5C] hover:text-[#A44C5C]'
                 }`}
               >
-                {cat}
+                {cat.label}
               </button>
             ))}
           </div>
@@ -72,12 +78,12 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
           <div className="relative w-full md:w-80 shrink-0">
             <input
               type="text"
-              placeholder="Search the journal..."
+              placeholder="ابحثي في المجلة..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent border-b border-gray-300 px-0 py-2 text-sm text-gray-900 focus:outline-none focus:border-[#A44C5C] transition-colors"
+              className="w-full bg-transparent border-b border-gray-300 px-0 py-2 text-sm text-gray-900 focus:outline-none focus:border-[#A44C5C] transition-colors text-right"
             />
-            <Search size={16} className="absolute right-0 top-3 border-gray-400 opacity-50" />
+            <Search size={16} className="absolute left-0 top-3 border-gray-400 opacity-50" />
           </div>
         </div>
 
@@ -88,7 +94,7 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
         ) : filteredPosts.length === 0 ? (
           <div className="text-center py-32 flex flex-col items-center">
             <BookOpen size={48} className="text-gray-300 mb-4" strokeWidth={1} />
-            <p className="font-serif text-xl text-gray-400">No articles found in this category.</p>
+            <p className="font-serif text-xl text-gray-400">لا توجد مقالات في هذا القسم حالياً.</p>
           </div>
         ) : (
           <div className="space-y-16">
@@ -125,7 +131,7 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
                   </div>
                   
                   <button className="uppercase text-[10px] tracking-widest font-bold border-b border-[#0B0B0B] pb-1 flex items-center gap-2 hover:border-[#DF8A9D] hover:text-[#DF8A9D] transition-colors mx-auto md:mx-0">
-                    Read Article <ArrowRight size={14} />
+                    اقرئي المقال <ArrowRight size={14} />
                   </button>
                 </div>
               </div>

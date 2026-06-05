@@ -957,11 +957,18 @@ function AppContent() {
           <div className="space-y-4">
             <h2 className="font-serif text-3xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName || 'SULTA'}</h2>
             <span className="text-[9px] uppercase tracking-[0.2em] font-serif block text-gray-400 italic">
-              {settings?.logo ? 'Luxury Sleepwear Boutique' : 'Where Comfort Meets Elegance'}
+              {settings?.logo ? 'بوتيك ملابس النوم الفاخرة' : 'حيث تلتقي الراحة بالأناقة الملكية'}
             </span>
             <p className="text-gray-400 text-xs leading-relaxed font-sans max-w-xs pt-2">
               متجر فريد مصمم لتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ومصر.
             </p>
+            <div className="pt-4">
+               <img 
+                 src="/src/assets/images/sulta_logo_black_card.png" 
+                 alt="Sulta Brand Card" 
+                 className="w-full h-auto rounded-lg shadow-2xl border border-gray-800 opacity-80 hover:opacity-100 transition-opacity"
+               />
+            </div>
           </div>
 
           {/* Quick Deep links */}
@@ -1009,8 +1016,8 @@ function AppContent() {
 
         {/* Bottom credits */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-500 font-sans">
-          <span>حقوق النشر والطبع محفوظة © ٢٠٢٦ بيت الأزياء الملكي SULTA. جميع العلامات التجارية مسجلة.</span>
-          <span className="font-serif italic text-gray-400">SULTA - WHERE COMFORT MEETS ELEGANCE</span>
+          <span>حقوق النشر وطبع المحتوى محفوظة © ٢٠٢٦ بيت الأزياء SULTA. جميع العلامات التجارية مسجلة.</span>
+          <span className="font-serif italic text-gray-400 font-bold uppercase tracking-widest">SULTA - حيث تلتقي الراحة بالأناقة الملكية</span>
         </div>
       </footer>
 

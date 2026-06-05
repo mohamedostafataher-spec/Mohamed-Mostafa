@@ -19,11 +19,27 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   
   const fallbackBanners = [
     {
-      mediaUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png',
-      title: 'BECAUSE YOU DESERVE',
-      subtitle: 'THE SOFTEST LIFE',
-      description: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',
-      ctaText: 'DISCOVER THE COLLECTION | اكتشفي المجموعة',
+      mediaUrl: '/src/assets/images/hero_pajama_lifestyle_1_1780682110287.png',
+      title: 'فخامةٌ تليقُ بِمَلِكَة',
+      subtitle: 'أناقةٌ لا تَعرفُ الحدود',
+      description: 'بيجامات الحرير الإيطالي المعالج لنعومة فائقة طوال الليل',
+      ctaText: 'تسوقي التشكيلة الجديدة',
+      mediaType: 'image'
+    },
+    {
+      mediaUrl: '/src/assets/images/hero_pajama_editorial_2_1780682126486.png',
+      title: 'سُلْطَة.. للراحةِ مَعنىً آخَر',
+      subtitle: 'كوتور ملابسِ النومِ الفاخِرة',
+      description: 'تصاميمُ ملكيّة تجمعُ بين الرقي والراحةِ المطلقة في منزلكِ',
+      ctaText: 'اكتشفي الأناقة المنزليّة',
+      mediaType: 'image'
+    },
+    {
+      mediaUrl: '/src/assets/images/hero_pajama_detail_3_1780682140472.png',
+      title: 'أدَقُ التفاصيلِ لأرقَى الأذواق',
+      subtitle: 'جودةٌ تلمسينَها في كُلِ غرزة',
+      description: 'نستخدمُ أجودَ خاماتِ المودال والكتان لتجربةِ نومٍ مثاليّة',
+      ctaText: 'دليل المنتجات الفاخرة',
       mediaType: 'image'
     }
   ];
@@ -88,9 +104,9 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
         })}
       </div>
 
-      {/* Content overlay matched with mockup layout (Left aligned) */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 pt-20 pb-32">
-        <div className="max-w-xl animate-fade-in text-left">
+      {/* Content overlay matched with mockup layout (Right aligned for Arabic) */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 pt-20 pb-32" dir="rtl">
+        <div className="max-w-xl animate-fade-in text-right">
           
           <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-[72px] text-[#A44C5C] font-normal leading-[1.1] tracking-normal mb-2 shadow-sm drop-shadow-sm whitespace-pre-line">
             {currentSlideData.title}
@@ -101,7 +117,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
           
           {/* Decorative Ribbon Icon Placement (Simulated with text/lucide for now) */}
           <div className="my-6">
-            <svg width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#A44C5C]">
+            <svg width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#A44C5C] scale-x-[-1]">
                <path d="M16 12C16 16.4183 12.4183 20 8 20C3.58172 20 0 16.4183 0 12C0 7.58172 3.58172 4 8 4C12.4183 4 16 7.58172 16 12Z" fill="currentColor" fillOpacity="0.2"/>
                <path d="M40 12C40 16.4183 36.4183 20 32 20C27.5817 20 24 16.4183 24 12C24 7.58172 27.5817 4 32 4C36.4183 4 40 7.58172 40 12Z" fill="currentColor" fillOpacity="0.2"/>
                <circle cx="20" cy="12" r="4" fill="currentColor"/>
@@ -112,13 +128,13 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
             {currentSlideData.description}
           </p>
 
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-wrap gap-4 items-center justify-start">
             <button
               onClick={onExplore}
               className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] border border-transparent px-8 py-3.5 rounded-full text-sm tracking-wider uppercase transition-colors inline-flex items-center justify-center gap-2 font-sans font-medium hover:scale-105 duration-300"
             >
               <span>{currentSlideData.ctaText}</span>
-              <ArrowRight size={16} />
+              <ArrowRight size={16} className="rotate-180" />
             </button>
           </div>
         </div>

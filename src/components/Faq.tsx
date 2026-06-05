@@ -14,33 +14,33 @@ export default function Faq() {
   const [faqs, setFaqs] = useState<FaqItem[]>([
     {
       category: 'materials',
-      question: 'What is the quality and material of SULTA pieces?',
-      answer: 'At SULTA, we utilize the finest global fabric lines with absolute exclusivity. We use imported luxury Italian satin with a smooth silk-like back that prevents static and sweating, natural Parisian silk, and refined French Chantilly Lace. Our cotton collection is crafted entirely from organic long-staple Egyptian cotton treated for a soothing velvety feel.'
+      question: 'ما هي جودة وخامة قطع "سُلْطَة"؟',
+      answer: 'في سُلْطَة، نعتمد أرقى خطوط الأقمشة العالمية بأسلوب حصري. نستخدم ساتان إيطالي فاخر مستورد بملمس حريري يمنع الكهرباء الساكنة والتعرق، وحرير باريسي طبيعي، ودانتيل "شانتيلي" الفرنسي الرفيع. تشكيلة القطن مصنوعة بالكامل من القطن المصري العضوي طويل التيلة والمعالج لملمس مخملي يسكن الحواس.'
     },
     {
       category: 'sizing',
-      question: 'How do I choose my perfect fit?',
-      answer: 'We have a precise sizing chart tailored carefully to provide the perfect fit. We recommend reviewing the "Size Guide" to find your match. If you fall between two sizes, we advise choosing the larger size for maximum comfort.'
+      question: 'كيف أختار مقاسي المثالي؟',
+      answer: 'لدينا جدول مقاسات دقيق مصمم بعناية فائقة لضمان الملاءمة المثالية. ننصحكِ بمراجعة "دليل المقاسات" الخاص بنا للعثور على ما يناسبكِ. إذا كنتِ بين مقاسين، نوصي باختيار المقاس الأكبر لضمان الراحة القصوى.'
     },
     {
       category: 'packaging',
-      question: 'How are the orders packaged?',
-      answer: 'All SULTA orders are shipped inside our "Royal Luxury Packaging", a classic matte black sturdy box engraved with the brand logo in gleaming champagne gold, tied manually with a soft pink velvet ribbon. The pieces inside are wrapped with unique silk paper and accompanied by a welcome card.'
+      question: 'كيف يتم تغليف الطلبات؟',
+      answer: 'تُشحن جميع طلبات سُلْطَة داخل "تغليفنا الملكي الفاخر"؛ صندوق صلب أسود "مات" كلاسيكي محفور عليه شعار العلامة بذهب الشمبانيا اللامع، ومربوط يدويًا بشريط مخملي وردي ناعم. القطع بداخلها مغلفة بورق حريري فريد ومرفق معها بطاقة ترحيبية.'
     },
     {
       category: 'shipping',
-      question: 'How long does shipping take?',
-      answer: 'We provide fast royal shipping for your convenience. Within major regions, shipping typically takes 2-4 business days.'
+      question: 'كم يستغرق الشحن؟',
+      answer: 'نوفر شحنًا ملكيًا سريعًا لراحتكِ. في المناطق الرئيسية، يستغرق الشحن عادةً من ٢ إلى ٤ أيام عمل.'
     },
     {
       category: 'returns',
-      question: 'What is the return and exchange policy?',
-      answer: 'We gladly support a fully flexible return and exchange policy within 14 days of receipt, provided the piece remains in its original unwashed and unused condition with all tags and the royal box intact.'
+      question: 'ما هي سياسة الاستبدال والاسترجاع؟',
+      answer: 'نحن ندعم سياسة استرجاع واستبدال مرنة بالكامل خلال ١٤ يومًا من الاستلام، بشرط أن تظل القطعة في حالتها الأصلية غير المغسولة وغير المستخدمة مع جميع الملصقات والصندوق الملكي سليمًا.'
     },
     {
       category: 'payments',
-      question: 'Are payment transactions secure?',
-      answer: 'Our website is equipped with the highest SSL security protocols and certified bank encryption. We accept major credit cards and secure mobile payment options.'
+      question: 'هل عمليات الدفع آمنة؟',
+      answer: 'موقعنا مجهز بأعلى بروتوكولات الأمان SSL والتشفير البنكي المعتمد. نقبل بطاقات الائتمان الرئيسية وخيارات الدفع الآمنة عبر الجوال مثل Apple Pay ومدى.'
     }
   ]);
 
@@ -55,13 +55,13 @@ export default function Faq() {
   }, []);
 
   const categories = [
-    { id: 'all', label: 'All' },
-    { id: 'materials', label: 'Fabrics & Quality' },
-    { id: 'sizing', label: 'Sizing & Fit' },
-    { id: 'packaging', label: 'Packaging & Gifting' },
-    { id: 'shipping', label: 'Shipping & Delivery' },
-    { id: 'returns', label: 'Returns & Exchanges' },
-    { id: 'payments', label: 'Payments & Security' },
+    { id: 'all', label: 'الكل' },
+    { id: 'materials', label: 'الأقمشة والجودة' },
+    { id: 'sizing', label: 'المقاسات والملاءمة' },
+    { id: 'packaging', label: 'التغليف والهدايا' },
+    { id: 'shipping', label: 'الشحن والتوصيل' },
+    { id: 'returns', label: 'الاسترجاع والاستبدال' },
+    { id: 'payments', label: 'الدفع والأمان' },
   ];
 
   const filteredFaqs = activeTab === 'all' 
@@ -72,17 +72,17 @@ export default function Faq() {
     <div className="bg-white min-h-screen">
       
       {/* Editorial Header */}
-      <div className="bg-[#FAF5F0] py-24 md:py-32 border-b border-[#DF8A9D]/20">
+      <div className="bg-[#FAF5F0] py-24 md:py-32 border-b border-[#DF8A9D]/20" dir="rtl">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <span className="font-serif italic text-xs tracking-[0.2em] text-[#A44C5C] block mb-3 uppercase">
-            Customer Concierge & Help
+            كونسيرج العملاء والمساعدة
           </span>
           <h2 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] tracking-wide mb-6 uppercase">
-            Frequently Asked Questions
+            الأسئلة الشائعة
           </h2>
           <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mb-4" />
           <p className="text-sm text-gray-500 font-sans max-w-xl mx-auto leading-relaxed">
-            At SULTA, we are dedicated to providing a refined shopping experience. Browse the certified answers from our experts to assist you.
+            في "سُلْطَة"، نحن مكرسون لتقديم تجربة تسوق متميزة. تصفحي الإجابات الموثقة من خبرائنا لمساعدتكِ.
           </p>
         </div>
       </div>
@@ -106,10 +106,10 @@ export default function Faq() {
         </div>
 
         {/* FAQ Accordion List */}
-        <div className="space-y-4 font-sans">
+        <div className="space-y-4 font-sans" dir="rtl">
           {filteredFaqs.length === 0 ? (
             <div className="text-center py-16 text-gray-400">
-              No questions found for this section.
+              لا توجد أسئلة في هذا القسم حالياً.
             </div>
           ) : (
             filteredFaqs.map((faq, idx) => (
@@ -123,15 +123,15 @@ export default function Faq() {
               >
                 <button
                   onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-                  className="w-full flex items-center justify-between p-6 text-left"
+                  className="w-full flex items-center justify-between p-6 text-right"
                 >
                   <span className={`font-serif text-sm tracking-wide ${openIdx === idx ? 'text-[#0B0B0B] font-semibold' : 'text-gray-700'}`}>
                     {faq.question}
                   </span>
                   {openIdx === idx ? (
-                    <ChevronUp size={18} className="text-[#A44C5C] shrink-0 ml-4" />
+                    <ChevronUp size={18} className="text-[#A44C5C] shrink-0 mr-4" />
                   ) : (
-                    <ChevronDown size={18} className="text-gray-400 shrink-0 ml-4" />
+                    <ChevronDown size={18} className="text-gray-400 shrink-0 mr-4" />
                   )}
                 </button>
                 

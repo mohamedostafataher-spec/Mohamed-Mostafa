@@ -50,10 +50,10 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
   })) || defaultQualities;
 
   const unboxing = dynamicContent?.unboxing || {
-    title: 'تجربة فتح الصندوق الملكي',
-    description: '"لأنكِ لستِ مجرد عميلة، بل ملكة متوجة في مملكتك الخاصة.. صممنا بكج SULTA ليمنحكِ شعور الفخامة منذ اللحظة الأولى لوصوله."',
-    bullet1: 'تغليف حريري يحمي رقة الملابس الملكية',
-    bullet2: 'عطر الدار الفاخر يفوح مع كل قطعة'
+    title: 'فخامة بيجامات سُلْطَة النسائية',
+    description: 'تجمع مجموعاتنا بين أرقى خامات الساتان الإيطالي والتصاميم العصرية لتمنحكِ الراحة والجمال في كل لحظة. اكتشفي التميز في كل قطعة مصممة خصيصاً للمرأة التي تبحث عن الفخامة.',
+    bullet1: 'أقمشة باردة ناعمة تداعب بشرتكِ',
+    bullet2: 'تصاميم ملكية تجمع بين الأنوثة والرقي'
   };
 
   return (
@@ -94,12 +94,12 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 text-right order-2 md:order-1">
               <span className="text-[10px] text-[#A44C5C] font-semibold tracking-[0.3em] uppercase block font-sans">
-                ✦ Unboxing the Dream ✦
+                ✦ SULTA LUXURY COLLECTIONS ✦
               </span>
               <h3 className="font-serif text-3xl md:text-5xl text-[#0B0B0B] font-light leading-tight">
                 {unboxing.title}
               </h3>
-              <p className="text-gray-500 text-sm md:text-base leading-relaxed font-serif italic">
+              <p className="text-gray-500 text-sm md:text-base leading-relaxed font-serif">
                 {unboxing.description}
               </p>
               <ul className="space-y-4 pt-4">
@@ -115,22 +115,25 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
             </div>
             <div className="relative order-1 md:order-2">
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
                   <img 
-                    src="/src/assets/images/sulta_box_closed_1780609086750.png" 
-                    alt="Sulta Luxury Box Closed" 
+                    src="/src/assets/images/sulta_box_art.png" 
+                    alt="Sulta Brand Artwork" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                 </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500">
+                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
                   <img 
-                    src="/src/assets/images/sulta_box_open_1780609104306.png" 
-                    alt="Sulta Luxury Box Open" 
+                    src="/src/assets/images/sulta_lifestyle_art.png" 
+                    alt="Sulta Premium Lifestyle Art" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                 </div>
+              </div>
+              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white rounded-full p-2 shadow-lg border border-pink-50 animate-bounce-subtle">
+                 <img src="/src/assets/images/wax_seal.png" alt="Royal Seal" className="w-full h-full object-contain" />
               </div>
             </div>
           </div>

@@ -8,23 +8,23 @@ interface AboutUsProps {
 
 export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
   const fallbackStory = {
-    title: 'SULTA HOUSE | دار سلطة',
-    quote: 'We believe that sleepwear is not just a routine — it is a daily ritual of resetting and pampering oneself.',
+    title: 'دار سُلْطَة | SULTA HOUSE',
+    quote: 'نؤمن أن ملابس النوم ليست مجرد روتين يومي — بل هي طقس يومي لتجديد الطاقة والاعتناء بالذات.',
     section1: {
-      title: 'Our Exquisite Heritage / إرثنا الملكي',
-      content: 'Founded to deliver the softest linen and heat-treated modal sleepwear in the Middle East. Every Sulta piece is designed dynamically to wrap you in comfort and peace. Our signature textiles are cooled and treated to stay perfectly breathable and flowy.',
-      imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800'
+      title: 'إرثنا الملكي / Our Exquisite Heritage',
+      content: 'تأسست دار سُلْطَة لتقديم أنعم أقمشة الكتان والمودال المعالج حرارياً في الشرق الأوسط. كل قطعة من سُلْطَة مصممة بذكاء لتغمركِ بالراحة والسلام. منسوجاتنا الفريدة مبردة ومعالجة لتبقى قابلة للتنفس وانسيابية تماماً.',
+      imageUrl: '/src/assets/images/sulta_luxury_lifestyle_about_2_1780682276428.png'
     },
     section2: {
-      title: 'The Softest Life Philosophy / فلسفة النعومة الملكية',
-      content: 'We combine French Parisian sleep couture with modern Middle-Eastern premium tastes. Handcrafted with pink bow ribbons, lace trims, and delicate details, we believe that high-end sleepwear should make you feel royal every night.',
-      imageUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png'
+      title: 'فلسفة النعومة الملكية / The Softest Life Philosophy',
+      content: 'نمزج بين كوتور ملابس النوم الباريسية وأرقى الأذواق العصرية في الشرق الأوسط. صناعة يدوية مزينة بشرائط وردية، وتفاصيل دقيقة من الدانتيل، نؤمن أن ملابس النوم الفاخرة يجب أن تجعلكِ تشعرين بملكتكِ المتوجة كل ليلة.',
+      imageUrl: '/src/assets/images/sulta_luxury_lifestyle_about_1_1780682261409.png'
     },
-    pillarsTitle: 'Our Timeless Commitments / التزامات تليق بكِ',
+    pillarsTitle: 'التزامات تليق بكِ / Our Timeless Commitments',
     pillars: [
-      { title: 'Royal Weave / غزل ملكي', description: 'Threads processed with heat-stabilized modal, ensuring silk-like flow and supreme durability.' },
-      { title: 'Fine Finish / لمسة دقيقة', description: 'Sewn with care by expert tailoring salons, carrying neat coquette lace bows and invisible stitching.' },
-      { title: 'Direct Value / قيمة حقيقية', description: 'A bridge from workshop to boutique, maximizing fabric quality while maintaining fair pricing.' }
+      { title: 'غزل ملكي / Royal Weave', description: 'خيوط معالجة بالمودال المستقر حرارياً، مما يضمن انسيابية تشبه الحرير ومتانة فائقة.' },
+      { title: 'لمسة دقيقة / Fine Finish', description: 'خيطت بعناية في أرقى مشاغل الحياكة، مزودة بفيونكات دانتيل رقيقة وخياطة غير مرئية.' },
+      { title: 'قيمة حقيقية / Direct Value', description: 'جسر مباشر من المشغل إلى البوتيك، لضمان جودة الأقمشة الفائقة مع الحفاظ على تسعير عادل.' }
     ]
   };
 
@@ -48,11 +48,60 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-20">
+      <div className="max-w-7xl mx-auto px-6 py-20 space-y-24">
         
+        {/* Editorial Content Expansion: Provided Artworks */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="rounded-3xl overflow-hidden shadow-lg border border-pink-100 aspect-[4/5] md:aspect-auto">
+             <img 
+               src="/src/assets/images/sulta_box_art.png" 
+               alt="Sulta Brand Artwork" 
+               className="w-full h-full object-cover"
+               referrerPolicy="no-referrer"
+             />
+          </div>
+          <div className="flex flex-col justify-center space-y-6 text-right md:pl-12">
+            <h4 className="font-serif text-3xl text-[#0B0B0B] font-light italic">عن عالمنا الصغير..</h4>
+            <p className="text-gray-500 font-serif leading-relaxed">
+              في سُلْطَة، نحن لا نصنع ملابس النوم فحسب، بل نبني عالماً من الراحة التي تبدأ من خيالكِ لتستقر في غرفتكِ. كل تفصيلة في تغليفنا وتصاميمنا مستوحاة من الأناقة الكلاسيكية بلمسة عصرية مرحة.
+            </p>
+            <div className="flex justify-start">
+               <img src="/src/assets/images/wax_seal.png" alt="Sulta Stamp" className="w-16 h-16 object-contain opacity-80" />
+            </div>
+          </div>
+        </div>
+
+        {/* Third Image Grid */}
+        <div className="flex flex-col md:flex-row-reverse gap-16 items-center">
+            <div className="md:w-1/2 space-y-6 order-2 md:order-1 text-right">
+              <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-normal tracking-wider uppercase border-b border-[#DF8A9D]/10 pb-4">
+                تفرّد التصميم
+              </h4>
+              <p className="text-sm md:text-base text-gray-650 leading-relaxed font-serif">
+                نعتمد في مجموعاتنا على تفاصيل تبرز أنوثتكِ، من الفيونكات الرقيقة إلى الألوان الهادئة التي تمنحكِ شعوراً بالسكينة.
+              </p>
+            </div>
+            <div className="md:w-1/2 order-1 md:order-2 aspect-square overflow-hidden bg-white relative rounded-3xl shadow-md border border-pink-100">
+              <img 
+                src="/src/assets/images/sulta_lifestyle_art.png" 
+                alt="Sulta Aesthetic" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+        </div>
+
+        <div className="text-center">
+           <img src="/src/assets/images/shoes_bow.png" alt="Luxury Details" className="w-48 mx-auto opacity-90" />
+        </div>
+
+        <div className="py-8">
+          <RibbonBowDivider />
+        </div>
+
         {/* Editorial Layout 1 */}
         {aboutData.section1 && (
-          <div className="flex flex-col md:flex-row gap-16 items-center mb-24">
+          <div className="flex flex-col md:flex-row gap-16 items-center">
             <div className="md:w-1/2 space-y-6 order-2 md:order-1">
               <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-normal tracking-wider uppercase border-b border-[#DF8A9D]/10 pb-4">
                 {aboutData.section1.title}
@@ -74,13 +123,9 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
           </div>
         )}
 
-        <div className="my-16">
-          <RibbonBowDivider />
-        </div>
-
         {/* Editorial Layout 2 */}
         {aboutData.section2 && (
-          <div className="flex flex-col md:flex-row gap-16 items-center mb-24">
+          <div className="flex flex-col md:flex-row gap-16 items-center">
             {aboutData.section2.imageUrl && (
               <div className="md:w-1/2 aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-white relative rounded-3xl shadow-md border border-pink-100">
                 <img 
@@ -91,7 +136,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                 />
               </div>
             )}
-            <div className="md:w-1/2 space-y-6">
+            <div className="md:w-1/2 space-y-6 text-right">
               <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-normal tracking-wider uppercase border-b border-[#DF8A9D]/10 pb-4">
                 {aboutData.section2.title}
               </h4>

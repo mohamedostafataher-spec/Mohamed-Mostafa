@@ -4,6 +4,8 @@ export type Currency = 'EGP' | 'SAR';
 export interface Category {
   id: string;
   name: string;
+  nameAr?: string;
+  nameEn?: string;
   slug: string;
   imageUrl?: string;
   seo?: {

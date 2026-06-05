@@ -47,15 +47,15 @@ export default function Header({
   };
 
   const menuItems = [
-    { id: 'home', label: 'HOME' },
-    { id: 'store', label: 'SHOP' },
-    { id: 'collections', label: 'COLLECTIONS' },
-    { id: 'new-arrivals', label: 'NEW ARRIVALS' },
-    { id: 'blog', label: 'JOURNAL' },
-    { id: 'about', label: 'ABOUT US' },
-    { id: 'track-order', label: 'TRACK ORDER' },
-    { id: 'contact', label: 'CONTACT' },
-    { id: 'dashboard', label: 'ADMIN' },
+    { id: 'home', label: 'الرئيسية' },
+    { id: 'store', label: 'المتجر' },
+    { id: 'collections', label: 'التشكيلات' },
+    { id: 'new-arrivals', label: 'وصل حديثاً' },
+    { id: 'blog', label: 'المجلة' },
+    { id: 'about', label: 'من نحن' },
+    { id: 'track-order', label: 'تتبع الطلب' },
+    { id: 'contact', label: 'اتصل بنا' },
+    { id: 'dashboard', label: 'الإدارة' },
   ];
 
   return (
@@ -71,7 +71,7 @@ export default function Header({
           <span>SULTA SLEEPWEAR COUTURE</span>
         </div>
         <div className="flex items-center gap-2 md:gap-3 text-[10.5px]">
-          <span className="text-gray-400 font-sans hidden sm:inline">Delivering To:</span>
+          <span className="text-gray-400 font-sans hidden sm:inline">الشحن إلى:</span>
           <button 
             onClick={() => setCountry('SA')} 
             className={`px-2 py-0.5 rounded transition-all flex items-center gap-1 ${country === 'SA' ? 'bg-[#A44C5C] text-[#FAF5F0] font-semibold' : 'opacity-60 hover:opacity-100 font-normal text-gray-700'}`}
@@ -190,17 +190,18 @@ export default function Header({
           <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto flex gap-3">
             <input
               type="text"
-              placeholder="Search for luxury sleepwear, satin sets, loungewear..."
+              placeholder="ابحثي عن ملابس النوم الفاخرة، أطقم الساتان، ملابس مريحة..."
               value={localQuery}
               onChange={(e) => setLocalQuery(e.target.value)}
-              className="flex-1 border-b-2 border-gray-300 bg-transparent px-2 py-2 text-lg font-serif focus:outline-none focus:border-[#A44C5C] text-[#0B0B0B] placeholder-gray-400"
+              className="flex-1 border-b-2 border-gray-300 bg-transparent px-2 py-2 text-lg font-serif focus:outline-none focus:border-[#A44C5C] text-[#0B0B0B] placeholder-gray-400 text-right"
+              dir="rtl"
               autoFocus
             />
             <button
               type="submit"
               className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-8 py-2.5 text-sm uppercase tracking-wider transition-colors font-sans"
             >
-              Search
+              بحث
             </button>
             <button
               type="button"
@@ -208,9 +209,9 @@ export default function Header({
                 setSearchOpen(false);
                 setLocalQuery('');
               }}
-              className="text-gray-500 hover:text-gray-800 px-4 text-sm transition-colors uppercase tracking-wider"
+              className="text-gray-500 hover:text-gray-800 px-4 text-sm uppercase tracking-wider transition-colors"
             >
-              Close
+              إغلاق
             </button>
           </form>
         </div>
