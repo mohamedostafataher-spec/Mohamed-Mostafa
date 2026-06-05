@@ -12,9 +12,8 @@ export default defineConfig(() => {
       },
     },
     server: {
-      // HMR is explicitly disabled to prevent WebSocket connection errors in the browser console.
+      // HMR is disabled to avoid console errors, but we keep watching enabled.
       hmr: false,
-      watch: null,
     },
   };
 });

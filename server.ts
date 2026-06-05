@@ -20,6 +20,14 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Middleware to disable caching during development/updates
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+  });
+
   // API Route: Generate Splash Image
   app.get("/api/generate-splash", async (req, res) => {
     if (!ai) {
