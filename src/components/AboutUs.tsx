@@ -54,7 +54,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="rounded-3xl overflow-hidden shadow-lg border border-pink-100 aspect-[4/5] md:aspect-auto">
              <img 
-               src="/src/assets/images/sulta_box_art.png" 
+               src="/src/assets/images/sulta_boutique_display_1_1780682812541.png" 
                alt="Sulta Brand Artwork" 
                className="w-full h-full object-cover"
                referrerPolicy="no-referrer"

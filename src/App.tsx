@@ -25,10 +25,6 @@ import { dbService, supabase } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
 import { recordView, recordCartAddition } from './utils/analytics';
 
-// @ts-ignore
-import sultaBoxClosed from './assets/images/sulta_box_closed_1780609086750.png';
-// @ts-ignore
-import sultaBoxOpen from './assets/images/sulta_box_open_1780609104306.png';
 
 export default function App() {
   return (
@@ -48,12 +44,6 @@ function AppContent() {
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [aiSplashImage, setAiSplashImage] = useState<string | null>(null);
-  const [activeBoxImg, setActiveBoxImg] = useState<number>(0);
-
-  const boxImages = [
-    { url: sultaBoxClosed, title: 'الصندوق الملكي المغلق' },
-    { url: sultaBoxOpen, title: 'الفخامة من الداخل' }
-  ];
 
   // Optimized Splash Loading Timer
   useEffect(() => {

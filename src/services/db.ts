@@ -100,10 +100,10 @@ export const supabase = supabaseInstance;
 // ==========================================
 
 export const MOCK_BOUTIQUE_CATEGORIES: Category[] = [
-  { id: 'sleepwear', name: 'Sleepwear', slug: 'sleepwear', imageUrl: 'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=600' },
-  { id: 'loungewear', name: 'Loungewear', slug: 'loungewear', imageUrl: 'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=600' },
-  { id: 'homewear', name: 'Homewear', slug: 'homewear', imageUrl: 'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=600' },
-  { id: 'collections', name: 'Collections', slug: 'collections', imageUrl: 'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=600' }
+  { id: 'sleepwear', nameAr: 'ملابس نوم', nameEn: 'Sleepwear', slug: 'sleepwear', imageUrl: 'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=600' },
+  { id: 'loungewear', nameAr: 'طواقم استرخاء', nameEn: 'Loungewear', slug: 'loungewear', imageUrl: 'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=600' },
+  { id: 'homewear', nameAr: 'ملابس منزلية', nameEn: 'Homewear', slug: 'homewear', imageUrl: 'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=600' },
+  { id: 'collections', nameAr: 'مجموعات حصرية', nameEn: 'Collections', slug: 'collections', imageUrl: 'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=600' }
 ];
 
 export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
@@ -307,9 +307,9 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
 function mapCategory(data: any): Category {
   return {
     id: data.id,
-    name: data.name,
-    nameAr: data.name_ar || data.nameAr || '',
-    nameEn: data.name_en || data.nameEn || '',
+    name: data.name, // Legacy support
+    nameAr: data.name_ar || data.nameAr || data.name || '',
+    nameEn: data.name_en || data.nameEn || data.name || '',
     slug: data.slug,
     imageUrl: data.image_url || data.imageUrl
   };
@@ -318,8 +318,10 @@ function mapCategory(data: any): Category {
 function mapCollection(data: any): Collection {
   return {
     id: data.id,
-    name: data.name,
-    description: data.description || '',
+    nameAr: data.name_ar || data.name || '',
+    nameEn: data.name_en || data.name || '',
+    descriptionAr: data.description_ar || data.description || '',
+    descriptionEn: data.description_en || data.description || '',
     imageUrl: data.image_url || data.imageUrl
   };
 }
@@ -641,7 +643,9 @@ export const dbService = {
       .from('categories')
       .upsert([{
         id: category.id,
-        name: category.name,
+        name: category.nameAr || category.name,
+        name_ar: category.nameAr,
+        name_en: category.nameEn,
         slug: category.slug,
         image_url: category.imageUrl
       }]);
@@ -679,8 +683,11 @@ export const dbService = {
       .from('collections')
       .upsert([{
         id: collection.id || undefined,
-        name: collection.name,
-        description: collection.description,
+        name: collection.nameAr, // For legacy/compatibility
+        name_ar: collection.nameAr,
+        name_en: collection.nameEn,
+        description_ar: collection.descriptionAr,
+        description_en: collection.descriptionEn,
         image_url: collection.imageUrl
       }]);
     if (error) throw error;
@@ -1173,6 +1180,34 @@ export const dbService = {
     const { error } = await supabase.from('customers').upsert([customer]);
     if (error) throw error;
     await dbService.logActivity('SAVE_CUSTOMER', `Saved customer ${customer.email || customer.id}`);
+  },
+
+  getMediaAssets: async (): Promise<string[]> => {
+    try {
+      const { data, error } = await supabase
+        .storage
+        .from('products')
+        .list('', {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'created_at', order: 'desc' },
+        });
+
+      if (error) throw error;
+      if (!data) return [];
+
+      // Generate public URLs for all files
+      return data.map(file => {
+        const { data: { publicUrl } } = supabase
+          .storage
+          .from('products')
+          .getPublicUrl(file.name);
+        return publicUrl;
+      });
+    } catch (err) {
+      console.error('Error fetching media assets:', err);
+      return [];
+    }
   },
 
   // Seed Data if DB is empty

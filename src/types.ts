@@ -3,9 +3,9 @@ export type Currency = 'EGP' | 'SAR';
 
 export interface Category {
   id: string;
-  name: string;
-  nameAr?: string;
-  nameEn?: string;
+  name?: string; // Legacy
+  nameAr: string;
+  nameEn: string;
   slug: string;
   imageUrl?: string;
   seo?: {
@@ -48,6 +48,7 @@ export interface Settings {
   snapchatPixelId?: string;
   tiktokPixelId?: string;
   shippingRates?: ShippingRate[];
+  currency?: string;
   defaultShippingFee?: number;
 }
 
@@ -250,8 +251,10 @@ export interface InStockAlert {
 
 export interface Collection {
   id: string;
-  name: string;
-  description?: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   imageUrl?: string;
   createdAt?: string;
 }

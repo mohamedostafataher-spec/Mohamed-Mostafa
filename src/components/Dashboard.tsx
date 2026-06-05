@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2 } from 'lucide-react';
-import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection } from '../types';
+import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection, CustomerProfile } from '../types';
 import { dbService, supabase } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
 import { generateProductContent, generateBlogDrafts, generateCategorySeo, calculateSeoScore } from '../utils/seoContentEngine';
@@ -123,24 +123,26 @@ export default function Dashboard({
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Custom Categories States
-  const [newCatName, setNewCatName] = useState('');
+  const [newCatNameAr, setNewCatNameAr] = useState('');
+  const [newCatNameEn, setNewCatNameEn] = useState('');
   const [newCatSlug, setNewCatSlug] = useState('');
   const [newCatImage, setNewCatImage] = useState('');
   const [uploadingCatImage, setUploadingCatImage] = useState(false);
 
   // Custom Collections States
-  const [newColName, setNewColName] = useState('');
-  const [newColDesc, setNewColDesc] = useState('');
+  const [newColNameAr, setNewColNameAr] = useState('');
+  const [newColNameEn, setNewColNameEn] = useState('');
+  const [newColDescAr, setNewColDescAr] = useState('');
+  const [newColDescEn, setNewColDescEn] = useState('');
   const [newColImage, setNewColImage] = useState('');
   const [uploadingColImage, setUploadingColImage] = useState(false);
 
   // Media Library Assets
-  const [mediaAssets, setMediaAssets] = useState<string[]>([
-    "/src/assets/images/hero_sleepwear_luxury_1780620325112.png",
-    "/src/assets/images/sulta_box_closed_1780609086750.png",
-    "/src/assets/images/sulta_box_open_1780609104306.png"
-  ]);
+  const [mediaAssets, setMediaAssets] = useState<string[]>([]);
   const [uploadingMediaFile, setUploadingMediaFile] = useState(false);
+
+  // Real Customer Data
+  const [realCustomers, setRealCustomers] = useState<CustomerProfile[]>([]);
 
   // Sync CMS states when settings load
   useEffect(() => {
@@ -151,6 +153,31 @@ export default function Dashboard({
 
   const [bannersList, setBannersList] = useState<any[]>([]);
   const [bestSellersCms, setBestSellersCms] = useState({ title: '', subtitle: '' });
+
+  useEffect(() => {
+    const unsubCustomers = dbService.subscribeCustomers(
+      (data) => setRealCustomers(data),
+      (err) => console.error(err)
+    );
+
+    // Initial media fetch
+    dbService.getMediaAssets().then(setMediaAssets);
+
+    return () => {
+      unsubCustomers();
+    };
+  }, []);
+
+  const handleRefreshMedia = async () => {
+    const assets = await dbService.getMediaAssets();
+    setMediaAssets(assets);
+  };
+
+  useEffect(() => {
+    if (activeMenu === 'media') {
+      handleRefreshMedia();
+    }
+  }, [activeMenu]);
 
   useEffect(() => {
     const heroSec = homepageSections?.find(s => s.section_key === 'hero_banners');
@@ -170,7 +197,7 @@ export default function Dashboard({
         },
         { 
           id: 'slide-2',
-          mediaUrl: '/src/assets/images/sulta_box_closed_1780609086750.png', 
+          mediaUrl: '/src/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png', 
           title: 'SLEEPWEAR',
           subtitle: 'Exquisite Silk Satin Comfort',
           description: 'طواقم فاخرة من الحرير الطبيعي والدانتيل، مصممة بدقة لتلبي أعلى تطلعاتك وتزين خلوتك المنزلية بجمالية ساحرة.',
@@ -717,17 +744,19 @@ export default function Dashboard({
 
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCatName) return alert('الرجاء كتابة اسم القسم الراقي.');
-    const slug = newCatSlug.trim() || newCatName.trim().toLowerCase().replace(/\s+/g, '-');
+    if (!newCatNameAr || !newCatNameEn) return alert('الرجاء كتابة اسم القسم الراقي باللغتين.');
+    const slug = newCatSlug.trim() || newCatNameEn.trim().toLowerCase().replace(/\s+/g, '-');
     const newCat: Category = {
       id: `CAT-${slug.toUpperCase()}`,
-      name: newCatName,
+      nameAr: newCatNameAr,
+      nameEn: newCatNameEn,
       slug: slug,
       imageUrl: newCatImage || '/src/assets/images/hero_sleepwear_luxury_1780620325112.png'
     };
     try {
       await dbService.saveCategory(newCat);
-      setNewCatName('');
+      setNewCatNameAr('');
+      setNewCatNameEn('');
       setNewCatSlug('');
       setNewCatImage('');
       alert('تم حفظ وتنشيط القسم الملكي بنجاح!');
@@ -738,17 +767,21 @@ export default function Dashboard({
 
   const handleCreateCollection = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newColName) return alert('الرجاء كتابة اسم التشكيلة الفاخرة.');
+    if (!newColNameAr || !newColNameEn) return alert('الرجاء كتابة اسم التشكيلة الفاخرة باللغتين.');
     const newCol: Collection = {
       id: `COL-${Math.floor(100 + Math.random() * 900)}`,
-      name: newColName,
-      description: newColDesc,
-      imageUrl: newColImage || '/src/assets/images/sulta_box_closed_1780609086750.png'
+      nameAr: newColNameAr,
+      nameEn: newColNameEn,
+      descriptionAr: newColDescAr,
+      descriptionEn: newColDescEn,
+      imageUrl: newColImage || '/src/assets/images/sulta_boutique_display_1_1780682812541.png'
     };
     try {
       await dbService.saveCollection(newCol);
-      setNewColName('');
-      setNewColDesc('');
+      setNewColNameAr('');
+      setNewColNameEn('');
+      setNewColDescAr('');
+      setNewColDescEn('');
       setNewColImage('');
       alert('تم ضخ التشكيلة الفاخرة وحفظها بنجاح!');
     } catch (err) {
@@ -2525,9 +2558,66 @@ export default function Dashboard({
 
           {/* MENU 5: CUSTOMER DIRECTORY */}
           {activeMenu === 'customers' && (
-            <div className="space-y-6">
-              <h3 className="font-serif text-lg font-light pb-2 border-b border-gray-150 text-[#0B0B0B]">سجل زبائن نادي SULTA الفاخرين</h3>
-              <p className="text-gray-500 text-xs">جاري تطوير النظام المتقدم للعملاء (VIP + Loyality)...</p>
+            <div className="space-y-8 animate-fadeIn text-right dir-rtl" style={{ direction: 'rtl' }}>
+              <div className="border-b border-gray-150 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h3 className="font-serif text-2xl font-light text-[#0B0B0B] flex items-center gap-3 justify-start">
+                    <Users className="text-[#F4B6C2]" size={24} />
+                    <span>سجل عملاء SULTA المتميزين ⚜️</span>
+                  </h3>
+                  <p className="text-gray-400 text-xs font-sans mt-1">قاعدة بيانات حية للأعضاء المسجلين وتتبع نقاط الولاء والإنفاق الكلي.</p>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-150 rounded-2.5xl overflow-hidden">
+                <table className="w-full text-right border-collapse font-sans text-xs">
+                  <thead className="bg-[#0B0B0B] text-white">
+                    <tr>
+                      <th className="p-4 text-right">العميل</th>
+                      <th className="p-4 text-right">تاريخ الانضمام</th>
+                      <th className="p-4 text-right">المستوى</th>
+                      <th className="p-4 text-right">النقاط</th>
+                      <th className="p-4 text-right">إجمالي الإنفاق</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {realCustomers.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="p-10 text-center text-gray-400">لا يوجد عملاء مسجلين حالياً.</td>
+                      </tr>
+                    ) : (
+                      realCustomers.map((customer) => (
+                        <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center font-bold">
+                                {customer.firstName?.[0] || customer.email[0].toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="font-bold text-gray-900">{customer.firstName} {customer.lastName}</div>
+                                <div className="text-[10px] text-gray-500">{customer.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4 text-gray-500">{new Date(customer.joinedAt).toLocaleDateString('ar-EG')}</td>
+                          <td className="p-4">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              customer.loyaltyTier === 'diamond' ? 'bg-blue-100 text-blue-700' :
+                              customer.loyaltyTier === 'platinum' ? 'bg-purple-100 text-purple-700' :
+                              customer.loyaltyTier === 'gold' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-gray-100 text-gray-700'
+                            }`}>
+                              {customer.loyaltyTier.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="p-4 font-mono">{customer.points}</td>
+                          <td className="p-4 font-bold text-gray-900 line-clamp-1">{customer.totalSpent} {settings?.currency || 'SAR'}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
@@ -3872,25 +3962,38 @@ export default function Dashboard({
                 <h4 className="font-serif text-sm font-semibold text-gray-800">إضافة قسم منزلي فاخر جديد</h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم القسم (مثال: ملابس الحرير الفاخرة)</label>
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم القسم (عربي)</label>
                     <input
                       type="text"
-                      value={newCatName}
-                      onChange={(e) => setNewCatName(e.target.value)}
+                      value={newCatNameAr}
+                      onChange={(e) => setNewCatNameAr(e.target.value)}
                       placeholder="بيجامات نوم قطنية.."
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-right"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم القسم (إنجليزي)</label>
+                    <input
+                      type="text"
+                      value={newCatNameEn}
+                      onChange={(e) => setNewCatNameEn(e.target.value)}
+                      placeholder="Luxury Cotton Pajamas.."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5 text-right">
                     <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">رمز العنوان Slug (بالإنكليزية - مثال: silk-satin)</label>
                     <input
                       type="text"
                       value={newCatSlug}
                       onChange={(e) => setNewCatSlug(e.target.value)}
                       placeholder="silk-satin"
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left"
                     />
                   </div>
                 </div>
@@ -3963,7 +4066,7 @@ export default function Dashboard({
 
                       <div className="relative z-20 mt-auto p-5 text-white select-none">
                         <span className="text-[10px] uppercase font-mono tracking-widest text-[#F6E7A6] block mb-1">ID: {cat.id}</span>
-                        <h5 className="font-serif text-lg font-light tracking-wide">{cat.name}</h5>
+                        <h5 className="font-serif text-lg font-light tracking-wide">{cat.nameAr} | {cat.nameEn}</h5>
                         <p className="text-[10px] text-gray-300 font-sans mt-0.5">Slug Link: /{cat.slug}</p>
                       </div>
                     </div>
@@ -3988,25 +4091,48 @@ export default function Dashboard({
                 <h4 className="font-serif text-sm font-semibold text-gray-800">صياغة تشكيلة أو ألبوم مبيعات جديد</h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم التشكيلة (مثال: طاقم استرخاء الحرير الأرجواني)</label>
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم التشكيلة (عربي)</label>
                     <input
                       type="text"
-                      value={newColName}
-                      onChange={(e) => setNewColName(e.target.value)}
-                      placeholder="تشكيلة العرائس دبي 2026..."
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                      value={newColNameAr}
+                      onChange={(e) => setNewColNameAr(e.target.value)}
+                      placeholder="تشكيلة العرائس..."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-right"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">وصف موجز للمجموعة الحصرية</label>
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">اسم التشكيلة (إنجليزي)</label>
                     <input
                       type="text"
-                      value={newColDesc}
-                      onChange={(e) => setNewColDesc(e.target.value)}
-                      placeholder="أرقى تصاميم التول المزين بالدانتيل الحريري اللامع..."
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B]"
+                      value={newColNameEn}
+                      onChange={(e) => setNewColNameEn(e.target.value)}
+                      placeholder="Bridal Collection..."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">وصف المجموعة (عربي)</label>
+                    <input
+                      type="text"
+                      value={newColDescAr}
+                      onChange={(e) => setNewColDescAr(e.target.value)}
+                      placeholder="أرقى تصاميم الحرير..."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-right"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">وصف المجموعة (إنجليزي)</label>
+                    <input
+                      type="text"
+                      value={newColDescEn}
+                      onChange={(e) => setNewColDescEn(e.target.value)}
+                      placeholder="Exquisite silk designs..."
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left"
                     />
                   </div>
                 </div>
@@ -4063,7 +4189,7 @@ export default function Dashboard({
                     <div key={col.id} className="group bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between h-72 relative">
                       <img 
                         src={col.imageUrl} 
-                        alt={col.name} 
+                        alt={col.nameAr} 
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-102 transition-transform duration-700 brightness-75"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10" />
@@ -4079,8 +4205,8 @@ export default function Dashboard({
 
                       <div className="relative z-20 mt-auto p-6 text-white select-none">
                         <span className="text-[10px] uppercase font-mono tracking-widest text-[#F6E7A6] block mb-1">COLLECTION CODE: {col.id}</span>
-                        <h5 className="font-serif text-2xl font-light tracking-wide">{col.name}</h5>
-                        {col.description && <p className="text-xs text-gray-300 font-sans mt-1 max-w-md leading-relaxed">{col.description}</p>}
+                        <h5 className="font-serif text-2xl font-light tracking-wide">{col.nameAr} | {col.nameEn}</h5>
+                        {col.descriptionAr && <p className="text-xs text-gray-300 font-sans mt-1 max-w-md leading-relaxed">{col.descriptionAr}</p>}
                       </div>
                     </div>
                   ))}
