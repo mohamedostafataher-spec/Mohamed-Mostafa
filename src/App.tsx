@@ -27,6 +27,7 @@ import { recordView, recordCartAddition } from './utils/analytics';
 
 // @ts-ignore
 import sultaBoxClosed from './assets/images/sulta_box_closed_1780609086750.png';
+// @ts-ignore
 import sultaBoxOpen from './assets/images/sulta_box_open_1780609104306.png';
 
 export default function App() {
@@ -46,6 +47,7 @@ function AppContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [aiSplashImage, setAiSplashImage] = useState<string | null>(null);
   const [activeBoxImg, setActiveBoxImg] = useState<number>(0);
 
   const boxImages = [
@@ -68,6 +70,20 @@ function AppContent() {
         return prev + Math.floor(Math.random() * 12) + 5;
       });
     }, 120);
+
+    // Fetch AI Splash Image
+    const fetchAiSplash = async () => {
+      try {
+        const res = await fetch('/api/generate-splash');
+        const data = await res.json();
+        if (data.imageUrl) {
+          setAiSplashImage(data.imageUrl);
+        }
+      } catch (err) {
+        console.error("Splash image generate error:", err);
+      }
+    };
+    fetchAiSplash();
 
     return () => {
       clearInterval(interval);
@@ -424,8 +440,21 @@ function AppContent() {
       
       {/* SCREEN 1: BRAND SPLASH SCREEN OVERLAY */}
       {showSplash && (
-        <div className="fixed inset-0 bg-[#0B0B0B] z-[100] flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
-          <div className="max-w-md w-full space-y-6 relative">
+        <div className="fixed inset-0 bg-[#0B0B0B] z-[100] flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in overflow-hidden">
+          {/* AI Generated Background Layer */}
+          {aiSplashImage && (
+            <div className="absolute inset-0 z-0 animate-fade-in duration-1000">
+              <img 
+                src={aiSplashImage} 
+                className="w-full h-full object-cover opacity-20 scale-110 blur-sm" 
+                alt="AI Generated Background"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0B] via-transparent to-[#0B0B0B]" />
+            </div>
+          )}
+
+          <div className="max-w-md w-full space-y-6 relative z-10">
             <div className="space-y-3">
               <span className="text-[10px] text-[#F4B6C2] font-semibold tracking-[0.3em] uppercase block animate-pulse font-sans">
                 ✦ BIENVENUE DANS L'ATELIER SULTA ✦
@@ -434,9 +463,16 @@ function AppContent() {
                 SULTA
               </h1>
               <div className="w-12 h-[1px] bg-white/20 mx-auto my-3" />
-              <span className="text-[10.5px] font-serif italic text-[#F6E7A6] tracking-wider block">
-                Where Comfort Meets Elegance
-              </span>
+              <div className="flex flex-col items-center space-y-1">
+                <span className="text-[10.5px] font-serif italic text-[#F6E7A6] tracking-wider block">
+                  Where Comfort Meets Elegance
+                </span>
+                {aiSplashImage && (
+                  <span className="text-[8px] text-[#F4B6C2]/60 font-sans tracking-widest uppercase">
+                    AI Visual Re-generated
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Custom high quality loading percentage bar */}
@@ -515,31 +551,45 @@ function AppContent() {
                     SELECT YOUR RETREAT
                   </p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-5xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-6xl mx-auto">
                   {categories.slice(0, 4).map((category) => (
                     <div
                       key={category.id}
                       onClick={() => handleSelectCategoryHome(category.id)}
-                      className="group flex flex-col items-center cursor-pointer text-center"
+                      className="group relative flex flex-col items-center cursor-pointer text-center aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-700"
                     >
-                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-md group-hover:border-[#DF8A9D]/40 transition-all duration-500 mb-4 bg-white relative">
+                      {/* Category Background Image */}
+                      <div className="absolute inset-0 bg-white">
                         {category.imageUrl && (
                           <img
                             src={category.imageUrl}
                             alt={category.name}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-90"
+                            className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-[1200ms] opacity-90"
                             referrerPolicy="no-referrer"
                           />
                         )}
-                        <div className="absolute inset-0 bg-[#A44C5C]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-[#A44C5C]/20 transition-colors" />
                       </div>
-                      <h4 className="text-[#0B0B0B] font-serif tracking-widest text-sm uppercase font-semibold">
-                        {category.name === 'sleepwear' ? 'Sleepwear / ملابس نوم' :
-                         category.name === 'loungewear' ? 'Loungewear / استرخاء' :
-                         category.name === 'homewear' ? 'Homewear / منزلي' :
-                         category.name === 'collections' ? 'Collections / التشكيلة' : category.name}
-                      </h4>
-                      <span className="text-[#A44C5C] text-[11px] font-sans mt-1 group-hover:underline underline-offset-4 tracking-[0.2em] uppercase font-medium">Shop Now</span>
+
+                      {/* Glassmorphism Title Box */}
+                      <div className="absolute bottom-4 left-4 right-4 p-4 rounded-3xl bg-white/40 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_0_rgba(255,255,255,0.18)] ring-1 ring-white/20 transform group-hover:-translate-y-2 transition-transform duration-500">
+                        <h4 className="text-[#0B0B0B] font-serif tracking-[0.1em] text-xs md:text-sm uppercase font-bold leading-tight">
+                          {category.name === 'sleepwear' ? 'Sleepwear' :
+                           category.name === 'loungewear' ? 'Loungewear' :
+                           category.name === 'homewear' ? 'Homewear' :
+                           category.name === 'collections' ? 'Collections' : category.name}
+                        </h4>
+                        <div className="h-[1px] w-6 bg-[#A44C5C]/40 mx-auto my-1.5 group-hover:w-full transition-all duration-700" />
+                        <h5 className="text-[10px] md:text-xs text-[#A44C5C] font-serif italic mb-1">
+                          {category.name === 'sleepwear' ? 'ملابس نوم' :
+                           category.name === 'loungewear' ? 'ملابس استرخاء' :
+                           category.name === 'homewear' ? 'ملابس منزلية' :
+                           category.name === 'collections' ? 'التشكيلات' : ''}
+                        </h5>
+                        <span className="text-[9px] text-[#A44C5C]/80 font-sans tracking-widest uppercase font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          Discover ✦
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
