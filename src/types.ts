@@ -67,7 +67,7 @@ export interface Product {
   washInstructionsAr: string;
   images: string[];
   video?: string; // video link
-  colors: { name: string; hex: string }[];
+  colors: { name: string; hex: string; images?: string[] }[];
   sizes: string[];
   isBestSeller?: boolean;
   featured?: boolean;

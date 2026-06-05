@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy } from 'lucide-react';
+import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
 import { PACKAGING_INFO } from '../data';
@@ -32,7 +33,37 @@ export default function ProductDetailModal({
 }: ProductDetailModalProps) {
   const { toast } = useToast();
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [direction, setDirection] = useState(0); // 1 for right, -1 for left
+
   const [selectedCol, setSelectedCol] = useState(product.colors[0]);
+  
+  // Luxury Gallery Logic: Show color-specific images if they exist, otherwise show all product images
+  const displayImages = (selectedCol && selectedCol.images && selectedCol.images.length > 0) 
+    ? selectedCol.images 
+    : product.images;
+
+  // Sync active image if it goes out of bounds for the current display images
+  React.useEffect(() => {
+    if (activeImageIdx >= displayImages.length) {
+      setActiveImageIdx(0);
+    }
+  }, [displayImages]);
+
+  const nextImage = () => {
+    setDirection(1);
+    setActiveImageIdx((prev) => (prev + 1) % (displayImages.length || 1));
+    setVideoPlaying(false);
+    setIsMacroZoomActive(false);
+    setIs360Active(false);
+  };
+
+  const prevImage = () => {
+    setDirection(-1);
+    setActiveImageIdx((prev) => (prev - 1 + (displayImages.length || 1)) % (displayImages.length || 1));
+    setVideoPlaying(false);
+    setIsMacroZoomActive(false);
+    setIs360Active(false);
+  };
   const [selectedSz, setSelectedSz] = useState(product.sizes[0] || 'S');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'wash' | 'pack' | 'size' | 'ship' | 'reviews' | 'questions'>('desc');
@@ -381,7 +412,7 @@ export default function ProductDetailModal({
                 <div className="flex-1 flex flex-col justify-center items-center space-y-4">
                   <div className="relative w-48 h-60 rounded-xl overflow-hidden border border-[#F6E7A6]/20 bg-black/40 flex items-center justify-center shadow-lg group">
                     <img 
-                      src={product.images[rotationFrameIndex % product.images.length]} 
+                      src={displayImages[rotationFrameIndex % displayImages.length]} 
                       alt="360 view"
                       className="w-full h-full object-cover transition-all duration-100 ease-out transform"
                     />
@@ -498,14 +529,45 @@ export default function ProductDetailModal({
                 </div>
               </div>
             ) : (
-              <>
-                <img
-                  src={product.images[activeImageIdx]}
-                  alt={product.nameAr}
-                  style={zoomStyle}
-                  className="w-full h-full object-cover object-center transition-transform duration-150 ease-out origin-center"
-                />
-              </>
+              <div className="relative w-full h-full group/main">
+                <AnimatePresence initial={false} custom={direction}>
+                  <motion.div
+                    key={activeImageIdx}
+                    custom={direction}
+                    initial={{ opacity: 0, x: direction > 0 ? 300 : -300 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: direction > 0 ? -300 : 300 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute inset-0"
+                  >
+                    <img
+                      src={displayImages[activeImageIdx]}
+                      alt={product.nameAr}
+                      style={zoomStyle}
+                      className="w-full h-full object-cover object-center transition-transform duration-150 ease-out origin-center select-none"
+                      referrerPolicy="no-referrer"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Navigation Arrows */}
+                {displayImages.length > 1 && (
+                  <>
+                    <button 
+                      onClick={prevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/40 hover:bg-white/80 p-2 rounded-full backdrop-blur-md transition-all opacity-0 group-hover/main:opacity-100 z-10 cursor-pointer"
+                    >
+                      <ChevronLeft size={20} className="text-gray-900" />
+                    </button>
+                    <button 
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/40 hover:bg-white/80 p-2 rounded-full backdrop-blur-md transition-all opacity-0 group-hover/main:opacity-100 z-10 cursor-pointer"
+                    >
+                      <ChevronRight size={20} className="text-gray-900" />
+                    </button>
+                  </>
+                )}
+              </div>
             )}
 
             {/* Corner label indicator */}
@@ -520,7 +582,7 @@ export default function ProductDetailModal({
           <div className="flex gap-2 select-none pt-2 justify-between items-center bg-white/45 p-2 rounded-xl border border-gray-150">
             <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
               {/* Image Thumbnails */}
-              {product.images.map((img, idx) => (
+              {displayImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => {
@@ -533,7 +595,7 @@ export default function ProductDetailModal({
                     !videoPlaying && !isMacroZoomActive && !is360Active && activeImageIdx === idx ? 'border-[#F4B6C2] scale-103 shadow-sm' : 'border-transparent opacity-85'
                   }`}
                 >
-                  <img src={img} alt="Thumb" className="w-full h-full object-cover object-center" />
+                  <img src={img} alt="Thumb" className="w-full h-full object-cover object-center" referrerPolicy="no-referrer" />
                 </button>
               ))}
 

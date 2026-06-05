@@ -101,6 +101,13 @@ export default function Dashboard({
   const [newProdStock, setNewProdStock] = useState(10);
   const [newProdVideo, setNewProdVideo] = useState('');
   const [newProdDescAr, setNewProdDescAr] = useState('');
+  // Management for colors
+  const [newProdColors, setNewProdColors] = useState<Product['colors']>([
+    { name: 'وردي ناعم', hex: '#F4B6C2', images: [] },
+    { name: 'أوف وايت الملكي', hex: '#FAFAF7', images: [] }
+  ]);
+  const [newColorName, setNewColorName] = useState('');
+  const [newColorHex, setNewColorHex] = useState('#000000');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -112,6 +119,9 @@ export default function Dashboard({
   const [editProdDescAr, setEditProdDescAr] = useState('');
   const [editProdVideo, setEditProdVideo] = useState('');
   const [editProdImages, setEditProdImages] = useState<string[]>([]);
+  const [editProdColors, setEditProdColors] = useState<Product['colors']>([]);
+  const [editColorName, setEditColorName] = useState('');
+  const [editColorHex, setEditColorHex] = useState('#000000');
   const [uploadingEditImage, setUploadingEditImage] = useState(false);
 
   // CMS States
@@ -588,21 +598,28 @@ export default function Dashboard({
 
     setUploadingImage(true);
     let successUrls: string[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const url = await dbService.uploadImage(files[i]);
-      if (url) {
-        successUrls.push(url);
-        setMediaAssets(prev => [url, ...prev]);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const url = await dbService.uploadImage(files[i]);
+        if (url) {
+          successUrls.push(url);
+          setMediaAssets(prev => [url, ...prev]);
+        }
       }
-    }
 
-    if (successUrls.length > 0) {
-      setUploadedImages(prev => [...prev, ...successUrls]);
-      setTempImageUrl(successUrls[0]);
-    } else {
-      alert('خطأ في الرفع لكافة الصور المحددة في سوبابيس');
+      if (successUrls.length > 0) {
+        setUploadedImages(prev => [...prev, ...successUrls]);
+        // Also update tempImageUrl to ensure some image is shown as primary
+        if (!tempImageUrl) setTempImageUrl(successUrls[0]);
+      } else {
+        alert('حدث خطأ أثناء رفع الصور لسوبابيس. يرجى التأكد من اتصال الإنترنت وحجم الصور.');
+      }
+    } catch (err) {
+      console.error("Upload process failed:", err);
+      alert('فشل نظام الرفع. يرجى المحاولة بصورة واحدة تلو الأخرى.');
+    } finally {
+      setUploadingImage(false);
     }
-    setUploadingImage(false);
   };
 
   const handleCatImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -805,6 +822,11 @@ export default function Dashboard({
 
     const newId = `SULTA-${newProdCategory.substring(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
     
+    // Final choice of images: use uploaded ones, then temp, then default
+    const finalImages = uploadedImages.length > 0 
+      ? uploadedImages 
+      : (tempImageUrl ? [tempImageUrl] : ['/src/assets/images/hero_sleepwear_luxury_1780620325112.png']);
+
     // Initial fields
     let initialProduct: Product = {
       id: newId,
@@ -819,13 +841,10 @@ export default function Dashboard({
       fabricAr: 'ساتان إيطالي ناعم وحريري مخملي',
       fabricEn: 'Silky Fine Italian Thread blend',
       washInstructionsAr: 'غسيل يدوي أو غسيل جاف فقط، لا تستخدمي المبيضات لتألق يدوم طويلاً.',
-      images: uploadedImages.length > 0 ? uploadedImages : (tempImageUrl ? [tempImageUrl] : ['/src/assets/images/hero_sleepwear_luxury_1780620325112.png']),
+      images: finalImages,
       video: newProdVideo.trim() || undefined,
-      colors: [
-        { name: 'وردي ناعم', hex: '#F4B6C2' },
-        { name: 'أوف وايت', hex: '#FAFAF7' }
-      ],
-      sizes: ['S', 'M', 'L'],
+      colors: newProdColors,
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
       isBestSeller: false,
       rating: 5.0,
       reviewsCount: 0,
@@ -876,6 +895,10 @@ export default function Dashboard({
       setNewProdVideo('');
       setTempImageUrl('');
       setUploadedImages([]);
+      setNewProdCategory('new');
+      setNewProdStock(10);
+      setNewProdPriceEG(0);
+      setNewProdPriceSA(0);
       alert('تم ضخ القطعة الراقية لـ SULTA وتوليد بيانات الـ SEO ومحركات البحث كاملة بنجاح وتخزينها في سوبابيس!');
     } catch (err) {
       console.error("Failed to insert product in DB:", err);
@@ -898,6 +921,7 @@ export default function Dashboard({
       stock: editProdStock,
       descriptionAr: editProdDescAr,
       video: editProdVideo.trim() || undefined,
+      colors: editProdColors,
       images: editProdImages.length > 0 ? editProdImages : (editingProduct.images || [])
     };
 
@@ -2156,6 +2180,57 @@ export default function Dashboard({
                   </div>
                 </div>
 
+                <div className="space-y-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-150">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-gray-400">يمكنك إضافة ألوان محددة لكل قطعة بدقة</span>
+                    <label className="text-gray-600 block font-bold text-sm">تخصيص تلوينات Sulta الفاخرة 🎨</label>
+                  </div>
+                  <div className="flex gap-2 mb-2">
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if (newColorName) {
+                          setNewProdColors(prev => [...prev, { name: newColorName, hex: newColorHex, images: [] }]);
+                          setNewColorName('');
+                        }
+                      }}
+                      className="bg-[#0B0B0B] text-[#F6E7A6] px-4 py-2 rounded-lg text-xs font-serif"
+                    >
+                      إضافة لون جديد
+                    </button>
+                    <div className="flex-1 flex gap-2">
+                      <input 
+                        type="color" 
+                        className="w-10 h-9 rounded-lg cursor-pointer border border-gray-200"
+                        value={newColorHex}
+                        onChange={e => setNewColorHex(e.target.value)}
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="اسم اللون (مثلاً: أزرق ملكي)" 
+                        className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs text-right"
+                        value={newColorName}
+                        onChange={e => setNewColorName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-end">
+                    {newProdColors.map((col, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
+                        <button 
+                          type="button"
+                          onClick={() => setNewProdColors(prev => prev.filter((_, i) => i !== idx))}
+                          className="text-red-400 hover:text-red-600 mr-1"
+                        >
+                          <X size={10} />
+                        </button>
+                        <span className="text-[10px] font-sans font-medium">{col.name}</span>
+                        <div className="w-3 h-3 rounded-full border border-gray-100" style={{ backgroundColor: col.hex }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-gray-400 block font-bold">صور القطعة والمعرض المرئي * (يمكنك تحديد صور متعددة)</label>
                   <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-thin">
@@ -2268,6 +2343,7 @@ export default function Dashboard({
                                   setEditProdDescAr(p.descriptionAr);
                                   setEditProdVideo(p.video || '');
                                   setEditProdImages(p.images || []);
+                                  setEditProdColors(p.colors || []);
                                 }}
                                 className="text-blue-500 hover:text-[#0B0B0B] text-xs transition-colors cursor-pointer"
                                 title="تعديل تفاصيل القطعة والصور"
@@ -2409,6 +2485,54 @@ export default function Dashboard({
                             />
                             {uploadingMediaFile ? <div className="w-4 h-4 border-2 border-[#A44C5C] border-t-transparent rounded-full animate-spin" /> : <Upload size={16} />}
                           </label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-150 my-2">
+                        <label className="text-gray-600 block font-bold text-sm">تخصيص تلوينات Sulta الفاخرة للقطع 🎨</label>
+                        <div className="flex gap-2">
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (editColorName) {
+                                setEditProdColors(prev => [...prev, { name: editColorName, hex: editColorHex, images: [] }]);
+                                setEditColorName('');
+                              }
+                            }}
+                            className="bg-[#0B0B0B] text-[#F6E7A6] px-4 py-2 rounded-lg text-xs font-serif"
+                          >
+                            تحديث/إضافة لون
+                          </button>
+                          <div className="flex-1 flex gap-2">
+                            <input 
+                              type="color" 
+                              className="w-10 h-9 rounded-lg cursor-pointer border border-gray-200"
+                              value={editColorHex}
+                              onChange={e => setEditColorHex(e.target.value)}
+                            />
+                            <input 
+                              type="text" 
+                              placeholder="اسم اللون" 
+                              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs text-right"
+                              value={editColorName}
+                              onChange={e => setEditColorName(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 justify-end">
+                          {editProdColors.map((col, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-150 shadow-sm">
+                              <button 
+                                type="button"
+                                onClick={() => setEditProdColors(prev => prev.filter((_, i) => i !== idx))}
+                                className="text-red-400 hover:text-red-600 mr-1"
+                              >
+                                <X size={10} />
+                              </button>
+                              <span className="text-[10px] font-sans font-medium">{col.name}</span>
+                              <div className="w-3 h-3 rounded-full border border-gray-100" style={{ backgroundColor: col.hex }} />
+                            </div>
+                          ))}
                         </div>
                       </div>
 
