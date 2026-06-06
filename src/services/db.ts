@@ -465,9 +465,11 @@ export const dbService = {
   
   uploadImage: async (file: File): Promise<string | null> => {
     try {
-      // Sanitize filename
-      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.]/g, '_').toLowerCase();
-      const fileName = `${Date.now()}_${sanitizedName}`;
+      // Use a completely safe filename structure to avoid "Invalid path specified" error
+      const fileExt = file.name ? file.name.split('.').pop()?.replace(/[^a-zA-Z0-9]/g, '') : '';
+      const safeExtension = fileExt ? fileExt.toLowerCase() : (file.type ? file.type.split('/')[1] : 'jpeg');
+      const randomString = Math.random().toString(36).substring(2, 10);
+      const fileName = `${Date.now()}_${randomString}.${safeExtension || 'jpg'}`;
       
       console.log(`[Supabase Storage] Uploading to bucket 'products', file: ${fileName}`);
 
@@ -893,45 +895,64 @@ export const dbService = {
     const allowedCategories = ['satin', 'cotton', 'loungewear', 'dresses', 'new'];
     const safeCategory = allowedCategories.includes(product.category) ? product.category : 'new';
 
-    const { error } = await supabase
-      .from('products')
-      .upsert([{
-        id: product.id,
-        name_ar: product.nameAr,
-        name_en: product.nameEn,
-        category: safeCategory,
-        category_id: product.category || 'new',
-        category_ar: product.categoryAr,
-        price: product.priceEG || product.priceSA || 0,
-        price_eg: product.priceEG,
-        price_sa: product.priceSA,
-        description_ar: product.descriptionAr,
-        description_en: product.descriptionEn,
-        fabric_ar: product.fabricAr,
-        fabric_en: product.fabricEn,
-        wash_instructions_ar: product.washInstructionsAr,
-        images: product.images || [],
-        video: product.video || null,
-        colors: JSON.stringify(product.colors || []),
-        sizes: product.sizes || [],
-        is_best_seller: product.isBestSeller,
-        featured: product.featured || false,
-        status: product.status || 'active',
-        sku: product.sku || null,
-        sale_price: product.salePriceSA || product.salePriceEG || null,
-        sale_price_sa: product.salePriceSA || null,
-        sale_price_eg: product.salePriceEG || null,
-        stock: product.stock,
-        rating: product.rating,
-        reviews_count: product.reviewsCount,
-        short_description: product.shortDescription || null,
-        tags: JSON.stringify(product.tags || []),
-        collection: product.collection || null,
-        name: product.nameEn,
-        slug: product.id.toLowerCase().replace(/\s+/g, '-'),
-        description: product.descriptionEn,
-        seo: product.seo ? JSON.stringify(product.seo) : null
-      }]);
+    const payload: any = {
+      id: product.id,
+      name_ar: product.nameAr,
+      name_en: product.nameEn,
+      category: safeCategory,
+      category_id: product.category || 'new',
+      category_ar: product.categoryAr,
+      price: product.priceEG || product.priceSA || 0,
+      price_eg: product.priceEG,
+      price_sa: product.priceSA,
+      description_ar: product.descriptionAr,
+      description_en: product.descriptionEn,
+      fabric_ar: product.fabricAr,
+      fabric_en: product.fabricEn,
+      wash_instructions_ar: product.washInstructionsAr,
+      images: product.images || [],
+      video: product.video || null,
+      colors: JSON.stringify(product.colors || []),
+      sizes: product.sizes || [],
+      is_best_seller: product.isBestSeller,
+      featured: product.featured || false,
+      status: product.status || 'active',
+      sku: product.sku || null,
+      sale_price: product.salePriceSA || product.salePriceEG || null,
+      sale_price_sa: product.salePriceSA || null,
+      sale_price_eg: product.salePriceEG || null,
+      stock: product.stock,
+      rating: product.rating,
+      reviews_count: product.reviewsCount,
+      short_description: product.shortDescription || null,
+      tags: JSON.stringify(product.tags || []),
+      collection: product.collection || null,
+      name: product.nameEn,
+      slug: product.id.toLowerCase().replace(/\s+/g, '-'),
+      description: product.descriptionEn,
+      seo: product.seo ? JSON.stringify(product.seo) : null
+    };
+
+    let { error } = await supabase.from('products').upsert([payload]);
+
+    let retries = 30;
+    while (error && error.message && error.message.includes('Could not find the') && retries > 0) {
+      console.warn("[DB] Schema cache issue:", error.message);
+      
+      const match = error.message.match(/Could not find the '([^']+)' column/);
+      if (match && match[1]) {
+        const colName = match[1];
+        console.warn(`[DB] Removing column '${colName}' to bypass schema cache...`);
+        delete payload[colName];
+        
+        const retryRes = await supabase.from('products').upsert([payload]);
+        error = retryRes.error;
+      } else {
+        break;
+      }
+      retries--;
+    }
+
     if (error) throw error;
   },
 

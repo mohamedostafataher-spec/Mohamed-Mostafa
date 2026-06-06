@@ -5763,7 +5763,7 @@ export default function Dashboard({
                 <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                   <h4 className="font-bold text-sm text-gray-850 mb-4">مناطق الشحن الحالية</h4>
 
-                  {shippingRatesState.length === 0 ? (
+                  {(!Array.isArray(shippingRatesState) || shippingRatesState.length === 0) ? (
                     <div className="text-center py-8 text-gray-400 text-xs">
                       لا يوجد مناطق شحن مضافة بعد. سيتم تطبيق القيمة الافتراضية على جميع الطلبات.
                     </div>
@@ -5779,7 +5779,7 @@ export default function Dashboard({
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                          {shippingRatesState.map((zone, idx) => (
+                          {Array.isArray(shippingRatesState) && shippingRatesState.map((zone, idx) => (
                             <tr key={idx} className="hover:bg-gray-55">
                               <td className="py-3 font-medium text-gray-850">{zone.regionAr}</td>
                               <td className="py-3 text-gray-650">{zone.regionEn}</td>
