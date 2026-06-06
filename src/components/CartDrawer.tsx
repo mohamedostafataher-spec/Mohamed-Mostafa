@@ -155,7 +155,7 @@ export default function CartDrawer({
                               <span className="w-1.5 h-1.5 rounded-full inline-block border border-gray-200" style={{ backgroundColor: item.selectedColor?.hex || '#ccc' }} />
                               {item.selectedColor?.name || 'افتراضي'}
                             </span>
-                            <span className="bg-gray-100 px-2 py-0.5 rounded-md">المقاس: {item.selectedSize}</span>
+                            <span className="bg-gray-100 px-2 py-0.5 rounded-md">المقاس: مقاس واحد (One Size)</span>
                           </div>
                         </div>
 
