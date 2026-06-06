@@ -35,7 +35,7 @@ export default function ProductDetailModal({
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [direction, setDirection] = useState(0); // 1 for right, -1 for left
 
-  const [selectedCol, setSelectedCol] = useState(product.colors[0]);
+  const [selectedCol, setSelectedCol] = useState(product.colors[0] || { name: 'Default', hex: '#000000', images: [] });
   
   // Luxury Gallery Logic: Show color-specific images if they exist, otherwise show all product images
   const displayImages = (selectedCol && selectedCol.images && selectedCol.images.length > 0) 
@@ -540,13 +540,21 @@ export default function ProductDetailModal({
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className="absolute inset-0"
                   >
-                    <img
-                      src={displayImages[activeImageIdx]}
-                      alt={product.nameAr}
-                      style={zoomStyle}
-                      className="w-full h-full object-cover object-center transition-transform duration-150 ease-out origin-center select-none"
-                      referrerPolicy="no-referrer"
-                    />
+                    {displayImages[activeImageIdx]?.match(/\.(mp4|webm|ogg|mov)$/i) || displayImages[activeImageIdx]?.includes('video') ? (
+                       <video
+                          src={displayImages[activeImageIdx]}
+                          className="w-full h-full object-cover object-center select-none"
+                          autoPlay muted loop playsInline
+                       />
+                    ) : (
+                       <img
+                         src={displayImages[activeImageIdx]}
+                         alt={product.nameAr}
+                         style={zoomStyle}
+                         className="w-full h-full object-cover object-center transition-transform duration-150 ease-out origin-center select-none"
+                         referrerPolicy="no-referrer"
+                       />
+                    )}
                   </motion.div>
                 </AnimatePresence>
 
@@ -595,7 +603,11 @@ export default function ProductDetailModal({
                     !videoPlaying && !isMacroZoomActive && !is360Active && activeImageIdx === idx ? 'border-[#F4B6C2] scale-103 shadow-sm' : 'border-transparent opacity-85'
                   }`}
                 >
-                  <img src={img} alt="Thumb" className="w-full h-full object-cover object-center" referrerPolicy="no-referrer" />
+                  {img?.match(/\.(mp4|webm|ogg|mov)$/i) || img?.includes('video') ? (
+                     <video src={img} className="w-full h-full object-cover object-center" muted playsInline />
+                  ) : (
+                     <img src={img} alt="Thumb" className="w-full h-full object-cover object-center" referrerPolicy="no-referrer" />
+                  )}
                 </button>
               ))}
 
@@ -1422,7 +1434,7 @@ ${shareUrl}`;
                   <button
                     type="button"
                     onClick={() => {
-                      onAddToCart(matchedPairProduct, matchedPairProduct.colors[0], matchedPairProduct.sizes[0], 1);
+                      onAddToCart(matchedPairProduct, matchedPairProduct.colors?.[0] || { name: 'Default', hex: '#000000', images: [] }, matchedPairProduct.sizes?.[0] || 'S', 1);
                       toast('تمت إضافة التنسيق المكمل (الكيمونو/البيجامة) إلى سلتكِ بنجاح! 🌸', 'success');
                     }}
                     className="bg-[#0B0B0B] text-white hover:bg-[#DF8A9C] p-2 rounded-xl transition-all cursor-pointer shrink-0"

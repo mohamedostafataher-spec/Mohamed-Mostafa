@@ -228,19 +228,27 @@ export default function StoreView({
                       {/* Image Area */}
                       <div className="relative aspect-[3/4] bg-[#FAF5F0] mb-4 overflow-hidden rounded-sm">
                         
-                        <img 
-                          src={product.images[0]} 
-                          alt={product.nameEn || product.nameAr} 
-                          className={`w-full h-full object-cover transition-opacity duration-700 ${isHovered && product.images[1] ? 'opacity-0' : 'opacity-100'} mix-blend-multiply`}
-                          referrerPolicy="no-referrer"
-                        />
-                        {product.images[1] && (
+                        {product.images[0]?.match(/\.(mp4|webm|ogg|mov)$/i) || product.images[0]?.includes('video') ? (
+                          <video src={product.images[0]} className={`w-full h-full object-cover transition-opacity duration-700 ${isHovered && product.images[1] ? 'opacity-0' : 'opacity-100'}`} autoPlay muted loop playsInline />
+                        ) : (
                           <img 
-                            src={product.images[1]} 
-                            alt={`${product.nameEn || product.nameAr} - View 2`} 
-                            className={`w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-700 ${isHovered ? 'opacity-100' : 'opacity-0'} mix-blend-multiply`}
+                            src={product.images[0]} 
+                            alt={product.nameEn || product.nameAr} 
+                            className={`w-full h-full object-cover transition-opacity duration-700 ${isHovered && product.images[1] ? 'opacity-0' : 'opacity-100'} mix-blend-multiply`}
                             referrerPolicy="no-referrer"
                           />
+                        )}
+                        {product.images[1] && (
+                          product.images[1]?.match(/\.(mp4|webm|ogg|mov)$/i) || product.images[1]?.includes('video') ? (
+                             <video src={product.images[1]} className={`w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-700 ${isHovered ? 'opacity-100' : 'opacity-0'}`} autoPlay muted loop playsInline />
+                          ) : (
+                             <img 
+                               src={product.images[1]} 
+                               alt={`${product.nameEn || product.nameAr} - View 2`} 
+                               className={`w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-700 ${isHovered ? 'opacity-100' : 'opacity-0'} mix-blend-multiply`}
+                               referrerPolicy="no-referrer"
+                             />
+                          )
                         )}
 
                         {/* Top Right Wishlist Button */}

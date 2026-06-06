@@ -59,7 +59,11 @@ function SortableProductRow({ product }: SortableProductRowProps) {
       >
         <Shuffle size={14} className="text-gray-400" />
       </div>
-      <img src={product.images[0]} className="w-10 h-10 object-cover rounded-lg" alt="" />
+      {product.images[0]?.match(/\.(mp4|webm|ogg|mov)$/i) || product.images[0]?.includes('video') ? (
+         <video src={product.images[0]} className="w-10 h-10 object-cover rounded-lg" autoPlay muted loop playsInline />
+      ) : (
+         <img src={product.images[0]} className="w-10 h-10 object-cover rounded-lg" alt="" />
+      )}
       <div className="flex-1 min-w-0">
         <h5 className="text-xs font-bold text-gray-900 truncate">{product.nameAr}</h5>
         <span className="text-[10px] text-gray-400 font-mono block">{product.sku} | {product.categoryAr}</span>

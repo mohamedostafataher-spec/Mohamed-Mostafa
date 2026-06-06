@@ -159,7 +159,7 @@ export default function CheckoutModal({
           return {
             productId: item.product.id,
             productName: item.product.nameAr,
-            color: item.selectedColor.name,
+            color: item.selectedColor?.name || 'افتراضي',
             size: item.selectedSize,
             quantity: item.quantity,
             price: itemPrice
@@ -715,10 +715,14 @@ export default function CheckoutModal({
                 const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
                 return (
                   <div key={idx} className="flex gap-2 items-center justify-between bg-[#FAFAF7] p-2 rounded-xl border border-gray-50 flex-row-reverse text-right">
-                    <img src={item.product.images[0]} alt={item.product.nameAr} className="w-8 h-10 object-cover rounded-md shrink-0" />
+                    {item.product.images[0]?.match(/\.(mp4|webm|ogg|mov)$/i) || item.product.images[0]?.includes('video') ? (
+                       <video src={item.product.images[0]} className="w-8 h-10 object-cover rounded-md shrink-0" autoPlay muted loop playsInline />
+                    ) : (
+                       <img src={item.product.images[0]} alt={item.product.nameAr} className="w-8 h-10 object-cover rounded-md shrink-0" />
+                    )}
                     <div className="flex-1 min-w-0 pr-2">
                       <span className="font-bold text-gray-900 line-clamp-1 block leading-tight">{item.product.nameAr}</span>
-                      <span className="text-[9px] text-gray-400 block font-mono">اللون: {item.selectedColor.name} • مقاس: {item.selectedSize} ■ {item.quantity}×</span>
+                      <span className="text-[9px] text-gray-400 block font-mono">اللون: {item.selectedColor?.name || 'افتراضي'} • مقاس: {item.selectedSize} ■ {item.quantity}×</span>
                     </div>
                     <span className="text-[11px] text-[#0B0B0B] font-bold font-sans shrink-0">{(itemPrice * item.quantity).toLocaleString()} {currencyLabel}</span>
                   </div>

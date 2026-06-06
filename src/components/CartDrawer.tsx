@@ -118,11 +118,19 @@ export default function CartDrawer({
                       
                       {/* Image Thumbnail */}
                       <div className="w-20 h-26 rounded-xl bg-gray-50 overflow-hidden shrink-0 border border-gray-100 cursor-pointer" onClick={() => { onSelectProduct(item.product); onClose(); }}>
-                        <img
-                          src={item.product.images[0]}
-                          alt={item.product.nameAr}
-                          className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform"
-                        />
+                        {item.product.images[0]?.match(/\.(mp4|webm|ogg|mov)$/i) || item.product.images[0]?.includes('video') ? (
+                          <video
+                            src={item.product.images[0]}
+                            className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform"
+                            autoPlay muted loop playsInline
+                          />
+                        ) : (
+                          <img
+                            src={item.product.images[0]}
+                            alt={item.product.nameAr}
+                            className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform"
+                          />
+                        )}
                       </div>
 
                       {/* Details specs */}
@@ -144,8 +152,8 @@ export default function CartDrawer({
                           {/* Options specifications indicators */}
                           <div className="flex flex-wrap gap-2 text-[10px] text-gray-500 font-sans mt-1.5 select-none">
                             <span className="bg-gray-100 px-2 py-0.5 rounded-md flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full inline-block border border-gray-200" style={{ backgroundColor: item.selectedColor.hex }} />
-                              {item.selectedColor.name}
+                              <span className="w-1.5 h-1.5 rounded-full inline-block border border-gray-200" style={{ backgroundColor: item.selectedColor?.hex || '#ccc' }} />
+                              {item.selectedColor?.name || 'افتراضي'}
                             </span>
                             <span className="bg-gray-100 px-2 py-0.5 rounded-md">المقاس: {item.selectedSize}</span>
                           </div>

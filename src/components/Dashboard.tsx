@@ -3561,12 +3561,16 @@ export default function Dashboard({
                           </>
                         )}
                       </div>
-                      <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} multiple />
+                      <input type="file" className="hidden" accept="image/*,video/*" onChange={handleImageUpload} disabled={uploadingImage} multiple />
                     </label>
 
                     {uploadedImages.map((imgUrl, srcIdx) => (
                       <div key={srcIdx} className="relative w-32 h-32 rounded-2xl overflow-hidden border border-gray-150 bg-white shadow-sm shrink-0">
-                        <img src={imgUrl} className="w-full h-full object-cover" alt={`Preview ${srcIdx + 1}`} referrerPolicy="no-referrer" />
+                        {imgUrl.match(/\.(mp4|webm|ogg|mov)$/i) || imgUrl.includes('video') ? (
+                           <video src={imgUrl} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+                        ) : (
+                           <img src={imgUrl} className="w-full h-full object-cover" alt={`Preview ${srcIdx + 1}`} referrerPolicy="no-referrer" />
+                        )}
                         <button 
                           type="button"
                           onClick={() => {
@@ -3891,12 +3895,16 @@ export default function Dashboard({
                                 </>
                               )}
                             </div>
-                            <input type="file" className="hidden" accept="image/*" onChange={handleEditImageUpload} disabled={uploadingEditImage} multiple />
+                            <input type="file" className="hidden" accept="image/*,video/*" onChange={handleEditImageUpload} disabled={uploadingEditImage} multiple />
                           </label>
 
                           {editProdImages.map((imgUrl, idx) => (
                             <div key={idx} className="relative w-28 h-28 rounded-2xl overflow-hidden border border-gray-150 bg-white shadow-sm shrink-0">
-                              <img src={imgUrl} className="w-full h-full object-cover" alt={`Edit Preview ${idx + 1}`} referrerPolicy="no-referrer" />
+                              {imgUrl.match(/\.(mp4|webm|ogg|mov)$/i) || imgUrl.includes('video') ? (
+                                <video src={imgUrl} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+                              ) : (
+                                <img src={imgUrl} className="w-full h-full object-cover" alt={`Edit Preview ${idx + 1}`} referrerPolicy="no-referrer" />
+                              )}
                               <button 
                                 type="button"
                                 onClick={() => setEditProdImages(prev => prev.filter((_, i) => i !== idx))}
