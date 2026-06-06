@@ -316,3 +316,34 @@ CREATE POLICY "Allow full control of orders" ON public.orders ALL USING (true);
 CREATE POLICY "Allow full control of reviews" ON public.reviews ALL USING (true);
 CREATE POLICY "Allow full control of profiles" ON public.profiles ALL USING (true);
 CREATE POLICY "Allow full control of addresses" ON public.addresses ALL USING (true);
+
+-- ==========================================
+-- 🔔 STORAGE BUCKETS INITIALIZATION AND POLICIES
+-- ==========================================
+
+-- 1. Create the 'products' bucket if it doesn't exist
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('products', 'products', true, 52428800, '{"image/*", "video/*"}'::text[])
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Storage Policies for 'products' bucket
+-- Allow public select/read of files
+CREATE POLICY "Allow public select of objects" 
+ON storage.objects FOR SELECT 
+USING (bucket_id = 'products');
+
+-- Allow anyone to upload new files
+CREATE POLICY "Allow public insert of objects" 
+ON storage.objects FOR INSERT 
+WITH CHECK (bucket_id = 'products');
+
+-- Allow anyone to update file details
+CREATE POLICY "Allow public update of objects" 
+ON storage.objects FOR UPDATE 
+USING (bucket_id = 'products');
+
+-- Allow anyone to delete files
+CREATE POLICY "Allow public delete of objects" 
+ON storage.objects FOR DELETE 
+USING (bucket_id = 'products');
+

@@ -31,7 +31,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
   const aboutData = homepageSections.find(s => s.section_key === 'about_page')?.content_json || fallbackStory;
 
   return (
-    <div className="bg-[#FAF4F5] min-h-screen animate-fade-in py-12">
+    <div className="bg-[#FAF4F5] min-h-screen animate-fade-in py-12" dir="rtl">
       
       {/* Hero Header */}
       <div className="bg-[#FAF5F0] py-20 border-b border-[#DF8A9D]/20">
@@ -42,7 +42,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
           <div className="py-2">
             <RibbonBowDivider />
           </div>
-          <p className="font-serif italic text-base md:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed mt-4">
+          <p className="font-serif text-base md:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed mt-4">
             "{aboutData.quote || 'We believe that comfort and elegance are never mutually exclusive.'}"
           </p>
         </div>
@@ -58,15 +58,20 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                alt="Sulta Brand Artwork" 
                className="w-full h-full object-cover"
                referrerPolicy="no-referrer"
+               onError={(e) => {
+                 e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800";
+               }}
              />
           </div>
-          <div className="flex flex-col justify-center space-y-6 text-right md:pl-12">
-            <h4 className="font-serif text-3xl text-[#0B0B0B] font-light italic">عن عالمنا الصغير..</h4>
+          <div className="flex flex-col justify-center space-y-6 text-right md:pr-12">
+            <h4 className="font-serif text-3xl text-[#0B0B0B] font-light">عن عالمنا الصغير..</h4>
             <p className="text-gray-500 font-serif leading-relaxed">
               في سُلْطَة، نحن لا نصنع ملابس النوم فحسب، بل نبني عالماً من الراحة التي تبدأ من خيالكِ لتستقر في غرفتكِ. كل تفصيلة في تغليفنا وتصاميمنا مستوحاة من الأناقة الكلاسيكية بلمسة عصرية مرحة.
             </p>
             <div className="flex justify-start">
-               <img src="/src/assets/images/wax_seal.png" alt="Sulta Stamp" className="w-16 h-16 object-contain opacity-80" />
+               <div className="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center shadow-md border border-white">
+                 <span className="text-white text-lg font-serif">✨</span>
+               </div>
             </div>
           </div>
         </div>
@@ -77,22 +82,32 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
               <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-normal tracking-wider uppercase border-b border-[#DF8A9D]/10 pb-4">
                 تفرّد التصميم
               </h4>
-              <p className="text-sm md:text-base text-gray-650 leading-relaxed font-serif">
+              <p className="text-sm md:text-base text-gray-655 leading-relaxed font-serif">
                 نعتمد في مجموعاتنا على تفاصيل تبرز أنوثتكِ، من الفيونكات الرقيقة إلى الألوان الهادئة التي تمنحكِ شعوراً بالسكينة.
               </p>
             </div>
             <div className="md:w-1/2 order-1 md:order-2 aspect-square overflow-hidden bg-white relative rounded-3xl shadow-md border border-pink-100">
               <img 
-                src="/src/assets/images/sulta_lifestyle_art.png" 
+                src="/src/assets/images/sulta_luxury_lifestyle_about_1_1780682261409.png" 
                 alt="Sulta Aesthetic" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1544026073-1628d363229b?q=80&w=800";
+                }}
               />
             </div>
         </div>
 
         <div className="text-center">
-           <img src="/src/assets/images/shoes_bow.png" alt="Luxury Details" className="w-48 mx-auto opacity-90" />
+           <img 
+             src="/src/assets/images/sulta_luxury_lifestyle_about_2_1780682276428.png" 
+             alt="Luxury Details" 
+             className="w-48 mx-auto opacity-90 rounded-2xl shadow-sm border border-pink-50"
+             onError={(e) => {
+               e.currentTarget.src = "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800";
+             }}
+           />
         </div>
 
         <div className="py-8">

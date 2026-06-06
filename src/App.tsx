@@ -20,6 +20,8 @@ import BlogPostView from './components/BlogPostView';
 import TrackOrder from './components/TrackOrder';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import RibbonBowDivider from './components/RibbonBowDivider';
+import SocialLinksView from './components/SocialLinksView';
+import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
 
 import { dbService, supabase } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -130,6 +132,7 @@ function AppContent() {
       try {
         // Seed initial data if needed
         await dbService.seedInitialData();
+        await dbService.addExperimentalPajama();
         
         // Auth Session Sync
         const { data: { session } } = await supabase.auth.getSession();
@@ -429,7 +432,7 @@ function AppContent() {
   const bestSellers = products.filter(p => p.isBestSeller).slice(0, 6);
 
   return (
-      <div className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
+      <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
       
       {/* SCREEN 1: BRAND SPLASH SCREEN OVERLAY */}
       {showSplash && (
@@ -869,6 +872,20 @@ function AppContent() {
           )
         )}
 
+        {/* VIEW LUXURY SALON EXPERIENCE */}
+        {currentTab === 'luxury-salon' && (
+          <PremiumLuxuryExperience
+            products={products}
+            currentCountry={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onAddToCart={handleAddToCart}
+            onBuyNow={handleBuyNow}
+            toast={toast}
+            onClose={() => setTab('home')}
+          />
+        )}
+
         {/* VIEW 7: DASHBOARD SECURE SCREEN (لوحة الإدارة للبراند) */}
         {currentTab === 'dashboard' && (
           <Dashboard
@@ -887,6 +904,7 @@ function AppContent() {
             collections={collections}
             setCollections={setCollections}
             homepageSections={homepageSections}
+            toast={toast}
           />
         )}
 
@@ -958,6 +976,7 @@ function AppContent() {
                  alt="Sulta Brand Card" 
                  className="w-full h-auto rounded-lg shadow-2xl border border-gray-800 opacity-80 hover:opacity-100 transition-opacity"
                />
+               <SocialLinksView className="flex gap-2 pt-4 justify-start" />
             </div>
           </div>
 

@@ -3,6 +3,7 @@ import { Send, Phone, Mail, Clock, Check, Heart } from 'lucide-react';
 import { useToast } from './Toast';
 import { Settings, ContactMessage } from '../types';
 import { dbService } from '../services/db';
+import SocialLinksView from './SocialLinksView';
 
 interface ContactUsProps {
   settings?: Settings;
@@ -69,10 +70,13 @@ export default function ContactUs({ settings }: ContactUsProps) {
           <div className="space-y-8">
             <div className="rounded-3xl overflow-hidden shadow-xl border border-pink-100 aspect-video mb-8">
                <img 
-                 src="/src/assets/images/pink_phone.png" 
+                 src="/src/assets/images/sulta_luxury_pajama_1_1780681467351.png" 
                  alt="Contact Sulta" 
                  className="w-full h-full object-cover"
                  referrerPolicy="no-referrer"
+                 onError={(e) => {
+                   e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800";
+                 }}
                />
             </div>
             <div className="bg-[#FAF5F0] border border-[#DF8A9D]/10 rounded-sm p-10 px-8 shadow-sm space-y-8">
@@ -110,6 +114,10 @@ export default function ContactUs({ settings }: ContactUsProps) {
                     يومياً من 9:00 صباحاً حتى 11:00 مساءً (بتوقيت مكة والقاهرة)
                   </p>
                 </div>
+              </div>
+              <div className="pt-6 border-t border-[#DF8A9D]/10">
+                <span className="block text-[10px] uppercase font-serif tracking-widest text-gray-400 mb-3 text-right">أزياؤنا على منصات التواصل الاجتماعي</span>
+                <SocialLinksView className="flex gap-2.5 justify-start text-[#0B0B0B]" />
               </div>
             </div>
           </div>

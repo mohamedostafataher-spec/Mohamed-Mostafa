@@ -49,8 +49,8 @@ export default function Header({
   const menuItems = [
     { id: 'home', label: 'الرئيسية' },
     { id: 'store', label: 'المتجر' },
+    { id: 'luxury-salon', label: 'صالون التجربة ✦' },
     { id: 'collections', label: 'التشكيلات' },
-    { id: 'new-arrivals', label: 'وصل حديثاً' },
     { id: 'blog', label: 'المجلة' },
     { id: 'about', label: 'من نحن' },
     { id: 'track-order', label: 'تتبع الطلب' },

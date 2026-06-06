@@ -36,29 +36,25 @@ async function startServer() {
     }
 
     try {
-      // Using gemini-2.0-flash which is the recommended model for Interactions
-      const interaction = await ai.interactions.create({
-        model: 'gemini-2.0-flash',
-        input: "A high-end, luxury close-up of folded silk satin sleepwear in a soft champagne color, with an elegant rose gold SULTA logo visible on a ribbon, cinematic lighting, 8k resolution, minimalist aesthetic.",
-        response_modalities: ['image'],
-        generation_config: {
-          image_config: {
-            aspect_ratio: "16:9",
-            image_size: "1K"
+      // Using gemini-3.5-flash which is the recommended model for Text tasks
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: "A high-end, luxury close-up of folded silk satin sleepwear in a soft champagne color, with an elegant rose gold SULTA logo visible on a ribbon, cinematic lighting, 8k resolution, minimalist aesthetic.",
+        config: {
+          imageConfig: {
+            aspectRatio: "16:9",
+            imageSize: "1K"
           },
         },
       });
 
       let imageUrl = null;
-      for (const step of interaction.steps) {
-        if (step.type === 'model_output') {
-          const imageContent = step.content?.find(c => c.type === 'image');
-          if (imageContent && imageContent.data) {
-            const base64EncodeString: string = imageContent.data;
-            const mimeType = imageContent.mime_type || 'image/png';
-            imageUrl = `data:${mimeType};base64,${base64EncodeString}`;
-            break;
-          }
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          const base64EncodeString: string = part.inlineData.data;
+          const mimeType = part.inlineData.mimeType || 'image/png';
+          imageUrl = `data:${mimeType};base64,${base64EncodeString}`;
+          break;
         }
       }
 
@@ -69,6 +65,27 @@ async function startServer() {
       }
     } catch (error: any) {
       console.error("Image generation error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  // API Route: Generate Banner Ideas
+  app.post("/api/generate-banner-ideas", async (req, res) => {
+    if (!ai) {
+      return res.status(500).json({ error: "Gemini API key not configured" });
+    }
+
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: "Generate 3 sets of professional luxury titles and marketing descriptions for sliders based on the SULTA brand aesthetic, which is high-end, elegant, and focused on luxury sleepwear. Return in JSON format with an array of objects, each having 'title' and 'description'.",
+        config: {
+          responseMimeType: "application/json",
+        },
+      });
+      res.json(JSON.parse(response.text || "{}"));
+    } catch (error: any) {
+      console.error("Banner ideas generation error:", error);
       res.status(500).json({ error: error.message || "Internal server error" });
     }
   });

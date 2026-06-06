@@ -16,12 +16,16 @@ try {
     const vKey = env.VITE_SUPABASE_ANON_KEY;
 
     if (typeof vUrl === 'string' && vUrl.trim().startsWith('http') && vUrl.includes('.')) {
-      urlToUse = vUrl.trim();
+      urlToUse = vUrl.trim().replace(/\/+$/, '');
     }
     
     // A real Supabase key is a long JWT (usually > 50 chars). 
-    // We reject placeholders like 'sb_publishable_...' or 'YOUR_...'
-    if (typeof vKey === 'string' && vKey.trim().length > 20 && !vKey.startsWith('sb_') && !vKey.includes('YOUR_')) {
+    // We reject placeholders like 'YOUR_...'
+    // If it starts with 'sb_', we log a warning but allow it to attempt initialization.
+    if (typeof vKey === 'string' && vKey.trim().length > 20 && !vKey.includes('YOUR_')) {
+      if (vKey.startsWith('sb_')) {
+          console.warn("[SULTA DB] Using a key starting with 'sb_'. This might be a placeholder.");
+      }
       keyToUse = vKey.trim();
     }
   }
@@ -84,7 +88,8 @@ const isUrlStructurallyValid = (u: string) => {
 
 if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
     try {
-        supabaseInstance = createClient(urlToUse, keyToUse);
+        const cleanUrl = urlToUse.trim().replace(/\/+$/, '');
+        supabaseInstance = createClient(cleanUrl, keyToUse);
     } catch (err) {
         console.error("[SULTA DB] createClient threw an error:", err);
         supabaseInstance = createDummyClient();
@@ -460,19 +465,54 @@ export const dbService = {
   
   uploadImage: async (file: File): Promise<string | null> => {
     try {
-      const fileName = `${Date.now()}-${file.name.replace(/\s/g, '_')}`;
+      // Sanitize filename
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.]/g, '_').toLowerCase();
+      const fileName = `${Date.now()}_${sanitizedName}`;
+      
+      console.log(`[Supabase Storage] Uploading to bucket 'products', file: ${fileName}`);
+
+      // Ensure the 'products' bucket exists and is public
+      try {
+        const { error: bucketError } = await supabase.storage.createBucket('products', {
+          public: true,
+          fileSizeLimit: 10485760, // 10MB
+        });
+        if (bucketError) {
+          // If error is just that it already exists, that's fine.
+          console.log("[Supabase Storage] Bucket setup status:", bucketError.message);
+        } else {
+          console.log("[Supabase Storage] Created 'products' public bucket successfully.");
+        }
+      } catch (bucketErr: any) {
+        console.log("[Supabase Storage] Skipped bucket creation/validation:", bucketErr?.message || bucketErr);
+      }
+
       const { data, error } = await supabase.storage
         .from('products')
-        .upload(fileName, file);
+        .upload(fileName, file, { 
+          cacheControl: '3600', 
+          upsert: true,
+          contentType: file.type || 'image/jpeg'
+        });
 
-      if (error) throw error;
-      if (!data) throw new Error("Upload response was empty (data is null)");
+      if (error) {
+        console.error("[Supabase Storage] Upload error details:", error);
+        throw error;
+      }
+      if (!data) throw new Error("Upload response was empty");
+
+      console.log(`[Supabase Storage] Upload path: ${data.path}`);
 
       const { data: publicData } = supabase.storage
         .from('products')
         .getPublicUrl(data.path);
 
-      return publicData?.publicUrl || null;
+      if (!publicData || !publicData.publicUrl) {
+          throw new Error("Failed to generate public URL");
+      }
+
+      console.log(`[Supabase Storage] Public URL: ${publicData.publicUrl}`);
+      return publicData.publicUrl;
     } catch (err) {
       console.error("Error uploading image to Supabase Storage:", err);
       return null;
@@ -543,8 +583,9 @@ export const dbService = {
       if (data) onSuccess(data.map(mapBlogPost));
     });
 
+    const channelName = 'public:blog_posts:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:blog_posts')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'blog_posts' }, async () => {
         const { data } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
         if (data) onSuccess(data.map(mapBlogPost));
@@ -621,8 +662,9 @@ export const dbService = {
       }
     });
 
+    const channelName = 'public:categories:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:categories')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, async () => {
         const { data } = await supabase.from('categories').select('*');
         if (data && data.length > 0) {
@@ -665,8 +707,9 @@ export const dbService = {
       if (data) onSuccess(data.map(mapCollection));
     });
 
+    const channelName = 'public:collections:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:collections')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'collections' }, async () => {
         const { data } = await supabase.from('collections').select('*');
         if (data) onSuccess(data.map(mapCollection));
@@ -706,8 +749,9 @@ export const dbService = {
       if (data) onSuccess(data);
     });
 
+    const channelName = 'public:homepage_sections:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:homepage_sections')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'homepage_sections' }, async () => {
         const { data } = await supabase.from('homepage_sections').select('*');
         if (data) onSuccess(data);
@@ -731,8 +775,9 @@ export const dbService = {
       }
     });
 
+    const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:products')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         const { data } = await supabase.from('products').select('*');
         if (data && data.length > 0) {
@@ -756,8 +801,9 @@ export const dbService = {
       if (data) onSuccess(data.map(mapCoupon));
     });
 
+    const channelName = 'public:coupons:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:coupons')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'coupons' }, async () => {
         const { data } = await supabase.from('coupons').select('*');
         if (data) onSuccess(data.map(mapCoupon));
@@ -777,8 +823,9 @@ export const dbService = {
       if (data) onSuccess(data.map(mapReview));
     });
 
+    const channelName = 'public:reviews:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:reviews')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, async () => {
         const { data } = await supabase.from('reviews').select('*');
         if (data) onSuccess(data.map(mapReview));
@@ -798,8 +845,9 @@ export const dbService = {
       if (data) onSuccess(data.map(mapOrder));
     });
 
+    const channelName = 'public:orders:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:orders')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, async () => {
         const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
         if (data) onSuccess(data.map(mapOrder));
@@ -841,14 +889,20 @@ export const dbService = {
   },
 
   saveProduct: async (product: Product): Promise<void> => {
+    // Standard allowed categories in CHECK constraint: ('satin', 'cotton', 'loungewear', 'dresses', 'new')
+    const allowedCategories = ['satin', 'cotton', 'loungewear', 'dresses', 'new'];
+    const safeCategory = allowedCategories.includes(product.category) ? product.category : 'new';
+
     const { error } = await supabase
       .from('products')
       .upsert([{
         id: product.id,
         name_ar: product.nameAr,
         name_en: product.nameEn,
-        category: product.category,
+        category: safeCategory,
+        category_id: product.category || 'new',
         category_ar: product.categoryAr,
+        price: product.priceEG || product.priceSA || 0,
         price_eg: product.priceEG,
         price_sa: product.priceSA,
         description_ar: product.descriptionAr,
@@ -856,10 +910,10 @@ export const dbService = {
         fabric_ar: product.fabricAr,
         fabric_en: product.fabricEn,
         wash_instructions_ar: product.washInstructionsAr,
-        images: JSON.stringify(product.images || []),
+        images: product.images || [],
         video: product.video || null,
         colors: JSON.stringify(product.colors || []),
-        sizes: JSON.stringify(product.sizes || []),
+        sizes: product.sizes || [],
         is_best_seller: product.isBestSeller,
         featured: product.featured || false,
         status: product.status || 'active',
@@ -867,10 +921,9 @@ export const dbService = {
         sale_price: product.salePriceSA || product.salePriceEG || null,
         sale_price_sa: product.salePriceSA || null,
         sale_price_eg: product.salePriceEG || null,
-        stock_quantity: product.stock,
+        stock: product.stock,
         rating: product.rating,
         reviews_count: product.reviewsCount,
-        stock: product.stock,
         short_description: product.shortDescription || null,
         tags: JSON.stringify(product.tags || []),
         collection: product.collection || null,
@@ -1008,8 +1061,9 @@ export const dbService = {
       if (data) onSuccess(data);
     });
 
+    const channelName = 'public:activity_logs:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-      .channel('public:activity_logs')
+      .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs' }, async () => {
         const { data } = await supabase.from('activity_logs').select('*').order('date', { ascending: false });
         if (data) onSuccess(data);
@@ -1038,6 +1092,38 @@ export const dbService = {
     } catch { }
   },
 
+  // ADD TEST PRODUCT
+  addExperimentalPajama: async (): Promise<void> => {
+    const product: Product = {
+      id: 'experimental-pajama-001',
+      nameAr: 'بيجامة فيونكات وردي تجريبية',
+      nameEn: 'Experimental Pink Bow Pajama Set',
+      category: 'sleepwear',
+      categoryAr: 'ملابس نوم',
+      priceEG: 850,
+      priceSA: 120,
+      descriptionAr: 'بيجامة تجريبية مع فيونكات وردي ناعمة للتحقق وتجربة نظام الشراء الفاخر.',
+      descriptionEn: 'Experimental pajama set with soft pink bows for purchasing flow testing.',
+      fabricAr: 'قطن مبرد ناعم عالي الجودة',
+      fabricEn: 'High quality soft premium cooling cotton',
+      washInstructionsAr: 'يغسل بماء غسيل لطيف لتجنب انكماش النسيج الممتاز.',
+      images: ['/src/assets/images/pink_bow_pajama_1780730148591.png'],
+      colors: [
+        { name: 'Rose', hex: '#DF8A9D' },
+        { name: 'White', hex: '#FFFFFF' }
+      ],
+      sizes: ['M', 'L', 'XL'],
+      isBestSeller: true,
+      rating: 5,
+      reviewsCount: 12,
+      stock: 15,
+      status: 'active',
+      featured: true,
+      tags: ['New Arrivals', 'Pajamas', 'Collections']
+    };
+    await dbService.saveProduct(product);
+  },
+
   subscribeInventoryLogs: (
     onSuccess: (logs: any[]) => void, 
     _onError: (error: any) => void
@@ -1045,10 +1131,14 @@ export const dbService = {
     supabase.from('inventory_logs').select('*').order('date', { ascending: false }).then(({ data }) => {
       if (data) onSuccess(data);
     });
-    const channel = supabase.channel('public:inventory_logs').on('postgres_changes', { event: '*', schema: 'public', table: 'inventory_logs' }, async () => {
+    const channelName = 'public:inventory_logs:' + Math.random().toString(36).substring(2, 15);
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory_logs' }, async () => {
         const { data } = await supabase.from('inventory_logs').select('*').order('date', { ascending: false });
         if (data) onSuccess(data);
-    }).subscribe();
+      })
+      .subscribe();
     return () => supabase.removeChannel(channel);
   },
 
@@ -1060,10 +1150,14 @@ export const dbService = {
     supabase.from('advanced_coupons').select('*').then(({ data }) => {
       if (data) onSuccess(data);
     });
-    const channel = supabase.channel('public:advanced_coupons').on('postgres_changes', { event: '*', schema: 'public', table: 'advanced_coupons' }, async () => {
+    const channelName = 'public:advanced_coupons:' + Math.random().toString(36).substring(2, 15);
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'advanced_coupons' }, async () => {
         const { data } = await supabase.from('advanced_coupons').select('*');
         if (data) onSuccess(data);
-    }).subscribe();
+      })
+      .subscribe();
     return () => supabase.removeChannel(channel);
   },
 
@@ -1115,7 +1209,10 @@ export const dbService = {
         createdAt: p.created_at
       })));
     });
-    const channel = supabase.channel('public:promotions').on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, async () => {
+    const channelName = 'public:promotions:' + Math.random().toString(36).substring(2, 15);
+    const channel = supabase
+        .channel(channelName)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, async () => {
         const { data } = await supabase.from('promotions').select('*');
         if (data) onSuccess(data.map((p: any) => ({
           id: p.id,
@@ -1193,17 +1290,24 @@ export const dbService = {
           sortBy: { column: 'created_at', order: 'desc' },
         });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message && error.message.includes("Invalid path")) {
+          console.warn("[SULTA DB] Got 'Invalid path' error from Supabase Storage. This typically means the 'products' bucket has not been created yet in your Supabase project. To resolve, copy and execute the Storage SQL setup block at the bottom of standard 'supabase-schema.sql'.");
+        }
+        throw error;
+      }
       if (!data) return [];
 
       // Generate public URLs for all files
-      return data.map(file => {
-        const { data: { publicUrl } } = supabase
-          .storage
-          .from('products')
-          .getPublicUrl(file.name);
-        return publicUrl;
-      });
+      return data
+        .filter(file => file.name && file.name !== '.emptyFolderPlaceholder')
+        .map(file => {
+          const { data: { publicUrl } } = supabase
+            .storage
+            .from('products')
+            .getPublicUrl(file.name);
+          return publicUrl;
+        });
     } catch (err) {
       console.error('Error fetching media assets:', err);
       return [];

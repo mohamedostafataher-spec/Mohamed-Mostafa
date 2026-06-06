@@ -46,14 +46,48 @@ export default function StoreView({
       result = result.filter(p => p.category === selectedCategory || p.categoryAr === selectedCategory);
     }
     
-    // Search filter
+    // Search filter (Smart Search Engine)
     if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(p => 
-        (p.nameEn && p.nameEn.toLowerCase().includes(q)) || 
-        (p.nameAr && p.nameAr.toLowerCase().includes(q)) ||
-        (p.descriptionEn && p.descriptionEn.toLowerCase().includes(q))
-      );
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(p => {
+        const matchesText = 
+          (p.nameEn && p.nameEn.toLowerCase().includes(q)) || 
+          (p.nameAr && p.nameAr.toLowerCase().includes(q)) ||
+          (p.descriptionEn && p.descriptionEn.toLowerCase().includes(q)) ||
+          (p.descriptionAr && p.descriptionAr.toLowerCase().includes(q)) ||
+          (p.category && p.category.toLowerCase().includes(q)) ||
+          (p.categoryAr && p.categoryAr.includes(q)) ||
+          (p.collection && p.collection.toLowerCase().includes(q));
+
+        // Fabric match (Satin, Cotton, Velvet, Silk, Linen)
+        const matchesFabric = 
+          (q.includes('ساتان') || q.includes('satin') || q.includes('بلينغ') || q.includes('حرير') || q.includes('silk')) && 
+          (p.nameAr?.includes('ساتان') || p.nameAr?.includes('حرير') || p.nameEn?.toLowerCase().includes('satin') || p.nameEn?.toLowerCase().includes('silk')) ||
+          (q.includes('قطن') || q.includes('cotton')) && 
+          (p.nameAr?.includes('قطن') || p.nameEn?.toLowerCase().includes('cotton')) ||
+          (q.includes('مخمل') || q.includes('velvet') || q.includes('شتاء') || q.includes('winter')) && 
+          (p.nameAr?.includes('مخمل') || p.nameEn?.toLowerCase().includes('velvet') || p.nameAr?.includes('روب') || p.nameEn?.toLowerCase().includes('robe'));
+
+        // Color matches
+        const matchesColor = p.colors?.some(c => 
+          c.name?.toLowerCase().includes(q) || 
+          (q.includes('وردي') && c.name?.includes('وردي')) ||
+          ((q.includes('أبيض') || q.includes('عاجي') || q.includes('وايت')) && c.name?.includes('وايت')) ||
+          (q.includes('أسود') && c.name?.includes('أسود'))
+        );
+
+        // Price range query handling e.g. "under 400" or "أقل من ٣٠٠"
+        const currentPrice = country === 'EG' ? p.priceEG : p.priceSA;
+        let matchesPriceRange = false;
+        if (q.includes('under') || q.includes('أقل من') || q.includes('اقل من') || q.includes('تحت')) {
+          const num = parseInt(q.replace(/[^0-9]/g, ''), 10);
+          if (num && currentPrice <= num) {
+            matchesPriceRange = true;
+          }
+        }
+
+        return matchesText || matchesFabric || matchesColor || matchesPriceRange;
+      });
     }
 
     // Sort

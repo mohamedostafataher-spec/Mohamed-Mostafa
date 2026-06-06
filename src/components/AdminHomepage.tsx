@@ -130,6 +130,36 @@ export default function AdminHomepage() {
   const [saving, setSaving] = useState(false);
 
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [generatedIdeas, setGeneratedIdeas] = useState<any[]>([]);
+
+  const handleGenerateIdeas = async () => {
+    setGenerating(true);
+    setGeneratedIdeas([]);
+    try {
+      const response = await fetch("/api/generate-banner-ideas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json();
+      setGeneratedIdeas(data.ideas || []);
+    } catch (error) {
+      console.error("Error generating ideas:", error);
+      alert("فشل توليد الأفكار");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleApplyIdea = (bannerIdx: number, idea: any) => {
+    const newBanners = [...heroSection.banners];
+    newBanners[bannerIdx] = { 
+        ...newBanners[bannerIdx], 
+        title: idea.title, 
+        description: idea.description 
+    };
+    setSections(prev => prev.map(s => s.section_key === 'hero_banners' ? { ...s, content_json: { ...heroSection, banners: newBanners } } : s));
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -246,6 +276,34 @@ export default function AdminHomepage() {
           onDragEnd={handleDragEnd}
         >
           <div className="space-y-4">
+            <div className="flex gap-2">
+                <button 
+                  onClick={handleGenerateIdeas}
+                  disabled={generating}
+                  className="px-4 py-2 bg-gradient-to-r from-[#DF8A9D] to-[#A44C5C] text-white rounded-xl text-xs font-bold hover:opacity-90 flex items-center gap-2 transition-all"
+                >
+                  <Sparkles size={14} />
+                  {generating ? "جاري التوليد..." : "توليد أفكار للبانر (AI)"}
+                </button>
+            </div>
+
+            {generatedIdeas.length > 0 && (
+                <div className="bg-[#FAF5F0] p-4 rounded-xl border border-[#DF8A9D]/20 space-y-2">
+                    <p className="text-[10px] text-gray-500 mb-2">اختر فكرة لتطبيقها على أحد البانرات:</p>
+                    {generatedIdeas.map((idea, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs">
+                             <span className="font-bold">{idea.title}</span>
+                             <button className="text-[#A44C5C] underline" onClick={() => {
+                                 const bannerIdx = parseInt(prompt("اختر رقم البانر (ابدأ من 1):") || "1") - 1;
+                                 if (bannerIdx >= 0 && bannerIdx < heroSection.banners.length) {
+                                     handleApplyIdea(bannerIdx, idea);
+                                 }
+                             }}>تطبيق</button>
+                        </div>
+                    ))}
+                </div>
+            )}
+            
             <SortableContext 
               items={heroSection.banners.map((_: any, i: number) => i.toString())}
               strategy={verticalListSortingStrategy}

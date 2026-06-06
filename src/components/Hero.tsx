@@ -124,7 +124,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
             </svg>
           </div>
 
-          <p className="font-serif italic text-xl md:text-3xl text-[#0B0B0B] mb-10 drop-shadow-sm">
+          <p className="font-serif text-xl md:text-3xl text-[#0B0B0B] mb-10 drop-shadow-sm">
             {currentSlideData.description}
           </p>
 

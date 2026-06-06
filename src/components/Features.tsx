@@ -121,19 +121,25 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
                     alt="Sulta Brand Artwork" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800";
+                    }}
                   />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
                   <img 
-                    src="/src/assets/images/sulta_lifestyle_art.png" 
+                    src="/src/assets/images/hero_pajama_lifestyle_1_1780682110287.png" 
                     alt="Sulta Premium Lifestyle Art" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=800";
+                    }}
                   />
                 </div>
               </div>
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white rounded-full p-2 shadow-lg border border-pink-50 animate-bounce-subtle">
-                 <img src="/src/assets/images/wax_seal.png" alt="Royal Seal" className="w-full h-full object-contain" />
+              <div className="absolute -bottom-4 -left-4 w-15 h-15 bg-amber-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce-subtle">
+                <span className="text-white text-lg font-serif">✨</span>
               </div>
             </div>
           </div>
