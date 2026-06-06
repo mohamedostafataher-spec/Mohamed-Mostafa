@@ -684,14 +684,15 @@ export const dbService = {
   },
 
   saveCategory: async (category: Category): Promise<void> => {
+    const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
     const { error } = await supabase
       .from('categories')
       .upsert([{
-        id: category.id,
+        id: (category.id && isUUID(category.id)) ? category.id : undefined,
         name: category.nameAr || category.name,
         name_ar: category.nameAr,
         name_en: category.nameEn,
-        slug: category.slug,
+        slug: category.slug || (category.id && !isUUID(category.id) ? category.id : 'slug-' + Date.now()),
         image_url: category.imageUrl
       }]);
     if (error) throw error;
@@ -725,10 +726,11 @@ export const dbService = {
   },
 
   saveCollection: async (collection: Collection): Promise<void> => {
+    const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
     const { error } = await supabase
       .from('collections')
       .upsert([{
-        id: collection.id || undefined,
+        id: (collection.id && isUUID(collection.id)) ? collection.id : undefined,
         name: collection.nameAr, // For legacy/compatibility
         name_ar: collection.nameAr,
         name_en: collection.nameEn,
