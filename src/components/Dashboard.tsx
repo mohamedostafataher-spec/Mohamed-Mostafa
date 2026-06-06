@@ -1196,6 +1196,69 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
   );
 };
 
+const compressAndResizeImage = (file: File, maxWidth = 1000, maxHeight = 1000, quality = 0.85): Promise<File> => {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/')) {
+      resolve(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                console.log(`[Image Compressor] Reduced file ${file.name} from ${(file.size / 1024).toFixed(1)}KB to ${(compressedFile.size / 1024).toFixed(1)}KB`);
+                resolve(compressedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        } else {
+          resolve(file);
+        }
+      };
+      img.onerror = () => resolve(file);
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function Dashboard({
   products,
   setProducts,
@@ -1307,6 +1370,17 @@ export default function Dashboard({
 
   const [bannersList, setBannersList] = useState<any[]>([]);
   const [bestSellersCms, setBestSellersCms] = useState({ title: '', subtitle: '' });
+
+  // Shipping Editor States
+  const [shippingRatesState, setShippingRatesState] = useState<ShippingRate[]>([]);
+  const [defaultShippingFeeState, setDefaultShippingFeeState] = useState<number>(0);
+
+  useEffect(() => {
+    if (settings) {
+      setShippingRatesState(settings.shippingRates || []);
+      setDefaultShippingFeeState(settings.defaultShippingFee ?? 0);
+    }
+  }, [settings]);
 
   useEffect(() => {
     const unsubCustomers = dbService.subscribeCustomers(
@@ -1744,7 +1818,8 @@ export default function Dashboard({
     let successUrls: string[] = [];
     try {
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+        const originalFile = files[i];
+        const file = await compressAndResizeImage(originalFile);
         
         // Prepare pre-emptive base64 fallback in case Supabase Storage fails
         const base64Url = await new Promise<string>((resolve) => {
@@ -1783,7 +1858,8 @@ export default function Dashboard({
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingCatImage(true);
-    const url = await dbService.uploadImage(file);
+    const compressed = await compressAndResizeImage(file);
+    const url = await dbService.uploadImage(compressed);
     if (url) {
       setNewCatImage(url);
       setMediaAssets(prev => [url, ...prev]);
@@ -1797,7 +1873,8 @@ export default function Dashboard({
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingColImage(true);
-    const url = await dbService.uploadImage(file);
+    const compressed = await compressAndResizeImage(file);
+    const url = await dbService.uploadImage(compressed);
     if (url) {
       setNewColImage(url);
       setMediaAssets(prev => [url, ...prev]);
@@ -1813,7 +1890,8 @@ export default function Dashboard({
     setUploadingMediaFile(true);
     let count = 0;
     for (let i = 0; i < files.length; i++) {
-      const url = await dbService.uploadImage(files[i]);
+      const compressed = await compressAndResizeImage(files[i]);
+      const url = await dbService.uploadImage(compressed);
       if (url) {
         setMediaAssets(prev => [url, ...prev]);
         count++;
@@ -2104,7 +2182,8 @@ export default function Dashboard({
     let successUrls: string[] = [];
     try {
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+        const originalFile = files[i];
+        const file = await compressAndResizeImage(originalFile);
         
         // Pre-emptive base64 fallback
         const base64Url = await new Promise<string>((resolve) => {
@@ -5564,6 +5643,167 @@ export default function Dashboard({
           {activeMenu === 'blog' && (
             <div className="animate-fade-in-rapid">
               <AdminBlog />
+            </div>
+          )}
+
+          {activeMenu === 'shipping' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center pb-4 border-b border-gray-150">
+                <div>
+                  <h3 className="font-serif text-xl font-light text-[#0B0B0B]">إدارة مناطق وتكلفة الشحن</h3>
+                  <p className="text-xs text-gray-500 mt-1">تحديد أسعار الشحن والتوصيل للمناطق المختلفة (مصر والمملكة العربية السعودية)</p>
+                </div>
+                <button
+                  onClick={async () => {
+                    await handleUpdateShippingRates(shippingRatesState, defaultShippingFeeState);
+                  }}
+                  disabled={isSavingShipping}
+                  className="bg-[#0B0B0B] text-[#F6E7A6] px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition flex items-center gap-2 shadow-sm disabled:opacity-55"
+                >
+                  <Check size={16} />
+                  <span>{isSavingShipping ? 'جاري الحفظ...' : 'حفظ التغييرات'}</span>
+                </button>
+              </div>
+
+              {/* Default Fee */}
+              <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 text-gray-800">
+                  <Truck className="text-gray-500" size={18} />
+                  <h4 className="font-bold text-sm">رسوم الشحن الافتراضية</h4>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">تُطبق هذه التكلفة تلقائياً في حالة عدم تطابق عنوان الشحن مع أي منطقة محددة أدناه.</p>
+                <div className="max-w-xs">
+                  <label className="block text-xs font-semibold text-gray-650 mb-1.5">التكلفة الافتراضية (بالعملة الافتراضية):</label>
+                  <input
+                    type="number"
+                    value={defaultShippingFeeState}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setDefaultShippingFeeState(val);
+                    }}
+                    className="w-full bg-gray-55 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black font-sans"
+                  />
+                </div>
+              </div>
+
+              {/* Zones List & Form */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-sans">
+                {/* Form to Add Zone */}
+                <div className="lg:col-span-1 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4 h-fit">
+                  <h4 className="font-bold text-sm text-gray-850">إضافة منطقة جديدة</h4>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-650 mb-1">اسم المنطقة بالعربية:</label>
+                      <input
+                        id="new-zone-ar"
+                        type="text"
+                        placeholder="مثال: الرياض"
+                        className="w-full bg-gray-55 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-650 mb-1">اسم المنطقة بالإنجليزية:</label>
+                      <input
+                        id="new-zone-en"
+                        type="text"
+                        placeholder="مثال: Riyadh"
+                        className="w-full bg-gray-55 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-650 mb-1">التكلفة (المبلغ الرقمي):</label>
+                      <input
+                        id="new-zone-fee"
+                        type="number"
+                        placeholder="مثال: 35"
+                        className="w-full bg-gray-55 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black font-sans"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const arInput = document.getElementById('new-zone-ar') as HTMLInputElement | null;
+                        const enInput = document.getElementById('new-zone-en') as HTMLInputElement | null;
+                        const feeInput = document.getElementById('new-zone-fee') as HTMLInputElement | null;
+
+                        const rAr = arInput?.value?.trim();
+                        const rEn = enInput?.value?.trim();
+                        const rFee = Number(feeInput?.value ?? 0);
+
+                        if (!rAr || !rEn) {
+                          alert('الرجاء إدخال اسم المنطقة بالعربية والإنجليزية.');
+                          return;
+                        }
+
+                        const newRate: ShippingRate = {
+                          regionAr: rAr,
+                          regionEn: rEn,
+                          fee: rFee
+                        };
+
+                        setShippingRatesState((prev) => [...prev, newRate]);
+
+                        // clear
+                        if (arInput) arInput.value = '';
+                        if (enInput) enInput.value = '';
+                        if (feeInput) feeInput.value = '';
+                      }}
+                      className="w-full bg-[#0B0B0B] text-[#F6E7A6] py-2.5 rounded-xl text-xs font-bold hover:opacity-90 transition mt-2 font-serif"
+                    >
+                      إضافة المنطقة للقائمة
+                    </button>
+                  </div>
+                </div>
+
+                {/* Zones List Table */}
+                <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                  <h4 className="font-bold text-sm text-gray-850 mb-4">مناطق الشحن الحالية</h4>
+
+                  {shippingRatesState.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400 text-xs">
+                      لا يوجد مناطق شحن مضافة بعد. سيتم تطبيق القيمة الافتراضية على جميع الطلبات.
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-right text-xs">
+                        <thead>
+                          <tr className="border-b border-gray-150 text-gray-500">
+                            <th className="pb-3 pt-1 font-semibold">المنطقة (بالعربية)</th>
+                            <th className="pb-3 pt-1 font-semibold">المنطقة (بالإنجليزية)</th>
+                            <th className="pb-3 pt-1 font-semibold">التكلفة</th>
+                            <th className="pb-3 pt-1 font-semibold text-center w-16">إجراء</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {shippingRatesState.map((zone, idx) => (
+                            <tr key={idx} className="hover:bg-gray-55">
+                              <td className="py-3 font-medium text-gray-850">{zone.regionAr}</td>
+                              <td className="py-3 text-gray-650">{zone.regionEn}</td>
+                              <td className="py-3 font-sans font-bold text-gray-900">{zone.fee}</td>
+                              <td className="py-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setShippingRatesState((prev) => prev.filter((_, i) => i !== idx));
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-1 rounded-lg transition inline-flex items-center justify-center h-8 w-8"
+                                  title="حذف المنطقة"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 

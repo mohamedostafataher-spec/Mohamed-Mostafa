@@ -16,7 +16,7 @@ try {
     const vKey = env.VITE_SUPABASE_ANON_KEY;
 
     if (typeof vUrl === 'string' && vUrl.trim().startsWith('http') && vUrl.includes('.')) {
-      urlToUse = vUrl.trim().replace(/\/+$/, '');
+      urlToUse = vUrl.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
     }
     
     // A real Supabase key is a long JWT (usually > 50 chars). 
@@ -88,7 +88,7 @@ const isUrlStructurallyValid = (u: string) => {
 
 if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
     try {
-        const cleanUrl = urlToUse.trim().replace(/\/+$/, '');
+        const cleanUrl = urlToUse.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
         supabaseInstance = createClient(cleanUrl, keyToUse);
     } catch (err) {
         console.error("[SULTA DB] createClient threw an error:", err);

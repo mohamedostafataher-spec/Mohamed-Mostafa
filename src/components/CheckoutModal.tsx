@@ -53,7 +53,32 @@ export default function CheckoutModal({
     return sum + itemPrice * item.quantity;
   }, 0);
 
-  const shippingCost = country === 'EG' ? 80 : 30;
+  // Dynamic Shipping calculation
+  const getDynamicShippingCost = () => {
+    if (!settings) return country === 'EG' ? 80 : 30;
+    
+    const userCity = city.trim().toLowerCase();
+    
+    if (userCity && settings.shippingRates && settings.shippingRates.length > 0) {
+      const match = settings.shippingRates.find(rate => {
+        const ar = rate.regionAr.toLowerCase();
+        const en = rate.regionEn.toLowerCase();
+        return userCity.includes(ar) || ar.includes(userCity) ||
+               userCity.includes(en) || en.includes(userCity);
+      });
+      if (match) {
+        return match.fee;
+      }
+    }
+    
+    if (settings.defaultShippingFee !== undefined && settings.defaultShippingFee !== null && settings.defaultShippingFee > 0) {
+      return settings.defaultShippingFee;
+    }
+    
+    return country === 'EG' ? 80 : 30;
+  };
+
+  const shippingCost = getDynamicShippingCost();
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
   const totalAmount = subtotal - discountAmount + shippingCost;
 
