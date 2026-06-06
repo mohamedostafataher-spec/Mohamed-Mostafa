@@ -2055,7 +2055,8 @@ export default function Dashboard({
     e.preventDefault();
     if (!newProdNameAr || !newProdNameEn) return showNotification('الرجاء تعبئة الأسماء للقطعة الفاخرة.', 'error');
 
-    const newId = `SULTA-${newProdCategory.substring(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+    const generatedCode = `SULTA-${newProdCategory.substring(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+    const newId = crypto.randomUUID();
     
     // Final choice of images: use uploaded ones, then temp, then default
     const finalImages = uploadedImages.length > 0 
@@ -2067,6 +2068,7 @@ export default function Dashboard({
       id: newId,
       nameAr: newProdNameAr,
       nameEn: newProdNameEn,
+      sku: generatedCode,
       category: newProdCategory,
       categoryAr: categories.find(c => (c.slug === newProdCategory || c.id === newProdCategory))?.nameAr || (newProdCategory === 'satin' ? 'ساتان ملكي حريري' : newProdCategory === 'cotton' ? 'بيجامات قطن طبيعي' : newProdCategory === 'loungewear' ? 'لانج وير كوتور' : newProdCategory === 'dresses' ? 'فساتين نوم' : 'المجموعة الجديدة والتريند الأكثر مبيعاً بمصر والسعودية'),
       priceEG: newProdPriceEG,

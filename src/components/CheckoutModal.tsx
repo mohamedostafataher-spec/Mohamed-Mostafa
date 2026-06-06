@@ -138,10 +138,12 @@ export default function CheckoutModal({
     setIsSubmitting(true);
 
     try {
-      const generatedId = `SULTA-${Math.floor(100000 + Math.random() * 900000)}`;
+      const generatedCode = `SULTA-${Math.floor(100000 + Math.random() * 900000)}`;
+      const newUuid = crypto.randomUUID();
       
       const newOrder: Order = {
-        id: generatedId,
+        id: newUuid,
+        trackingNumber: generatedCode,
         customerName: name,
         phone: phone,
         country: country,
