@@ -631,7 +631,7 @@ function AppContent() {
               const bannerSection = homepageSections.find(s => s.section_key === 'middle_banner');
               const bannerData = bannerSection?.content_json || {
                 active: true,
-                imageUrl: '/assets/images/hero_sleepwear_luxury_1780620325112.png',
+                imageUrl: '/img/hero_sleepwear_luxury_1780620325112.png',
                 subtitle: 'Because You Deserve',
                 title: 'THE SOFTEST LIFE',
                 buttonText: 'SHOP THE COLLECTION'
@@ -969,7 +969,7 @@ function AppContent() {
             </p>
             <div className="pt-4">
                <img 
-                 src="/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png" 
+                 src="/img/sulta_luxury_pajama_hero_2_1780682794821.png" 
                  alt="Sulta Brand Card" 
                  className="w-full h-auto rounded-lg shadow-2xl border border-gray-800 opacity-80 hover:opacity-100 transition-opacity"
                />

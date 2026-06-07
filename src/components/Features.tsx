@@ -117,7 +117,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
                   <img 
-                    src="/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png" 
+                    src="/img/sulta_luxury_pajama_hero_2_1780682794821.png" 
                     alt="Sulta Brand Artwork" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -128,7 +128,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
                   <img 
-                    src="/assets/images/hero_pajama_lifestyle_1_1780682110287.png" 
+                    src="/img/hero_pajama_lifestyle_1_1780682110287.png" 
                     alt="Sulta Premium Lifestyle Art" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"

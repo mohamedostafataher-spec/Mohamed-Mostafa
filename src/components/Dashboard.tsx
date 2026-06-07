@@ -1550,7 +1550,7 @@ export default function Dashboard({
       setBannersList([
         { 
           id: 'slide-1',
-          mediaUrl: '/assets/images/hero_sleepwear_luxury_1780620325112.png', 
+          mediaUrl: '/img/hero_sleepwear_luxury_1780620325112.png', 
           title: 'SULTA',
           subtitle: 'Where Comfort Meets Elegance',
           description: 'مجموعة بيجامات نوم ولانج وير مصممة خصيصاً لتمنحك الراحة الكاملة والأنوثة المستحقة تليق بك وبأدق تفاصيل ليلتك الهادئة والراقية بأرقى الخامات المرموقة.',
@@ -1560,7 +1560,7 @@ export default function Dashboard({
         },
         { 
           id: 'slide-2',
-          mediaUrl: '/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png', 
+          mediaUrl: '/img/sulta_luxury_pajama_hero_2_1780682794821.png', 
           title: 'SLEEPWEAR',
           subtitle: 'Exquisite Silk Satin Comfort',
           description: 'طواقم فاخرة من الحرير الطبيعي والدانتيل، مصممة بدقة لتلبي أعلى تطلعاتك وتزين خلوتك المنزلية بجمالية ساحرة.',
@@ -2160,7 +2160,7 @@ export default function Dashboard({
       nameAr: newCatNameAr,
       nameEn: newCatNameEn,
       slug: slug,
-      imageUrl: newCatImage || '/assets/images/hero_sleepwear_luxury_1780620325112.png'
+      imageUrl: newCatImage || '/img/hero_sleepwear_luxury_1780620325112.png'
     };
     try {
       await dbService.saveCategory(newCat);
@@ -2183,7 +2183,7 @@ export default function Dashboard({
       nameEn: newColNameEn,
       descriptionAr: newColDescAr,
       descriptionEn: newColDescEn,
-      imageUrl: newColImage || '/assets/images/sulta_boutique_display_1_1780682812541.png'
+      imageUrl: newColImage || '/img/sulta_boutique_display_1_1780682812541.png'
     };
     try {
       await dbService.saveCollection(newCol);
@@ -2218,7 +2218,7 @@ export default function Dashboard({
     // Final choice of images: use uploaded ones, then temp, then default
     const finalImages = uploadedImages.length > 0 
       ? uploadedImages 
-      : (tempImageUrl ? [tempImageUrl] : ['/assets/images/hero_sleepwear_luxury_1780620325112.png']);
+      : (tempImageUrl ? [tempImageUrl] : ['/img/hero_sleepwear_luxury_1780620325112.png']);
 
     // Initial fields
     let initialProduct: Product = {

@@ -19,7 +19,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   
   const fallbackBanners = [
     {
-      mediaUrl: '/assets/images/hero_pajama_lifestyle_1_1780682110287.png',
+      mediaUrl: '/img/hero_pajama_lifestyle_1_1780682110287.png',
       title: 'فخامةٌ تليقُ بِمَلِكَة',
       subtitle: 'أناقةٌ لا تَعرفُ الحدود',
       description: 'بيجامات الحرير الإيطالي المعالج لنعومة فائقة طوال الليل',
@@ -27,7 +27,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
       mediaType: 'image'
     },
     {
-      mediaUrl: '/assets/images/hero_pajama_editorial_2_1780682126486.png',
+      mediaUrl: '/img/hero_pajama_editorial_2_1780682126486.png',
       title: 'سُلْطَة.. للراحةِ مَعنىً آخَر',
       subtitle: 'كوتور ملابسِ النومِ الفاخِرة',
       description: 'تصاميمُ ملكيّة تجمعُ بين الرقي والراحةِ المطلقة في منزلكِ',
@@ -35,7 +35,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
       mediaType: 'image'
     },
     {
-      mediaUrl: '/assets/images/hero_pajama_detail_3_1780682140472.png',
+      mediaUrl: '/img/hero_pajama_detail_3_1780682140472.png',
       title: 'أدَقُ التفاصيلِ لأرقَى الأذواق',
       subtitle: 'جودةٌ تلمسينَها في كُلِ غرزة',
       description: 'نستخدمُ أجودَ خاماتِ المودال والكتان لتجربةِ نومٍ مثاليّة',

@@ -36,11 +36,35 @@ export default function Header({
 }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localQuery, setLocalQuery] = useState('');
+  const [timeLeft, setTimeLeft] = useState<{ hours: number, mins: number, secs: number }>({ hours: 0, mins: 0, secs: 0 });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      // Midnight countdown
+      const now = new Date();
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      const diff = tomorrow.getTime() - now.getTime();
+      return {
+        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+        mins: Math.floor((diff / 1000 / 60) % 60),
+        secs: Math.floor((diff / 1000) % 60)
+      };
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const getHeaderLogoParts = () => {
-    const rawName = settings?.siteName || 'SULTA';
+    let rawName = settings?.siteName || 'SULTA';
+    // Replace any occurrence of Sulta (case insensitive) with Sulta
+    rawName = rawName.replace(/sulta/i, 'Sulta');
     const words = rawName.trim().split(/\s+/);
     if (words.length >= 2) {
       return {
@@ -83,9 +107,17 @@ export default function Header({
           <Truck size={14} className="text-[#A44C5C]" />
           <span className="tracking-wide">SHIPPING WORLDWIDE | شحن سريع للدول العربية</span>
         </div>
-        <div className="hidden lg:flex items-center gap-2 text-[10px] tracking-[0.25em] font-serif font-semibold">
+        <div className="hidden lg:flex items-center gap-2 text-[10px] font-serif font-semibold">
           <Sparkles size={11} className="text-[#DF8A9D] animate-pulse" />
-          <span>SULTA SLEEPWEAR COUTURE</span>
+          <span className="tracking-[0.25em]">SULTA LINGERIE EXCLUSIVES</span>
+          <span className="text-gray-300 mx-2">|</span>
+          <div className="flex items-center gap-1.5 bg-[#A44C5C]/10 px-2 py-0.5 rounded text-[#A44C5C]">
+             <span>ينتهي العرض الخاص خلال:</span>
+             <span className="font-mono font-bold tracking-widest" dir="ltr">
+               {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.mins).padStart(2, '0')}:{String(timeLeft.secs).padStart(2, '0')}
+             </span>
+             <span className="animate-pulse">⏳</span>
+          </div>
         </div>
         <div className="flex items-center gap-2 md:gap-3 text-[10.5px]">
           <span className="text-gray-400 font-sans hidden sm:inline">الشحن إلى:</span>
@@ -125,15 +157,12 @@ export default function Header({
  
           {/* BRAND LOGO */}
           <div className="flex items-center justify-center flex-1 lg:flex-none select-none cursor-pointer" onClick={() => setTab('home')}>
-            {/* The SULTA/ZORIA text logo imitating the brand marks from mockup */}
             <div className="text-center group max-w-[280px]">
-              <h1 className="font-serif text-lg sm:text-[22px] font-bold tracking-[0.1em] text-[#A44C5C] group-hover:text-[#DF8A9D] transition-colors duration-500 flex items-center justify-center gap-1.5 leading-none">
-                {/* st emblem */}
-                <span className="font-serif italic font-bold">st</span>
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-[0.15em] text-[#A44C5C] group-hover:text-[#DF8A9D] transition-colors duration-700 flex items-center justify-center leading-none">
                 <span className="uppercase">{logoParts.main}</span>
               </h1>
-              <span className="text-[6px] sm:text-[8px] tracking-[0.25em] uppercase font-sans text-gray-400 mt-1 block leading-tight truncate max-w-[260px] mx-auto">
-                {logoParts.sub}
+              <span className="text-[7px] sm:text-[9px] tracking-[0.3em] uppercase font-sans text-gray-500 mt-1.5 block leading-tight truncate max-w-[260px] mx-auto">
+                {logoParts.sub || 'HIGH COUTURE SLEEPWEAR'}
               </span>
             </div>
           </div>

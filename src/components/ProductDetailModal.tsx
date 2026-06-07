@@ -1368,7 +1368,7 @@ export default function ProductDetailModal({
                 <Heart size={16} fill={isFav ? '#EF4444' : 'none'} className={isFav ? 'text-red-500' : 'text-gray-750'} />
               </button>
 
-              {/* Luxury Share Button representing Zoria / SULTA sleepwear */}
+              {/* Luxury Share Button representing Sulta / SULTA sleepwear */}
               <button
                 type="button"
                 onClick={handleShareClick}

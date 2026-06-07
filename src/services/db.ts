@@ -337,7 +337,7 @@ function cleanImgUrl(url: any, fallbackCategory?: string): string {
   }
 
   // Check if it's a local assets path
-  if (cleaned.includes('/assets/')) {
+  if (cleaned.includes('/img/')) {
     const parts = cleaned.split('/');
     const filename = parts[parts.length - 1];
     
@@ -391,14 +391,14 @@ function mapCollection(data: any): Collection {
 function mapSettings(data: any): Settings {
   const rawHero = Array.isArray(data.hero_images) ? data.hero_images : (data.hero_images ? JSON.parse(data.hero_images) : []);
   const checkedHero = (rawHero && rawHero.length > 0) ? rawHero : [
-    '/assets/images/hero_pajama_lifestyle_1_1780682110287.png',
-    '/assets/images/hero_pajama_editorial_2_1780682126486.png',
-    '/assets/images/hero_pajama_detail_3_1780682140472.png'
+    '/img/hero_pajama_lifestyle_1_1780682110287.png',
+    '/img/hero_pajama_editorial_2_1780682126486.png',
+    '/img/hero_pajama_detail_3_1780682140472.png'
   ];
 
   return {
     siteName: data.site_name,
-    logo: cleanImgUrl(data.logo, 'sleepwear') || '/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png',
+    logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_luxury_pajama_hero_2_1780682794821.png',
     promoBannerAr: data.promo_banner_ar,
     promoEndTime: data.promo_end_time,
     heroMiniAlertAr: data.hero_mini_alert_ar,
@@ -653,9 +653,7 @@ export const dbService = {
     onSuccess: (posts: BlogPost[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('blog_posts').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-      if (data) onSuccess(data.map(mapBlogPost));
-    });
+    supabase.from('blog_posts').select('*').order('created_at', { ascending: false }).then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapBlogPost)); }).catch((err) => { console.warn('Supabase fetch failed for blog_posts', err); /* fallback provided by state default */ });
 
     const channelName = 'public:blog_posts:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -728,22 +726,26 @@ export const dbService = {
     onSuccess: (categories: Category[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('categories').select('*').then(({ data }) => {
-      if (data && data.length > 0) {
-        onSuccess(data.map(mapCategory));
-      } else {
+    supabase.from('categories').select('*').then(({ data, error }) => {
+      if (error || !data || data.length === 0) {
         onSuccess(MOCK_BOUTIQUE_CATEGORIES);
+      } else {
+        onSuccess(data.map(mapCategory));
       }
-    });
+    }).catch(() => onSuccess(MOCK_BOUTIQUE_CATEGORIES));
 
     const channelName = 'public:categories:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, async () => {
-        const { data } = await supabase.from('categories').select('*');
-        if (data && data.length > 0) {
-          onSuccess(data.map(mapCategory));
-        } else {
+        try {
+          const { data, error } = await supabase.from('categories').select('*');
+          if (error || !data || data.length === 0) {
+            onSuccess(MOCK_BOUTIQUE_CATEGORIES);
+          } else {
+            onSuccess(data.map(mapCategory));
+          }
+        } catch {
           onSuccess(MOCK_BOUTIQUE_CATEGORIES);
         }
       })
@@ -777,9 +779,7 @@ export const dbService = {
     onSuccess: (collections: Collection[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('collections').select('*').then(({ data }) => {
-      if (data) onSuccess(data.map(mapCollection));
-    });
+    supabase.from('collections').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapCollection)); }).catch((err) => { console.warn('Supabase fetch failed for collections', err); /* fallback provided by state default */ });
 
     const channelName = 'public:collections:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -820,9 +820,7 @@ export const dbService = {
     onSuccess: (sections: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('homepage_sections').select('*').then(({ data }) => {
-      if (data) onSuccess(data);
-    });
+    supabase.from('homepage_sections').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for homepage_sections', err); /* fallback provided by state default */ });
 
     const channelName = 'public:homepage_sections:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -842,22 +840,26 @@ export const dbService = {
     onSuccess: (products: Product[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('products').select('*').then(({ data }) => {
-      if (data && data.length > 0) {
-        onSuccess(data.map(mapProduct));
-      } else {
+    supabase.from('products').select('*').then(({ data, error }) => {
+      if (error || !data || data.length === 0) {
         onSuccess(MOCK_BOUTIQUE_PRODUCTS);
+      } else {
+        onSuccess(data.map(mapProduct));
       }
-    });
+    }).catch(() => onSuccess(MOCK_BOUTIQUE_PRODUCTS));
 
     const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
-        const { data } = await supabase.from('products').select('*');
-        if (data && data.length > 0) {
-          onSuccess(data.map(mapProduct));
-        } else {
+        try {
+          const { data, error } = await supabase.from('products').select('*');
+          if (error || !data || data.length === 0) {
+            onSuccess(MOCK_BOUTIQUE_PRODUCTS);
+          } else {
+            onSuccess(data.map(mapProduct));
+          }
+        } catch {
           onSuccess(MOCK_BOUTIQUE_PRODUCTS);
         }
       })
@@ -872,9 +874,7 @@ export const dbService = {
     onSuccess: (coupons: DiscountCoupon[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('coupons').select('*').then(({ data }) => {
-      if (data) onSuccess(data.map(mapCoupon));
-    });
+    supabase.from('coupons').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapCoupon)); }).catch((err) => { console.warn('Supabase fetch failed for coupons', err); /* fallback provided by state default */ });
 
     const channelName = 'public:coupons:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -894,9 +894,7 @@ export const dbService = {
     onSuccess: (reviews: Review[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('reviews').select('*').then(({ data }) => {
-      if (data) onSuccess(data.map(mapReview));
-    });
+    supabase.from('reviews').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapReview)); }).catch((err) => { console.warn('Supabase fetch failed for reviews', err); /* fallback provided by state default */ });
 
     const channelName = 'public:reviews:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -916,9 +914,7 @@ export const dbService = {
     onSuccess: (orders: Order[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('orders').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-      if (data) onSuccess(data.map(mapOrder));
-    });
+    supabase.from('orders').select('*').order('created_at', { ascending: false }).then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapOrder)); }).catch((err) => { console.warn('Supabase fetch failed for orders', err); /* fallback provided by state default */ });
 
     const channelName = 'public:orders:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -1184,9 +1180,7 @@ export const dbService = {
     onSuccess: (logs: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('activity_logs').select('*').order('date', { ascending: false }).then(({ data }) => {
-      if (data) onSuccess(data);
-    });
+    supabase.from('activity_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for activity_logs', err); /* fallback provided by state default */ });
 
     const channelName = 'public:activity_logs:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -1234,7 +1228,7 @@ export const dbService = {
       fabricAr: 'قطن مبرد ناعم عالي الجودة',
       fabricEn: 'High quality soft premium cooling cotton',
       washInstructionsAr: 'يغسل بماء غسيل لطيف لتجنب انكماش النسيج الممتاز.',
-      images: ['/assets/images/pink_bow_pajama_1780730148591.png'],
+      images: ['/img/pink_bow_pajama_1780730148591.png'],
       colors: [
         { name: 'Rose', hex: '#DF8A9D' },
         { name: 'White', hex: '#FFFFFF' }
@@ -1255,9 +1249,7 @@ export const dbService = {
     onSuccess: (logs: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('inventory_logs').select('*').order('date', { ascending: false }).then(({ data }) => {
-      if (data) onSuccess(data);
-    });
+    supabase.from('inventory_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for inventory_logs', err); /* fallback provided by state default */ });
     const channelName = 'public:inventory_logs:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
@@ -1274,9 +1266,7 @@ export const dbService = {
     onSuccess: (coupons: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('advanced_coupons').select('*').then(({ data }) => {
-      if (data) onSuccess(data);
-    });
+    supabase.from('advanced_coupons').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for advanced_coupons', err); /* fallback provided by state default */ });
     const channelName = 'public:advanced_coupons:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
@@ -1390,9 +1380,7 @@ export const dbService = {
     onSuccess: (customers: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('customers').select('*').then(({ data }) => {
-      if (data) onSuccess(data);
-    });
+    supabase.from('customers').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for customers', err); /* fallback provided by state default */ });
     const channel = supabase.channel('public:customers').on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, async () => {
         const { data } = await supabase.from('customers').select('*');
         if (data) onSuccess(data);
@@ -1486,7 +1474,7 @@ export const dbService = {
         const heroContent = {
           banners: [
             {
-              mediaUrl: '/assets/images/hero_sleepwear_luxury_1780620325112.png',
+              mediaUrl: '/img/hero_sleepwear_luxury_1780620325112.png',
               title: 'BECAUSE YOU DESERVE',
               subtitle: 'THE SOFTEST LIFE',
               description: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',

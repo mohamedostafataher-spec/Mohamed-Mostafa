@@ -2,10 +2,11 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Filter, Search, Heart, ShoppingBag, Eye, X, ChevronDown, 
   Sparkles, SlidersHorizontal, ArrowLeft, Play, Info, 
-  Volume2, VolumeX, Check, Grid, RefreshCw, Star, ArrowUpDown
+  Volume2, VolumeX, Check, Grid, RefreshCw, Star, ArrowUpDown, Wand2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Country, Category } from '../types';
+import StyleAssistant from './StyleAssistant';
 
 interface StoreViewProps {
   products: Product[];
@@ -43,6 +44,7 @@ export default function StoreView({
   const [activeThumbIndices, setActiveThumbIndices] = useState<Record<string, number>>({});
   const [cardColorSelections, setCardColorSelections] = useState<Record<string, { name: string; hex: string }>>({});
   const [isMuted, setIsMuted] = useState(true);
+  const [showStyleAssistant, setShowStyleAssistant] = useState(false);
   
   // Quick view states
   const [qvSelectedSize, setQvSelectedSize] = useState<string>('');
@@ -216,15 +218,27 @@ export default function StoreView({
         }, [selectedCategory, products])}
 
         {/* Floating Atelier Audio Controller */}
-        <div className="absolute top-6 left-6 z-10 hidden md:flex items-center gap-2 bg-black/40 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/10 text-white select-none">
-          <button 
-            type="button"
-            onClick={() => setIsMuted(!isMuted)} 
-            className="text-[#FAF5F0] hover:text-[#DF8A9D] transition-colors cursor-pointer flex items-center gap-1.5"
-            title={isMuted ? "تشغيل الصوت" : "كتم الصوت"}
+        <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
+          {/* Mute Button (Desktop only initially) */}
+          <div className="hidden md:flex items-center bg-black/40 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/10 text-white select-none">
+            <button 
+              type="button"
+              onClick={() => setIsMuted(!isMuted)} 
+              className="text-[#FAF5F0] hover:text-[#DF8A9D] transition-colors cursor-pointer flex items-center gap-1.5"
+              title={isMuted ? "تشغيل الصوت" : "كتم الصوت"}
+            >
+              {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} className="animate-pulse" />}
+              <span className="text-[10px] font-sans tracking-widest font-semibold uppercase">⚜️ BRAND ATMOSPHERE</span>
+            </button>
+          </div>
+          
+          {/* Style Assistant Floating Button (Always visible) */}
+          <button
+            onClick={() => setShowStyleAssistant(true)}
+            className="flex items-center gap-2 bg-[#FAF4F5] hover:bg-[#DF8A9C] text-[#DF8A9C] hover:text-white px-3.5 py-2 rounded-full transition-colors border border-white/20 shadow-md backdrop-blur-sm"
           >
-            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} className="animate-pulse" />}
-            <span className="text-[10px] font-sans tracking-widest font-semibold uppercase">⚜️ BRAND ATMOSPHERE</span>
+            <Wand2 size={14} className="animate-pulse" />
+            <span className="text-[10px] font-bold tracking-wide">المستشار 👗</span>
           </button>
         </div>
 
@@ -421,10 +435,20 @@ export default function StoreView({
               <div className="sticky top-28 space-y-8">
                 
                 {/* Brand Logo Stamp */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-150 text-center space-y-2">
-                  <div className="w-10 h-10 bg-[#FAF5F0] border border-[#c5a059]/30 rounded-full flex items-center justify-center mx-auto text-xs">👑</div>
-                  <strong className="font-serif uppercase tracking-[0.25em] text-[#0C0C0C] text-[10px] block">SULTA ATELIER</strong>
-                  <p className="text-gray-400 text-[10px]">حياكة يدوية خاصة وتوليفات الحرير الملكي الفاخر منذ التأسيس.</p>
+                <div className="bg-white p-6 rounded-2xl border border-gray-150 text-center space-y-4">
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 bg-[#FAF5F0] border border-[#c5a059]/30 rounded-full flex items-center justify-center mx-auto text-xs">👑</div>
+                    <strong className="font-serif uppercase tracking-[0.25em] text-[#0C0C0C] text-[10px] block">SULTA ATELIER</strong>
+                    <p className="text-gray-400 text-[10px]">حياكة يدوية خاصة وتوليفات الحرير الملكي الفاخر منذ التأسيس.</p>
+                  </div>
+                  
+                  <button
+                    onClick={() => setShowStyleAssistant(true)}
+                    className="w-full flex items-center justify-center gap-2 bg-[#FAF4F5] hover:bg-[#DF8A9C] text-[#DF8A9C] hover:text-white px-4 py-2.5 rounded-xl transition-colors group border border-[#DF8A9C]/20"
+                  >
+                    <Wand2 size={14} className="group-hover:animate-spin" />
+                    <span className="text-[10px] font-bold">مستشار العناية والستايل 👗</span>
+                  </button>
                 </div>
 
                 {/* Subcategories widget */}
@@ -951,6 +975,15 @@ export default function StoreView({
         </section>
       )}
 
+      {showStyleAssistant && (
+        <StyleAssistant 
+          onClose={() => setShowStyleAssistant(false)}
+          onRecommend={(catId) => {
+             setSelectedCategory(catId);
+             setSelectedCollection('all');
+          }}
+        />
+      )}
     </div>
   );
 }

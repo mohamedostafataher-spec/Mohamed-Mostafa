@@ -13,12 +13,12 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
     section1: {
       title: 'إرثنا الملكي / Our Exquisite Heritage',
       content: 'تأسست دار سُلْطَة لتقديم أنعم أقمشة الكتان والمودال المعالج حرارياً في الشرق الأوسط. كل قطعة من سُلْطَة مصممة بذكاء لتغمركِ بالراحة والسلام. منسوجاتنا الفريدة مبردة ومعالجة لتبقى قابلة للتنفس وانسيابية تماماً.',
-      imageUrl: '/assets/images/sulta_luxury_lifestyle_about_2_1780682276428.png'
+      imageUrl: '/img/sulta_luxury_lifestyle_about_2_1780682276428.png'
     },
     section2: {
       title: 'فلسفة النعومة الملكية / The Softest Life Philosophy',
       content: 'نمزج بين كوتور ملابس النوم الباريسية وأرقى الأذواق العصرية في الشرق الأوسط. صناعة يدوية مزينة بشرائط وردية، وتفاصيل دقيقة من الدانتيل، نؤمن أن ملابس النوم الفاخرة يجب أن تجعلكِ تشعرين بملكتكِ المتوجة كل ليلة.',
-      imageUrl: '/assets/images/sulta_luxury_lifestyle_about_1_1780682261409.png'
+      imageUrl: '/img/sulta_luxury_lifestyle_about_1_1780682261409.png'
     },
     pillarsTitle: 'التزامات تليق بكِ / Our Timeless Commitments',
     pillars: [
@@ -54,7 +54,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="rounded-3xl overflow-hidden shadow-lg border border-pink-100 aspect-[4/5] md:aspect-auto">
              <img 
-               src="/assets/images/sulta_boutique_display_1_1780682812541.png" 
+               src="/img/sulta_boutique_display_1_1780682812541.png" 
                alt="Sulta Brand Artwork" 
                className="w-full h-full object-cover"
                referrerPolicy="no-referrer"
@@ -88,7 +88,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
             </div>
             <div className="md:w-1/2 order-1 md:order-2 aspect-square overflow-hidden bg-white relative rounded-3xl shadow-md border border-pink-100">
               <img 
-                src="/assets/images/sulta_luxury_lifestyle_about_1_1780682261409.png" 
+                src="/img/sulta_luxury_lifestyle_about_1_1780682261409.png" 
                 alt="Sulta Aesthetic" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -101,7 +101,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
 
         <div className="text-center">
            <img 
-             src="/assets/images/sulta_luxury_lifestyle_about_2_1780682276428.png" 
+             src="/img/sulta_luxury_lifestyle_about_2_1780682276428.png" 
              alt="Luxury Details" 
              className="w-48 mx-auto opacity-90 rounded-2xl shadow-sm border border-pink-50"
              onError={(e) => {

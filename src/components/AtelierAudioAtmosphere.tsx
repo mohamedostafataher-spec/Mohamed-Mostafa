@@ -11,20 +11,20 @@ interface Track {
 
 const ATELIER_PLAYLIST: Track[] = [
   {
-    nameAr: "أوتار الحرير الملكي 🎻",
-    nameEn: "Royal Silk Strings",
+    nameAr: "عود ملكي - ليالي الرياض ✨",
+    nameEn: "Royal Oud - Riyadh Nights",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     duration: "6:12"
   },
   {
-    nameAr: "رواق الصالون الهادئ 🎹",
-    nameEn: "Couture Salon Piano",
+    nameAr: "نسيم النيل المخملي - استرخاء 🌊",
+    nameEn: "Velvet Nile Breeze",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
     duration: "5:04"
   },
   {
-    nameAr: "أقمار الروز والساتان 🌙",
-    nameEn: "Blush Rose & Moon",
+    nameAr: "أجواء صالون Sulta - كلاسيك 🕊️",
+    nameEn: "Sulta Salon - Classic",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     duration: "4:42"
   }
