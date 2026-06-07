@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2, X, Server, Radio, AlertTriangle, Shield, CheckCircle2, RefreshCw, Terminal, Monitor, Smartphone, Tablet as TabletIcon, Layout, FileText, Zap, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2, X, Server, Radio, AlertTriangle, Shield, CheckCircle2, RefreshCw, Terminal, Monitor, Smartphone, Tablet as TabletIcon, Layout, FileText, Zap, ShieldAlert, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection, CustomerProfile } from '../types';
 import { dbService, supabase } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
@@ -1511,9 +1511,9 @@ export default function Dashboard({
         facebook: facebookState,
         whatsapp: whatsappState
       }));
-      customToast('تم حفظ حسابات التواصل الاجتماعي بنجاح', 'success');
+      toast('تم حفظ حسابات التواصل الاجتماعي بنجاح', 'success');
     } else {
-      customToast('فشل حفظ حسابات التواصل', 'error');
+      toast('فشل حفظ حسابات التواصل', 'error');
     }
     setIsSavingSocials(false);
   };
@@ -4100,12 +4100,33 @@ export default function Dashboard({
                           </label>
 
                           {editProdImages.map((imgUrl, idx) => (
-                            <div key={idx} className="relative w-28 h-28 rounded-2xl overflow-hidden border border-gray-150 bg-white shadow-sm shrink-0">
+                            <div key={idx} className="relative w-28 h-28 rounded-2xl overflow-hidden border border-gray-150 bg-white shadow-sm shrink-0 group">
                               {imgUrl.match(/\.(mp4|webm|ogg|mov)$/i) || imgUrl.includes('video') ? (
                                 <video src={imgUrl} className="w-full h-full object-cover" muted loop autoPlay playsInline />
                               ) : (
                                 <img src={imgUrl} className="w-full h-full object-cover" alt={`Edit Preview ${idx + 1}`} referrerPolicy="no-referrer" />
                               )}
+                              {/* Reorder Buttons */}
+                              <div className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 flex flex-col gap-1 transition-opacity">
+                                {idx > 0 && (
+                                  <button type="button" onClick={() => {
+                                    const newImages = [...editProdImages];
+                                    [newImages[idx], newImages[idx - 1]] = [newImages[idx - 1], newImages[idx]];
+                                    setEditProdImages(newImages);
+                                  }} className="bg-white/90 p-0.5 rounded-full shadow hover:bg-white text-gray-700">
+                                    <ArrowLeft size={12} />
+                                  </button>
+                                )}
+                                {idx < editProdImages.length - 1 && (
+                                  <button type="button" onClick={() => {
+                                    const newImages = [...editProdImages];
+                                    [newImages[idx], newImages[idx + 1]] = [newImages[idx + 1], newImages[idx]];
+                                    setEditProdImages(newImages);
+                                  }} className="bg-white/90 p-0.5 rounded-full shadow hover:bg-white text-gray-700">
+                                    <ArrowRight size={12} />
+                                  </button>
+                                )}
+                              </div>
                               <button 
                                 type="button"
                                 onClick={() => setEditProdImages(prev => prev.filter((_, i) => i !== idx))}

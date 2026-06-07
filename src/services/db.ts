@@ -985,7 +985,7 @@ export const dbService = {
     const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
     const payload: any = {
-      id: product.id,
+      ...(isUUID(product.id) ? { id: product.id } : {}),
       name_ar: product.nameAr,
       name_en: product.nameEn,
       category: safeCategory,
@@ -1017,7 +1017,7 @@ export const dbService = {
       tags: JSON.stringify(product.tags || []),
       collection: (product.collection && isUUID(product.collection)) ? product.collection : null,
       name: product.nameEn,
-      slug: product.id.toLowerCase().replace(/\s+/g, '-'),
+      slug: (product.id && !isUUID(product.id)) ? product.id.toLowerCase().replace(/\s+/g, '-') : product.id.toLowerCase().replace(/\s+/g, '-'),
       description: product.descriptionEn,
       seo: product.seo ? JSON.stringify(product.seo) : null
     };
