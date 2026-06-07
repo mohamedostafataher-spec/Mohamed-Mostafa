@@ -95,6 +95,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
                   src={slide.url}
                   alt={slide.alt}
                   className="w-full h-full object-cover object-center"
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/img/hero_pajama_editorial_2_1780682126486.png'; }}
                 />
               )}
               {/* Optional elegant gradient overlay to ensure text legibility */}

@@ -12,6 +12,7 @@ import AdminPromotions from './AdminPromotions';
 import AdminHomepage from './AdminHomepage';
 import AdminMarketingCenter from './AdminMarketingCenter';
 import AdminExperienceCenter from './AdminExperienceCenter';
+import SalesByRegionChart from './SalesByRegionChart';
 
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
@@ -663,6 +664,8 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
               <div className="bg-pink-50 text-pink-600 p-2.5 rounded-xl"><Sparkles size={20} /></div>
             </div>
           </div>
+
+          <SalesByRegionChart orders={orders} />
 
           {/* Real-time Health Radar Scores */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

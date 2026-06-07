@@ -644,7 +644,7 @@ function AppContent() {
               const bannerSection = homepageSections.find(s => s.section_key === 'middle_banner');
               const bannerData = bannerSection?.content_json || {
                 active: true,
-                imageUrl: '/img/hero_sleepwear_luxury_1780620325112.png',
+                imageUrl: '/img/sulta_luxury_pajama_hero_2_1780682794821.png',
                 subtitle: 'Because You Deserve',
                 title: 'THE SOFTEST LIFE',
                 buttonText: 'SHOP THE COLLECTION'
