@@ -65,8 +65,6 @@ export default function Header({
     let rawName = settings?.siteName || 'SULTA';
     // Replace any occurrence of Sulta (case insensitive) with Sulta
     rawName = rawName.replace(/sulta/i, 'Sulta');
-    // Also replace Zoria with Sulta
-    rawName = rawName.replace(/zoria/i, 'Sulta').replace(/ZORIA/g, 'SULTA');
     const words = rawName.trim().split(/\s+/);
     if (words.length >= 2) {
       return {

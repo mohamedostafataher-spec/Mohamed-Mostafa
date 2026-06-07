@@ -2123,7 +2123,7 @@ export default function Dashboard({
 
   // Product actions with real Supabase connection
   const handleDeleteProduct = async (prodId: string, nameAr?: string) => {
-    if (confirm(`هل أنتِ متأكدة من حذف قطعة "${nameAr || ''}" نهائياً من المستودع والمتجر؟`)) {
+    if (window.confirm(`هل أنتِ متأكدة من حذف قطعة "${nameAr || ''}" نهائياً من المستودع والمتجر؟`)) {
       const originalProducts = [...products];
       setProducts(prev => prev.filter(p => p.id !== prodId));
       try {
