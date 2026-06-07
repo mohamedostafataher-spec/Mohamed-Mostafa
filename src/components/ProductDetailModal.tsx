@@ -35,7 +35,7 @@ export default function ProductDetailModal({
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [direction, setDirection] = useState(0); // 1 for right, -1 for left
 
-  const [selectedCol, setSelectedCol] = useState((product.colors && product.colors[0]) || { name: 'Default', hex: '#000000', images: [] });
+  const [selectedCol, setSelectedCol] = useState(product.colors[0] || { name: 'Default', hex: '#000000', images: [] });
   
   // Luxury Gallery Logic: Show color-specific images if they exist, otherwise show all product images
   const displayImages = (selectedCol && selectedCol.images && selectedCol.images.length > 0) 
@@ -243,7 +243,7 @@ export default function ProductDetailModal({
     const text = `مرحباً براند Sulta الفاخر 🌸، أريد طلب القطعة التالية:
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}
-• المقاس المطلوب: مقاس واحد (One Size)
+• المقاس المطلوب: ${selectedSz}
 • الكمية: ${quantity}
 • السعر الإجمالي: ${(price * quantity).toLocaleString()} ${currencyLabel}
 • الدولة: ${country === 'EG' ? 'مصر 🇪🇬' : 'السعودية 🇸🇦'}
@@ -747,7 +747,7 @@ export default function ProductDetailModal({
             <div className="mb-4 border-b border-gray-100 pb-4 text-right">
               <h5 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">تلوينات راقية متوفرة: <span className="text-gray-800 font-sans font-medium">{selectedCol.name}</span></h5>
               <div className="flex gap-2.5 justify-end select-none">
-                {(product.colors || []).map(col => (
+                {product.colors.map(col => (
                   <button
                     key={col.name}
                     onClick={() => setSelectedCol(col)}
@@ -768,18 +768,38 @@ export default function ProductDetailModal({
             {/* Sizes picker selection */}
             <div className="mb-4 border-b border-gray-100 pb-4">
               <div className="flex justify-between items-center mb-2.5">
-                <h5 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">المقاس</h5>
+                <h5 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">حددي مقاسك</h5>
                 <button
                   onClick={() => setActiveTab('size')}
-                  className="text-[10px] font-sans text-[#F4B6C2] hover:underline cursor-pointer flex items-center gap-1"
+                  className="text-[10px] font-sans text-[#F4B6C2] hover:underline cursor-pointer"
                 >
-                  <Sparkles size={11} /> دعينا نخبركِ سر المقاس!
+                  دليل المقاسات في المتجر
                 </button>
               </div>
               <div className="flex gap-2 select-none justify-start flex-wrap">
-                <div className="relative px-6 h-11 text-xs font-sans font-medium rounded-xl flex items-center justify-center transition-all border bg-[#0B0B0B] text-[#F6E7A6] border-black shadow-md font-bold scale-103 cursor-default">
-                  One Size (مقاس واحد لغاية وزن 85 كجم)
-                </div>
+                {product.sizes.map(sz => {
+                  const isSzOutOfStock = isConfigOutOfStock(selectedCol.name, sz);
+                  return (
+                    <button
+                      key={sz}
+                      onClick={() => setSelectedSz(sz)}
+                      className={`relative w-11 h-11 text-xs font-sans font-medium rounded-xl flex items-center justify-center transition-all border cursor-pointer ${
+                        selectedSz === sz
+                          ? isSzOutOfStock
+                            ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold scale-103'
+                            : 'bg-[#0B0B0B] text-[#F6E7A6] border-black shadow-md font-bold scale-103'
+                          : isSzOutOfStock
+                            ? 'bg-gray-50 text-gray-300 border-gray-150 line-through decoration-red-400 decoration-1'
+                            : 'bg-white text-gray-700 border-gray-200 hover:bg-[#FAF4F5]'
+                      }`}
+                    >
+                      <span>{sz}</span>
+                      {isSzOutOfStock && (
+                        <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full" title="نفد المخزون - تنبيه التوفر مفعل" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -932,17 +952,252 @@ export default function ProductDetailModal({
                 </div>
               )}
               {activeTab === 'size' && (
-                <div className="bg-white p-4 rounded-xl border border-gray-150 text-right space-y-3 flex flex-col items-center justify-center py-6 text-center">
-                  <div className="w-12 h-12 bg-pink-50 text-[#DF8A9C] rounded-full flex items-center justify-center mb-1">
-                    <Sparkles size={20} />
-                  </div>
-                  <h6 className="font-bold text-gray-900 text-sm">مقاس واحد يناسب الجميع (One Size)</h6>
-                  <p className="text-gray-600 text-xs leading-relaxed max-w-sm">
-                    جميع تصاميم ملابس النوم لدينا تأتي بمقاس واحد مصمم بذكاء وفخامة ليناسب انحناءات الجسم المختلفة بكل راحة وانسيابية حتى وزن <strong className="text-gray-900 font-sans">85 كيلو جرام</strong>.
-                  </p>
-                  <p className="text-[10px] text-[#DF8A9C] font-semibold bg-pink-50/50 px-3 py-1.5 rounded-lg mt-2 inline-block">
-                    وداعاً لحيرة اختيار المقاسات! ✨
-                  </p>
+                <div className="bg-white p-3 rounded-xl border border-gray-150 text-right space-y-3">
+                  {isQuizMode ? (
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center bg-gray-50 p-2 rounded-lg">
+                        <span className="text-[10px] text-gray-400 font-sans">بدقة %95 بضمان الاستبدال المجاني 🛡️</span>
+                        <h6 className="font-bold text-gray-800 text-[11px] flex items-center gap-1">
+                          <Sparkles size={11} className="text-[#DF8A9C]" />
+                          <span>مكتشف المقاس الذكي من Sulta</span>
+                        </h6>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {/* Height slider */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center text-[10px]">
+                            <span className="font-bold text-gray-700 font-sans">{fitHeight} cm</span>
+                            <span className="text-gray-450 font-medium">الطول بالسم:</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="140" 
+                            max="200" 
+                            value={fitHeight} 
+                            onChange={(e) => {
+                              setFitHeight(Number(e.target.value));
+                              setFitCalculatedSize(null);
+                            }}
+                            className="w-full accent-[#DF8A9C] h-1 bg-gray-200 rounded-lg cursor-pointer" 
+                          />
+                        </div>
+
+                        {/* Weight slider */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center text-[10px]">
+                            <span className="font-bold text-gray-700 font-sans">{fitWeight} kg</span>
+                            <span className="text-gray-450 font-medium">الوزن بالكيلو:</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="40" 
+                            max="120" 
+                            value={fitWeight} 
+                            onChange={(e) => {
+                              setFitWeight(Number(e.target.value));
+                              setFitCalculatedSize(null);
+                            }}
+                            className="w-full accent-[#DF8A9C] h-1 bg-gray-200 rounded-lg cursor-pointer" 
+                          />
+                        </div>
+
+                        {/* Age slider */}
+                        <div className="space-y-1 font-sans">
+                          <div className="flex justify-between items-center text-[10px]">
+                            <span className="font-bold text-gray-700">{fitAge} سنة</span>
+                            <span className="text-gray-450 font-medium font-serif">العمر:</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="18" 
+                            max="70" 
+                            value={fitAge} 
+                            onChange={(e) => {
+                              setFitAge(Number(e.target.value));
+                              setFitCalculatedSize(null);
+                            }}
+                            className="w-full accent-[#DF8A9C] h-1 bg-gray-200 rounded-lg cursor-pointer" 
+                          />
+                        </div>
+                      </div>
+
+                      {/* Body Shapes select grid */}
+                      <div className="space-y-1">
+                        <span className="text-[10px] text-gray-450 block">شكل تقسيم قوام جسدكِ:</span>
+                        <div className="grid grid-cols-4 gap-1.5 text-center text-[9px]">
+                          {[
+                            { id: 'hourglass', label: 'ساعة رملية ⏳' },
+                            { id: 'pear', label: 'كومثرى 🍐' },
+                            { id: 'rectangle', label: 'مستطيل 📐' },
+                            { id: 'apple', label: 'تفاحة 🍎' }
+                          ].map(shape => (
+                            <button
+                              key={shape.id}
+                              type="button"
+                              onClick={() => {
+                                setFitShape(shape.id as any);
+                                setFitCalculatedSize(null);
+                              }}
+                              className={`py-1 rounded-md border font-sans transition-all cursor-pointer ${
+                                fitShape === shape.id 
+                                  ? 'border-[#DF8A9C] bg-pink-50 text-neutral-900 font-bold' 
+                                  : 'border-gray-150 bg-white text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              {shape.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Run calculation action */}
+                      {!fitCalculatedSize ? (
+                        <button
+                          type="button"
+                          onClick={runFitCalculation}
+                          className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#DF8A9C] hover:text-white py-1.5 rounded-lg text-[11px] font-sans font-bold tracking-wide transition-all cursor-pointer"
+                        >
+                          درسي قياسات جسدي واحسبي المقاس 📐✨
+                        </button>
+                      ) : (
+                        <div className="bg-emerald-50 border border-green-200/60 p-2.5 rounded-xl text-center space-y-1.5 animation-scale-up">
+                          <p className="text-[10px] text-gray-500 font-sans">المقاس الذهبي المناسب لقوامكِ هو:</p>
+                          <p className="text-lg font-serif font-black text-green-800">{fitCalculatedSize}</p>
+                          <div className="flex justify-center items-center gap-2 text-[9px] text-green-700">
+                            <span className="font-bold">مستوى الدقة المقدرة: 95%+</span>
+                            <span>•</span>
+                            <span className="font-bold">استبدال مجاني مجنّد بالمنزل 🛡️</span>
+                          </div>
+                          <p className="text-[9px] text-gray-400">تم اختيار وتنشيط المقاس لكِ في الأعلى تلقائياً لتسهيل الشراء.</p>
+                        </div>
+                      )}
+
+                      {/* Switch layout action */}
+                      <button
+                        type="button"
+                        onClick={() => setIsQuizMode(false)}
+                        className="w-full text-center text-[9px] text-gray-400 hover:text-[#DF8A9C] underline block cursor-pointer"
+                      >
+                        أو تصفحي جدول المقاسات بالسنتيمتر التقليدي ↩
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 text-right">
+                      {/* 1. Dynamic Size Chart */}
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] text-gray-400 font-bold block">📊 جدول مقاسات القطعة وملاءمتها:</span>
+                        <table className="w-full text-center border-collapse border border-gray-150 text-[10px]">
+                          <thead className="bg-[#0B0B0B] text-white">
+                            <tr>
+                              <th className="p-1 border border-gray-150">المقاس</th>
+                              <th className="p-1 border border-gray-150">الصدر (Inches)</th>
+                              <th className="p-1 border border-gray-150">الورك (Inches)</th>
+                              <th className="p-1 border border-gray-150 font-sans">الطول cm</th>
+                              <th className="p-1 border border-gray-150">الحالة</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="bg-white">
+                              <td className="p-1 border border-gray-150 font-bold">XS / S</td>
+                              <td className="p-1 border border-gray-150 font-sans">32 - 34</td>
+                              <td className="p-1 border border-gray-150 font-sans">34 - 36</td>
+                              <td className="p-1 border border-gray-150">155 - 165</td>
+                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
+                                {product.sizes?.includes('S') || product.sizes?.includes('XS') ? 'متوفر ✦' : 'نفذت ✕'}
+                              </td>
+                            </tr>
+                            <tr className="bg-gray-50">
+                              <td className="p-1 border border-gray-150 font-bold">M / L</td>
+                              <td className="p-1 border border-gray-150 font-sans">36 - 38</td>
+                              <td className="p-1 border border-gray-150 font-sans">38 - 41</td>
+                              <td className="p-1 border border-gray-150">160 - 172</td>
+                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
+                                {product.sizes?.includes('M') || product.sizes?.includes('L') ? 'متوفر ✦' : 'نفذت ✕'}
+                              </td>
+                            </tr>
+                            <tr className="bg-white">
+                              <td className="p-1 border border-gray-150 font-bold">XL</td>
+                              <td className="p-1 border border-gray-150 font-sans">40 - 42</td>
+                              <td className="p-1 border border-gray-150 font-sans">43 - 45</td>
+                              <td className="p-1 border border-gray-150">165 - 180</td>
+                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
+                                {product.sizes?.includes('XL') ? 'متوفر ✦' : 'نفذت ✕'}
+                              </td>
+                            </tr>
+                            <tr className="bg-gray-50">
+                              <td className="p-1 border border-gray-150 font-bold">XXL</td>
+                              <td className="p-1 border border-gray-150 font-sans">44 - 46</td>
+                              <td className="p-1 border border-gray-150 font-sans">46 - 49</td>
+                              <td className="p-1 border border-gray-150">165 - 185</td>
+                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
+                                {product.sizes?.includes('XXL') ? 'متوفر ✦' : 'نفذت ✕'}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* 2. Fit Information */}
+                      <div className="bg-pink-50/45 p-2 rounded-lg border border-pink-100/50 text-[10px]">
+                        <span className="font-bold text-[#A44C5C] block mb-0.5">ℹ️ ملاءمة القولبة وقوام القصّة:</span>
+                        <p className="text-gray-655 font-sans">
+                          القصة فضفاضة بمقاس كروي مريح (Couture Comfort Fit) تتدلى بنعومة مطلقة بفضل نسيج <strong className="text-[#A44C5C]">{product.fabricAr || 'الساتان الفاهر'}</strong> المعالج حرارياً. توفر حرية حركة لا مثيل لها ونفوذ هواء مثالي للبشرة الحساسة أثناء الاستلقاء والنوم.
+                        </p>
+                      </div>
+
+                      {/* 3. Model Measurements */}
+                      <div className="bg-neutral-50 p-2.5 rounded-lg border border-neutral-150 text-[10px] space-y-0.5">
+                        <span className="font-bold text-gray-800 block">👩🏻 قياسات العارضة الإرشادية (Model Measurements):</span>
+                        <p className="text-gray-500 font-sans">
+                          العارضة ترتدي مقاس <strong className="text-neutral-950">{(product.sizes || ['M'])[0]}</strong> المعروض في الصور الملكية للأطقم الفاخرة.
+                        </p>
+                        <p className="text-gray-550 font-sans">
+                          • طول العارضة: <span className="font-semibold text-neutral-800">173 سم</span> • محيط الصدر: <span className="font-semibold text-neutral-800">34 بوصة</span> • الأرداف: <span className="font-semibold text-neutral-800">37 بوصة</span> • الوزن التقريبي: <span className="font-semibold text-neutral-800">62 كيلو</span>.
+                        </p>
+                      </div>
+
+                      {/* 4. Product Measurements based on selectedSz */}
+                      <div className="bg-[#FAF9F5] p-2.5 rounded-md border border-amber-100/60 text-[10px]">
+                        <span className="font-bold text-[#A44C5C] block">📐 أبعاد القطعة المحددة الآن (Product Measurements):</span>
+                        <div className="mt-1 font-sans text-gray-700 grid grid-cols-2 gap-2 text-right">
+                          <p>• المقاس المختار: <strong className="text-black">{selectedSz || 'غير محدد'}</strong></p>
+                          <p>
+                            • أبعاد الصدر: {' '}
+                            <strong>
+                              {selectedSz === 'S' || selectedSz === 'XS' ? '32-34 بوصة' : 
+                               selectedSz === 'XL' ? '40-42 بوصة' :
+                               selectedSz === 'XXL' ? '44-46 بوصة' : '36-38 بوصة'}
+                            </strong>
+                          </p>
+                          <p>
+                            • أبعاد الأرداف: {' '}
+                            <strong>
+                              {selectedSz === 'S' || selectedSz === 'XS' ? '34-36 بوصة' : 
+                               selectedSz === 'XL' ? '43-45 بوصة' :
+                               selectedSz === 'XXL' ? '46-49 بوصة' : '38-41" بوصة'}
+                            </strong>
+                          </p>
+                          <p>
+                            • طول البنطال/الرداء: {' '}
+                            <strong>
+                              {selectedSz === 'S' || selectedSz === 'XS' ? '155-165 سم' : 
+                               selectedSz === 'XL' ? '165-180 سم' :
+                               selectedSz === 'XXL' ? '165-185 سم' : '160-172 سم'}
+                            </strong>
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsQuizMode(true)}
+                        className="w-full text-center text-[10px] text-[#DF8A9C] hover:underline font-bold block cursor-pointer"
+                      >
+                        ⚡ جربي حاسبة قياس الأجسام الذكية بدقة %95
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
               {activeTab === 'ship' && (
@@ -1159,8 +1414,8 @@ export default function ProductDetailModal({
                       const shareUrl = `${window.location.origin}?product=${product.id}`;
                       const text = `شاهدت هذا التصميم الخيالي لبيجامات وملابس نوم SULTA الفاخرة ✨:
 🌸 الموديل: *${product.nameAr}*
-🎨 الألوان المتوفرة: ${(product.colors || []).map(c => c?.name).join(' - ')}
-💎 المقاس المتوفر: مقاس واحد يناسب الجميع (One Size)
+🎨 الألوان المتوفرة: ${product.colors.map(c => c.name).join(' - ')}
+💎 المقاسات المتوافرة: ${product.sizes.join(', ')}
 💰 السعر: ${price.toLocaleString()} ${currencyLabel}
 
 القطعة منسوجة بقمة الفخامة والنعومة ومتاحة للتوصيل الفوري بالرياض ومصر ومختلف الدول العربيّة!
@@ -1289,7 +1544,7 @@ ${shareUrl}`;
                     const text = `مرحباً براند Sulta الفاخر 🌸، أريد حجز مقاس مسبق (تحت الحياكة اليدوية):
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}
-• المقاس المطلوب: مقاس واحد (One Size)
+• المقاس المطلوب: ${selectedSz}
 • الكمية: ${quantity}
 • حالة القطعة: حياكة بالطلب (غير متوفرة للتسليم الفوري)
 • السعر الإجمالي: ${(price * quantity).toLocaleString()} ${currencyLabel}

@@ -334,7 +334,75 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
           }
         });
       }
+
+      // 5. Missing product images check (Empty images list)
+      if (!p.images || p.images.length === 0 || p.images.every((img: any) => !img || img.trim() === '')) {
+        issues.push({
+          id: `images-empty-${p.id}`,
+          title: `الصور مفقودة تماماً للمنتج: ${p.nameAr}`,
+          type: 'error',
+          category: 'Media',
+          description: `المنتج لا يحتوي على أي صور في المعرض، مما يتسبب في مساحة فارغة للزوار.`,
+          fixSuggestion: 'تحميل صور حريرية جميلة وتنسيق المعرض السحابي فوراً.',
+          refId: p.id,
+          canAutoHeal: true,
+          healAction: async () => {
+            const defaultImgs = ['https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600'];
+            setRepairLogs(prev => [...prev, `🖼️ [الوسائط] جاري ترميم وإرفاق صورة افتراضية فخمة لمنتج (${p.nameAr})`]);
+            const { error } = await supabase.from('products').update({ images: defaultImgs }).eq('id', p.id);
+            if (!error) {
+              setRepairLogs(prev => [...prev, `🟢 [الوسائط] تم إصلاح معرض منتج (${p.nameAr}) بنجاح بدعم الصورة الملكية.`]);
+              return true;
+            } else {
+              setRepairLogs(prev => [...prev, `❌ [الوسائط] فشل إصلاح معرض منتج (${p.nameAr}): ${error.message}`]);
+              return false;
+            }
+          }
+        });
+      }
+
+      // 6. Broken images check (placeholder strings or invalid formats)
+      p.images?.forEach((imgUrl: any, iIdx: number) => {
+        if (imgUrl && (imgUrl.includes('placeholder') || imgUrl.trim() === '')) {
+          issues.push({
+            id: `broken-img-${p.id}-${iIdx}`,
+            title: `صورة مكسورة في معرض منتج: ${p.nameAr} (الرابط يحتوي مؤشرات بناء تجريبية)`,
+            type: 'warning',
+            category: 'Media',
+            description: `الصورة رقم ${iIdx + 1} للمنتج تالفة أو تحتوي روابط تجريبية.`,
+            fixSuggestion: 'تحديث فوري للمسار برابط حقيقي فخم من سوبابيس.',
+            refId: p.id,
+            canAutoHeal: true,
+            healAction: async () => {
+              const fixedList = [...p.images];
+              fixedList[iIdx] = 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600';
+              setRepairLogs(prev => [...prev, `🖼️ [الوسائط] جاري تطهير الرابط التالف رقم ${iIdx + 1} لمنتج (${p.nameAr})`]);
+              const { error } = await supabase.from('products').update({ images: fixedList }).eq('id', p.id);
+              if (!error) {
+                setRepairLogs(prev => [...prev, `🟢 [الوسائط] تم تطهير وتبديل الصورة التالفة للمنتج (${p.nameAr}).`]);
+                return true;
+              } else {
+                setRepairLogs(prev => [...prev, `❌ [الوسائط] تعذر ترميم الرابط التالف لمنتج (${p.nameAr}): ${error.message}`]);
+                return false;
+              }
+            }
+          });
+        }
+      });
     });
+
+    // 7. Global products list check (Missing products)
+    if (products.length === 0) {
+      issues.push({
+        id: 'no-products-total',
+        title: 'خلو المتجر تماماً من أي منتج معروض',
+        type: 'error',
+        category: 'Architecture',
+        description: 'المستودع فارغ ولا توجد أي منتجات متاحة للمبيعات للضيوف.',
+        fixSuggestion: 'تفعيل وتغذية المتجر بالبجايم والقطع من تبويبة المنتجات أو استخدام بذر البيانات الأولي.',
+        canAutoHeal: false
+      });
+    }
 
     // Scans across categories
     categories.forEach(cat => {
@@ -1358,6 +1426,38 @@ export default function Dashboard({
   const [mediaAssets, setMediaAssets] = useState<string[]>([]);
   const [uploadingMediaFile, setUploadingMediaFile] = useState(false);
 
+  useEffect(() => {
+    const urls = new Set<string>();
+    // Collect from products
+    products?.forEach((p: any) => {
+      p.images?.forEach((img: string) => {
+        if (img && img.startsWith('http')) urls.add(img);
+      });
+    });
+    // Collect from categories
+    categories?.forEach((c: any) => {
+      if (c.imageUrl && c.imageUrl.startsWith('http')) urls.add(c.imageUrl);
+    });
+    // Collect from collections
+    collections?.forEach((col: any) => {
+      if (col.imageUrl && col.imageUrl.startsWith('http')) urls.add(col.imageUrl);
+    });
+    // Collect from local storage (manually uploaded)
+    try {
+      const stored = localStorage.getItem('sulta_uploaded_media_assets');
+      if (stored) {
+        const list = JSON.parse(stored);
+        if (Array.isArray(list)) {
+          list.forEach((url: string) => {
+            if (url && url.startsWith('http')) urls.add(url);
+          });
+        }
+      }
+    } catch (e) {}
+
+    setMediaAssets(Array.from(urls));
+  }, [products, categories, collections]);
+
   // Real Customer Data
   const [realCustomers, setRealCustomers] = useState<CustomerProfile[]>([]);
 
@@ -1415,7 +1515,7 @@ export default function Dashboard({
       setBannersList([
         { 
           id: 'slide-1',
-          mediaUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png', 
+          mediaUrl: '/assets/images/hero_sleepwear_luxury_1780620325112.png', 
           title: 'SULTA',
           subtitle: 'Where Comfort Meets Elegance',
           description: 'مجموعة بيجامات نوم ولانج وير مصممة خصيصاً لتمنحك الراحة الكاملة والأنوثة المستحقة تليق بك وبأدق تفاصيل ليلتك الهادئة والراقية بأرقى الخامات المرموقة.',
@@ -1425,7 +1525,7 @@ export default function Dashboard({
         },
         { 
           id: 'slide-2',
-          mediaUrl: '/src/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png', 
+          mediaUrl: '/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png', 
           title: 'SLEEPWEAR',
           subtitle: 'Exquisite Silk Satin Comfort',
           description: 'طواقم فاخرة من الحرير الطبيعي والدانتيل، مصممة بدقة لتلبي أعلى تطلعاتك وتزين خلوتك المنزلية بجمالية ساحرة.',
@@ -1889,15 +1989,37 @@ export default function Dashboard({
     if (!files || files.length === 0) return;
     setUploadingMediaFile(true);
     let count = 0;
+    const uploadedUrls: string[] = [];
     for (let i = 0; i < files.length; i++) {
-      const compressed = await compressAndResizeImage(files[i]);
-      const url = await dbService.uploadImage(compressed);
-      if (url) {
-        setMediaAssets(prev => [url, ...prev]);
-        count++;
+      try {
+        const compressed = await compressAndResizeImage(files[i]);
+        const url = await dbService.uploadImage(compressed);
+        if (url) {
+          uploadedUrls.push(url);
+          setMediaAssets(prev => [url, ...prev]);
+          count++;
+        } else {
+          // pre-emptive base64 fallback in case of connection dropouts
+          const base64Url = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => resolve(ev.target?.result as string);
+            reader.readAsDataURL(compressed);
+          });
+          uploadedUrls.push(base64Url);
+          setMediaAssets(prev => [base64Url, ...prev]);
+          count++;
+        }
+      } catch (err) {
+        console.error("Single asset processing error:", err);
       }
     }
     if (count > 0) {
+      try {
+        const stored = localStorage.getItem('sulta_uploaded_media_assets');
+        const list = stored ? JSON.parse(stored) : [];
+        const updated = [...uploadedUrls, ...list];
+        localStorage.setItem('sulta_uploaded_media_assets', JSON.stringify(updated));
+      } catch (err) {}
       alert(`تم تحميل ${count} ملف بنجاح وإضافته إلى المكتبة المرئية للفخامة!`);
     }
     setUploadingMediaFile(false);
@@ -2003,7 +2125,7 @@ export default function Dashboard({
       nameAr: newCatNameAr,
       nameEn: newCatNameEn,
       slug: slug,
-      imageUrl: newCatImage || '/src/assets/images/hero_sleepwear_luxury_1780620325112.png'
+      imageUrl: newCatImage || '/assets/images/hero_sleepwear_luxury_1780620325112.png'
     };
     try {
       await dbService.saveCategory(newCat);
@@ -2026,7 +2148,7 @@ export default function Dashboard({
       nameEn: newColNameEn,
       descriptionAr: newColDescAr,
       descriptionEn: newColDescEn,
-      imageUrl: newColImage || '/src/assets/images/sulta_boutique_display_1_1780682812541.png'
+      imageUrl: newColImage || '/assets/images/sulta_boutique_display_1_1780682812541.png'
     };
     try {
       await dbService.saveCollection(newCol);
@@ -2061,7 +2183,7 @@ export default function Dashboard({
     // Final choice of images: use uploaded ones, then temp, then default
     const finalImages = uploadedImages.length > 0 
       ? uploadedImages 
-      : (tempImageUrl ? [tempImageUrl] : ['/src/assets/images/hero_sleepwear_luxury_1780620325112.png']);
+      : (tempImageUrl ? [tempImageUrl] : ['/assets/images/hero_sleepwear_luxury_1780620325112.png']);
 
     // Initial fields
     let initialProduct: Product = {
@@ -5605,6 +5727,14 @@ export default function Dashboard({
                           type="button"
                           onClick={() => {
                             if (confirm('هل ترغبين في إزالة هذا الملف من المعرض المؤقت للذاكرة؟')) {
+                              try {
+                                const stored = localStorage.getItem('sulta_uploaded_media_assets');
+                                if (stored) {
+                                  const list = JSON.parse(stored);
+                                  const updated = list.filter((item: string) => item !== assetUrl);
+                                  localStorage.setItem('sulta_uploaded_media_assets', JSON.stringify(updated));
+                                }
+                              } catch(err){}
                               setMediaAssets(prev => prev.filter(item => item !== assetUrl));
                             }
                           }}

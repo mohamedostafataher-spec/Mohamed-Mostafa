@@ -39,6 +39,23 @@ export default function Header({
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const getHeaderLogoParts = () => {
+    const rawName = settings?.siteName || 'SULTA';
+    const words = rawName.trim().split(/\s+/);
+    if (words.length >= 2) {
+      return {
+        main: words[0],
+        sub: words.slice(1).join(' ')
+      };
+    }
+    return {
+      main: rawName,
+      sub: 'LUXURY SLEEPWEAR'
+    };
+  };
+
+  const logoParts = getHeaderLogoParts();
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(localQuery);
@@ -108,15 +125,15 @@ export default function Header({
  
           {/* BRAND LOGO */}
           <div className="flex items-center justify-center flex-1 lg:flex-none select-none cursor-pointer" onClick={() => setTab('home')}>
-            {/* The SULTA text logo imitating the brand marks from mockup */}
-            <div className="text-center group">
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide text-[#A44C5C] group-hover:text-[#DF8A9D] transition-colors duration-500 flex items-center justify-center gap-1">
-                {/* sLt emblem */}
+            {/* The SULTA/ZORIA text logo imitating the brand marks from mockup */}
+            <div className="text-center group max-w-[280px]">
+              <h1 className="font-serif text-lg sm:text-[22px] font-bold tracking-[0.1em] text-[#A44C5C] group-hover:text-[#DF8A9D] transition-colors duration-500 flex items-center justify-center gap-1.5 leading-none">
+                {/* st emblem */}
                 <span className="font-serif italic font-bold">st</span>
-                <span className="ml-2 uppercase tracking-[0.15em] font-normal">{settings?.siteName || 'SULTA'}</span>
+                <span className="uppercase">{logoParts.main}</span>
               </h1>
-              <span className="text-[7px] md:text-[9px] tracking-[0.3em] uppercase font-sans text-gray-500 mt-1 block">
-                SULTA BRAND
+              <span className="text-[6px] sm:text-[8px] tracking-[0.25em] uppercase font-sans text-gray-400 mt-1 block leading-tight truncate max-w-[260px] mx-auto">
+                {logoParts.sub}
               </span>
             </div>
           </div>

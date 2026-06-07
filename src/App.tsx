@@ -22,6 +22,8 @@ import WhatsAppFloat from './components/WhatsAppFloat';
 import RibbonBowDivider from './components/RibbonBowDivider';
 import SocialLinksView from './components/SocialLinksView';
 import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
+import FabricGuide from './components/FabricGuide';
+import AtelierAudioAtmosphere from './components/AtelierAudioAtmosphere';
 
 import { dbService, supabase } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -130,19 +132,36 @@ function AppContent() {
 
     const initData = async () => {
       try {
-        // Seed initial data if needed
-        await dbService.seedInitialData();
-        await dbService.addExperimentalPajama();
+        // Seed initial data if needed - safely caught so any database/table connection errors won't block the site
+        try {
+          await dbService.seedInitialData();
+        } catch (e) {
+          console.warn("[SULTA DB] Seeding initial data skipped or failed:", e);
+        }
+
+        try {
+          await dbService.addExperimentalPajama();
+        } catch (e) {
+          console.warn("[SULTA DB] Adding experimental pajama skipped or failed:", e);
+        }
         
         // Auth Session Sync
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          setSession(session);
+        } catch (e) {
+          console.error("[SULTA AUTH] Fetching active session failed:", e);
+        }
         setAuthLoading(false);
 
-        const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-          setSession(session);
-        });
-        subscription = data.subscription;
+        try {
+          const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+          });
+          subscription = data.subscription;
+        } catch (e) {
+          console.error("[SULTA AUTH] Setting auth state changes failed:", e);
+        }
 
         // Fetch settings - ensure this doesn't block the splash
         dbService.getSettings().then(setSettings).catch(err => console.error("Settings error:", err));
@@ -428,8 +447,23 @@ function AppContent() {
     // We can simulate an active selection by leaving it to StoreView filter
   };
 
-  // Best sellers filter list on home
-  const bestSellers = products.filter(p => p.isBestSeller).slice(0, 6);
+  // Dynamic live homepage filtering systems
+  const bestSellers = products.filter(p => p.isBestSeller && p.status === 'active').slice(0, 6);
+  const newArrivals = [...products]
+    .filter(p => p.status === 'active')
+    .sort((a, b) => b.id.localeCompare(a.id))
+    .slice(0, 6);
+  const featuredProducts = products.filter(p => p.featured && p.status === 'active').slice(0, 6);
+  const trendingProducts = products
+    .filter(p => p.status === 'active')
+    .sort((a, b) => (b.rating || 5) - (a.rating || 5))
+    .slice(0, 6);
+  const latestProducts = [...products]
+    .filter(p => p.status === 'active')
+    .slice(0, 6);
+  const seasonalCollections = products
+    .filter(p => p.status === 'active' && (p.descriptionEn?.toLowerCase().includes('summer') || p.descriptionAr?.includes('صيف') || p.category === 'satin'))
+    .slice(0, 6);
 
   return (
       <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
@@ -597,7 +631,7 @@ function AppContent() {
               const bannerSection = homepageSections.find(s => s.section_key === 'middle_banner');
               const bannerData = bannerSection?.content_json || {
                 active: true,
-                imageUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png',
+                imageUrl: '/assets/images/hero_sleepwear_luxury_1780620325112.png',
                 subtitle: 'Because You Deserve',
                 title: 'THE SOFTEST LIFE',
                 buttonText: 'SHOP THE COLLECTION'
@@ -635,83 +669,91 @@ function AppContent() {
               );
             })()}
 
-            {/* BEST SELLERS */}
-            <section className="py-20 bg-[#FAF5F0]">
-              <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                
-                <RibbonBowDivider />
-
-                <div className="text-center max-w-xl mx-auto mb-16 flex flex-col items-center justify-center">
-                  <h3 className="font-serif text-3xl md:text-4xl text-[#0B0B0B] font-medium tracking-widest uppercase">
-                    BEST SELLERS
-                  </h3>
-                  <p className="text-gray-400 text-xs mt-2 font-serif italic tracking-widest">
-                    Our Most Loved Gilded Sleepwear | الأكثر مبيعاً
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-                  {bestSellers.length > 0 ? bestSellers.map((prod) => {
-                    const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
-                    const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
-
-                    return (
-                      <div
-                        key={prod.id}
-                        className="group flex flex-col h-full bg-white rounded-3xl p-4 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer"
-                        onClick={() => handleSelectProduct(prod)}
-                      >
-                        {/* Rating indicator */}
-                        <div className="absolute top-6 left-6 z-10 flex items-center gap-1 bg-white/80 backdrop-blur-xs px-2.5 py-1 rounded-full text-[10px] text-[#A44C5C] font-serif tracking-widest font-semibold border border-[#DF8A9D]/15">
-                          <Star size={10} className="fill-[#A44C5C] text-[#A44C5C]" />
-                          <span>{prod.rating || 5}</span>
-                        </div>
-                        
-                        {/* Favorite Button */}
-                        <div className="absolute top-6 right-6 z-10">
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                            className="p-1.5 bg-white/90 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-[#DF8A9D] border border-gray-100"
-                          >
-                            <Heart size={14} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
-                          </button>
-                        </div>
-
-                        {/* Top Photo */}
-                        <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-2xl mb-4">
-                          <img
-                            src={prod.images[0]}
-                            alt={prod.nameEn || prod.nameAr}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-
-                        {/* Text details bottom */}
-                        <div className="space-y-1.5 text-center mt-auto flex flex-col items-center">
-                          <span className="text-[9px] uppercase tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-[#FAF4F5] text-[#A44C5C] inline-block font-semibold">
-                            {prod.isBestSeller ? 'Best Seller' : 'New'}
-                          </span>
-                          <h4 className="text-xs sm:text-sm font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
-                            {country === 'EG' && prod.nameAr ? prod.nameAr : prod.nameEn}
-                          </h4>
-                          <span className="font-sans font-semibold text-xs sm:text-sm text-[#A44C5C]">
-                            {priceVal.toLocaleString()} {currencyLabel}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  }) : (
-                    <div className="col-span-full text-center text-gray-500 py-10 font-serif">
-                      Products are currently being curated.
-                    </div>
-                  )}
-                </div>
-                <div className="mt-12">
+            {/* DYNAMIC METRIC-DRIVEN HOMEPAGE SECTIONS */}
+            {[
+              { title: 'BEST SELLERS', label: 'Our Most Loved Gilded Sleepwear | الأكثر مبيعاً ونبلاء الطلب', data: bestSellers },
+              { title: 'NEW ARRIVALS', label: 'Freshly Woven Luxury | وصلنا حديثاً من النسيج الفاخر', data: newArrivals },
+              { title: 'FEATURED PRODUCTS', label: 'Selected Couture Masterpieces | روائع مختارة من الكوتور الفاخر', data: featuredProducts },
+              { title: 'TRENDING OUTSETS', label: 'The Season\'s Most Elegant Choices | صيحات الأناقة والرقي الأكثر رواجاً', data: trendingProducts },
+              { title: 'LATEST LUXURIES', label: 'The Latest SULTA Creative Outfits | آخر الإبداعات الملكية', data: latestProducts },
+              { title: 'SEASONAL CROWNS', label: 'Curated Warm & Summer Sets | المجموعات الموسمية والساتان الإيطالي', data: seasonalCollections },
+            ].map((section, sectionIdx) => (
+              <section key={section.title} className={`py-16 ${sectionIdx % 2 === 0 ? 'bg-[#FAF5F0]' : 'bg-white'}`}>
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
                   <RibbonBowDivider />
+                  
+                  <div className="text-center max-w-xl mx-auto mb-12 flex flex-col items-center justify-center">
+                    <h3 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-medium tracking-widest uppercase">
+                      {section.title}
+                    </h3>
+                    <p className="text-gray-400 text-[10px] sm:text-xs mt-2 font-serif italic tracking-widest text-[#A44C5C]">
+                      {section.label}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+                    {section.data.length > 0 ? section.data.map((prod) => {
+                      const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
+                      const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
+
+                      return (
+                        <div
+                          key={prod.id}
+                          className="group flex flex-col h-full bg-white rounded-2xl p-3 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
+                          onClick={() => handleSelectProduct(prod)}
+                        >
+                          {/* Rating indicator */}
+                          <div className="absolute top-4 left-4 z-10 flex items-center gap-0.5 bg-white/80 backdrop-blur-xs px-2 py-0.5 rounded-full text-[9px] text-[#A44C5C] font-serif tracking-widest font-semibold border border-[#DF8A9D]/15">
+                            <Star size={8} className="fill-[#A44C5C] text-[#A44C5C]" />
+                            <span>{prod.rating || 5}</span>
+                          </div>
+                          
+                          {/* Favorite Button */}
+                          <div className="absolute top-4 right-4 z-10">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
+                              className="p-1 bg-white/90 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-[#DF8A9D] border border-gray-100 cursor-pointer"
+                            >
+                              <Heart size={12} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
+                            </button>
+                          </div>
+
+                          {/* Top Photo */}
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">
+                            <img
+                              src={prod.images[0]}
+                              alt={prod.nameEn || prod.nameAr}
+                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+
+                          {/* Text details bottom */}
+                          <div className="space-y-1 text-center mt-auto flex flex-col items-center">
+                            <span className="text-[8px] uppercase tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-[#FAF4F5] text-[#A44C5C] inline-block font-semibold">
+                              {prod.isBestSeller ? 'Best Seller' : 'New'}
+                            </span>
+                            <h4 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
+                              {country === 'EG' && prod.nameAr ? prod.nameAr : prod.nameEn}
+                            </h4>
+                            <span className="font-sans font-semibold text-3xs sm:text-2xs md:text-xs text-[#A44C5C]">
+                              {priceVal.toLocaleString()} {currencyLabel}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }) : (
+                      <div className="col-span-full text-center text-gray-400 py-6 text-3xs font-serif italic">
+                        يرجى إضافة قطع وتنشيطها في لوحة الإدارة للإثراء الفوري.
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-12">
+                    <RibbonBowDivider />
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            ))}
 
             {/* FEATURES & UNBOXING (DYNAMIC FROM SUPABASE) */}
             <Features homepageSections={homepageSections} />
@@ -773,54 +815,9 @@ function AppContent() {
           />
         )}
 
-        {/* VIEW 3: SIZE GUIDE PAGE */}
-        {currentTab === 'sizes' && (
-          <div className="max-w-4xl mx-auto px-6 py-24 font-sans text-xs md:text-sm text-gray-700 leading-relaxed bg-[#FAF5F0] my-10 rounded-sm">
-            <h2 className="font-serif text-3xl md:text-5xl font-light text-center text-[#0B0B0B] mb-2 uppercase tracking-wide">Size Guide</h2>
-            <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mt-6 mb-10" />
-            
-            <p className="text-center max-w-xl mx-auto text-gray-500 font-sans text-sm mb-12">
-              We understand how important the fit of sleepwear is to your ultimate comfort. Please review the detailed chart below to ensure a precise, elegant fit.
-            </p>
-
-            <div className="border border-[#DF8A9D]/20 rounded-sm overflow-hidden bg-white shadow-sm max-w-2xl mx-auto mb-10">
-              <table className="w-full text-center border-collapse text-xs md:text-sm">
-                <thead className="bg-[#0B0B0B] text-[#FAF5F0]">
-                  <tr className="font-serif tracking-widest uppercase text-[10px]">
-                    <th className="p-4 font-normal">Size</th>
-                    <th className="p-4 font-normal">Bust (Inches)</th>
-                    <th className="p-4 font-normal">Hip (Inches)</th>
-                    <th className="p-4 font-normal">Approx. Weight</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#DF8A9D]/10">
-                  <tr className="group hover:bg-[#FAF5F0]/50 transition-colors">
-                     <td className="p-4 font-serif font-bold text-[#A44C5C]">XS / S</td>
-                    <td className="p-4 font-sans text-gray-600">32" - 34"</td>
-                    <td className="p-4 font-sans text-gray-600">34" - 36"</td>
-                    <td className="p-4 text-gray-500">45 - 58 kg</td>
-                  </tr>
-                  <tr className="group hover:bg-[#FAF5F0]/50 transition-colors">
-                     <td className="p-4 font-serif font-bold text-[#A44C5C]">M / L</td>
-                    <td className="p-4 font-sans text-gray-600">36" - 38"</td>
-                    <td className="p-4 font-sans text-gray-600">38" - 41"</td>
-                    <td className="p-4 text-gray-500">60 - 75 kg</td>
-                  </tr>
-                   <tr className="group hover:bg-[#FAF5F0]/50 transition-colors">
-                     <td className="p-4 font-serif font-bold text-[#A44C5C]">XL</td>
-                    <td className="p-4 font-sans text-gray-600">40" - 42"</td>
-                    <td className="p-4 font-sans text-gray-600">43" - 45"</td>
-                    <td className="p-4 text-gray-500">78 - 95 kg</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="bg-[#FAF5F0] border border-[#DF8A9D]/30 p-6 rounded-sm text-center max-w-xl mx-auto text-xs space-y-2">
-               <strong className="font-serif uppercase tracking-widest text-[#A44C5C] block mb-2">Designer's Tip:</strong>
-               <p className="text-gray-500">If you fall between sizes, we always recommend choosing the larger size for sleepwear to ensure comfortable stretch and ease of movement during sleep and home relaxation.</p>
-            </div>
-          </div>
+        {/* VIEW 3: PREMIUM DYNAMIC FABRIC GUIDE PAGE */}
+        {currentTab === 'fabrics' && (
+          <FabricGuide homepageSections={homepageSections} />
         )}
 
         {/* VIEW 4: ABOUT ABOUT DETAILS (من نحن) */}
@@ -963,7 +960,7 @@ function AppContent() {
           
           {/* Logo & Motto Column */}
           <div className="space-y-4">
-            <h2 className="font-serif text-3xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName || 'SULTA'}</h2>
+            <h2 className="font-serif text-xl sm:text-2xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName || 'SULTA'}</h2>
             <span className="text-[9px] uppercase tracking-[0.2em] font-serif block text-gray-400 italic">
               {settings?.logo ? 'بوتيك ملابس النوم الفاخرة' : 'حيث تلتقي الراحة بالأناقة الملكية'}
             </span>
@@ -972,7 +969,7 @@ function AppContent() {
             </p>
             <div className="pt-4">
                <img 
-                 src="/src/assets/images/sulta_logo_black_card.png" 
+                 src="/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png" 
                  alt="Sulta Brand Card" 
                  className="w-full h-auto rounded-lg shadow-2xl border border-gray-800 opacity-80 hover:opacity-100 transition-opacity"
                />
@@ -986,7 +983,7 @@ function AppContent() {
             <div className="flex flex-col gap-2.5 font-sans items-start text-right">
               <button type="button" onClick={() => setTab('home')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">الرئيسية</button>
               <button type="button" onClick={() => setTab('store')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">متجرنا</button>
-              <button type="button" onClick={() => setTab('sizes')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل المقاسات</button>
+              <button type="button" onClick={() => setTab('fabrics')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل الخامات الحريرية</button>
               <button type="button" onClick={() => setTab('about')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">حول البراند</button>
               <button type="button" onClick={() => setTab('dashboard')} className="text-right text-[#F6E7A6] hover:underline font-bold transition-colors cursor-pointer">لوحة الإدارة والتقارير</button>
               <button type="button" onClick={() => setTab('dbtest')} className="text-right text-gray-600 hover:text-[#c5a059] text-[9px] mt-2 transition-colors cursor-pointer">فحص قاعدة البيانات (Diagnostic)</button>
@@ -1000,7 +997,7 @@ function AppContent() {
               <button type="button" onClick={() => setTab('faq')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
               <button type="button" onClick={() => setTab('track-order')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">تتبع طلبيتي ومسار المعالجة</button>
               <button type="button" onClick={() => setTab('returns')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">سياسة الاسترجاع في مصر والسعودية</button>
-              <button type="button" onClick={() => setTab('sizes')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل المقاسات الرسمي</button>
+              <button type="button" onClick={() => setTab('fabrics')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل الخامات الرسمي</button>
               <span className="text-[#F4B6C2] font-semibold text-[10px]">تأمين كلي على الطلبيات المعبأة ورقياً</span>
             </div>
           </div>
@@ -1065,7 +1062,7 @@ function AppContent() {
                   { id: 'home', label: 'الرئيسية 🏠' },
                   { id: 'store', label: 'المتجر والكتالوج 🛍️' },
                   { id: 'blog', label: 'المجلة (The Journal) 📰' },
-                  { id: 'sizes', label: 'دليل المقاسات 📏' },
+                  { id: 'fabrics', label: 'دليل الخامات الحريرية 🧵' },
                   { id: 'about', label: 'رواد قصتنا وعن Sulta ✨' },
                   { id: 'faq', label: 'الأسئلة الشائعة للعرائس ❓' },
                   { id: 'returns', label: 'سياسة الاسترجاع والتبديل 🔄' },
@@ -1176,6 +1173,7 @@ function AppContent() {
         </button>
       </div>
 
+      <AtelierAudioAtmosphere />
       <WhatsAppFloat number={settings?.whatsappNumber} />
     </div>
   );

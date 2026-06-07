@@ -190,9 +190,9 @@ export default function AdminMarketingCenter() {
           setFeedPosts(JSON.parse(localFeed));
         } else {
           const defaults: SocialFeedPost[] = [
-            { id: 'feed-1', platform: 'instagram', mediaUrl: '/src/assets/images/hero_pajama_lifestyle_1_1780682110287.png', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سلطة', likes: 1420, comments: 65, order: 1 },
-            { id: 'feed-2', platform: 'instagram', mediaUrl: '/src/assets/images/sulta_luxury_pajama_1_1780681467351.png', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة كالحرير ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
-            { id: 'feed-3', platform: 'instagram', mediaUrl: '/src/assets/images/sulta_luxury_pajama_2_1780681482748.png', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
+            { id: 'feed-1', platform: 'instagram', mediaUrl: '/assets/images/hero_pajama_lifestyle_1_1780682110287.png', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سلطة', likes: 1420, comments: 65, order: 1 },
+            { id: 'feed-2', platform: 'instagram', mediaUrl: '/assets/images/sulta_luxury_pajama_1_1780681467351.png', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة كالحرير ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
+            { id: 'feed-3', platform: 'instagram', mediaUrl: '/assets/images/sulta_luxury_pajama_2_1780681482748.png', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
           ];
           setFeedPosts(defaults);
           localStorage.setItem('sulta_marketing_feeds', JSON.stringify(defaults));
@@ -725,7 +725,7 @@ export default function AdminMarketingCenter() {
                     value={feedForm.mediaUrl}
                     onChange={(e) => setFeedForm({ ...feedForm, mediaUrl: e.target.value })}
                     className="w-full border border-gray-200 bg-white p-2 rounded-lg text-left font-mono"
-                    placeholder="/src/assets/images/or_url.png"
+                    placeholder="/assets/images/or_url.png"
                   />
                   <p className="text-[9px] text-gray-400 mt-0.5">يمكنكِ استخدام مسارات الأصول المحلية أو روابط Unsplash مباشرة.</p>
                 </div>

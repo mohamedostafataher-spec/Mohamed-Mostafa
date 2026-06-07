@@ -722,7 +722,7 @@ export default function CheckoutModal({
                     )}
                     <div className="flex-1 min-w-0 pr-2">
                       <span className="font-bold text-gray-900 line-clamp-1 block leading-tight">{item.product.nameAr}</span>
-                      <span className="text-[9px] text-gray-400 block font-mono">اللون: {item.selectedColor?.name || 'افتراضي'} • مقاس: مقاس واحد (One Size) ■ {item.quantity}×</span>
+                      <span className="text-[9px] text-gray-400 block font-mono">اللون: {item.selectedColor?.name || 'افتراضي'} • مقاس: {item.selectedSize} ■ {item.quantity}×</span>
                     </div>
                     <span className="text-[11px] text-[#0B0B0B] font-bold font-sans shrink-0">{(itemPrice * item.quantity).toLocaleString()} {currencyLabel}</span>
                   </div>

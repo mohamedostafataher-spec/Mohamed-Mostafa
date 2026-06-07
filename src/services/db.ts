@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem } from '../types';
 import { createClient } from '@supabase/supabase-js';
 
@@ -10,24 +11,21 @@ let keyToUse = DEFAULT_KEY;
 
 // Safely extract from Vite env if available
 try {
-  const env = (import.meta as any).env;
-  if (env) {
-    const vUrl = env.VITE_SUPABASE_URL;
-    const vKey = env.VITE_SUPABASE_ANON_KEY;
+  const vUrl = import.meta.env.VITE_SUPABASE_URL;
+  const vKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (typeof vUrl === 'string' && vUrl.trim().startsWith('http') && vUrl.includes('.')) {
-      urlToUse = vUrl.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+  if (typeof vUrl === 'string' && vUrl.trim().startsWith('http') && vUrl.includes('.')) {
+    urlToUse = vUrl.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+  }
+  
+  // A real Supabase key is a long JWT (usually > 50 chars). 
+  // We reject placeholders like 'YOUR_...'
+  // If it starts with 'sb_', we allow it to attempt initialization.
+  if (typeof vKey === 'string' && vKey.trim().length > 20 && !vKey.includes('YOUR_')) {
+    if (vKey.startsWith('sb_')) {
+        console.warn("[SULTA DB] Using a key starting with 'sb_'. This is active.");
     }
-    
-    // A real Supabase key is a long JWT (usually > 50 chars). 
-    // We reject placeholders like 'YOUR_...'
-    // If it starts with 'sb_', we log a warning but allow it to attempt initialization.
-    if (typeof vKey === 'string' && vKey.trim().length > 20 && !vKey.includes('YOUR_')) {
-      if (vKey.startsWith('sb_')) {
-          console.warn("[SULTA DB] Using a key starting with 'sb_'. This might be a placeholder.");
-      }
-      keyToUse = vKey.trim();
-    }
+    keyToUse = vKey.trim();
   }
 } catch (e) {
     // Environment not available, use defaults
@@ -35,19 +33,19 @@ try {
 
 // --- DUMMY CLIENT (FALLBACK) ---
 const createDummyClient = () => {
-    const p = (val: any = null) => Promise.resolve({ data: val, error: null });
+    const p = (val: any = null) => Promise.resolve({ data: val, count: 0, error: null });
     const chainable = () => ({
         select: () => ({ 
             order: () => ({ 
                 limit: () => ({ single: () => p() }), 
-                then: (cb: any) => cb({ data: [], error: null }) 
+                then: (cb: any) => cb({ data: [], count: 0, error: null }) 
             }),
             eq: () => ({ 
                 limit: () => ({ single: () => p() }), 
-                then: (cb: any) => cb({ data: [], error: null }) 
+                then: (cb: any) => cb({ data: [], count: 0, error: null }) 
             }),
             limit: () => ({ single: () => p() }),
-            then: (cb: any) => cb({ data: [], error: null }) 
+            then: (cb: any) => cb({ data: [], count: 0, error: null }) 
         }),
         insert: () => p(),
         upsert: () => p(),
@@ -126,8 +124,8 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
     fabricEn: 'Premium high-density breathable cooling Satin (Polysatin composition)',
     washInstructionsAr: 'غسيل يدوي بماء بارد ومساحيق غسيل رقيقة للمنسوجات الفاخرة.',
     images: [
-      'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=800',
-      'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800'
+      'https://images.unsplash.com/photo-1598554889165-8139a49f2883?q=80&w=800',
+      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800'
     ],
     colors: [
       { name: 'Rose', hex: '#DF8A9D' },
@@ -158,8 +156,8 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
     fabricEn: 'Processed premium silk-satin blend with exquisite drape count',
     washInstructionsAr: 'تنظيف جاف أو غسيل رقيق للغاية منفصلا.',
     images: [
-      'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=800',
-      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=800'
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=800',
+      'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=800'
     ],
     colors: [
       { name: 'Pearl Ivory', hex: '#FAF5F0' },
@@ -191,7 +189,7 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
     washInstructionsAr: 'غسيل آلي بماء فاتر ولطيف.',
     images: [
       'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800',
-      'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=800'
+      'https://images.unsplash.com/photo-1562572159-4ebcd318f2dd?q=80&w=800'
     ],
     colors: [
       { name: 'Soft Rose', hex: '#DF8A9D' },
@@ -222,8 +220,8 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
     fabricEn: 'Heavy bridal-weight premium satin with high luster finish',
     washInstructionsAr: 'غسيل رقيق يدوي بماء بارد وبدون عصر مكثف.',
     images: [
-      'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=800',
-      'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800'
+      'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=800',
+      'https://images.unsplash.com/photo-1598554889165-8139a49f2883?q=80&w=800'
     ],
     colors: [
       { name: 'Midnight Black', hex: '#0B0B0B' },
@@ -255,7 +253,7 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
     washInstructionsAr: 'تنظيف رقيق مع مسحوق غسيل سائل خاص بالحرير.',
     images: [
       'https://images.unsplash.com/photo-1562572159-4ebcd318f2dd?q=80&w=800',
-      'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=800'
+      'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800'
     ],
     colors: [
       { name: 'Lavender', hex: '#BDB2FF' },
@@ -286,7 +284,7 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
     fabricEn: 'Boutique anti-static ultra-smooth satin with lace highlights',
     washInstructionsAr: 'يغسل يدويًا للحفاظ على الأطراف المزينة بالدانتيل رقيقًا.',
     images: [
-      'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=800',
+      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800',
       'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800'
     ],
     colors: [
@@ -309,6 +307,65 @@ export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
 // SULTA COUTURE SUPABASE CONNECTION
 // ==========================================
 
+function cleanImgUrl(url: any, fallbackCategory?: string): string {
+  const getUnsplashFallback = (category?: string): string => {
+    const cat = String(category || 'sleepwear').toLowerCase();
+    if (cat === 'sleepwear') {
+      return 'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=600';
+    }
+    if (cat === 'loungewear') {
+      return 'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=600';
+    }
+    if (cat === 'homewear') {
+      return 'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=600';
+    }
+    if (cat === 'collections' || cat === 'new') {
+      return 'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=600';
+    }
+    return 'https://images.unsplash.com/photo-1598554889165-8139a49f2883?q=80&w=800'; // Default peach blush luxury pajama
+  };
+
+  if (!url || typeof url !== 'string' || url.trim() === '' || url.includes('placeholder') || url.includes('or_url.png')) {
+    return getUnsplashFallback(fallbackCategory);
+  }
+
+  let cleaned = url.trim();
+  if (cleaned.startsWith('/src/assets/')) {
+    cleaned = cleaned.replace(/^\/src\/assets\//, '/assets/');
+  } else if (cleaned.startsWith('src/assets/')) {
+    cleaned = cleaned.replace(/^src\/assets\//, '/assets/');
+  }
+
+  // Check if it's a local assets path
+  if (cleaned.includes('/assets/')) {
+    const parts = cleaned.split('/');
+    const filename = parts[parts.length - 1];
+    
+    // If the file is not in list of physical images, redirect to luxury unsplash photo!
+    const VALID_LOCAL_IMAGES = [
+      'hero_pajama_detail_3_1780682140472.png',
+      'hero_pajama_editorial_2_1780682126486.png',
+      'hero_pajama_lifestyle_1_1780682110287.png',
+      'hero_sleepwear_luxury_1780620325112.png',
+      'pink_bow_pajama_1780730148591.png',
+      'sulta_boutique_display_1_1780682812541.png',
+      'sulta_box_closed_1780609086750.png',
+      'sulta_box_open_1780609104306.png',
+      'sulta_luxury_lifestyle_about_1_1780682261409.png',
+      'sulta_luxury_lifestyle_about_2_1780682276428.png',
+      'sulta_luxury_pajama_1_1780681467351.png',
+      'sulta_luxury_pajama_2_1780681482748.png',
+      'sulta_luxury_pajama_hero_2_1780682794821.png'
+    ];
+    
+    if (!VALID_LOCAL_IMAGES.includes(filename)) {
+      return getUnsplashFallback(fallbackCategory);
+    }
+  }
+
+  return cleaned;
+}
+
 function mapCategory(data: any): Category {
   return {
     id: data.id,
@@ -316,7 +373,7 @@ function mapCategory(data: any): Category {
     nameAr: data.name_ar || data.nameAr || data.name || '',
     nameEn: data.name_en || data.nameEn || data.name || '',
     slug: data.slug,
-    imageUrl: data.image_url || data.imageUrl
+    imageUrl: cleanImgUrl(data.image_url || data.imageUrl, data.id)
   };
 }
 
@@ -327,20 +384,27 @@ function mapCollection(data: any): Collection {
     nameEn: data.name_en || data.name || '',
     descriptionAr: data.description_ar || data.description || '',
     descriptionEn: data.description_en || data.description || '',
-    imageUrl: data.image_url || data.imageUrl
+    imageUrl: cleanImgUrl(data.image_url || data.imageUrl, 'collections')
   };
 }
 
 function mapSettings(data: any): Settings {
+  const rawHero = Array.isArray(data.hero_images) ? data.hero_images : (data.hero_images ? JSON.parse(data.hero_images) : []);
+  const checkedHero = (rawHero && rawHero.length > 0) ? rawHero : [
+    '/assets/images/hero_pajama_lifestyle_1_1780682110287.png',
+    '/assets/images/hero_pajama_editorial_2_1780682126486.png',
+    '/assets/images/hero_pajama_detail_3_1780682140472.png'
+  ];
+
   return {
     siteName: data.site_name,
-    logo: data.logo,
+    logo: cleanImgUrl(data.logo, 'sleepwear') || '/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png',
     promoBannerAr: data.promo_banner_ar,
     promoEndTime: data.promo_end_time,
     heroMiniAlertAr: data.hero_mini_alert_ar,
     heroSubtitleAr: data.hero_subtitle_ar,
     heroDescriptionAr: data.hero_description_ar,
-    heroImages: Array.isArray(data.hero_images) ? data.hero_images : (data.hero_images ? JSON.parse(data.hero_images) : []),
+    heroImages: checkedHero.map((imgUrl: any) => cleanImgUrl(imgUrl, 'sleepwear')),
     contactEmail: data.contact_email,
     contactPhone: data.contact_phone,
     whatsapp: data.whatsapp,
@@ -357,11 +421,18 @@ function mapSettings(data: any): Settings {
 }
 
 function mapProduct(data: any): Product {
+  const catKey = data.category || 'sleepwear';
+  let rawImages = Array.isArray(data.images) ? data.images : (data.images ? JSON.parse(data.images) : []);
+  if (!Array.isArray(rawImages) || rawImages.length === 0 || rawImages.every(img => !img || String(img).trim() === '')) {
+    rawImages = [''];
+  }
+  const cleanedImages = rawImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey));
+
   return {
     id: data.id,
     nameAr: data.name_ar || '',
     nameEn: data.name_en || '',
-    category: data.category || 'new',
+    category: catKey,
     categoryAr: data.category_ar || '',
     priceEG: Number(data.price_eg ?? 0),
     priceSA: Number(data.price_sa ?? 0),
@@ -370,7 +441,7 @@ function mapProduct(data: any): Product {
     fabricAr: data.fabric_ar || '',
     fabricEn: data.fabric_en || '',
     washInstructionsAr: data.wash_instructions_ar || '',
-    images: Array.isArray(data.images) ? data.images : (data.images ? JSON.parse(data.images) : []),
+    images: cleanedImages,
     video: data.video || undefined,
     colors: Array.isArray(data.colors) ? data.colors : (data.colors ? JSON.parse(data.colors) : []),
     sizes: Array.isArray(data.sizes) ? data.sizes : (data.sizes ? JSON.parse(data.sizes) : []),
@@ -439,7 +510,7 @@ function mapBlogPost(data: any): BlogPost {
     slug: data.slug,
     content: data.content,
     excerpt: data.excerpt,
-    imageUrl: data.image_url || data.imageUrl,
+    imageUrl: cleanImgUrl(data.image_url || data.imageUrl, 'sleepwear'),
     author: data.author,
     category: data.category,
     tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
@@ -661,7 +732,7 @@ export const dbService = {
       if (data && data.length > 0) {
         onSuccess(data.map(mapCategory));
       } else {
-        onSuccess([]);
+        onSuccess(MOCK_BOUTIQUE_CATEGORIES);
       }
     });
 
@@ -673,7 +744,7 @@ export const dbService = {
         if (data && data.length > 0) {
           onSuccess(data.map(mapCategory));
         } else {
-          onSuccess([]);
+          onSuccess(MOCK_BOUTIQUE_CATEGORIES);
         }
       })
       .subscribe();
@@ -684,15 +755,14 @@ export const dbService = {
   },
 
   saveCategory: async (category: Category): Promise<void> => {
-    const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
     const { error } = await supabase
       .from('categories')
       .upsert([{
-        id: (category.id && isUUID(category.id)) ? category.id : undefined,
+        id: category.id || undefined,
         name: category.nameAr || category.name,
         name_ar: category.nameAr,
         name_en: category.nameEn,
-        slug: category.slug || (category.id && !isUUID(category.id) ? category.id : 'slug-' + Date.now()),
+        slug: category.slug || (category.id ? category.id.toLowerCase() : 'slug-' + Date.now()),
         image_url: category.imageUrl
       }]);
     if (error) throw error;
@@ -776,7 +846,7 @@ export const dbService = {
       if (data && data.length > 0) {
         onSuccess(data.map(mapProduct));
       } else {
-        onSuccess([]);
+        onSuccess(MOCK_BOUTIQUE_PRODUCTS);
       }
     });
 
@@ -788,7 +858,7 @@ export const dbService = {
         if (data && data.length > 0) {
           onSuccess(data.map(mapProduct));
         } else {
-          onSuccess([]);
+          onSuccess(MOCK_BOUTIQUE_PRODUCTS);
         }
       })
       .subscribe();
@@ -923,7 +993,7 @@ export const dbService = {
       name_ar: product.nameAr,
       name_en: product.nameEn,
       category: safeCategory,
-      category_id: (product.category && isUUID(product.category)) ? product.category : null,
+      category_id: product.category || null,
       category_ar: product.categoryAr,
       price: product.priceEG || product.priceSA || 0,
       price_eg: product.priceEG,
@@ -1164,7 +1234,7 @@ export const dbService = {
       fabricAr: 'قطن مبرد ناعم عالي الجودة',
       fabricEn: 'High quality soft premium cooling cotton',
       washInstructionsAr: 'يغسل بماء غسيل لطيف لتجنب انكماش النسيج الممتاز.',
-      images: ['/src/assets/images/pink_bow_pajama_1780730148591.png'],
+      images: ['/assets/images/pink_bow_pajama_1780730148591.png'],
       colors: [
         { name: 'Rose', hex: '#DF8A9D' },
         { name: 'White', hex: '#FFFFFF' }
@@ -1375,7 +1445,7 @@ export const dbService = {
   seedInitialData: async (): Promise<void> => {
     try {
       const { count } = await supabase.from('products').select('*', { count: 'exact', head: true });
-      if (count === 0) {
+      if (count === 0 || count === null || count === undefined) {
         console.log("DB is empty, seeding initial boutique data...");
         // Seed Categories
         for (const cat of MOCK_BOUTIQUE_CATEGORIES) {
@@ -1416,7 +1486,7 @@ export const dbService = {
         const heroContent = {
           banners: [
             {
-              mediaUrl: '/src/assets/images/hero_sleepwear_luxury_1780620325112.png',
+              mediaUrl: '/assets/images/hero_sleepwear_luxury_1780620325112.png',
               title: 'BECAUSE YOU DESERVE',
               subtitle: 'THE SOFTEST LIFE',
               description: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',

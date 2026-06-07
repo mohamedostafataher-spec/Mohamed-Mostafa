@@ -121,7 +121,7 @@ async function startServer() {
         const seo = {
           title: "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة",
           description: "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من الساتان الإيطالي والحرير الطبيعي. تجربة ملكية تبدأ من اختيارك.",
-          image: "/src/assets/images/hero_sleepwear_luxury_1780620325112.png"
+          image: "/assets/images/hero_sleepwear_luxury_1780620325112.png"
         };
 
         const finalHtml = html
@@ -151,7 +151,7 @@ async function startServer() {
         const seo = {
           title: "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة",
           description: "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من الساتان الإيطالي والحرير الطبيعي. تجربة ملكية تبدأ من اختيارك.",
-          image: "/src/assets/images/hero_sleepwear_luxury_1780620325112.png"
+          image: "/assets/images/hero_sleepwear_luxury_1780620325112.png"
         };
 
         const finalHtml = html

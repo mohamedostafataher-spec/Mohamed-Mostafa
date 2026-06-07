@@ -1268,7 +1268,7 @@ export default function PremiumLuxuryExperience({
                     )) : (
                       <>
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src="https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=400" className="w-full h-40 object-cover" alt="" />
+                          <img src="https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=400" className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">ميار أسامة - الرياض</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" خام الساتان ثقيل وبديع، التغليف الملكي عطر الدار يجنن! "</p>

@@ -70,7 +70,7 @@ export default function ContactUs({ settings }: ContactUsProps) {
           <div className="space-y-8">
             <div className="rounded-3xl overflow-hidden shadow-xl border border-pink-100 aspect-video mb-8">
                <img 
-                 src="/src/assets/images/sulta_luxury_pajama_1_1780681467351.png" 
+                 src="/assets/images/sulta_luxury_pajama_1_1780681467351.png" 
                  alt="Contact Sulta" 
                  className="w-full h-full object-cover"
                  referrerPolicy="no-referrer"
