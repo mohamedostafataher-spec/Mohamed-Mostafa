@@ -417,6 +417,19 @@ function AppContent() {
   };
 
   // Custom Intercepting Setters to automatically write mutations to database via dbService
+  const deleteProduct = React.useCallback(async (prodId: string, nameAr?: string) => {
+    try {
+      if (window.confirm(`هل أنتِ متأكدة من حذف قطعة "${nameAr || ''}" نهائياً من المستودع والمتجر؟`)) {
+        await dbService.deleteProduct(prodId);
+        setProducts(prev => prev.filter(p => p.id !== prodId));
+        toast('تم حذف المنتج بنجاح من قاعدة البيانات', 'success');
+      }
+    } catch (err) {
+      console.error("Delete product error:", err);
+      toast('فشل حذف المنتج من قاعدة البيانات', 'error');
+    }
+  }, []);
+
   const syncProducts = React.useCallback(async (value: React.SetStateAction<Product[]>) => {
     const nextArr = typeof value === 'function' ? value(products) : value;
     setProducts(nextArr);
@@ -902,6 +915,7 @@ function AppContent() {
             setCollections={setCollections}
             homepageSections={homepageSections}
             toast={toast}
+            deleteProduct={deleteProduct}
           />
         )}
 

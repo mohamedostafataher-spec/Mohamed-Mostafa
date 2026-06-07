@@ -32,6 +32,7 @@ interface DashboardProps {
   setCollections?: React.Dispatch<React.SetStateAction<Collection[]>>;
   homepageSections?: any[];
   toast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
+  deleteProduct?: (id: string, nameAr?: string) => Promise<void>;
 }
 
 const getStatusBadge = (status: Order['status']) => {
@@ -1343,7 +1344,8 @@ export default function Dashboard({
   collections = [],
   setCollections,
   homepageSections = [],
-  toast
+  toast,
+  deleteProduct
 }: DashboardProps) {
   const showNotification = (msg: string, type: 'success' | 'error' | 'info' = 'success') => {
     if (toast) {
@@ -2121,19 +2123,32 @@ export default function Dashboard({
     }
   };
 
-  // Product actions with real Supabase connection
+  // Helper for products CSV export
+  const exportProductsToCSV = () => {
+    const headers = ['ID', 'Name (AR)', 'Name (EN)', 'Category', 'Price (EG)', 'Price (SA)', 'Stock'];
+    const rows = products.map(p => [
+      p.id,
+      `"${p.nameAr.replace(/"/g, '""')}"`,
+      `"${p.nameEn.replace(/"/g, '""')}"`,
+      `"${p.categoryAr.replace(/"/g, '""')}"`,
+      p.priceEG,
+      p.priceSA,
+      p.stock
+    ]);
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'products_backup.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleDeleteProduct = async (prodId: string, nameAr?: string) => {
-    if (window.confirm(`هل أنتِ متأكدة من حذف قطعة "${nameAr || ''}" نهائياً من المستودع والمتجر؟`)) {
-      const originalProducts = [...products];
-      setProducts(prev => prev.filter(p => p.id !== prodId));
-      try {
-        await dbService.deleteProduct(prodId);
-        showNotification('تم حذف المنتج بنجاح من قاعدة البيانات', 'success');
-      } catch (err) {
-        console.error("Failed to delete product in DB:", err);
-        setProducts(originalProducts);
-        alert('حدث خطأ أثناء الاتصال بقاعدة البيانات. تم التراجع عن الحذف.');
-      }
+    if (deleteProduct) {
+      await deleteProduct(prodId, nameAr);
     }
   };
 
