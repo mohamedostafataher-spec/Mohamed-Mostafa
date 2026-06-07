@@ -63,6 +63,10 @@ export default function Header({
 
   const getHeaderLogoParts = () => {
     let rawName = settings?.siteName || 'SULTA';
+    // Forced override: Remove 'Zoria' branding
+    if (rawName.toLowerCase().includes('zoria')) {
+      rawName = 'SULTA';
+    }
     // Replace any occurrence of Sulta (case insensitive) with Sulta
     rawName = rawName.replace(/sulta/i, 'Sulta');
     const words = rawName.trim().split(/\s+/);

@@ -974,7 +974,7 @@ function AppContent() {
           
           {/* Logo & Motto Column */}
           <div className="space-y-4">
-            <h2 className="font-serif text-xl sm:text-2xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName || 'SULTA'}</h2>
+            <h2 className="font-serif text-xl sm:text-2xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName?.toLowerCase().includes('zoria') ? 'SULTA' : (settings?.siteName || 'SULTA')}</h2>
             <span className="text-[9px] uppercase tracking-[0.2em] font-serif block text-gray-400 italic">
               {settings?.logo ? 'بوتيك ملابس النوم الفاخرة' : 'حيث تلتقي الراحة بالأناقة الملكية'}
             </span>
