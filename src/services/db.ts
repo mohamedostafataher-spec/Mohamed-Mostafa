@@ -727,12 +727,12 @@ export const dbService = {
     _onError: (error: any) => void
   ): (() => void) => {
     supabase.from('categories').select('*').then(({ data, error }) => {
-      if (error || !data || data.length === 0) {
-        onSuccess(MOCK_BOUTIQUE_CATEGORIES);
-      } else {
+      if (error) {
+        onSuccess([]);
+      } else if (data) {
         onSuccess(data.map(mapCategory));
       }
-    }).catch(() => onSuccess(MOCK_BOUTIQUE_CATEGORIES));
+    }).catch(() => onSuccess([]));
 
     const channelName = 'public:categories:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -740,13 +740,13 @@ export const dbService = {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, async () => {
         try {
           const { data, error } = await supabase.from('categories').select('*');
-          if (error || !data || data.length === 0) {
-            onSuccess(MOCK_BOUTIQUE_CATEGORIES);
-          } else {
+          if (error) {
+            onSuccess([]);
+          } else if (data) {
             onSuccess(data.map(mapCategory));
           }
         } catch {
-          onSuccess(MOCK_BOUTIQUE_CATEGORIES);
+          onSuccess([]);
         }
       })
       .subscribe();
@@ -841,12 +841,12 @@ export const dbService = {
     _onError: (error: any) => void
   ): (() => void) => {
     supabase.from('products').select('*').then(({ data, error }) => {
-      if (error || !data || data.length === 0) {
-        onSuccess(MOCK_BOUTIQUE_PRODUCTS);
-      } else {
+      if (error) {
+        onSuccess([]);
+      } else if (data) {
         onSuccess(data.map(mapProduct));
       }
-    }).catch(() => onSuccess(MOCK_BOUTIQUE_PRODUCTS));
+    }).catch(() => onSuccess([]));
 
     const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -854,13 +854,13 @@ export const dbService = {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         try {
           const { data, error } = await supabase.from('products').select('*');
-          if (error || !data || data.length === 0) {
-            onSuccess(MOCK_BOUTIQUE_PRODUCTS);
-          } else {
+          if (error) {
+            onSuccess([]);
+          } else if (data) {
             onSuccess(data.map(mapProduct));
           }
         } catch {
-          onSuccess(MOCK_BOUTIQUE_PRODUCTS);
+          onSuccess([]);
         }
       })
       .subscribe();

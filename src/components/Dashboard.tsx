@@ -2122,12 +2122,13 @@ export default function Dashboard({
   };
 
   // Product actions with real Supabase connection
-  const handleDeleteProduct = async (prodId: string) => {
-    if (confirm('هل أنتِ متأكدة من حذف هذه القطعة الساحرة نهائياً من المستودع والمتجر؟')) {
+  const handleDeleteProduct = async (prodId: string, nameAr?: string) => {
+    if (confirm(`هل أنتِ متأكدة من حذف قطعة "${nameAr || ''}" نهائياً من المستودع والمتجر؟`)) {
       const originalProducts = [...products];
       setProducts(prev => prev.filter(p => p.id !== prodId));
       try {
         await dbService.deleteProduct(prodId);
+        showNotification('تم حذف المنتج بنجاح من قاعدة البيانات', 'success');
       } catch (err) {
         console.error("Failed to delete product in DB:", err);
         setProducts(originalProducts);
@@ -2330,6 +2331,24 @@ export default function Dashboard({
       console.error("Failed to update product in DB:", err);
       setProducts(originalProducts);
       alert('فشل تحديث القطعة الراقية في سوبابيس. يرجى تكرار المحاولة لاحقاً.');
+    }
+  };
+
+  const handleDeleteAllProducts = async () => {
+    if (!window.confirm('🚨 تحذير: سيتم حذف جميع المنتجات الحالية من قاعدة البيانات بشكل نهائي! هل أنت متأكد من الاستمرار؟')) return;
+    
+    const originalProducts = [...products];
+    setProducts([]);
+    
+    try {
+      for (const p of originalProducts) {
+        await dbService.deleteProduct(p.id);
+      }
+      showNotification('تم إفراغ مستودع المنتجات بالكامل من قاعدة البيانات بنجاح!', 'success');
+    } catch (err) {
+      console.error("Failed to delete all products:", err);
+      setProducts(originalProducts);
+      alert('حدث خطأ أثناء محاولة حذف جميع المنتجات. تم استرجاع المنتجات لتفادي الفقدان.');
     }
   };
 
@@ -2769,8 +2788,6 @@ export default function Dashboard({
             const returningCustomersCount = uniquePhones.filter(phone => orders.filter(o => (o.phone?.trim() || "") === phone).length > 1).length;
             const newCustomersCount = Math.max(0, uniquePhones.length - returningCustomersCount);
 
-            const liveVisitors = Math.floor(Math.sin(Date.now() / 60000) * 3) + 7;
-
             // Generate dynamic daily sales chart data for the past 7 days based on actual orders
             const daysOfWeekAr = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
             const last7DaysData = Array.from({ length: 7 }).map((_, idx) => {
@@ -2909,17 +2926,17 @@ export default function Dashboard({
                 {/* 4. Live Visitors & CR */}
                 <div className="bg-[#FAFAF7] border border-gray-100/80 rounded-2xl p-5 flex flex-col justify-between shadow-xs">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] text-gray-400 font-bold tracking-wider">المتصفحون ومعدل التحويل</span>
+                    <span className="text-[10px] text-gray-400 font-bold tracking-wider">قاعدة العملاء النشطين</span>
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
                   </div>
                   <div>
-                    <strong className="text-sm font-semibold text-[#0B0B0B] block font-sans">🟢 {liveVisitors} متصفحين الآن</strong>
+                    <strong className="text-sm font-semibold text-[#0B0B0B] block font-sans">🟢 {uniquePhones.length} عميل نشط مسجل</strong>
                     <strong className="text-xs text-gray-500 block mt-1 font-sans">معدل التحويل: {conversionRateState}%</strong>
                   </div>
-                  <span className="text-[9px] text-gray-400 mt-2 block font-sans">• متوسط الجلسات اليومية: 450</span>
+                  <span className="text-[9px] text-gray-400 mt-2 block font-sans">• العملاء العائدون: {returningCustomersCount}</span>
                 </div>
               </div>
 
@@ -3771,6 +3788,18 @@ export default function Dashboard({
               </form>
 
               {/* Products list tabular layout */}
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-bold text-gray-800">قائمة المنتجات المخزنة</h4>
+                {products.length > 0 && (
+                  <button
+                    onClick={handleDeleteAllProducts}
+                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition-colors border border-red-200 shadow-sm text-xs"
+                  >
+                    <Trash2 size={14} />
+                    حذف جميع المنتجات
+                  </button>
+                )}
+              </div>
               <div className="overflow-x-auto border border-gray-200 rounded-2xl">
                 <table className="w-full text-right border-collapse font-sans text-xs">
                   <thead className="bg-[#0B0B0B] text-white">
@@ -3840,9 +3869,9 @@ export default function Dashboard({
                               </button>
                               <button
                                 type="button"
-                                onClick={() => handleDeleteProduct(p.id)}
+                                onClick={() => handleDeleteProduct(p.id, p.nameAr)}
                                 className="text-red-500 hover:text-red-700 text-xs transition-colors"
-                                title="حذف المنتج من المتجر"
+                                title="حذف المنتج نهائياً من قاعدة البيانات"
                               >
                                 <Trash2 size={14} className="mx-auto" />
                               </button>
