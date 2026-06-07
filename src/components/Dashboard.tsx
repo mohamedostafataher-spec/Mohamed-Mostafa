@@ -1475,12 +1475,47 @@ export default function Dashboard({
   const [shippingRatesState, setShippingRatesState] = useState<ShippingRate[]>([]);
   const [defaultShippingFeeState, setDefaultShippingFeeState] = useState<number>(0);
 
+  // Socials Editor States
+  const [instagramState, setInstagramState] = useState<string>('');
+  const [tiktokState, setTiktokState] = useState<string>('');
+  const [facebookState, setFacebookState] = useState<string>('');
+  const [whatsappState, setWhatsappState] = useState<string>('');
+  const [isSavingSocials, setIsSavingSocials] = useState<boolean>(false);
+
   useEffect(() => {
     if (settings) {
       setShippingRatesState(settings.shippingRates || []);
       setDefaultShippingFeeState(settings.defaultShippingFee ?? 0);
+      setInstagramState(settings.instagram || '');
+      setTiktokState(settings.tiktok || '');
+      setFacebookState(settings.facebook || '');
+      setWhatsappState(settings.whatsapp || '');
     }
   }, [settings]);
+
+  const handleUpdateSocials = async () => {
+    setIsSavingSocials(true);
+    const success = await dbService.updateSettings({
+      instagram: instagramState,
+      tiktok: tiktokState,
+      facebook: facebookState,
+      whatsapp: whatsappState
+    });
+    if (success) {
+      setSettings((prev: any) => ({
+        ...prev,
+        instagram: instagramState,
+        tiktok: tiktokState,
+        facebook: facebookState,
+        whatsapp: whatsappState
+      }));
+      customToast('تم حفظ حسابات التواصل الاجتماعي بنجاح', 'success');
+    } else {
+      customToast('فشل حفظ حسابات التواصل', 'error');
+    }
+    setIsSavingSocials(false);
+  };
+
 
   useEffect(() => {
     const unsubCustomers = dbService.subscribeCustomers(
@@ -5775,6 +5810,71 @@ export default function Dashboard({
                 <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold flex items-center gap-1">
                   <Check size={12} />
                   متصل وجاهز للإنتاج
+                </div>
+              </div>
+
+              {/* Social Media Links */}
+              <div className="bg-white border border-gray-100 rounded-2xl p-6 mt-6 shadow-sm">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h4 className="font-bold text-sm text-gray-800">منصات التواصل الاجتماعي (الروابط الرسمية)</h4>
+                    <p className="text-xs text-gray-500 mt-1">أدخلي روابط صفحاتك لتظهر تلقائياً في المتجر (أيقونات أسفل الموقع وفي صفحة التواصل).</p>
+                  </div>
+                  <button
+                    onClick={handleUpdateSocials}
+                    disabled={isSavingSocials}
+                    className="bg-[#0B0B0B] text-[#F6E7A6] px-5 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition disabled:opacity-60 flex items-center gap-1.5"
+                  >
+                    <Check size={14} />
+                    {isSavingSocials ? 'جاري الحفظ...' : 'حفظ روابط المنصات'}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Instagram - انستجرام</label>
+                    <input
+                      type="text"
+                      placeholder="رابط حسابك او المعرف (sulta.couture)"
+                      value={instagramState}
+                      onChange={(e) => setInstagramState(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black font-sans text-left"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">TikTok - تيك توك</label>
+                    <input
+                      type="text"
+                      placeholder="رابط حسابك او المعرف"
+                      value={tiktokState}
+                      onChange={(e) => setTiktokState(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black font-sans text-left"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Facebook - فيسبوك</label>
+                    <input
+                      type="text"
+                      placeholder="رابط حساب الفيسبوك"
+                      value={facebookState}
+                      onChange={(e) => setFacebookState(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black font-sans text-left"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">WhatsApp - واتساب</label>
+                    <input
+                      type="text"
+                      placeholder="رقم الواتساب بالصيغة الدولية (مثال: +96650...)"
+                      value={whatsappState}
+                      onChange={(e) => setWhatsappState(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black font-sans text-left"
+                      dir="ltr"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

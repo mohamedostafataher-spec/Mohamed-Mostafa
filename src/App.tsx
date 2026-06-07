@@ -973,7 +973,7 @@ function AppContent() {
                  alt="Sulta Brand Card" 
                  className="w-full h-auto rounded-lg shadow-2xl border border-gray-800 opacity-80 hover:opacity-100 transition-opacity"
                />
-               <SocialLinksView className="flex gap-2 pt-4 justify-start" />
+               <SocialLinksView settings={settings} className="flex gap-2 pt-4 justify-start" />
             </div>
           </div>
 

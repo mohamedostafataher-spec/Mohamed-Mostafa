@@ -117,7 +117,7 @@ export default function ContactUs({ settings }: ContactUsProps) {
               </div>
               <div className="pt-6 border-t border-[#DF8A9D]/10">
                 <span className="block text-[10px] uppercase font-serif tracking-widest text-gray-400 mb-3 text-right">أزياؤنا على منصات التواصل الاجتماعي</span>
-                <SocialLinksView className="flex gap-2.5 justify-start text-[#0B0B0B]" />
+                <SocialLinksView settings={settings} className="flex gap-2.5 justify-start text-[#0B0B0B]" />
               </div>
             </div>
           </div>
