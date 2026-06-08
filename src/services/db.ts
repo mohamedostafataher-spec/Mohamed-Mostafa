@@ -48,28 +48,30 @@ try {
 // --- DUMMY CLIENT (FALLBACK) ---
 const createDummyClient = () => {
     const p = (val: any = null) => Promise.resolve({ data: val, count: 0, error: null });
-    const chainable = () => ({
-        select: () => ({ 
-            order: () => ({ 
-                limit: () => ({ single: () => p() }), 
-                then: (cb: any) => cb({ data: [], count: 0, error: null }) 
-            }),
-            eq: () => ({ 
-                limit: () => ({ single: () => p() }), 
-                then: (cb: any) => cb({ data: [], count: 0, error: null }) 
-            }),
-            limit: () => ({ single: () => p() }),
-            then: (cb: any) => cb({ data: [], count: 0, error: null }) 
-        }),
+    
+    // A simple handler for the mock chain
+    const mock: any = {
+        select: () => mock,
+        from: () => mock,
+        order: () => mock,
+        eq: () => mock,
+        limit: () => mock,
+        single: () => p(),
         insert: () => p(),
         upsert: () => p(),
-        update: () => ({ eq: () => p() }),
-        delete: () => ({ eq: () => p() }),
-        insert_multiple: () => p(),
-    });
+        update: () => mock, 
+        delete: () => mock,
+        then: (cb: any) => {
+            cb({ data: [], count: 0, error: null });
+            return mock;
+        },
+        catch: (cb: any) => {
+            return mock;
+        }
+    };
 
     return {
-        from: () => chainable(),
+        from: () => mock,
         auth: {
             getSession: () => Promise.resolve({ data: { session: null }, error: null }),
             onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
