@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { Settings } from '../types';
+import { cleanImgUrl } from '../services/db';
 
 interface HeroProps {
   onExplore: () => void;
@@ -47,7 +48,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   const activeBanners = dbActiveBanners.length > 0 ? dbActiveBanners : fallbackBanners;
 
   const slides = activeBanners.map((b: any) => ({
-    url: b.mediaUrl || b.url,
+    url: cleanImgUrl(b.mediaUrl || b.url, 'sleepwear'),
     alt: b.title || 'Sulta Banner',
     title: b.title || 'CURATED LUXURY.',
     subtitle: b.subtitle || 'TIMELESS STYLE.\nYOUR RESET.',
@@ -95,7 +96,8 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
                   src={slide.url}
                   alt={slide.alt}
                   className="w-full h-full object-cover object-center"
-                  onError={(e) => { (e.target as HTMLImageElement).src = '/img/hero_pajama_editorial_2_1780682126486.png'; }}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => { (e.target as HTMLImageElement).src = cleanImgUrl('fallback', 'sleepwear'); }}
                 />
               )}
               {/* Optional elegant gradient overlay to ensure text legibility */}

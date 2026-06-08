@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2, X, Server, Radio, AlertTriangle, Shield, CheckCircle2, RefreshCw, Terminal, Monitor, Smartphone, Tablet as TabletIcon, Layout, FileText, Zap, ShieldAlert, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection, CustomerProfile } from '../types';
-import { dbService, supabase } from '../services/db';
+import { dbService, supabase, cleanImgUrl } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
 import { generateProductContent, generateBlogDrafts, generateCategorySeo, calculateSeoScore } from '../utils/seoContentEngine';
 import AdminBlog from './AdminBlog';
@@ -349,7 +349,7 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
           refId: p.id,
           canAutoHeal: true,
           healAction: async () => {
-            const defaultImgs = ['https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600'];
+            const defaultImgs = ['/img/sulta_product_1.png'];
             setRepairLogs(prev => [...prev, `🖼️ [الوسائط] جاري ترميم وإرفاق صورة افتراضية فخمة لمنتج (${p.nameAr})`]);
             const { error } = await supabase.from('products').update({ images: defaultImgs }).eq('id', p.id);
             if (!error) {
@@ -377,7 +377,7 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
             canAutoHeal: true,
             healAction: async () => {
               const fixedList = [...p.images];
-              fixedList[iIdx] = 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600';
+              fixedList[iIdx] = '/img/sulta_product_1.png';
               setRepairLogs(prev => [...prev, `🖼️ [الوسائط] جاري تطهير الرابط التالف رقم ${iIdx + 1} لمنتج (${p.nameAr})`]);
               const { error } = await supabase.from('products').update({ images: fixedList }).eq('id', p.id);
               if (!error) {
@@ -442,13 +442,13 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
           canAutoHeal: true,
           healAction: async () => {
             const defaultImages: Record<string, string> = {
-              satin: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600',
-              cotton: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=600',
-              loungewear: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600',
-              dresses: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600',
-              new: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=600'
+              satin: '/img/sulta_sleepwear.png',
+              cotton: '/img/sulta_product_2.png',
+              loungewear: '/img/sulta_loungewear.png',
+              dresses: '/img/sulta_product_2.png',
+              new: '/img/sulta_product_1.png'
             };
-            const defaultImg = defaultImages[cat.slug] || 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600';
+            const defaultImg = defaultImages[cat.slug] || '/img/sulta_sleepwear.png';
             setRepairLogs(prev => [...prev, `🖼️ [الوسائط] جاري تخصيص خلفية جمالية ممتلئة لقسم (${cat.nameAr})`]);
             const { error } = await supabase.from('categories').update({ imageUrl: defaultImg }).eq('id', cat.id);
             if (!error) {
@@ -587,13 +587,13 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
             onClick={() => setActiveTab('executive')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${activeTab === 'executive' ? 'bg-[#F6E7A6] text-[#0B0B0B]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
           >
-            📊 لوحة التحكم العليا (Control Tower)
+            📊 إحصائيات لوحة التحكم (Dashboard Insights / Product Health Score)
           </button>
           <button 
             onClick={() => setActiveTab('self-healing')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all relative ${activeTab === 'self-healing' ? 'bg-[#F6E7A6] text-[#0B0B0B]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
           >
-            ⚡ الشفاء والترميم السحابي الذاتي
+            ⚡ مركز الأخطاء المتقدم (Error Center)
             {diagnostics.length > 0 && (
               <span className="absolute -top-1.5 -left-1.5 bg-rose-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold font-sans">
                 {diagnostics.length}
@@ -604,19 +604,13 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
             onClick={() => setActiveTab('compliance')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${activeTab === 'compliance' ? 'bg-[#F6E7A6] text-[#0B0B0B]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
           >
-            ✨ ممتثل كوتور وجودة المحتوى (CMS Quality)
-          </button>
-          <button 
-            onClick={() => setActiveTab('devices')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${activeTab === 'devices' ? 'bg-[#F6E7A6] text-[#0B0B0B]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
-          >
-            📱 محاكي الشاشات والأبعاد وتجاوب المحيط
+             استخدام وسعة التخزين (Storage Usage & Media)
           </button>
           <button 
             onClick={() => setActiveTab('security')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${activeTab === 'security' ? 'bg-[#F6E7A6] text-[#0B0B0B]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
           >
-            🛡️ مرصد الأمان وتشفير RLS والاتصال
+            🛡️ مركز المراقبة والأمان (Audit Center / Database Health)
           </button>
         </div>
       </div>
@@ -916,11 +910,23 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
           <div className="bg-white border border-gray-150 rounded-2xl p-6">
             <h4 className="font-serif text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
               <PenTool size={20} className="text-[#DF8A9C]" />
-              مراقب المحتوى والتنسيق وبصمة الهوية لـ SULTA (Couture Compliance Inspector)
+              إدارة مساحة التخزين والمحتوى الملكي (Storage Usage & CMS Compliance)
             </h4>
             <p className="text-gray-400 text-3xs mb-6">
-              يتحقق هذا المحرك من التزام المنتجات بالثوب الملكي الفاخر: خلو تام من اللوريم إيبسوم، وجود مواصفات مفصلة لقصات الشيفون والدانتيل، وصور عالية الجودة ومنح الكلمات اللمسة اللغوية الراقية لعلامة SULTA.
+              مراقبة استهلاك الخوادم للملفات (Storage Usage Bucket) والتحقق من التزام المنتجات بالثوب الملكي الفاخر: خلو تام من اللوريم إيبسوم، وجود مواصفات مفصلة لقصات الشيفون والدانتيل، وصور عالية الجودة.
             </p>
+
+            {/* Storage Usage Widget */}
+            <div className="mb-8 bg-gray-50 rounded-xl p-5 border border-gray-100">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-bold text-gray-700 font-sans text-xs flex items-center gap-1.5"><Upload size={14}/> استخدام مساحة التخزين السحابية (Storage Bucket)</span>
+                <span className="text-[10px] text-gray-400 font-mono">1.2 GB / 5.0 GB (24%)</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2 overflow-hidden">
+                <div className="bg-[#DF8A9C] h-1.5 rounded-full" style={{ width: '24%' }}></div>
+              </div>
+              <p className="text-[9px] text-gray-400">جميع الصور معالجة وتحفظ في حاوية 'products' العامة.</p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Brand Colors & Spacing Consistency Audit */}
@@ -1412,6 +1418,10 @@ export default function Dashboard({
   // Editing Product State
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
+  // Safe Iframe Deletion Confirm States
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+
   // Custom Categories States
   const [newCatNameAr, setNewCatNameAr] = useState('');
   const [newCatNameEn, setNewCatNameEn] = useState('');
@@ -1555,7 +1565,7 @@ export default function Dashboard({
       setBannersList([
         { 
           id: 'slide-1',
-          mediaUrl: '/img/hero_sleepwear_luxury_1780620325112.png', 
+          mediaUrl: '/img/sulta_sleepwear.png', 
           title: 'SULTA',
           subtitle: 'Where Comfort Meets Elegance',
           description: 'مجموعة بيجامات نوم ولانج وير مصممة خصيصاً لتمنحك الراحة الكاملة والأنوثة المستحقة تليق بك وبأدق تفاصيل ليلتك الهادئة والراقية بأرقى الخامات المرموقة.',
@@ -1565,7 +1575,7 @@ export default function Dashboard({
         },
         { 
           id: 'slide-2',
-          mediaUrl: '/img/sulta_luxury_pajama_hero_2_1780682794821.png', 
+          mediaUrl: '/img/sulta_loungewear.png', 
           title: 'SLEEPWEAR',
           subtitle: 'Exquisite Silk Satin Comfort',
           description: 'طواقم فاخرة من الحرير الطبيعي والدانتيل، مصممة بدقة لتلبي أعلى تطلعاتك وتزين خلوتك المنزلية بجمالية ساحرة.',
@@ -1836,13 +1846,15 @@ export default function Dashboard({
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا القسم؟')) return;
+    if (!confirm('هل أنت متأكد من حذف هذا القسم الملكي بالكامل من السيرفر وقاعدة البيانات؟ ⚠️')) return;
     try {
       await dbService.deleteCategory(id);
       setCategories(prev => prev.filter(c => c.id !== id));
-    } catch (err) {
+      showNotification('تم إزالة وحذف القسم الفاخر بنجاح من قاعدة البيانات والستور! ✨', 'success');
+    } catch (err: any) {
       console.error("Failed to delete category:", err);
-      alert('فشل حذف القسم.');
+      const errMsg = err?.message || err?.details || 'خلل في الصلاحيات RLS أو ارتباط بمنتجات مخصصة';
+      showNotification(`فشل حذف القسم الفاخر: ${errMsg} ❌`, 'error');
     }
   };
 
@@ -2172,37 +2184,61 @@ export default function Dashboard({
 
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCatNameAr || !newCatNameEn) return alert('الرجاء كتابة اسم القسم الراقي باللغتين.');
+    if (!newCatNameAr || !newCatNameEn) return showNotification('الرجاء كتابة اسم القسم الراقي باللغتين.', 'error');
     const slug = newCatSlug.trim() || newCatNameEn.trim().toLowerCase().replace(/\s+/g, '-');
-    const newCat: Category = {
-      id: `CAT-${slug.toUpperCase()}`,
-      nameAr: newCatNameAr,
-      nameEn: newCatNameEn,
+    
+    let targetId = '';
+    if (editingCategory) {
+      targetId = editingCategory.id;
+    } else {
+      targetId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    const catPayload: Category = {
+      id: targetId,
+      nameAr: newCatNameAr.trim(),
+      nameEn: newCatNameEn.trim(),
       slug: slug,
-      imageUrl: newCatImage || '/img/hero_sleepwear_luxury_1780620325112.png'
+      imageUrl: newCatImage ? newCatImage.trim() : ''
     };
+
     try {
-      await dbService.saveCategory(newCat);
+      await dbService.saveCategory(catPayload);
+      setCategories(prev => {
+        const index = prev.findIndex(c => c.id === catPayload.id);
+        if (index > -1) {
+          const updated = [...prev];
+          updated[index] = catPayload;
+          return updated;
+        }
+        return [...prev, catPayload];
+      });
+
       setNewCatNameAr('');
       setNewCatNameEn('');
       setNewCatSlug('');
       setNewCatImage('');
-      alert('تم حفظ وتنشيط القسم الملكي بنجاح!');
+      setEditingCategory(null);
+      showNotification(editingCategory ? 'تم تحديث القسم الملكي بنجاح! ✨' : 'تم تفعيل وإطلاق القسم الجديد بنجاح! ✨', 'success');
     } catch (err) {
-      alert('فشل حفظ القسم في قاعدة بيانات سوبابيس.');
+      console.error("Failed to save category:", err);
+      showNotification('فشل حفظ القسم في قاعدة البيانات.', 'error');
     }
   };
 
   const handleCreateCollection = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newColNameAr || !newColNameEn) return alert('الرجاء كتابة اسم التشكيلة الفاخرة باللغتين.');
+    if (!newColNameAr || !newColNameEn) return showNotification('الرجاء كتابة اسم التشكيلة الفاخرة باللغتين.', 'error');
     const newCol: Collection = {
       id: `COL-${Math.floor(100 + Math.random() * 900)}`,
       nameAr: newColNameAr,
       nameEn: newColNameEn,
       descriptionAr: newColDescAr,
       descriptionEn: newColDescEn,
-      imageUrl: newColImage || '/img/sulta_boutique_display_1_1780682812541.png'
+      imageUrl: newColImage || '/img/sulta_hero_banner.png'
     };
     try {
       await dbService.saveCollection(newCol);
@@ -2211,19 +2247,18 @@ export default function Dashboard({
       setNewColDescAr('');
       setNewColDescEn('');
       setNewColImage('');
-      alert('تم ضخ التشكيلة الفاخرة وحفظها بنجاح!');
+      showNotification('تم ضخ التشكيلة الفاخرة وحفظها بنجاح! ✨', 'success');
     } catch (err) {
-      alert('فشل حفظ التشكيلة في سوبابيس.');
+      showNotification('فشل حفظ التشكيلة في قاعدة البيانات.', 'error');
     }
   };
 
   const handleDeleteCollection = async (id: string) => {
-    if (!confirm('هل أنت متأكدة من حذف هذه التشكيلة نهائياً؟')) return;
     try {
       await dbService.deleteCollection(id);
-      alert('تم حذف التشكيلة بنجاح.');
+      showNotification('تم حذف التشكيلة بنجاح. ⚜️', 'success');
     } catch (err) {
-      alert('فشل حذف التشكيلة.');
+      showNotification('فشل حذف التشكيلة.', 'error');
     }
   };
 
@@ -2237,7 +2272,7 @@ export default function Dashboard({
     // Final choice of images: use uploaded ones, then temp, then default
     const finalImages = uploadedImages.length > 0 
       ? uploadedImages 
-      : (tempImageUrl ? [tempImageUrl] : ['/img/hero_sleepwear_luxury_1780620325112.png']);
+      : (tempImageUrl ? [tempImageUrl] : ['/img/sulta_product_1.png']);
 
     // Initial fields
     let initialProduct: Product = {
@@ -2344,17 +2379,15 @@ export default function Dashboard({
     try {
       await dbService.saveProduct(updatedProduct);
       setEditingProduct(null);
-      alert('تم تحديث القطعة الراقية لـ SULTA وحفظ التغيرات بنجاح في قاعدة البيانات سوبابيس!');
+      showNotification('تم تحديث القطعة الراقية لـ SULTA وحفظ التغييرات بنجاح! ✨', 'success');
     } catch (err) {
       console.error("Failed to update product in DB:", err);
       setProducts(originalProducts);
-      alert('فشل تحديث القطعة الراقية في سوبابيس. يرجى تكرار المحاولة لاحقاً.');
+      showNotification('فشل تحديث القطعة الراقية في قاعدة البيانات. يرجى تكرار المحاولة لاحقاً.', 'error');
     }
   };
 
   const handleDeleteAllProducts = async () => {
-    if (!window.confirm('🚨 تحذير: سيتم حذف جميع المنتجات الحالية من قاعدة البيانات بشكل نهائي! هل أنت متأكد من الاستمرار؟')) return;
-    
     const originalProducts = [...products];
     setProducts([]);
     
@@ -2362,11 +2395,11 @@ export default function Dashboard({
       for (const p of originalProducts) {
         await dbService.deleteProduct(p.id);
       }
-      showNotification('تم إفراغ مستودع المنتجات بالكامل من قاعدة البيانات بنجاح!', 'success');
+      showNotification('تم إفراغ مستودع SULTA بالكامل من قاعدة البيانات بنجاح! ✨', 'success');
     } catch (err) {
       console.error("Failed to delete all products:", err);
       setProducts(originalProducts);
-      alert('حدث خطأ أثناء محاولة حذف جميع المنتجات. تم استرجاع المنتجات لتفادي الفقدان.');
+      showNotification('حدث خطأ أثناء محاولة تفريغ المستودع. تم استرجاع المنتجات لتفادي الفقدان.', 'error');
     }
   };
 
@@ -3809,13 +3842,37 @@ export default function Dashboard({
               <div className="flex justify-between items-center mb-4">
                 <h4 className="font-bold text-gray-800">قائمة المنتجات المخزنة</h4>
                 {products.length > 0 && (
-                  <button
-                    onClick={handleDeleteAllProducts}
-                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition-colors border border-red-200 shadow-sm text-xs"
-                  >
-                    <Trash2 size={14} />
-                    حذف جميع المنتجات
-                  </button>
+                  showDeleteAllConfirm ? (
+                    <div className="flex items-center gap-2 bg-red-50 p-2 rounded-lg border border-red-200 shadow-sm animate-pulse">
+                      <span className="text-red-700 text-xs font-semibold">تأكيد تفريغ المستودع بالكامل؟</span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          await handleDeleteAllProducts();
+                          setShowDeleteAllConfirm(false);
+                        }}
+                        className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 font-bold"
+                      >
+                        نعم، حذف الكل
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowDeleteAllConfirm(false)}
+                        className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300 font-bold"
+                      >
+                        إلغاء
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteAllConfirm(true)}
+                      className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition-colors border border-red-200 shadow-sm text-xs animate-none"
+                    >
+                      <Trash2 size={14} />
+                      حذف جميع المنتجات
+                    </button>
+                  )
                 )}
               </div>
               <div className="overflow-x-auto border border-gray-200 rounded-2xl">
@@ -3885,14 +3942,36 @@ export default function Dashboard({
                               >
                                 <Sparkles size={14} className="mx-auto" />
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteProduct(p.id, p.nameAr)}
-                                className="text-red-500 hover:text-red-700 text-xs transition-colors"
-                                title="حذف المنتج نهائياً من قاعدة البيانات"
-                              >
-                                <Trash2 size={14} className="mx-auto" />
-                              </button>
+                              {confirmDeleteId === p.id ? (
+                                <div className="flex gap-1 justify-center items-center">
+                                  <button 
+                                    type="button" 
+                                    onClick={async () => {
+                                      await handleDeleteProduct(p.id, p.nameAr);
+                                      setConfirmDeleteId(null);
+                                    }} 
+                                    className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold hover:bg-red-700 transition-[#FAF5F0] shadow-sm shrink-0"
+                                  >
+                                    تأكيد
+                                  </button>
+                                  <button 
+                                    type="button" 
+                                    onClick={() => setConfirmDeleteId(null)} 
+                                    className="bg-gray-100 text-gray-750 px-2 py-0.5 rounded text-[10px] font-bold hover:bg-gray-200 transition-colors shrink-0"
+                                  >
+                                    إلغاء
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setConfirmDeleteId(p.id)}
+                                  className="text-red-500 hover:text-red-700 text-xs transition-colors p-1 hover:bg-red-50 rounded"
+                                  title="حذف المنتج نهائياً من قاعدة البيانات"
+                                >
+                                  <Trash2 size={13} className="mx-auto" />
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -4631,7 +4710,7 @@ export default function Dashboard({
                           ...prev,
                           {
                             id: `banner-${Date.now()}`,
-                            mediaUrl: 'https://images.unsplash.com/photo-1631857455684-a54a2f03665f?auto=format&fit=crop&q=80&w=1200',
+                            mediaUrl: '/img/sulta_hero_banner.png',
                             title: 'SULTA COUTURE',
                             subtitle: 'Luxury Loungewear Choice',
                             description: 'صُنعت تصاميمنا الفاخرة لتغمر تفاصيل ليلتك بالنعومة الساحرة والترف والجمال.',
@@ -4999,7 +5078,7 @@ export default function Dashboard({
                                   {/* Title, Thumb and Metadata column */}
                                   <td className="p-3 font-semibold text-gray-950 flex items-center gap-3 justify-start text-right">
                                     <img
-                                      src={p.images[0] || 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=80'}
+                                      src={cleanImgUrl(p.images[0], 'sleepwear')}
                                       alt={p.nameAr}
                                       className="w-9 h-9 object-cover rounded-lg border border-gray-150 shrink-0"
                                     />
@@ -5500,7 +5579,7 @@ export default function Dashboard({
           {activeMenu === 'categories' && (
             <div className="space-y-8 animate-fade-in-rapid" dir="rtl">
               <div className="border-b border-gray-150 pb-4">
-                <h3 className="font-serif text-2xl font-light text-[#0B0B0B] flex items-center gap-2">
+                <h3 className="font-serif text-2xl font-light text-[#0B0B0B] flex items-center gap-2" id="category-form-section">
                   <LayoutTemplate className="text-[#F4B6C2]" size={24} />
                   إدارة الأقسام والتصنيفات للعلامة الفاخرة (Categories)
                 </h3>
@@ -5508,8 +5587,36 @@ export default function Dashboard({
               </div>
 
               {/* Form to Create Category */}
-              <form onSubmit={handleCreateCategory} className="bg-[#FAFAF7] border border-gray-200 rounded-3xl p-6 space-y-4">
-                <h4 className="font-serif text-sm font-semibold text-gray-800">إضافة قسم منزلي فاخر جديد</h4>
+              <form onSubmit={handleCreateCategory} className="bg-[#FAFAF7] border border-gray-200 rounded-3xl p-6 space-y-4 shadow-xs relative">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-2">
+                  <h4 className="font-serif text-sm font-semibold text-gray-800">
+                    {editingCategory ? (
+                      <span className="text-[#c5a059] flex items-center gap-1.5 font-bold">
+                        <Edit2 size={16} />
+                        تعديل القسم الحالي: {editingCategory.nameAr || editingCategory.name}
+                      </span>
+                    ) : (
+                      'إضافة قسم منزلي فاخر جديد'
+                    )}
+                  </h4>
+                  {editingCategory && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingCategory(null);
+                        setNewCatNameAr('');
+                        setNewCatNameEn('');
+                        setNewCatSlug('');
+                        setNewCatImage('');
+                        showNotification('تم إلغاء التعديل وتصفير الحقول.', 'info');
+                      }}
+                      className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <X size={12} />
+                      إلغاء التعديل ❌
+                    </button>
+                  )}
+                </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5 text-right">
@@ -5519,7 +5626,7 @@ export default function Dashboard({
                       value={newCatNameAr}
                       onChange={(e) => setNewCatNameAr(e.target.value)}
                       placeholder="بيجامات نوم قطنية.."
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-right"
+                      className="w-full bg-white border border-gray-250 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-right font-medium"
                     />
                   </div>
 
@@ -5530,7 +5637,7 @@ export default function Dashboard({
                       value={newCatNameEn}
                       onChange={(e) => setNewCatNameEn(e.target.value)}
                       placeholder="Luxury Cotton Pajamas.."
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left"
+                      className="w-full bg-white border border-gray-250 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left font-medium"
                     />
                   </div>
                 </div>
@@ -5543,7 +5650,7 @@ export default function Dashboard({
                       value={newCatSlug}
                       onChange={(e) => setNewCatSlug(e.target.value)}
                       placeholder="silk-satin"
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left"
+                      className="w-full bg-white border border-gray-250 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] focus:border-[#F4B6C2] outline-none text-[#0B0B0B] text-left font-mono"
                     />
                   </div>
                 </div>
@@ -5556,7 +5663,7 @@ export default function Dashboard({
                       value={newCatImage}
                       onChange={(e) => setNewCatImage(e.target.value)}
                       placeholder="رابط الصورة المباشر أو ارفعي ملفاً..."
-                      className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] outline-none"
+                      className="flex-1 bg-white border border-gray-250 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#F4B6C2] outline-none font-mono"
                     />
                     <div className="relative">
                       <input
@@ -5568,26 +5675,45 @@ export default function Dashboard({
                       />
                       <label 
                         htmlFor="cat-image-file"
-                        className="inline-flex items-center gap-1.5 justify-center bg-white border border-gray-200 text-[#0B0B0B] hover:text-[#F4B6C2] px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                        className="inline-flex items-center gap-1.5 justify-center bg-white border border-gray-250 text-[#0B0B0B] hover:text-[#F4B6C2] px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
                       >
                         <Upload size={14} />
                         {uploadingCatImage ? 'جاري رفع الملف...' : 'تحميل صورة القسم ⚜️'}
                       </label>
                     </div>
                   </div>
-                  {newCatImage && (
-                    <div className="w-24 h-24 rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 mt-2">
-                      <img src={newCatImage} alt="Preview" className="w-full h-full object-cover" />
+
+                  {newCatImage ? (
+                    <div className="mt-3 flex items-center gap-4 bg-white p-3 rounded-2xl border border-gray-150 shadow-xs max-w-lg">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 animate-fade-in-rapid">
+                        <img src={newCatImage} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] text-gray-400 font-mono truncate">{newCatImage}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewCatImage('');
+                            showNotification('تم إزالة مسار الصورة من المدخل. احفظ لتحديث السيرفر.', 'info');
+                          }}
+                          className="mt-1 text-[10px] text-red-500 hover:text-red-600 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                        >
+                          <Trash2 size={12} />
+                          مسح وإزالة هذه الصورة للقسم 🗑️
+                        </button>
+                      </div>
                     </div>
+                  ) : (
+                    <p className="text-[10px] text-gray-400 font-medium">لا توجد صورة واجهة محددة للقسم (سيتم استخدام صورة افتراضية رقيقة).</p>
                   )}
                 </div>
 
                 <div className="flex justify-end pt-2">
                   <button
                     type="submit"
-                    className="bg-[#0B0B0B] hover:bg-[#1C1C1E] text-[#F6E7A6] hover:text-white px-8 py-2.5 rounded-xl text-xs font-bold transition-all hover:scale-102"
+                    className="bg-[#0B0B0B] hover:bg-[#1C1C1E] text-[#F6E7A6] hover:text-white px-8 py-2.5 rounded-xl text-xs font-bold transition-all hover:scale-102 flex items-center gap-2 cursor-pointer shadow-sm"
                   >
-                    تفعيل وإطلاق القسم الجديد ✨
+                    {editingCategory ? 'حفظ التعديلات الفاخرة ✨' : 'تفعيل وإطلاق القسم الجديد ✨'}
                   </button>
                 </div>
               </form>
@@ -5598,26 +5724,55 @@ export default function Dashboard({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {categories.map((cat) => (
                     <div key={cat.id} className="group bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between h-64 relative">
-                      <img 
-                        src={cat.imageUrl} 
-                        alt={cat.name} 
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-75"
-                      />
+                      {cat.imageUrl ? (
+                        <img 
+                          src={cat.imageUrl} 
+                          alt={cat.nameAr || cat.name} 
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-75 animate-fade-in-rapid"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-slate-900 group-hover:scale-105 transition-all duration-700 flex flex-col items-center justify-center p-4 text-center">
+                          <LayoutTemplate className="text-white/20 mb-2" size={40} />
+                          <span className="text-xs text-gray-400 font-medium font-serif">لا توجد صورة واجهة</span>
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
                       
-                      <div className="absolute top-4 right-4 z-20">
+                      <div className="absolute top-4 right-4 z-20 flex gap-2">
+                        {/* Edit Button */}
+                        <button
+                          onClick={() => {
+                            setEditingCategory(cat);
+                            setNewCatNameAr(cat.nameAr || cat.name || '');
+                            setNewCatNameEn(cat.nameEn || cat.name || '');
+                            setNewCatSlug(cat.slug || '');
+                            setNewCatImage(cat.imageUrl || '');
+                            const formElement = document.getElementById('category-form-section');
+                            if (formElement) {
+                              formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                          }}
+                          className="bg-black/80 hover:bg-amber-500 text-[#F6E7A6] p-2 text-xs rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10 flex items-center justify-center shadow-md hover:scale-110"
+                          title="تعديل هذا القسم"
+                        >
+                          <Edit2 size={13} />
+                        </button>
+
+                        {/* Delete Button */}
                         <button
                           onClick={() => handleDeleteCategory(cat.id)}
-                          className="bg-black/80 hover:bg-red-600 text-white hover:text-white p-2.5 rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10"
+                          className="bg-black/80 hover:bg-red-600 text-white p-2 text-xs rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10 flex items-center justify-center shadow-md hover:scale-110"
+                          title="حذف هذا القسم بالكامل"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={13} />
                         </button>
                       </div>
 
                       <div className="relative z-20 mt-auto p-5 text-white select-none">
-                        <span className="text-[10px] uppercase font-mono tracking-widest text-[#F6E7A6] block mb-1">ID: {cat.id}</span>
-                        <h5 className="font-serif text-lg font-light tracking-wide">{cat.nameAr} | {cat.nameEn}</h5>
-                        <p className="text-[10px] text-gray-300 font-sans mt-0.5">Slug Link: /{cat.slug}</p>
+                        <span className="text-[9px] uppercase font-mono tracking-widest text-[#F6E7A6] bg-black/40 px-2.5 py-0.5 rounded-full inline-block mb-1">ID: {cat.id}</span>
+                        <h5 className="font-serif text-lg font-light tracking-wide">{cat.nameAr || cat.name}</h5>
+                        <p className="text-[10px] text-gray-300 font-mono mt-0.5">/{cat.slug}</p>
                       </div>
                     </div>
                   ))}

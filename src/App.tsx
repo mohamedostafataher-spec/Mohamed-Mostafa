@@ -25,7 +25,7 @@ import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
 import FabricGuide from './components/FabricGuide';
 import AtelierAudioAtmosphere from './components/AtelierAudioAtmosphere';
 
-import { dbService, supabase } from './services/db';
+import { dbService, supabase, cleanImgUrl } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
 import { recordView, recordCartAddition } from './utils/analytics';
 
@@ -139,12 +139,14 @@ function AppContent() {
           console.warn("[SULTA DB] Seeding initial data skipped or failed:", e);
         }
 
+        // Clean experimental pajama from live database if present to ensure clean slate
         try {
-          await dbService.addExperimentalPajama();
+          await supabase.from('products').delete().eq('id', 'experimental-pajama-001');
+          console.log("[SULTA DB] Experimental template pajamas cleaned.");
         } catch (e) {
-          console.warn("[SULTA DB] Adding experimental pajama skipped or failed:", e);
+          console.warn("[SULTA DB] Cleaning experimental pajama failed:", e);
         }
-        
+
         // Auth Session Sync
         try {
           const { data: { session } } = await supabase.auth.getSession();
@@ -419,39 +421,28 @@ function AppContent() {
   // Custom Intercepting Setters to automatically write mutations to database via dbService
   const deleteProduct = React.useCallback(async (prodId: string, nameAr?: string) => {
     try {
-      if (window.confirm(`هل أنتِ متأكدة من حذف قطعة "${nameAr || ''}" نهائياً من المستودع والمتجر؟`)) {
-        await dbService.deleteProduct(prodId);
-        setProducts(prev => prev.filter(p => p.id !== prodId));
-        toast('تم حذف المنتج بنجاح من قاعدة البيانات', 'success');
-      }
+      await dbService.deleteProduct(prodId);
+      setProducts(prev => prev.filter(p => p.id !== prodId));
+      toast(`تم حذف القطعة "${nameAr || ''}" بنجاح`, 'success');
     } catch (err) {
       console.error("Delete product error:", err);
       toast('فشل حذف المنتج من قاعدة البيانات', 'error');
     }
   }, []);
 
-  const syncProducts = React.useCallback(async (value: React.SetStateAction<Product[]>) => {
+  const syncProducts = React.useCallback((value: React.SetStateAction<Product[]>) => {
     const nextArr = typeof value === 'function' ? value(products) : value;
     setProducts(nextArr);
-    for (const p of nextArr) {
-      await dbService.saveProduct(p);
-    }
   }, [products]);
 
-  const syncCoupons = React.useCallback(async (value: React.SetStateAction<DiscountCoupon[]>) => {
+  const syncCoupons = React.useCallback((value: React.SetStateAction<DiscountCoupon[]>) => {
     const nextArr = typeof value === 'function' ? value(coupons) : value;
     setCoupons(nextArr);
-    for (const c of nextArr) {
-      await dbService.saveCoupon(c);
-    }
   }, [coupons]);
 
-  const syncOrders = React.useCallback(async (value: React.SetStateAction<Order[]>) => {
+  const syncOrders = React.useCallback((value: React.SetStateAction<Order[]>) => {
     const nextArr = typeof value === 'function' ? value(orders) : value;
     setOrders(nextArr);
-    for (const o of nextArr) {
-      await dbService.updateOrder(o);
-    }
   }, [orders]);
 
   // Select home categories shortcut
@@ -654,7 +645,7 @@ function AppContent() {
                 <section className="relative py-24 md:py-32 overflow-hidden bg-[#DF8A9D]/20">
                   <div className="absolute inset-0 z-0 opacity-50">
                     <img 
-                      src={bannerData.imageUrl} 
+                      src={cleanImgUrl(bannerData.imageUrl)} 
                       className="w-full h-full object-cover grayscale mix-blend-overlay opacity-30" 
                       alt="luxury background"
                       referrerPolicy="no-referrer"
@@ -974,7 +965,7 @@ function AppContent() {
           
           {/* Logo & Motto Column */}
           <div className="space-y-4">
-            <h2 className="font-serif text-xl sm:text-2xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName?.toLowerCase().includes('zoria') ? 'SULTA' : (settings?.siteName || 'SULTA')}</h2>
+            <h2 className="font-serif text-xl sm:text-2xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName || 'SULTA'}</h2>
             <span className="text-[9px] uppercase tracking-[0.2em] font-serif block text-gray-400 italic">
               {settings?.logo ? 'بوتيك ملابس النوم الفاخرة' : 'حيث تلتقي الراحة بالأناقة الملكية'}
             </span>
@@ -983,7 +974,7 @@ function AppContent() {
             </p>
             <div className="pt-4">
                <img 
-                 src="/img/sulta_luxury_pajama_hero_2_1780682794821.png" 
+                 src={cleanImgUrl("/img/sulta_luxury_pajama_hero_2_1780682794821.png")} 
                  alt="Sulta Brand Card" 
                  className="w-full h-auto rounded-lg shadow-2xl border border-gray-800 opacity-80 hover:opacity-100 transition-opacity"
                />

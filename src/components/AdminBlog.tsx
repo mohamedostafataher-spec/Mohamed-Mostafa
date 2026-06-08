@@ -151,7 +151,7 @@ export default function AdminBlog() {
                   value={currentPost.imageUrl || ''}
                   onChange={e => setCurrentPost(prev => ({ ...prev, imageUrl: e.target.value }))}
                   className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-[#A44C5C] outline-none"
-                  placeholder="https://images.unsplash.com/..."
+                  placeholder="/img/sulta_product_1.png"
                 />
               </div>
             </div>

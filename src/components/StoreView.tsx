@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Country, Category } from '../types';
 import StyleAssistant from './StyleAssistant';
+import { cleanImgUrl } from '../services/db';
 
 interface StoreViewProps {
   products: Product[];
@@ -154,7 +155,7 @@ export default function StoreView({
         titleAr: 'الكتالوج الملكي لعلامة SULTA',
         titleEn: 'THE IMPERIAL SULTA CATALOGUE',
         descAr: 'تحفة الحرير الملكي الإيطالي والقطن العضوي طويل التيلة المصمم ليزين لياليك بالفخامة والراحة المطلقة.',
-        bgImage: 'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=1600',
+        bgImage: cleanImgUrl('fallback', 'collections'),
         quote: '"الجمال ليس اختيارًا، بل أسلوب حياة تتبنينه داخل عالمك الخاص.."',
         author: 'SULTA ATELIER'
       };
@@ -164,7 +165,7 @@ export default function StoreView({
       titleAr: catObj?.nameAr || catObj?.name || 'مجموعة فاخرة',
       titleEn: (catObj?.nameEn || catObj?.name || 'COUTURE DESIGN').toUpperCase(),
       descAr: `قطع مفعمة بالفخامة والجاذبية مصممة بدقة من خامة ${catObj?.nameAr || 'البراند'} العريقة لتطوق جسدكِ كالغيم المريح.`,
-      bgImage: catObj?.imageUrl || 'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=1600',
+      bgImage: catObj?.imageUrl || cleanImgUrl('fallback', 'collections'),
       quote: `"صيغت لتلبي شغف العرائس وتلامس رقة الروح بنعومة حريرية لا تفنى."`,
       author: 'إصدارات ليمتد كوتور'
     };
@@ -534,7 +535,7 @@ export default function StoreView({
                   const isEditorialFeature = index % 5 === 0 && mobileLayout === 'single'; // Break grid with larger content on single layout
                   
                   // Select source image
-                  let currentImg = product.images?.[activeImgIdx] || 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600';
+                  let currentImg = cleanImgUrl(product.images?.[activeImgIdx]);
                   
                   return (
                     <div 
@@ -648,13 +649,13 @@ export default function StoreView({
 
                           {/* Product Title in Bold Royal Serif */}
                           <h3 className="font-serif text-sm md:text-base font-medium text-[#0C0C0C] group-hover:text-[#A44C5C] duration-300 tracking-wide line-clamp-1">
-                            {country === 'EG' && product.nameAr ? product.nameAr : product.nameEn}
+                            {product.nameAr || product.nameEn}
                           </h3>
 
                           {/* Luxury Description (if editorial layout) */}
                           {isEditorialFeature && (
                             <p className="text-gray-500 text-xs line-clamp-3 leading-relaxed pt-1 select-text">
-                              {country === 'EG' ? product.descriptionAr : product.descriptionEn}
+                              {product.descriptionAr || product.descriptionEn}
                             </p>
                           )}
                         </div>
@@ -785,7 +786,7 @@ export default function StoreView({
                     />
                   ) : (
                     <img 
-                      src={quickViewProduct.images?.[qvActiveImageIdx] || 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600'} 
+                      src={cleanImgUrl(quickViewProduct.images?.[qvActiveImageIdx])}
                       alt={quickViewProduct.nameAr}
                       className="w-full h-full object-cover animate-fade-in"
                       referrerPolicy="no-referrer"
@@ -829,7 +830,7 @@ export default function StoreView({
                     </span>
                     
                     <h2 className="font-serif text-xl md:text-2xl font-light text-[#0C0C0C] tracking-wide leading-tight">
-                      {country === 'EG' && quickViewProduct.nameAr ? quickViewProduct.nameAr : quickViewProduct.nameEn}
+                      {quickViewProduct.nameAr || quickViewProduct.nameEn}
                     </h2>
 
                     {/* Price tag */}
@@ -844,7 +845,7 @@ export default function StoreView({
 
                     {/* Simple description */}
                     <p className="text-gray-500 text-xs leading-relaxed select-text">
-                      {country === 'EG' ? quickViewProduct.descriptionAr : quickViewProduct.descriptionEn}
+                      {quickViewProduct.descriptionAr || quickViewProduct.descriptionEn}
                     </p>
 
                     {/* Colors Options */}

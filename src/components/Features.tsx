@@ -1,6 +1,7 @@
 import React from 'react';
 import { Truck, ShieldCheck, RefreshCw, Globe, Sparkles, HeartHandshake, Heart } from 'lucide-react';
 import RibbonBowDivider from './RibbonBowDivider';
+import { cleanImgUrl } from '../services/db';
 
 interface FeaturesProps {
   homepageSections?: any[];
@@ -117,23 +118,23 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
                   <img 
-                    src="/img/sulta_luxury_pajama_hero_2_1780682794821.png" 
+                    src={cleanImgUrl('fallback', 'loungewear')}
                     alt="Sulta Brand Artwork" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800";
+                      e.currentTarget.src = cleanImgUrl('fallback', 'sleepwear');
                     }}
                   />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
                   <img 
-                    src="/img/hero_pajama_lifestyle_1_1780682110287.png" 
+                    src={cleanImgUrl('fallback', 'sleepwear')}
                     alt="Sulta Premium Lifestyle Art" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=800";
+                      e.currentTarget.src = cleanImgUrl('fallback', 'sleepwear');
                     }}
                   />
                 </div>

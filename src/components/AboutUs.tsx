@@ -1,6 +1,7 @@
 import React from 'react';
 import { Award, Feather, Sparkles } from 'lucide-react';
 import RibbonBowDivider from './RibbonBowDivider';
+import { cleanImgUrl } from '../services/db';
 
 interface AboutUsProps {
   homepageSections?: any[];
@@ -13,12 +14,12 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
     section1: {
       title: 'إرثنا الملكي / Our Exquisite Heritage',
       content: 'تأسست دار سُلْطَة لتقديم أنعم أقمشة الكتان والمودال المعالج حرارياً في الشرق الأوسط. كل قطعة من سُلْطَة مصممة بذكاء لتغمركِ بالراحة والسلام. منسوجاتنا الفريدة مبردة ومعالجة لتبقى قابلة للتنفس وانسيابية تماماً.',
-      imageUrl: '/img/sulta_luxury_lifestyle_about_2_1780682276428.png'
+      imageUrl: cleanImgUrl('fallback', 'sleepwear')
     },
     section2: {
       title: 'فلسفة النعومة الملكية / The Softest Life Philosophy',
       content: 'نمزج بين كوتور ملابس النوم الباريسية وأرقى الأذواق العصرية في الشرق الأوسط. صناعة يدوية مزينة بشرائط وردية، وتفاصيل دقيقة من الدانتيل، نؤمن أن ملابس النوم الفاخرة يجب أن تجعلكِ تشعرين بملكتكِ المتوجة كل ليلة.',
-      imageUrl: '/img/sulta_luxury_lifestyle_about_1_1780682261409.png'
+      imageUrl: cleanImgUrl('fallback', 'loungewear')
     },
     pillarsTitle: 'التزامات تليق بكِ / Our Timeless Commitments',
     pillars: [
@@ -54,12 +55,12 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="rounded-3xl overflow-hidden shadow-lg border border-pink-100 aspect-[4/5] md:aspect-auto">
              <img 
-               src="/img/sulta_boutique_display_1_1780682812541.png" 
+               src={cleanImgUrl('fallback', 'collections')}
                alt="Sulta Brand Artwork" 
                className="w-full h-full object-cover"
                referrerPolicy="no-referrer"
                onError={(e) => {
-                 e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800";
+                 e.currentTarget.src = cleanImgUrl('fallback', 'loungewear');
                }}
              />
           </div>
@@ -87,25 +88,26 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
               </p>
             </div>
             <div className="md:w-1/2 order-1 md:order-2 aspect-square overflow-hidden bg-white relative rounded-3xl shadow-md border border-pink-100">
-              <img 
-                src="/img/sulta_luxury_lifestyle_about_1_1780682261409.png" 
-                alt="Sulta Aesthetic" 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-                onError={(e) => {
-                  e.currentTarget.src = "https://images.unsplash.com/photo-1544026073-1628d363229b?q=80&w=800";
-                }}
-              />
+               <img 
+                 src={cleanImgUrl('fallback', 'loungewear')}
+                 alt="Sulta Aesthetic" 
+                 className="w-full h-full object-cover"
+                 referrerPolicy="no-referrer"
+                 onError={(e) => {
+                   e.currentTarget.src = cleanImgUrl('fallback', 'sleepwear');
+                 }}
+               />
             </div>
         </div>
 
         <div className="text-center">
            <img 
-             src="/img/sulta_luxury_lifestyle_about_2_1780682276428.png" 
+             src={cleanImgUrl('fallback', 'sleepwear')}
              alt="Luxury Details" 
              className="w-48 mx-auto opacity-90 rounded-2xl shadow-sm border border-pink-50"
+             referrerPolicy="no-referrer"
              onError={(e) => {
-               e.currentTarget.src = "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800";
+               e.currentTarget.src = cleanImgUrl('fallback', 'collections');
              }}
            />
         </div>

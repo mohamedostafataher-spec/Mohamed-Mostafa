@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send, Phone, Mail, Clock, Check, Heart } from 'lucide-react';
 import { useToast } from './Toast';
 import { Settings, ContactMessage } from '../types';
-import { dbService } from '../services/db';
+import { dbService, cleanImgUrl } from '../services/db';
 import SocialLinksView from './SocialLinksView';
 
 interface ContactUsProps {
@@ -70,12 +70,12 @@ export default function ContactUs({ settings }: ContactUsProps) {
           <div className="space-y-8">
             <div className="rounded-3xl overflow-hidden shadow-xl border border-pink-100 aspect-video mb-8">
                <img 
-                 src="/img/sulta_luxury_pajama_1_1780681467351.png" 
+                 src={cleanImgUrl('fallback', 'collections')}
                  alt="Contact Sulta" 
                  className="w-full h-full object-cover"
                  referrerPolicy="no-referrer"
                  onError={(e) => {
-                   e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800";
+                   e.currentTarget.src = cleanImgUrl('fallback', 'sleepwear');
                  }}
                />
             </div>

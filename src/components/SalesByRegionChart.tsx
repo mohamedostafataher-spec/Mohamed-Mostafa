@@ -17,9 +17,9 @@ const SalesByRegionChart: React.FC<SalesByRegionChartProps> = ({ orders }) => {
       // Assuming 'region' or 'country' is in order data or we can infer it
       // Based on the prompt "السعودية مقابل مصر", I will look for SAR vs EGP currencies or shipping info
       if (order.currency === 'SAR') {
-        regionalData['Saudi Arabia'].sales += order.total;
+        regionalData['Saudi Arabia'].sales += order.totalPrice;
       } else if (order.currency === 'EGP') {
-        regionalData['Egypt'].sales += order.total;
+        regionalData['Egypt'].sales += order.totalPrice;
       }
     });
 

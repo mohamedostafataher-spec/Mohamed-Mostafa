@@ -1066,7 +1066,7 @@ export default function PremiumLuxuryExperience({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="relative group overflow-hidden rounded-3xl border border-gray-250 bg-[#0B0B0B]">
                   <img 
-                    src="https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=1200" 
+                    src="/img/sulta_loungewear.png" 
                     className="w-full h-[400px] object-cover opacity-80" 
                     alt="Lookbook Winter Campaign" 
                   />
@@ -1227,7 +1227,7 @@ export default function PremiumLuxuryExperience({
                         type="text" 
                         value={galleryPhoto}
                         onChange={(e) => setGalleryPhoto(e.target.value)}
-                        placeholder="https://images.unsplash.com/photo-..."
+                        placeholder="/img/sulta_sleepwear.png"
                         className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#DF8A9C]" 
                       />
                     </div>
@@ -1268,7 +1268,7 @@ export default function PremiumLuxuryExperience({
                     )) : (
                       <>
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src="https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=400" className="w-full h-40 object-cover" alt="" />
+                          <img src="/img/sulta_product_1.png" className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">ميار أسامة - الرياض</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" خام الساتان ثقيل وبديع، التغليف الملكي عطر الدار يجنن! "</p>
@@ -1276,7 +1276,7 @@ export default function PremiumLuxuryExperience({
                         </div>
 
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=400" className="w-full h-40 object-cover" alt="" />
+                          <img src="/img/sulta_product_2.png" className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">دينا جلال - القاهرة</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" منسق كوتور للأطقم فادني لتجهيز جهازي، شكراً دار سولتة. "</p>
@@ -1284,7 +1284,7 @@ export default function PremiumLuxuryExperience({
                         </div>
 
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src="https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=400" className="w-full h-40 object-cover" alt="" />
+                          <img src="/img/sulta_sleepwear.png" className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">حصة فهد - جدة</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" قطن السولتة مريح وصحي جداً أثناء النوم والترطيب مثالي. "</p>

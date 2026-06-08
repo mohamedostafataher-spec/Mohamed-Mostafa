@@ -63,21 +63,24 @@ export default function Header({
 
   const getHeaderLogoParts = () => {
     let rawName = settings?.siteName || 'SULTA';
-    // Forced override: Remove 'Zoria' branding
+    // Forced override: Ensure SULTA branding
     if (rawName.toLowerCase().includes('zoria')) {
+      rawName = rawName.replace(/zoria/ig, 'SULTA');
+    }
+    if (rawName === 'Store' || !rawName.trim()) {
       rawName = 'SULTA';
     }
-    // Replace any occurrence of Sulta (case insensitive) with Sulta
-    rawName = rawName.replace(/sulta/i, 'Sulta');
+    // Uppercase of SULTA
+    rawName = rawName.replace(/sulta/i, 'SULTA');
     const words = rawName.trim().split(/\s+/);
     if (words.length >= 2) {
       return {
-        main: words[0],
-        sub: words.slice(1).join(' ')
+        main: words[0].toUpperCase(),
+        sub: words.slice(1).join(' ').toUpperCase()
       };
     }
     return {
-      main: rawName,
+      main: rawName.toUpperCase(),
       sub: 'HIGH COUTURE SLEEPWEAR'
     };
   };

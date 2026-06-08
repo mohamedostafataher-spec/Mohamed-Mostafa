@@ -9,10 +9,24 @@ const DEFAULT_KEY = 'NOT_CONFIGURED';
 let urlToUse = DEFAULT_URL;
 let keyToUse = DEFAULT_KEY;
 
-// Safely extract from Vite env if available
+// Safely extract from Vite env if available, falling back to process.env in Node CLI environments
 try {
-  const vUrl = import.meta.env.VITE_SUPABASE_URL;
-  const vKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  let vUrl: string | undefined;
+  let vKey: string | undefined;
+
+  try {
+    vUrl = import.meta.env.VITE_SUPABASE_URL;
+    vKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  } catch {
+    // Vite object not defined or throws
+  }
+
+  if (!vUrl && typeof process !== 'undefined' && process.env) {
+    vUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+  }
+  if (!vKey && typeof process !== 'undefined' && process.env) {
+    vKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  }
 
   if (typeof vUrl === 'string' && vUrl.trim().startsWith('http') && vUrl.includes('.')) {
     urlToUse = vUrl.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
@@ -99,230 +113,36 @@ if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
 export const supabase = supabaseInstance;
 
 // ==========================================
-// MOCK FALLBACK BOUTIQUE DATA (Match mockups exactly)
+// MOCK FALLBACK BOUTIQUE DATA REMOVED FOR PRODUCTION
 // ==========================================
-
-export const MOCK_BOUTIQUE_CATEGORIES: Category[] = [
-  { id: 'sleepwear', nameAr: 'ملابس نوم', nameEn: 'Sleepwear', slug: 'sleepwear', imageUrl: 'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=600' },
-  { id: 'loungewear', nameAr: 'طواقم استرخاء', nameEn: 'Loungewear', slug: 'loungewear', imageUrl: 'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=600' },
-  { id: 'homewear', nameAr: 'ملابس منزلية', nameEn: 'Homewear', slug: 'homewear', imageUrl: 'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=600' },
-  { id: 'collections', nameAr: 'مجموعات حصرية', nameEn: 'Collections', slug: 'collections', imageUrl: 'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=600' }
-];
-
-export const MOCK_BOUTIQUE_PRODUCTS: Product[] = [
-  {
-    id: 'satin-blush',
-    nameAr: 'طقم بيجامة ساتان روز الملكي متبلّش',
-    nameEn: 'Satin Blush Pajama Set',
-    category: 'sleepwear',
-    categoryAr: 'ملابس نوم',
-    priceEG: 2700,
-    priceSA: 330,
-    descriptionAr: 'دللي حواسك مع طقم بيجامة الساتان الروز المصممة بعناية فائقة لتنساب بنعومة تامة كالحرير على البشرة.',
-    descriptionEn: 'Indulge in premium relaxation with our hand-tailored Satin Blush sleep set, curated uniquely for SULTA.',
-    fabricAr: 'حرير ساتان مبرد فاخر عالي الكثافة (بولي ساتان فائق النعومة)',
-    fabricEn: 'Premium high-density breathable cooling Satin (Polysatin composition)',
-    washInstructionsAr: 'غسيل يدوي بماء بارد ومساحيق غسيل رقيقة للمنسوجات الفاخرة.',
-    images: [
-      'https://images.unsplash.com/photo-1598554889165-8139a49f2883?q=80&w=800',
-      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800'
-    ],
-    colors: [
-      { name: 'Rose', hex: '#DF8A9D' },
-      { name: 'Ivory', hex: '#FAF5F0' }
-    ],
-    sizes: ['S', 'M', 'L', 'XL'],
-    isBestSeller: true,
-    rating: 5,
-    reviewsCount: 128,
-    stock: 25,
-    sku: 'SLT-SAT-BLS',
-    featured: true,
-    status: 'active',
-    shortDescription: 'Satin Blush premium pajama set for brides and modern ladies.',
-    tags: ['Satin', 'Sleepwear', 'Pajamas', 'New Arrivals']
-  },
-  {
-    id: 'ivory-dream',
-    nameAr: 'طقم ساتان حلم العاج الكلاسيكي',
-    nameEn: 'Ivory Dream Pajama Set',
-    category: 'sleepwear',
-    categoryAr: 'ملابس نوم',
-    priceEG: 2500,
-    priceSA: 310,
-    descriptionAr: 'كلاسيكية خالدة بلون العاج اللؤلؤي البديع. تتميز بياقة مفتوحة وأطراف مطرزة بدقة لخياطة راقية لا تزول.',
-    descriptionEn: 'A pristine luxury staple. Beautiful pearl ivory pajama set with detailed premium stitching and piping.',
-    fabricAr: 'حرير طبيعي معالج بالساتان فائق القوام',
-    fabricEn: 'Processed premium silk-satin blend with exquisite drape count',
-    washInstructionsAr: 'تنظيف جاف أو غسيل رقيق للغاية منفصلا.',
-    images: [
-      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=800',
-      'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=800'
-    ],
-    colors: [
-      { name: 'Pearl Ivory', hex: '#FAF5F0' },
-      { name: 'Gold', hex: '#DBC082' }
-    ],
-    sizes: ['S', 'M', 'L', 'XL'],
-    isBestSeller: true,
-    rating: 5,
-    reviewsCount: 96,
-    stock: 14,
-    sku: 'SLT-SAT-IVY',
-    featured: true,
-    status: 'active',
-    shortDescription: 'Elegant Ivory Dream pajamas with contract piping.',
-    tags: ['Ivory', 'Classic', 'Satin', 'Bridal']
-  },
-  {
-    id: 'soft-pink-cotton',
-    nameAr: 'طقم قطن مريح بلون وردي ناعم',
-    nameEn: 'Soft Pink Cotton Set',
-    category: 'loungewear',
-    categoryAr: 'ملابس استرخاء',
-    priceEG: 2400,
-    priceSA: 295,
-    descriptionAr: 'طقم مصنوع من قطن مصري نقي معالج بمرونة تامة للراحة في المنزل والتلذذ بنوم هانىء وراحة فائقة.',
-    descriptionEn: 'Experience pure cotton comfort. Exceptionally soft pink cotton lounge and sleep set.',
-    fabricAr: 'قطن طبيعي نقي 100٪ مع خيوط مرنة',
-    fabricEn: '100% long-staple egyptian organic cotton with gentle stretch',
-    washInstructionsAr: 'غسيل آلي بماء فاتر ولطيف.',
-    images: [
-      'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800',
-      'https://images.unsplash.com/photo-1562572159-4ebcd318f2dd?q=80&w=800'
-    ],
-    colors: [
-      { name: 'Soft Rose', hex: '#DF8A9D' },
-      { name: 'Lilac', hex: '#E2D1F9' }
-    ],
-    sizes: ['M', 'L', 'XL'],
-    isBestSeller: true,
-    rating: 5,
-    reviewsCount: 231,
-    stock: 45,
-    sku: 'SLT-COT-PNK',
-    featured: true,
-    status: 'active',
-    shortDescription: 'Supremely breathable soft pink cotton lounge set.',
-    tags: ['Cotton', 'Loungewear', 'Soft Pink']
-  },
-  {
-    id: 'midnight-elegance',
-    nameAr: 'طقم ساتان أناقة منتصف الليل الأسود',
-    nameEn: 'Midnight Elegance Set',
-    category: 'sleepwear',
-    categoryAr: 'ملابس نوم',
-    priceEG: 2900,
-    priceSA: 355,
-    descriptionAr: 'الفخامة السوداء العميقة ببريق الساتان الساحر وطباعة دانتيل خفيفة. مصممة لتجربة ملكية مهيبة بالمنزل.',
-    descriptionEn: 'Enigmatic deep black satin with premium satin touch and subtle contrasts for a powerful elegant styling.',
-    fabricAr: 'ساتان العرائس الثقيل الإيطالي عالي الجاذبية',
-    fabricEn: 'Heavy bridal-weight premium satin with high luster finish',
-    washInstructionsAr: 'غسيل رقيق يدوي بماء بارد وبدون عصر مكثف.',
-    images: [
-      'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=800',
-      'https://images.unsplash.com/photo-1598554889165-8139a49f2883?q=80&w=800'
-    ],
-    colors: [
-      { name: 'Midnight Black', hex: '#0B0B0B' },
-      { name: 'Deep Grey', hex: '#4A4A4A' }
-    ],
-    sizes: ['S', 'M', 'L', 'XL'],
-    isBestSeller: true,
-    rating: 5,
-    reviewsCount: 74,
-    stock: 19,
-    sku: 'SLT-SAT-MID',
-    featured: true,
-    status: 'active',
-    shortDescription: 'Deep lustrous black sleepwear set for high-end styling.',
-    tags: ['Satin', 'Midnight', 'Black', 'Best Sellers']
-  },
-  {
-    id: 'lavender-luxe',
-    nameAr: 'طقم ساتان اللافندر المترف للعرايس',
-    nameEn: 'Lavender Luxe Set',
-    category: 'sleepwear',
-    categoryAr: 'ملابس نوم',
-    priceEG: 2650,
-    priceSA: 325,
-    descriptionAr: 'تمتعي باللون اللافندر الباريسي الآسر مع خامة خفيفة ناعمة تداعب الجسد مفعمة بالأنوثة الحالمة.',
-    descriptionEn: 'Dreamy shade of Parisian Lavender. High-end satin lounge set engineered with ultimate drape layout.',
-    fabricAr: 'حرير فيسكوز ساتان فائق النعومة والمطاطية الجانبية',
-    fabricEn: 'Viscose-silk satin blend with luxurious side-stretch and cooling comfort',
-    washInstructionsAr: 'تنظيف رقيق مع مسحوق غسيل سائل خاص بالحرير.',
-    images: [
-      'https://images.unsplash.com/photo-1562572159-4ebcd318f2dd?q=80&w=800',
-      'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800'
-    ],
-    colors: [
-      { name: 'Lavender', hex: '#BDB2FF' },
-      { name: 'Ivory Pearl', hex: '#FAF5F0' }
-    ],
-    sizes: ['S', 'M', 'L'],
-    isBestSeller: true,
-    rating: 5,
-    reviewsCount: 112,
-    stock: 22,
-    sku: 'SLT-SAT-LAV',
-    featured: true,
-    status: 'active',
-    shortDescription: 'Dreamy Lavender satin bridal pajama set.',
-    tags: ['Lavender', 'Satin', 'Pajamas', 'Luxe']
-  },
-  {
-    id: 'rose-satin-boutique',
-    nameAr: 'طقم ساتان الورد الفاخر المزين بدانتيل',
-    nameEn: 'Rose Satin Set',
-    category: 'sleepwear',
-    categoryAr: 'ملابس نوم',
-    priceEG: 1800,
-    priceSA: 220,
-    descriptionAr: 'قوام ساتان حريري خفيف يمنحك النعومة المطلقة التي تبحثين عنها مع كل لمسة.',
-    descriptionEn: 'Light fluid satin that feels incredible on your skin. Tailored meticulously.',
-    fabricAr: 'ساتان السلس الناعم المعالج ضد الكرمشة والكهرباء الساكنة',
-    fabricEn: 'Boutique anti-static ultra-smooth satin with lace highlights',
-    washInstructionsAr: 'يغسل يدويًا للحفاظ على الأطراف المزينة بالدانتيل رقيقًا.',
-    images: [
-      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800',
-      'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=800'
-    ],
-    colors: [
-      { name: 'Satin Rose', hex: '#DF8A9D' }
-    ],
-    sizes: ['S', 'M', 'L', 'XL'],
-    isBestSeller: true,
-    rating: 5,
-    reviewsCount: 88,
-    stock: 30,
-    sku: 'SLT-SAT-RSE',
-    featured: true,
-    status: 'active',
-    shortDescription: 'Handcrafted rose satin set decorated with fine lace.',
-    tags: ['Lace', 'Satin', 'Rose']
-  }
-];
 
 // ==========================================
 // SULTA COUTURE SUPABASE CONNECTION
 // ==========================================
 
-function cleanImgUrl(url: any, fallbackCategory?: string): string {
+export function cleanText(text: any): any {
+  if (typeof text !== 'string') return text;
+  return text
+    .replace(/zoria/ig, 'SULTA')
+    .replace(/زوريا/g, 'سولتا');
+}
+
+export function cleanImgUrl(url: any, fallbackCategory?: string): string {
   const getUnsplashFallback = (category?: string): string => {
     const cat = String(category || 'sleepwear').toLowerCase();
     if (cat === 'sleepwear') {
-      return 'https://images.unsplash.com/photo-1614088685112-0a7db9bcdad5?q=80&w=600';
+      return '/img/sulta_sleepwear.png';
     }
     if (cat === 'loungewear') {
-      return 'https://images.unsplash.com/photo-1582298538104-fc2c0a1a0071?q=80&w=600';
+      return '/img/sulta_loungewear.png';
     }
-    if (cat === 'homewear') {
-      return 'https://images.unsplash.com/photo-1517554558809-9b4971b38f39?q=80&w=600';
+    if (cat === 'homewear' || cat === 'dresses') {
+      return '/img/sulta_product_2.png';
     }
     if (cat === 'collections' || cat === 'new') {
-      return 'https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=600';
+      return '/img/sulta_hero_banner.png';
     }
-    return 'https://images.unsplash.com/photo-1598554889165-8139a49f2883?q=80&w=800'; // Default peach blush luxury pajama
+    return '/img/sulta_product_1.png'; // Default peach blush luxury pajama
   };
 
   if (!url || typeof url !== 'string' || url.trim() === '' || url.includes('placeholder') || url.includes('or_url.png')) {
@@ -336,30 +156,46 @@ function cleanImgUrl(url: any, fallbackCategory?: string): string {
     cleaned = cleaned.replace(/^src\/assets\//, '/assets/');
   }
 
-  // Check if it's a local assets path
+  // Pre-configured high-resolution Unsplash mappings so local asset paths load beautiful images
+  const IMAGE_MAPPING: Record<string, string> = {
+    'hero_pajama_lifestyle_1_1780682110287.png': '/img/sulta_sleepwear.png',
+    'hero_pajama_editorial_2_1780682126486.png': '/img/sulta_loungewear.png',
+    'hero_pajama_detail_3_1780682140472.png': '/img/sulta_product_1.png',
+    'hero_sleepwear_luxury_1780620325112.png': '/img/sulta_product_2.png',
+    'pink_bow_pajama_1780730148591.png': '/img/sulta_hero_banner.png',
+    'sulta_boutique_display_1_1780682812541.png': '/img/sulta_sleepwear.png',
+    'sulta_box_closed_1780609086750.png': '/img/sulta_product_2.png',
+    'sulta_box_open_1780609104306.png': '/img/sulta_product_1.png',
+    'sulta_luxury_lifestyle_about_1_1780682261409.png': '/img/sulta_loungewear.png',
+    'sulta_luxury_lifestyle_about_2_1780682276428.png': '/img/sulta_sleepwear.png',
+    'sulta_luxury_pajama_1_1780681467351.png': '/img/sulta_product_1.png',
+    'sulta_luxury_pajama_2_1780681482748.png': '/img/sulta_product_2.png',
+    'sulta_luxury_pajama_hero_2_1780682794821.png': '/img/sulta_hero_banner.png',
+  };
+
+  // Convert local /img/ or /assets/ paths to beautiful Unsplash fallbacks
   if (cleaned.includes('/img/')) {
     const parts = cleaned.split('/');
     const filename = parts[parts.length - 1];
-    
-    // If the file is not in list of physical images, redirect to luxury unsplash photo!
-    const VALID_LOCAL_IMAGES = [
-      'hero_pajama_detail_3_1780682140472.png',
-      'hero_pajama_editorial_2_1780682126486.png',
-      'hero_pajama_lifestyle_1_1780682110287.png',
-      'hero_sleepwear_luxury_1780620325112.png',
-      'pink_bow_pajama_1780730148591.png',
-      'sulta_boutique_display_1_1780682812541.png',
-      'sulta_box_closed_1780609086750.png',
-      'sulta_box_open_1780609104306.png',
-      'sulta_luxury_lifestyle_about_1_1780682261409.png',
-      'sulta_luxury_lifestyle_about_2_1780682276428.png',
-      'sulta_luxury_pajama_1_1780681467351.png',
-      'sulta_luxury_pajama_2_1780681482748.png',
-      'sulta_luxury_pajama_hero_2_1780682794821.png'
-    ];
-    
-    if (!VALID_LOCAL_IMAGES.includes(filename)) {
-      return getUnsplashFallback(fallbackCategory);
+    if (IMAGE_MAPPING[filename]) {
+      return IMAGE_MAPPING[filename];
+    }
+    return getUnsplashFallback(fallbackCategory);
+  }
+
+  // Also trap existing seeded unsplash mock images that might be in the database
+  if (cleaned.includes('images.unsplash.com')) {
+    return getUnsplashFallback(fallbackCategory);
+  }
+
+  // Exact match
+  if (IMAGE_MAPPING[cleaned]) {
+    return IMAGE_MAPPING[cleaned];
+  }
+
+  for (const [key, val] of Object.entries(IMAGE_MAPPING)) {
+    if (cleaned.endsWith(key)) {
+      return val;
     }
   }
 
@@ -369,9 +205,9 @@ function cleanImgUrl(url: any, fallbackCategory?: string): string {
 function mapCategory(data: any): Category {
   return {
     id: data.id,
-    name: data.name, // Legacy support
-    nameAr: data.name_ar || data.nameAr || data.name || '',
-    nameEn: data.name_en || data.nameEn || data.name || '',
+    name: cleanText(data.name), // Legacy support
+    nameAr: cleanText(data.name_ar || data.nameAr || data.name || ''),
+    nameEn: cleanText(data.name_en || data.nameEn || data.name || ''),
     slug: data.slug,
     imageUrl: cleanImgUrl(data.image_url || data.imageUrl, data.id)
   };
@@ -380,10 +216,10 @@ function mapCategory(data: any): Category {
 function mapCollection(data: any): Collection {
   return {
     id: data.id,
-    nameAr: data.name_ar || data.name || '',
-    nameEn: data.name_en || data.name || '',
-    descriptionAr: data.description_ar || data.description || '',
-    descriptionEn: data.description_en || data.description || '',
+    nameAr: cleanText(data.name_ar || data.name || ''),
+    nameEn: cleanText(data.name_en || data.name || ''),
+    descriptionAr: cleanText(data.description_ar || data.description || ''),
+    descriptionEn: cleanText(data.description_en || data.description || ''),
     imageUrl: cleanImgUrl(data.image_url || data.imageUrl, 'collections')
   };
 }
@@ -396,14 +232,16 @@ function mapSettings(data: any): Settings {
     '/img/hero_pajama_detail_3_1780682140472.png'
   ];
 
+  let mappedSiteName = cleanText(data.site_name || 'SULTA');
+
   return {
-    siteName: data.site_name,
+    siteName: mappedSiteName,
     logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_luxury_pajama_hero_2_1780682794821.png',
-    promoBannerAr: data.promo_banner_ar,
+    promoBannerAr: cleanText(data.promo_banner_ar),
     promoEndTime: data.promo_end_time,
-    heroMiniAlertAr: data.hero_mini_alert_ar,
-    heroSubtitleAr: data.hero_subtitle_ar,
-    heroDescriptionAr: data.hero_description_ar,
+    heroMiniAlertAr: cleanText(data.hero_mini_alert_ar),
+    heroSubtitleAr: cleanText(data.hero_subtitle_ar),
+    heroDescriptionAr: cleanText(data.hero_description_ar),
     heroImages: checkedHero.map((imgUrl: any) => cleanImgUrl(imgUrl, 'sleepwear')),
     contactEmail: data.contact_email,
     contactPhone: data.contact_phone,
@@ -430,17 +268,17 @@ function mapProduct(data: any): Product {
 
   return {
     id: data.id,
-    nameAr: data.name_ar || '',
-    nameEn: data.name_en || '',
+    nameAr: cleanText(data.name_ar || ''),
+    nameEn: cleanText(data.name_en || ''),
     category: catKey,
-    categoryAr: data.category_ar || '',
+    categoryAr: cleanText(data.category_ar || ''),
     priceEG: Number(data.price_eg ?? 0),
     priceSA: Number(data.price_sa ?? 0),
-    descriptionAr: data.description_ar || '',
-    descriptionEn: data.description_en || '',
-    fabricAr: data.fabric_ar || '',
-    fabricEn: data.fabric_en || '',
-    washInstructionsAr: data.wash_instructions_ar || '',
+    descriptionAr: cleanText(data.description_ar || ''),
+    descriptionEn: cleanText(data.description_en || ''),
+    fabricAr: cleanText(data.fabric_ar || ''),
+    fabricEn: cleanText(data.fabric_en || ''),
+    washInstructionsAr: cleanText(data.wash_instructions_ar || ''),
     images: cleanedImages,
     video: data.video || undefined,
     colors: Array.isArray(data.colors) ? data.colors : (data.colors ? JSON.parse(data.colors) : []),
@@ -454,10 +292,10 @@ function mapProduct(data: any): Product {
     salePriceSA: data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined),
     featured: !!data.featured,
     status: data.status || 'active',
-    shortDescription: data.short_description || undefined,
+    shortDescription: cleanText(data.short_description || undefined),
     tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
     collection: data.collection || undefined,
-    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(data.seo) : data.seo) : undefined
+    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined
   };
 }
 
@@ -596,6 +434,11 @@ export const dbService = {
   getSettings: async (): Promise<Settings | null> => {
     const { data, error } = await supabase.from('settings').select('*').limit(1).single();
     if (error) return null;
+    if (data && data.site_name && data.site_name.toLowerCase().includes('zoria')) {
+      const cleanedSiteName = data.site_name.replace(/zoria/ig, 'SULTA');
+      await supabase.from('settings').update({ site_name: cleanedSiteName }).eq('id', data.id);
+      data.site_name = cleanedSiteName;
+    }
     return data ? mapSettings(data) : null;
   },
 
@@ -757,22 +600,55 @@ export const dbService = {
   },
 
   saveCategory: async (category: Category): Promise<void> => {
-    const { error } = await supabase
-      .from('categories')
-      .upsert([{
-        id: category.id || undefined,
-        name: category.nameAr || category.name,
-        name_ar: category.nameAr,
-        name_en: category.nameEn,
-        slug: category.slug || (category.id ? category.id.toLowerCase() : 'slug-' + Date.now()),
-        image_url: category.imageUrl
-      }]);
+    let catId = category.id;
+
+    const buildPayload = (uid: string) => ({
+      id: uid,
+      name: category.nameAr || category.name || '',
+      name_ar: category.nameAr || null,
+      name_en: category.nameEn || null,
+      slug: category.slug || (category.id ? category.id.toLowerCase() : 'slug-' + Date.now()),
+      image_url: category.imageUrl || null
+    });
+
+    let payload = buildPayload(catId);
+    let { error } = await supabase.from('categories').upsert([payload]);
+
+    let retries = 15;
+    while (error && error.message && retries > 0) {
+      if (error.message.includes("Could not find the '")) {
+        const match = error.message.match(/Could not find the '([^']+)' column/);
+        if (match && match[1]) {
+          const colName = match[1];
+          console.warn(`[DB] Removing categories missing column '${colName}' of 'categories' to bypass schema cache...`);
+          delete payload[colName];
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+      const retryRes = await supabase.from('categories').upsert([payload]);
+      error = retryRes.error;
+      retries--;
+    }
+
     if (error) throw error;
   },
 
   deleteCategory: async (categoryId: string): Promise<void> => {
+    // First reset any product.category_id that matches this category to null or 'new' to prevent foreign key constraint violations
+    try {
+      await supabase.from('products').update({ category_id: null }).eq('category_id', categoryId);
+    } catch (e) {
+      console.warn("[DB] Failed to pre-clear product foreign keys (could be normal depending on schema):", e);
+    }
+
     const { error } = await supabase.from('categories').delete().eq('id', categoryId);
-    if (error) throw error;
+    if (error) {
+      console.warn("[DB] deleteCategory failed with raw categoryId:", categoryId, error);
+      throw error;
+    }
   },
 
   subscribeCollections: (
@@ -985,7 +861,7 @@ export const dbService = {
     const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
     const payload: any = {
-      ...(isUUID(product.id) ? { id: product.id } : {}),
+      id: product.id,
       name_ar: product.nameAr,
       name_en: product.nameEn,
       category: safeCategory,
@@ -1038,11 +914,27 @@ export const dbService = {
       } else if (uuidMatch && uuidMatch[1]) {
          const problematicVal = uuidMatch[1];
          console.warn(`[DB] UUID syntax error for value ${problematicVal}. Examining payload...`);
-         for (const key of Object.keys(payload)) {
-             if (payload[key] === problematicVal) {
-                 console.warn(`[DB] Found problematic uuid field: ${key}. Stripping it.`);
-                 delete payload[key];
-                 // if the primary key "id" is stripped, we might insert an autogenerated one or fail. Let's see what happens.
+         const getCategoryUuid = (id: string) => {
+           const CATEGORY_UUID_MAP: Record<string, string> = {
+             'sleepwear': 'de000000-0000-0000-0000-000000000001',
+             'loungewear': 'de000000-0000-0000-0000-000000000002',
+             'homewear': 'de000000-0000-0000-0000-000000000003',
+             'dresses': 'de000000-0000-0000-0000-000000000004',
+             'new': 'de000000-0000-0000-0000-000000000005',
+             'collections': 'de000000-0000-0000-0000-000000000006'
+           };
+           return CATEGORY_UUID_MAP[id.toLowerCase()];
+         };
+         const catUuid = getCategoryUuid(problematicVal);
+         if (catUuid && payload.category_id === problematicVal) {
+             console.warn(`[DB] Auto-mapping category_id column from '${problematicVal}' to uuid '${catUuid}' to resolve invalid uuid syntax error...`);
+             payload.category_id = catUuid;
+         } else {
+             for (const key of Object.keys(payload)) {
+                 if (payload[key] === problematicVal) {
+                     console.warn(`[DB] Found problematic uuid field: ${key}. Stripping it.`);
+                     delete payload[key];
+                 }
              }
          }
       } else {
@@ -1431,62 +1323,6 @@ export const dbService = {
 
   // Seed Data if DB is empty
   seedInitialData: async (): Promise<void> => {
-    try {
-      const { count } = await supabase.from('products').select('*', { count: 'exact', head: true });
-      if (count === 0 || count === null || count === undefined) {
-        console.log("DB is empty, seeding initial boutique data...");
-        // Seed Categories
-        for (const cat of MOCK_BOUTIQUE_CATEGORIES) {
-          await dbService.saveCategory(cat);
-        }
-        // Seed Products
-        for (const prod of MOCK_BOUTIQUE_PRODUCTS) {
-          await dbService.saveProduct(prod);
-        }
-        // Seed Settings
-        await dbService.updateSettings({
-          siteName: 'SULTA ATELIER',
-          promoBannerAr: 'خصم ٢٠٪ بمناسبة الافتتاح - ابدئي رحلتك الملكية اليوم',
-          heroSubtitleAr: 'THE SOFTEST LIFE',
-          heroDescriptionAr: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',
-          whatsapp: '+966500000000',
-          instagram: 'sulta.atelier',
-          defaultShippingFee: 35
-        });
-        
-        // Seed Features Section
-        const featuresContent = {
-          qualities: [
-            { title: 'شحن ملكي فائق السرعة', desc: 'توصيل مخصص لباب المنزل مغلّف بصندوق هدايا أسود ووردي فاخر بعناية.' },
-            { title: 'سداد مشفر آمن بالكامل', desc: 'ندعم بوابات دفع Apple Pay وSTC Pay ومدى والفيزا وفوري بكل سلاسة.' },
-            { title: 'خامات إيطالية وعضوية عريقة', desc: 'ساتان معالج حرارياً بنعومة تضاهي الغيوم، قطن مصري نقي طويل التيلة.' }
-          ],
-          unboxing: {
-            title: 'تجربة فتح الصندوق الملكي',
-            description: '"لأنكِ لستِ مجرد عميلة، بل ملكة متوجة في مملكتك الخاصة.. صممنا بكج SULTA ليمنحكِ شعور الفخامة منذ اللحظة الأولى لوصوله."',
-            bullet1: 'تغليف حريري يحمي رقة الملابس الملكية',
-            bullet2: 'عطر الدار الفاخر يفوح مع كل قطعة'
-          }
-        };
-        await dbService.saveHomepageSection('features_list', featuresContent);
-
-        // Seed Hero Banners
-        const heroContent = {
-          banners: [
-            {
-              mediaUrl: '/img/hero_sleepwear_luxury_1780620325112.png',
-              title: 'BECAUSE YOU DESERVE',
-              subtitle: 'THE SOFTEST LIFE',
-              description: 'طقم بيجامة ساتان فائق النعومة والخامة الملكية المعالجة حرارياً',
-              ctaText: 'DISCOVER THE COLLECTION | اكتشفي المجموعة',
-              active: true
-            }
-          ]
-        };
-        await dbService.saveHomepageSection('hero_banners', heroContent);
-      }
-    } catch (err) {
-      console.error("Seeding failed:", err);
-    }
+    console.log('Seeding is disabled for production.');
   },
 };

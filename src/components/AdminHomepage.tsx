@@ -53,9 +53,9 @@ function SortableItem({ banner, idx, uploadingIdx, handleImageUpload, removeBann
       <div 
         {...attributes} 
         {...listeners}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing p-1.5 bg-white rounded-full border border-gray-100 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute -right-3 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing p-2 bg-[#A44C5C] text-white rounded-full shadow-lg border-2 border-white hover:scale-110 transition-transform"
       >
-        <GripVertical size={16} className="text-gray-400" />
+        <GripVertical size={18} />
       </div>
 
       <button 

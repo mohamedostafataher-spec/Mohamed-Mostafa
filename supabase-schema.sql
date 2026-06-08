@@ -314,6 +314,7 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 
 -- Dynamic Public Access Policies
 CREATE POLICY "Allow public select of products" ON public.products FOR SELECT USING (true);
@@ -324,13 +325,14 @@ CREATE POLICY "Allow public select of categories" ON public.categories FOR SELEC
 CREATE POLICY "Allow public inserts of orders" ON public.orders FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow public inserts of reviews" ON public.reviews FOR INSERT WITH CHECK (true);
 
--- Allow full admin operations for everyone for local boutique development controls
-CREATE POLICY "Allow full control of products" ON public.products ALL USING (true);
-CREATE POLICY "Allow full control of coupons" ON public.coupons ALL USING (true);
-CREATE POLICY "Allow full control of orders" ON public.orders ALL USING (true);
-CREATE POLICY "Allow full control of reviews" ON public.reviews ALL USING (true);
-CREATE POLICY "Allow full control of profiles" ON public.profiles ALL USING (true);
-CREATE POLICY "Allow full control of addresses" ON public.addresses ALL USING (true);
+-- Allow full admin operations for everyone for local boutique development controls (Using correct FOR ALL syntax)
+CREATE POLICY "Allow full control of products" ON public.products FOR ALL USING (true);
+CREATE POLICY "Allow full control of coupons" ON public.coupons FOR ALL USING (true);
+CREATE POLICY "Allow full control of orders" ON public.orders FOR ALL USING (true);
+CREATE POLICY "Allow full control of reviews" ON public.reviews FOR ALL USING (true);
+CREATE POLICY "Allow full control of profiles" ON public.profiles FOR ALL USING (true);
+CREATE POLICY "Allow full control of addresses" ON public.addresses FOR ALL USING (true);
+CREATE POLICY "Allow full control of categories" ON public.categories FOR ALL USING (true);
 
 -- ==========================================
 -- 🔔 STORAGE BUCKETS INITIALIZATION AND POLICIES
@@ -361,4 +363,52 @@ USING (bucket_id = 'products');
 CREATE POLICY "Allow public delete of objects" 
 ON storage.objects FOR DELETE 
 USING (bucket_id = 'products');
+
+-- ==========================================
+-- 🛡️ [PHASE 6 & 7] ACTIVITY LOGS AND SYSTEM HEALTH 🛡️
+-- ==========================================
+
+-- 12. Activity Logs Table (سجلات النشاطات والمراقبة)
+CREATE TABLE IF NOT EXISTS public.activity_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    action TEXT NOT NULL,
+    details TEXT,
+    admin_id TEXT DEFAULT 'system',
+    admin_name TEXT,
+    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Note: We trust internal usage for activity logs
+ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anonymous full control of activity logs" ON public.activity_logs FOR ALL USING (true);
+
+-- Add to Realtime Publication
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'activity_logs') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.activity_logs;
+    END IF;
+END $$;
+
+-- 13. System Health Monitor / Dashboard Insights (إحصائيات النظام الفورية)
+CREATE OR REPLACE VIEW public.dashboard_insights AS
+SELECT
+    (SELECT COUNT(*) FROM public.products) as total_products,
+    (SELECT COUNT(*) FROM public.orders) as total_orders,
+    (SELECT COUNT(*) FROM public.profiles) as total_customers,
+    (SELECT COALESCE(SUM(total), 0) FROM public.orders) as total_revenue,
+    (SELECT COUNT(*) FROM public.products WHERE stock <= 5) as low_stock_products;
+
+-- Setup full-text search capability for the products table (Phase 8: Advanced Search)
+-- NOTE: Uses Arabic vector since the language is mostly Arabic.
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS search_vector tsvector GENERATED ALWAYS AS (
+    setweight(to_tsvector('arabic', coalesce(name_ar, '')), 'A') ||
+    setweight(to_tsvector('english', coalesce(name_en, '')), 'A') ||
+    setweight(to_tsvector('arabic', coalesce(description_ar, '')), 'B') ||
+    setweight(to_tsvector('arabic', coalesce(category_ar, '')), 'C') ||
+    setweight(to_tsvector('arabic', coalesce(fabric_ar, '')), 'D')
+) STORED;
+
+CREATE INDEX IF NOT EXISTS products_search_idx ON public.products USING GIN (search_vector);
+
 
