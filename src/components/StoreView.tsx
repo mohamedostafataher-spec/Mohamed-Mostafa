@@ -155,7 +155,7 @@ export default function StoreView({
         titleAr: 'الكتالوج الملكي لعلامة SULTA',
         titleEn: 'THE IMPERIAL SULTA CATALOGUE',
         descAr: 'تحفة الحرير الملكي الإيطالي والقطن العضوي طويل التيلة المصمم ليزين لياليك بالفخامة والراحة المطلقة.',
-        bgImage: cleanImgUrl('fallback', 'collections'),
+        bgImage: '/img/sulta_hero_banner_real.png',
         quote: '"الجمال ليس اختيارًا، بل أسلوب حياة تتبنينه داخل عالمك الخاص.."',
         author: 'SULTA ATELIER'
       };

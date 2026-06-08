@@ -1423,6 +1423,9 @@ export default function Dashboard({
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
 
   // Custom Categories States
+  const [confirmDeleteCategoryId, setConfirmDeleteCategoryId] = useState<string | null>(null);
+  const [showDeleteAllCategoriesConfirm, setShowDeleteAllCategoriesConfirm] = useState(false);
+
   const [newCatNameAr, setNewCatNameAr] = useState('');
   const [newCatNameEn, setNewCatNameEn] = useState('');
   const [newCatSlug, setNewCatSlug] = useState('');
@@ -1846,15 +1849,30 @@ export default function Dashboard({
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا القسم الملكي بالكامل من السيرفر وقاعدة البيانات؟ ⚠️')) return;
     try {
       await dbService.deleteCategory(id);
       setCategories(prev => prev.filter(c => c.id !== id));
       showNotification('تم إزالة وحذف القسم الفاخر بنجاح من قاعدة البيانات والستور! ✨', 'success');
+      setConfirmDeleteCategoryId(null);
     } catch (err: any) {
       console.error("Failed to delete category:", err);
       const errMsg = err?.message || err?.details || 'خلل في الصلاحيات RLS أو ارتباط بمنتجات مخصصة';
       showNotification(`فشل حذف القسم الفاخر: ${errMsg} ❌`, 'error');
+    }
+  };
+
+  const handleDeleteAllCategories = async () => {
+    try {
+      if (categories.length === 0) return;
+      for (const cat of categories) {
+        await dbService.deleteCategory(cat.id);
+      }
+      setCategories([]);
+      showNotification('تم إفراغ جميع الأقسام بنجاح! ✨', 'success');
+      setShowDeleteAllCategoriesConfirm(false);
+    } catch (err: any) {
+      console.error("Failed to delete all categories:", err);
+      showNotification('حدث خطأ أثناء محاولة حذف كل الأقسام', 'error');
     }
   };
 
@@ -5720,7 +5738,39 @@ export default function Dashboard({
 
               {/* Category Grid Card Shelf */}
               <div className="space-y-4">
-                <h4 className="font-serif text-sm font-semibold text-gray-800">الأقسام الحالية المعلنة على المتجر ({categories.length})</h4>
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="font-serif text-sm font-semibold text-gray-800">الأقسام الحالية المعلنة على المتجر ({categories.length})</h4>
+                  {categories.length > 0 && (
+                    showDeleteAllCategoriesConfirm ? (
+                      <div className="flex items-center gap-2 bg-red-50 p-2 rounded-lg border border-red-200 shadow-sm animate-pulse">
+                        <span className="text-red-700 text-xs font-semibold">تأكيد حذف جميع الأقسام؟</span>
+                        <button
+                          type="button"
+                          onClick={handleDeleteAllCategories}
+                          className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 font-bold"
+                        >
+                          نعم، حذف الكل
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowDeleteAllCategoriesConfirm(false)}
+                          className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300 font-bold"
+                        >
+                          إلغاء
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setShowDeleteAllCategoriesConfirm(true)}
+                        className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition-colors border border-red-200 shadow-sm text-xs animate-none"
+                      >
+                        <Trash2 size={14} />
+                        حذف جميع الأقسام
+                      </button>
+                    )
+                  )}
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {categories.map((cat) => (
                     <div key={cat.id} className="group bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between h-64 relative">
@@ -5760,13 +5810,32 @@ export default function Dashboard({
                         </button>
 
                         {/* Delete Button */}
-                        <button
-                          onClick={() => handleDeleteCategory(cat.id)}
-                          className="bg-black/80 hover:bg-red-600 text-white p-2 text-xs rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10 flex items-center justify-center shadow-md hover:scale-110"
-                          title="حذف هذا القسم بالكامل"
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                        {confirmDeleteCategoryId === cat.id ? (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => handleDeleteCategory(cat.id)}
+                              className="bg-red-600 hover:bg-red-700 text-white p-2 text-xs rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10 flex items-center justify-center shadow-md hover:scale-110"
+                              title="تأكيد الحذف"
+                            >
+                              <Check size={13} />
+                            </button>
+                            <button
+                              onClick={() => setConfirmDeleteCategoryId(null)}
+                              className="bg-gray-500 hover:bg-gray-600 text-white p-2 text-xs rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10 flex items-center justify-center shadow-md hover:scale-110"
+                              title="إلغاء الحذف"
+                            >
+                              <X size={13} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmDeleteCategoryId(cat.id)}
+                            className="bg-black/80 hover:bg-red-600 text-white p-2 text-xs rounded-full backdrop-blur-md cursor-pointer transition-all border border-white/10 flex items-center justify-center shadow-md hover:scale-110"
+                            title="حذف هذا القسم بالكامل"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
                       </div>
 
                       <div className="relative z-20 mt-auto p-5 text-white select-none">
