@@ -29,13 +29,6 @@ export default function CheckoutModal({
   const [email, setEmail] = useState('');
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
-  const [notes, setNotes] = useState('');
-  
-  // Custom Packaging Options State
-  const [selectedRibbon, setSelectedRibbon] = useState<string>('champagne');
-  const [addCongratCard, setAddCongratCard] = useState<boolean>(false);
-  const [congratMessage, setCongratMessage] = useState<string>('');
-  const [giftTheme, setGiftTheme] = useState<'standard' | 'wedding' | 'birthday' | 'thanks' | 'love'>('wedding');
 
   // Selected payment method
   const [selectedPayment, setSelectedPayment] = useState<string>('cod');
@@ -149,10 +142,10 @@ export default function CheckoutModal({
         country: country,
         city: city,
         address: address,
-        notes: notes || undefined,
-        giftMessage: addCongratCard ? congratMessage : undefined,
-        giftCardTheme: addCongratCard ? giftTheme : undefined,
-        ribbon: selectedRibbon,
+        notes: undefined,
+        giftMessage: undefined,
+        giftCardTheme: undefined,
+        ribbon: 'default',
         shippingFee: shippingCost,
         items: cart.map(item => {
           const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
@@ -397,7 +390,7 @@ export default function CheckoutModal({
               </div>
             )}
 
-            {/* STEP 2: SHIPPING & LUXURY PACKAGING */}
+            {/* STEP 2: SHIPPING & ADDRESS */}
             {step === 2 && (
               <div className="space-y-4.5 font-sans text-right">
                 
@@ -409,7 +402,7 @@ export default function CheckoutModal({
                       placeholder="مثال: الرياض أو جدة أو القاهرة"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full text-xs border border-gray-200 focus:border-[#DF8A9C] rounded-xl px-4 py-3 bg-white focus:outline-none text-right"
+                      className="w-full text-xs border border-gray-200 focus:border-[#DF8A9C] rounded-xl px-4 py-3 bg-white focus:outline-none text-right font-sans"
                       required
                     />
                   </div>
@@ -420,151 +413,26 @@ export default function CheckoutModal({
                       placeholder="الحي، اسم الشارع، رقم العمارة أو الفيلا"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="w-full text-xs border border-gray-200 focus:border-[#DF8A9C] rounded-xl px-4 py-3 bg-white focus:outline-none text-right"
+                      className="w-full text-xs border border-gray-200 focus:border-[#DF8A9C] rounded-xl px-4 py-3 bg-white focus:outline-none text-right font-sans"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Ribbon Bow Customization */}
-                <div>
-                  <label className="text-[10px] font-bold uppercase text-[#0B0B0B] tracking-wider block mb-2">
-                    🎀 اختر لون الشريط الحريري لورقة الشكر والغلاف:
-                  </label>
-                  <div className="flex gap-2 flex-wrap">
-                    {ribbons.map((rib) => (
-                      <button
-                        key={rib.id}
-                        type="button"
-                        onClick={() => setSelectedRibbon(rib.id)}
-                        className={`text-xs px-3.5 py-2 rounded-full border transition-all flex items-center gap-2 cursor-pointer ${
-                          selectedRibbon === rib.id
-                            ? 'border-gray-900 bg-[#0B0B0B] text-white'
-                            : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        <span className="w-3.5 h-3.5 rounded-full border border-gray-300" style={{ backgroundColor: rib.hex }} />
-                        <span>{rib.nameAr}</span>
-                      </button>
-                    ))}
+                {/* Sulta Couture Presentation Box */}
+                <div className="bg-[#FCFCF9] border border-amber-200/60 rounded-2xl p-5 relative overflow-hidden text-right shadow-xs select-none">
+                  <div className="absolute top-3 left-3 text-[9px] font-serif tracking-[0.2em] text-[#c5a059]">SULTA LUXE</div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-bold text-[#0B0B0B]">مكافأة تغليف Sulta الفاخر المعتمد 🎁</span>
                   </div>
-                </div>
-
-                {/* Custom Personalized Gift Packaging Note */}
-                <div className="bg-[#FAF4F5]/30 border border-[#DF8A9C]/20 rounded-2xl p-4 md:p-5 space-y-3">
-                  <div className="flex items-center gap-2 justify-end text-right">
-                    <span className="text-gray-950 font-bold text-xs">ملاحظات التغليف الفاخر وبطاقة الإهداء الشخصية 👑</span>
-                    <span className="text-lg">✉️</span>
-                  </div>
-                  <p className="text-[10.5px] text-gray-500 leading-relaxed text-right font-sans">
-                    نحن في Sulta يسعدنا جداً صياغة رسائل التقدير الخاصة بكِ. اكتبِ هنا أي ملاحظات إضافية للتغليف أو رسالة إهداء معينة لحياكتها مع الصندوق الفاخر.
+                  <p className="text-[11px] text-gray-600 leading-relaxed font-sans">
+                    تقديراً لثقتِك، يتم تجهيز طلبيتكِ تلقائياً في ورشة <strong className="text-[#0B0B0B]">Sulta Couture</strong> داخل صندوق الساتان الفخم، معقوداً بشريط شامبين الحريري الفاخر، وبطاقة امتنان أنيقة مصممة لتليق بفخامتِك.
                   </p>
-                  <textarea
-                    placeholder="مثال: يرجى كتابة 'إلى رفيقة دربي الفاتنة..' أو أي تفاصيل خاصة بالتغليف الساحر..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full text-xs border border-gray-200 focus:border-[#DF8A9C] rounded-xl px-4 py-3 bg-white h-20 text-right font-sans focus:outline-none focus:ring-4 focus:ring-pink-100/30 transition-all resize-none animate-fade-in text-gray-800"
-                    maxLength={250}
-                  />
-                  <div className="flex justify-between items-center text-[9px] text-gray-400 font-mono">
-                    <span>الحد الأقصى: {notes.length} / 250 حرف</span>
-                    <span>خط ذهبي يدوي فاخر 🖋️</span>
+                  <div className="mt-3 flex items-center gap-4 justify-end text-[10px] font-serif text-[#c5a059]">
+                    <span>✦ ورق عاجي مستورد</span>
+                    <span>✦ شريط حرير طبيعي</span>
+                    <span>✦ صندوق خشبي كوتور</span>
                   </div>
-                </div>
-
-                {/* 🧧 Gift Message (رسالة إهداء) Royal Customization Card */}
-                <div className="border border-amber-200/60 rounded-2xl p-4 bg-white space-y-3 shadow-xs">
-                  <div className="flex items-center justify-between flex-row-reverse">
-                    <label className="flex items-center gap-2.5 justify-end text-xs cursor-pointer select-none">
-                      <span className="font-bold text-gray-900 flex items-center gap-1">
-                        <Gift size={14} className="text-[#DF8A9C]" />
-                        <span>أرغب في إدراج 'رسالة إهداء' شخصية (طبعة أنيقة داخل البكج الفاخر)</span>
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={addCongratCard}
-                        onChange={(e) => setAddCongratCard(e.target.checked)}
-                        className="accent-[#DF8A9C] rounded w-4.5 h-4.5"
-                      />
-                    </label>
-                    <span className="text-[10px] text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full font-serif border border-amber-100">بطاقة إهداء</span>
-                  </div>
-                  
-                  {addCongratCard && (
-                    <div className="animate-fade-in space-y-4">
-                      {/* Presets Grid */}
-                      <div>
-                        <span className="text-[10px] text-gray-400 block mb-1.5 text-right font-medium">✨ كروت ومقترحات إهداء جاهزة للنسخ التلقائي:</span>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 justify-end select-none text-[10px]">
-                          {[
-                            { id: 'wedding', label: 'زفاف مبارك 💍', text: 'ألف مبروك يا أجمل عروس، تتهنين بقطع Sulta الحريرية المترفة، دامت لياليكِ سعيدة ومفعمة بالحب والرقة! بكل مودة...' },
-                            { id: 'birthday', label: 'عيد ميلاد سعيد 🎂', text: 'كل عام وسنواتكِ تزداد نضارة وجمالاً بالملابس المنزلية المترفة! عيد ميلاد سعيد لقلبكِ النقي، ممتنة لوجودكِ...' },
-                            { id: 'thanks', label: 'شكر وامتنان 💖', text: 'تعبيراً عن امتناني الشديد وعميق تقديري، أهديكِ قطعة الدانتيل الراقية من Sulta كعلامة محبة وتقدير فخم...' },
-                            { id: 'love', label: 'حب ومودة 🌸', text: 'إلى من تملأ حياتي بالرقة والدفء، أهديكِ الصندوق المترف من Sulta ليخبركِ بمدى غلاوتكِ وحبي الممتد لكِ...' }
-                          ].map(item => (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => {
-                                setGiftTheme(item.id as any);
-                                setCongratMessage(item.text);
-                              }}
-                              className={`py-1.5 rounded-lg border text-center font-sans transition-all cursor-pointer ${
-                                giftTheme === item.id 
-                                  ? 'border-[#DF8A9C] bg-[#FAF4F5]/70 text-[#0B0B0B] font-semibold'
-                                  : 'border-gray-150 bg-white text-gray-600 hover:bg-gray-50'
-                              }`}
-                            >
-                              {item.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Text Input */}
-                      <div className="space-y-1">
-                        <span className="text-[10px] text-gray-400 block mb-1 text-right">كتابة الرسائل الخاصة بكِ:</span>
-                        <textarea
-                          placeholder="اكتبي الإهداء الشخصي هنا ليتم معالجته وطباعته بماء الذهب والفضة..."
-                          value={congratMessage}
-                          onChange={(e) => setCongratMessage(e.target.value)}
-                          className="w-full text-xs border border-gray-200 focus:border-[#DF8A9C] focus:ring-1 focus:ring-[#DF8A9C] rounded-xl px-4 py-3 bg-[#FAFAF7] h-18 text-right font-sans focus:outline-none transition-all resize-none"
-                          maxLength={160}
-                        />
-                        <div className="flex justify-between items-center text-[9px] text-gray-400 font-mono">
-                          <span>الحد الأقصى: {congratMessage.length} / 160 حرف</span>
-                          <span>خط عاجي ملكي 🖋️</span>
-                        </div>
-                      </div>
-
-                      {/* Live Elegant Replica/Mockup of the card */}
-                      <div className="border border-amber-200 bg-[#FCFCF9] rounded-2xl p-4 md:p-5 relative overflow-hidden shadow-inner text-center mx-auto max-w-sm">
-                        {/* Decorative golden border layout overlay */}
-                        <div className="absolute inset-2 border border-amber-100 rounded-xl pointer-events-none" />
-                        <div className="absolute top-2.5 right-2.5 text-[8px] font-serif text-amber-500 tracking-widest">SULTA COUTURE</div>
-                        <div className="absolute bottom-2.5 left-2.5 text-[8px] font-sans text-gray-400">Atelier Gift Preview ✉️</div>
-                        
-                        <div className="py-2 px-1 relative z-10">
-                          <span className="text-[10px] font-serif tracking-[0.25em] text-[#DF8A9C] block uppercase mb-1">
-                            {giftTheme === 'wedding' && '💍 Wedding Celebration Card'}
-                            {giftTheme === 'birthday' && '🎂 Royal Birthday Card'}
-                            {giftTheme === 'thanks' && '💖 Appreciative Regard Card'}
-                            {giftTheme === 'love' && '🌸 Kind & Warm Affection'}
-                          </span>
-                          
-                          <div className="w-12 h-[1px] bg-amber-200 mx-auto my-1.5" />
-                          
-                          <p className="text-xs text-gray-700 italic font-serif leading-relaxed px-2 py-1 min-h-12 flex items-center justify-center" dir="rtl">
-                            {congratMessage || 'أجمل التبريكات وأرق الكلمات تتهادين بها في بهاء حقيقي...'}
-                          </p>
-                          
-                          <div className="w-12 h-[1px] bg-amber-200 mx-auto my-1.5" />
-                          
-                          <p className="text-[9px] text-amber-600 font-serif">يطبع على ورق إيطالي بكراميل العاج الفاخر 🍂</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
               </div>
@@ -624,15 +492,6 @@ export default function CheckoutModal({
                     <p><strong>المستلمة:</strong> {name}</p>
                     <p><strong>الهاتف:</strong> {phone} | <strong>البريد:</strong> {email}</p>
                     <p><strong>العنوان:</strong> {city} • {address} • {country === 'EG' ? 'مصر' : 'المملكة العربية السعودية'}</p>
-                  </div>
-
-                  <div className="p-3.5 flex justify-between bg-gray-50 text-gray-900 font-bold">
-                    <span>التغليف الفاخر والشخصي</span>
-                    <span className="text-gray-500 font-normal">تعديل</span>
-                  </div>
-                  <div className="p-3.5 space-y-0.5 text-gray-600">
-                    <p><strong>لون الشريط الداني:</strong> {ribbons.find(r => r.id === selectedRibbon)?.nameAr}</p>
-                    {addCongratCard && <p className="text-[#DF8A9C] mt-1 italic"><strong>بطاقة تهنئة:</strong> "{congratMessage}"</p>}
                   </div>
 
                   <div className="p-3.5 flex justify-between bg-gray-50 text-gray-900 font-bold">
