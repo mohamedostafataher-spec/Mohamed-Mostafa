@@ -19,6 +19,7 @@ import { useToast } from './Toast';
 import { Order, Product, Country, Review, OrderStatus } from "../types";
 import { jsPDF } from "jspdf";
 import { dbService } from "../services/db";
+import OrderDetailView from "./OrderDetailView";
 import {
   AreaChart,
   Area,
@@ -1468,6 +1469,18 @@ export default function AccountView({
           {activeTab === "track" && (
             <div className="text-right space-y-8">
               {trackedOrder ? (
+                <OrderDetailView
+                  orderId={trackedOrder.id}
+                  initialOrder={trackedOrder}
+                  onClose={() => {
+                    setTrackedOrder(null);
+                    setActiveTab("orders");
+                  }}
+                  onReorder={onReorder}
+                  allProducts={products}
+                />
+              ) : null}
+              {false && trackedOrder ? (
                 <div className="space-y-8 animate-fade-in text-right">
                   {/* Track Header */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-gray-150 gap-4 text-right">

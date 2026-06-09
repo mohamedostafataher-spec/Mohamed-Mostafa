@@ -558,6 +558,7 @@ function AppContent() {
         cart={cart}
         favorites={favorites}
         settings={settings}
+        products={products}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenFavorites={() => setTab('account')} // wishlist is in Account screen tab
         onSearch={(query) => {

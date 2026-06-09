@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { PackageSearch, Mail, Phone, Package, Send, CheckCircle2, ChevronLeft, MapPin } from 'lucide-react';
+import { PackageSearch, Mail, Phone, Package, Send, CheckCircle2, ChevronLeft, MapPin, Eye } from 'lucide-react';
 import { dbService } from '../services/db';
 import { Order } from '../types';
+import OrderDetailView from './OrderDetailView';
 
 export default function TrackOrder() {
   const [method, setMethod] = useState<'id' | 'email' | 'phone'>('id');
@@ -9,6 +10,7 @@ export default function TrackOrder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [foundOrders, setFoundOrders] = useState<Order[] | null>(null);
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,9 +18,7 @@ export default function TrackOrder() {
     setError('');
     
     try {
-      // In a real app we'd query Supabase. Since dbService currently gets all orders:
       const orders = await new Promise<Order[]>((resolve) => {
-         // Using the subscription to fetch ones (hack for now without writing a new specific query in dbService to avoid over-complicating this prototype)
          const unsub = dbService.subscribeOrders(
            (data) => {
              unsub();
@@ -32,19 +32,24 @@ export default function TrackOrder() {
       });
 
       let results: Order[] = [];
+      const trimmedQuery = query.trim().toUpperCase();
       if (method === 'id') {
-        results = orders.filter(o => o.id === query || o.trackingNumber === query);
+        results = orders.filter(o => o.id.toUpperCase() === trimmedQuery || (o.trackingNumber && o.trackingNumber.toUpperCase() === trimmedQuery));
       } else if (method === 'email') {
-        results = orders.filter(o => o.email === query);
+        results = orders.filter(o => o.email && o.email.toLowerCase().trim() === query.toLowerCase().trim());
       } else if (method === 'phone') {
-        results = orders.filter(o => o.phone === query);
+        results = orders.filter(o => o.phone.replace(/\s+/g, '') === query.replace(/\s+/g, ''));
       }
 
       if (results.length === 0) {
         setError('تعذر العثور على طلب بهذا المعرّف. يرجى التأكد من البيانات.');
       } else {
-        // Sort by date descending
-        setFoundOrders(results.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        const sorted = results.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setFoundOrders(sorted);
+        // If exactly one order matches, auto-open the glorious tracking view
+        if (sorted.length === 1) {
+          setActiveOrderId(sorted[0].id);
+        }
       }
     } catch (err) {
       setError('حدث خطأ أثناء الاتصال بالخادم.');
@@ -53,12 +58,27 @@ export default function TrackOrder() {
     }
   };
 
-  const statusMap: Record<string, { label: string, step: number, desc: string }> = {
-    new: { label: 'طلب جديد', step: 1, desc: 'تم استلام طلبك وهو قيد المراجعة' },
-    processing: { label: 'جاري التجهيز', step: 2, desc: 'نقوم بتغليف وإعداد طلبك بعناية فائقة' },
-    shipped: { label: 'تم الشحن', step: 3, desc: 'غادرت الشحنة منشأتنا في طريقها إليك' },
-    delivered: { label: 'تم التسليم', step: 4, desc: 'تم إيصال الشحنة بنجاح' }
+  const statusMap: Record<string, string> = {
+    new: 'طلب جديد',
+    pending: 'طلب جديد',
+    confirmed: 'تم تأكيد الطلب',
+    processing: 'جاري التجهيز',
+    packed: 'مغلف وجاهز للتسليم',
+    shipped: 'تم الشحن',
+    out_for_delivery: 'في التوصيل الاخير',
+    delivered: 'تم التسليم بنجاح',
+    cancelled: 'ملغي',
+    returned: 'مسترجع',
+    refunded: 'مسترجع ومسترد'
   };
+
+  if (activeOrderId) {
+    return (
+      <div className="py-24 px-4 bg-[#FAFAF8] min-h-screen">
+        <OrderDetailView orderId={activeOrderId} onClose={() => setActiveOrderId(null)} />
+      </div>
+    );
+  }
 
   return (
     <div className="py-24 px-4 bg-[#FAFAF8] min-h-screen">
@@ -105,73 +125,31 @@ export default function TrackOrder() {
           </form>
         </div>
 
-        {foundOrders && foundOrders.map(order => {
-          const currentStep = statusMap[order.status]?.step || 1;
-          
-          return (
-            <div key={order.id} className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 mb-6 animate-fade-in" dir="rtl">
-              <div className="flex justify-between items-start border-b border-gray-100 pb-4 mb-6">
-                 <div>
-                   <span className="text-gray-400 text-xs font-sans block mb-1">الطلبية رقم</span>
-                   <strong className="font-mono text-xl tracking-wider text-gray-900">{order.id}</strong>
-                 </div>
-                 <div className="text-left">
-                   <span className="text-gray-400 text-xs font-sans block mb-1">تاريخ الطلب</span>
-                   <span className="text-sm font-bold font-sans">{new Date(order.date).toLocaleDateString('ar-SA')}</span>
-                 </div>
-              </div>
-
-              {/* Status Stepper */}
-              <div className="relative mb-12 mt-8 px-4">
-                <div className="absolute top-1/2 left-8 right-8 h-1 bg-gray-100 -translate-y-1/2 z-0 rounded-full">
-                  <div 
-                    className="h-full bg-[#A44C5C] transition-all duration-1000 rounded-full" 
-                    style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
-                  />
+        {foundOrders && foundOrders.length > 1 && (
+          <div className="space-y-4" dir="rtl">
+            <h3 className="font-serif text-sm font-bold text-gray-900 pr-2 border-r-3 border-[#A44C5C] mb-4">طلبيات مطابقة للبحث:</h3>
+            {foundOrders.map(order => (
+              <div key={order.id} className="bg-white p-5 rounded-3xl shadow-xs border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-fade-in">
+                <div>
+                  <div className="text-xs font-mono font-bold text-gray-500">رقم الطلب: {order.id}</div>
+                  <div className="text-[11px] font-sans text-gray-400 mt-0.5">التاريخ: {order.date} • القيمة: {order.totalPrice.toLocaleString()} {order.currency}</div>
                 </div>
-                
-                <div className="flex justify-between relative z-10">
-                  {[1, 2, 3, 4].map((stepNumber) => {
-                    const isCompleted = stepNumber <= currentStep;
-                    const isActive = stepNumber === currentStep;
-                    let icon = <Package size={16} />;
-                    if (stepNumber === 1) icon = <Package size={16} />;
-                    if (stepNumber === 2) icon = <MapPin size={16} />;
-                    if (stepNumber === 3) icon = <Send size={16} />;
-                    if (stepNumber === 4) icon = <CheckCircle2 size={16} />;
-
-                    return (
-                      <div key={stepNumber} className="flex flex-col items-center gap-2">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                          ${isActive ? 'bg-[#A44C5C] text-white shadow-lg scale-110' : 
-                            isCompleted ? 'bg-[#0B0B0B] text-white' : 'bg-white border-2 border-gray-200 text-gray-300'}`}
-                        >
-                          {icon}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="flex justify-between mt-4 text-[10px] sm:text-xs font-bold font-sans text-gray-500 text-center px-1">
-                  <span className={currentStep >= 1 ? 'text-[#0B0B0B]' : ''}>مُستلم</span>
-                  <span className={currentStep >= 2 ? 'text-[#0B0B0B]' : ''}>تجهيز</span>
-                  <span className={currentStep >= 3 ? 'text-[#0B0B0B]' : ''}>بالطريق</span>
-                  <span className={currentStep >= 4 ? 'text-[#0B0B0B]' : ''}>تم التسليم</span>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <span className="text-[10px] bg-slate-100 border border-slate-200 text-slate-800 px-2.5 py-1 rounded-full font-sans font-bold">
+                    {statusMap[order.status] || order.status}
+                  </span>
+                  <button
+                    onClick={() => setActiveOrderId(order.id)}
+                    className="flex-1 sm:flex-none text-xs bg-[#0B0B0B] text-white hover:bg-[#A44C5C] px-4 py-2 rounded-xl transition-all font-sans font-bold flex items-center justify-center gap-1 cursor-pointer"
+                  >
+                    <Eye size={12} />
+                    <span>عرض التفاصيل الكاملة</span>
+                  </button>
                 </div>
               </div>
-
-              <div className="bg-gray-50 p-4 rounded-xl">
-                 <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                   <ChevronLeft size={16} className="text-[#A44C5C]" />
-                   تحديث الحالة:
-                 </h4>
-                 <p className="text-gray-600 font-sans text-sm pr-6">
-                   {statusMap[order.status]?.desc || 'جاري معالجة الطلب'}
-                 </p>
-              </div>
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        )}
 
       </div>
     </div>

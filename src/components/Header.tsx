@@ -17,6 +17,7 @@ interface HeaderProps {
   setMobileMenuOpen: (open: boolean) => void;
   settings?: Settings;
   session: any;
+  products?: Product[];
 }
 
 export default function Header({
@@ -33,10 +34,26 @@ export default function Header({
   setMobileMenuOpen,
   settings,
   session,
+  products = [],
 }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localQuery, setLocalQuery] = useState('');
   const [timeLeft, setTimeLeft] = useState<{ hours: number, mins: number, secs: number }>({ hours: 0, mins: 0, secs: 0 });
+
+  // Computed visual suggestions list matching query
+  const suggestions = React.useMemo(() => {
+    const trimmed = localQuery.trim().toLowerCase();
+    if (!trimmed || trimmed.length < 1) return [];
+
+    return products
+      .filter((p) => {
+        const arMatch = p.nameAr?.toLowerCase().includes(trimmed);
+        const enMatch = p.nameEn?.toLowerCase().includes(trimmed);
+        const catMatch = p.categoryAr?.toLowerCase().includes(trimmed) || p.category?.toLowerCase().includes(trimmed);
+        return p.status === 'active' && (arMatch || enMatch || catMatch);
+      })
+      .slice(0, 5);
+  }, [localQuery, products]);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -267,6 +284,53 @@ export default function Header({
               إغلاق
             </button>
           </form>
+
+          {/* Luxury Instant Real-Time Visual Suggestions */}
+          {suggestions.length > 0 && (
+            <div className="max-w-3xl mx-auto mt-4 bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-lg animate-fade-in-rapid font-sans text-right" dir="rtl">
+              <div className="p-3.5 bg-gray-50 text-[10px] text-gray-400 font-bold border-b border-gray-100 uppercase tracking-widest">
+                مقترحات بحث ذكية فورية لـ SULTA ⚜️
+              </div>
+              <div className="divide-y divide-gray-100">
+                {suggestions.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      onSearch(p.nameAr);
+                      setLocalQuery(p.nameAr);
+                      setTab('store');
+                      setSearchOpen(false);
+                    }}
+                    type="button"
+                    className="w-full text-right p-3.5 hover:bg-[#FAF5F0] flex items-center justify-between transition-colors cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-3">
+                      {p.images && p.images.length > 0 ? (
+                        <img
+                          src={p.images[0]}
+                          referrerPolicy="no-referrer"
+                          alt=""
+                          className="w-12 h-14 rounded-lg object-cover border border-gray-150 shrink-0 group-hover:scale-105 transition-all"
+                        />
+                      ) : (
+                        <div className="w-12 h-14 bg-gray-100 rounded-lg shrink-0 flex items-center justify-center text-gray-300">?</div>
+                      )}
+                      <div>
+                        <h4 className="font-bold text-gray-900 group-hover:text-[#A44C5C] text-xs transition-colors">{p.nameAr}</h4>
+                        <span className="text-[10px] text-gray-400 block mt-0.5">{p.categoryAr}</span>
+                      </div>
+                    </div>
+
+                    <div className="text-left font-sans text-xs">
+                      <span className="font-bold text-[#A44C5C]">
+                        {country === 'SA' ? `${p.priceSA} SAR` : `${p.priceEG} EGP`}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </header>
