@@ -15,8 +15,8 @@ try {
   let vKey: string | undefined;
 
   try {
-    vUrl = import.meta.env.VITE_SUPABASE_URL;
-    vKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    vUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL;
+    vKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY;
   } catch {
     // Vite object not defined or throws
   }
@@ -103,12 +103,14 @@ const isUrlStructurallyValid = (u: string) => {
 if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
     try {
         const cleanUrl = urlToUse.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+        console.log(`[SULTA DB] Correctly configured with real Supabase database: ${cleanUrl} (Key length: ${keyToUse.length})`);
         supabaseInstance = createClient(cleanUrl, keyToUse);
     } catch (err) {
         console.error("[SULTA DB] createClient threw an error:", err);
         supabaseInstance = createDummyClient();
     }
 } else {
+    console.warn(`[SULTA DB] Using offline fallback Dummy Client. Missing or invalid Supabase configurations. URL: ${urlToUse}, Key: ${keyToUse === DEFAULT_KEY ? 'DEFAULT_KEY' : 'PRESENT'}`);
     supabaseInstance = createDummyClient();
 }
 
