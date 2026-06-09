@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../services/db';
-import { CheckCircle2, AlertCircle, Database, Lock, RefreshCw, Server } from 'lucide-react';
+import { supabase, dbService } from '../services/db';
+import { CheckCircle2, AlertCircle, Database, Lock, RefreshCw, Server, HelpCircle } from 'lucide-react';
 
 export default function DatabaseTest() {
   const [results, setResults] = useState<{
-    db: { status: 'idle' | 'loading' | 'success' | 'error'; message: string; count?: number };
+    db: { status: 'idle' | 'loading' | 'success' | 'error'; message: string; count?: number; diagnosticDetails?: string };
     auth: { status: 'idle' | 'loading' | 'success' | 'error'; message: string; user?: any };
   }>({
     db: { status: 'idle', message: 'Waiting to test...' },
@@ -12,26 +12,32 @@ export default function DatabaseTest() {
   });
 
   const testDatabase = async () => {
-    setResults(prev => ({ ...prev, db: { status: 'loading', message: 'Fetching products...' } }));
+    setResults(prev => ({ 
+      ...prev, 
+      db: { status: 'loading', message: 'جاري فحص الاتصال بجدول المنتجات وتدقيق السياسات...' } 
+    }));
+    
     try {
-      const { data, error, count } = await supabase
-        .from('products')
-        .select('*', { count: 'exact', head: false });
-
-      if (error) throw error;
-
+      // Invoke the robust diagnostic test we created in dbService
+      const res = await dbService.testProductsConnection();
+      
       setResults(prev => ({
         ...prev,
         db: { 
-          status: 'success', 
-          message: 'Connection Successful!', 
-          count: data?.length || 0 
+          status: res.success ? 'success' : 'error', 
+          message: res.message, 
+          count: res.data?.length || 0,
+          diagnosticDetails: res.diagnosticDetails
         }
       }));
     } catch (err: any) {
       setResults(prev => ({
         ...prev,
-        db: { status: 'error', message: err.message || 'Database connection failed' }
+        db: { 
+          status: 'error', 
+          message: err.message || 'فشل الاتصال البرمجي بقاعدة البيانات', 
+          diagnosticDetails: 'تأكد من ضبط وتمرير متغيرات البيئة بصورة صحيحة وبدء تشغيل ملقم Supabase.'
+        }
       }));
     }
   };
@@ -83,28 +89,42 @@ export default function DatabaseTest() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Database Test Card */}
-          <div className="bg-[#161618] border border-white/10 rounded-2xl p-6 hover:border-[#c5a059]/30 transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-[#c5a059]/10 rounded-lg">
-                  <Database className="w-6 h-6 text-[#c5a059]" />
+          <div className="bg-[#161618] border border-white/10 rounded-2xl p-6 hover:border-[#c5a059]/30 transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-[#c5a059]/10 rounded-lg">
+                    <Database className="w-6 h-6 text-[#c5a059]" />
+                  </div>
+                  <h2 className="font-serif text-xl text-white">قاعدة البيانات</h2>
                 </div>
-                <h2 className="font-serif text-xl text-white">قاعدة البيانات</h2>
+                <StatusIcon status={results.db.status} />
               </div>
-              <StatusIcon status={results.db.status} />
+              
+              <div className="space-y-4">
+                <p className={`text-sm tracking-wide leading-relaxed ${results.db.status === 'error' ? 'text-red-400 font-bold' : 'text-gray-300'}`}>
+                  {results.db.message}
+                </p>
+                {results.db.status === 'success' && (
+                  <div className="flex items-center gap-2 text-xs text-[#c5a059] bg-[#c5a059]/5 p-2 rounded-lg border border-[#c5a059]/10">
+                    <CheckCircle2 size={12} className="shrink-0" />
+                    <span>تم العثور على {results.db.count} منتج في الجدول</span>
+                  </div>
+                )}
+              </div>
             </div>
-            
-            <div className="space-y-4">
-              <p className={`text-sm ${results.db.status === 'error' ? 'text-red-400' : 'text-gray-300'}`}>
-                {results.db.message}
-              </p>
-              {results.db.status === 'success' && (
-                <div className="flex items-center gap-2 text-xs text-[#c5a059]">
-                  <CheckCircle2 size={12} />
-                  <span>تم العثور على {results.db.count} منتج في الجدول</span>
+
+            {results.db.diagnosticDetails && (
+              <div className="mt-5 pt-4 border-t border-white/5 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs text-gray-400 font-bold">
+                  <HelpCircle size={13} className="text-[#c5a059]" />
+                  <span>دليل توجيهي واستكشاف الأخطاء:</span>
                 </div>
-              )}
-            </div>
+                <p className="text-[11px] text-gray-400 leading-relaxed bg-black/40 p-2.5 rounded-lg border border-white/5">
+                  {results.db.diagnosticDetails}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Auth Test Card */}

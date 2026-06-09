@@ -1591,4 +1591,116 @@ export const dbService = {
   seedInitialData: async (): Promise<void> => {
     console.log('Seeding is disabled for production.');
   },
+
+  // DIAGNOSTIC TEST FOR PRODUCTS TABLE (RLS AND API KEY VERIFICATION)
+  testProductsConnection: async (): Promise<{
+    success: boolean;
+    error: any;
+    data: any[] | null;
+    message: string;
+    diagnosticDetails?: string;
+  }> => {
+    console.log("%c[SULTA DB DIAGNOSTIC] 🔍 Starting connection diagnostics for table 'products'...", "background: #161618; color: #c5a059; font-weight: bold; font-size: 13px; padding: 4px; border-radius: 4px;");
+    
+    // Log active URL
+    console.log(`[SULTA DB DIAGNOSTIC] Target Supabase URL: ${urlToUse}`);
+    
+    try {
+      // 1. Check if we are using the Dummy Client
+      if (keyToUse === DEFAULT_KEY) {
+        const errorMsg = "The database is currently using the offline fallback Mock Client because VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY are missing or set to defaults.";
+        console.error("%c[SULTA DB DIAGNOSTIC] ❌ CONFIGURATION ERROR:", "color: #ff4b4b; font-weight: bold;", errorMsg);
+        console.table({
+          "VITE_SUPABASE_URL Configured": isUrlStructurallyValid(urlToUse) ? "Yes" : "No",
+          "VITE_SUPABASE_ANON_KEY Configured": keyToUse !== DEFAULT_KEY ? "Yes" : "No (Using DEFAULT_KEY)",
+          "Active URL": urlToUse,
+          "Expected Key Action": "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env / Vercel configurations."
+        });
+        
+        return {
+          success: false,
+          error: new Error("Supabase is not configured (Using Mock Client)"),
+          data: null,
+          message: errorMsg,
+          diagnosticDetails: "تنبيه: تطبيقك غير متصل بقاعدة بيانات حقيقية. يرجى التحقق من متغيرات البيئة VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY للتأكد من ربطها بـ Supabase بنجاح."
+        };
+      }
+
+      // 2. Query 'products'
+      console.log("[SULTA DB DIAGNOSTIC] Sending select query: supabase.from('products').select('*').limit(5)...");
+      const { data, error, status, statusText } = await supabase.from('products').select('*').limit(5);
+
+      if (error) {
+        console.error("%c[SULTA DB DIAGNOSTIC] ❌ DATABASE CONNECTION FAILED:", "color: #ff4b4b; font-weight: bold;");
+        console.error("Error Object:", error);
+        console.table({
+          "HTTP Status": status,
+          "Status Text": statusText,
+          "Error Code": error.code || "None",
+          "Error Message": error.message
+        });
+
+        let diagnosticDetails = "خطأ غير معروف في الاتصال. راجع الكونسول لمزيد من التفاصيل.";
+        
+        // Pinpoint RLS vs API Key vs Schema issues
+        if (status === 401 || error.message?.includes("JWT") || error.message?.includes("Invalid API key") || error.message?.toLowerCase().includes("unauthorized")) {
+          // Authentication / API Key Issue
+          diagnosticDetails = "❌ خلل في مفاتيح الـ API: رمز التوثيق (JWT / ANON KEY) غير صالح أو منتهي الصلاحية، أو أنه لا يتطابق مع هذا المشروع في Supabase. يرجى إعادة نسخ مفتاح Anon من إعدادات API في لوحة تحكم Supabase وتحديث المتغيرات.";
+          console.warn("%c[SULTA DB DIAGNOSTIC] 💡 ANALYSIS: API KEY / AUTHENTICATION ISSUE SPOTTED!", "color: #ffca28; font-weight: bold;");
+          console.warn("Recommendation: Ensure VITE_SUPABASE_ANON_KEY matches your Supabase Project's Anon key perfectly. Check for spaces or trailing slash errors.");
+        } 
+        else if (status === 403 || error.message?.toLowerCase().includes("violates row-level security") || error.message?.toLowerCase().includes("insufficient_privilege") || error.message?.toLowerCase().includes("permission denied")) {
+          // RLS Rule Issue
+          diagnosticDetails = "❌ خلل في سياسات الأمان RLS: تم الاتصال بنجاح ولكن سياسات الأمان في Supabase تمنع استرجاع البيانات (Row Level Security). يرجى فتح جدول 'products' في Supabase والذهاب لـ Authentication -> Policies وإنشاء سياسة تمكن المستخدمين (عموم الجمهور) من إجراء عملية القراءة SELECT.";
+          console.warn("%c[SULTA DB DIAGNOSTIC] 💡 ANALYSIS: ROW LEVEL SECURITY (RLS) VIOLATION SPOTTED!", "color: #ffca28; font-weight: bold;");
+          console.warn("Recommendation: RLS is active on public.products but has no POLICY allowing SELECT/Read. Go to Supabase -> Database -> Policies -> Enable Read Access for everyone.");
+        }
+        else if (status === 404 || error.code === "PGRST116" || error.message?.toLowerCase().includes("relation") || error.message?.toLowerCase().includes("does not exist")) {
+          // Missing Schema/Table Issue
+          diagnosticDetails = "❌ خلل في جدول قاعدة البيانات: جدول 'products' غير موجود في قاعدة بياناتك داخل المخطط العام (public schema). يرجى نسخ الكود من ملف 'supabase-schema.sql' وتشغيله في الـ SQL Editor في Supabase لإنشاء الجداول.";
+          console.warn("%c[SULTA DB DIAGNOSTIC] 💡 ANALYSIS: MISSING TABLE OR SCHEMATIC ERROR!", "color: #ffca28; font-weight: bold;");
+          console.warn("Recommendation: Run the database creation script 'supabase-schema.sql' inside the Supabase SQL Editor. The table 'products' could not be found.");
+        }
+
+        return {
+          success: false,
+          error,
+          data: null,
+          message: `فشل الاتصال: ${error.message} (كود ${status})`,
+          diagnosticDetails
+        };
+      }
+
+      // 3. Successful Connection
+      console.log("%c[SULTA DB DIAGNOSTIC] 🎉 CONNECTION TEST PASSED SUCCESSFULLY!", "color: #4caf50; font-weight: bold;");
+      console.log(`[SULTA DB DIAGNOSTIC] Retrieved ${data?.length || 0} products:`, data);
+
+      let successMsg = `تم الاتصال بجداول Supabase ومطابقة جدول products بنجاح. تم استرجاع ${data?.length || 0} من المنتجات.`;
+      let diagnosticDetails = "اتصالك سليم وقائم بشكل كامل! الجداول مطابقة والـ API Key سليم تماماً والبيانات مسترجعة ونشطة وعامة.";
+      
+      if (!data || data.length === 0) {
+        successMsg += " (تحذير: جدول المنتجات فارغ تماماً)";
+        diagnosticDetails = "الاتصال سليم، ولكن لا توجد منتجات لعرضها. يرجى الانتقال إلى لوحة التحكم الإدارية أو Supabase لإضافة منتج جديد، أو تشغيل Seed للبيانات للتمتع بالعرض التفاعلي.";
+        console.warn("[SULTA DB DIAGNOSTIC] Warning: Connection succeeded but table is empty. Try adding an item!");
+      }
+
+      return {
+        success: true,
+        error: null,
+        data,
+        message: successMsg,
+        diagnosticDetails
+      };
+
+    } catch (err: any) {
+      console.error("%c[SULTA DB DIAGNOSTIC] ❌ UNEXPECTED SYSTEM RUNTIME EXCEPTION:", "color: #ff4b4b; font-weight: bold;", err);
+      return {
+        success: false,
+        error: err,
+        data: null,
+        message: `حدث استثناء غير متوقع: ${err?.message || String(err)}`,
+        diagnosticDetails: "تسبب تشغيل الكود في كود متصفح العميل بعطل أثناء إرسال استعلام Supabase. تحقق من اتصال الشبكة وسرعة الاستجابة."
+      };
+    }
+  },
 };
