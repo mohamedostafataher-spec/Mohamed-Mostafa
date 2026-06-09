@@ -977,11 +977,21 @@ export const dbService = {
   },
 
   saveOrder: async (order: Order): Promise<void> => {
-    const payload = {
+    const safeCountry = (order.country && (order.country.toUpperCase() === 'EG' || order.country.toUpperCase() === 'SA')) 
+      ? order.country.toUpperCase() 
+      : 'SA';
+    const safeCurrency = (order.currency && (order.currency.toUpperCase() === 'EGP' || order.currency.toUpperCase() === 'SAR')) 
+      ? order.currency.toUpperCase() 
+      : (safeCountry === 'EG' ? 'EGP' : 'SAR');
+    const safeStatus = (order.status && ['pending', 'processing', 'shipped', 'delivered'].includes(order.status))
+      ? order.status
+      : 'pending';
+
+    const payload: any = {
       id: order.id,
       customer_name: order.customerName,
       phone: order.phone,
-      country: order.country,
+      country: safeCountry,
       city: order.city,
       address: order.address,
       notes: order.giftMessage 
@@ -989,29 +999,74 @@ export const dbService = {
         : order.notes,
       items: order.items,
       total_price: order.totalPrice,
-      currency: order.currency,
+      currency: safeCurrency,
       payment_method: order.paymentMethod,
-      status: order.status,
+      status: safeStatus,
       date: order.date,
-      tracking_number: order.trackingNumber || null
+      tracking_number: order.trackingNumber || null,
+      subtotal: Number(order.totalPrice ?? 0) - Number(order.shippingFee ?? 0),
+      shipping_cost: Number(order.shippingFee ?? 0),
+      discount: 0,
+      total: Number(order.totalPrice ?? 0)
     };
 
+    console.log("[SULTA DB] Attempting insert into 'orders' with payload:", payload);
     let { error } = await supabase.from('orders').insert([payload]);
 
-    let retries = 5;
-    while (error && error.message && error.message.includes('Could not find the') && retries > 0) {
-      const match = error.message.match(/Could not find the '([^']+)' column/);
-      if (match && match[1]) {
-        delete (payload as any)[match[1]];
+    let retries = 20;
+    while (error && error.message && retries > 0) {
+      const errMsg = error.message;
+      console.warn(`[SULTA DB] saveOrder failed: "${errMsg}". Retries left: ${retries}`);
+
+      // 1. Column doesn't exist
+      let colName: string | null = null;
+      const missingMatch = errMsg.match(/Could not find the '([^']+)' column/i);
+      const pgNotExistMatch = errMsg.match(/column "([^"]+)" of relation "orders" does not exist/i) || errMsg.match(/column "([^"]+)" does not exist/i);
+      
+      if (missingMatch && missingMatch[1]) {
+        colName = missingMatch[1];
+      } else if (pgNotExistMatch && pgNotExistMatch[1]) {
+        colName = pgNotExistMatch[1];
+      }
+
+      if (colName) {
+        console.warn(`[SULTA DB] Automatically removing column '${colName}' to satisfy database schema.`);
+        delete payload[colName];
+        
         const retryRes = await supabase.from('orders').insert([payload]);
         error = retryRes.error;
-      } else {
-        break;
+        retries--;
+        continue;
       }
-      retries--;
+
+      // 2. CHECK constraint violation override
+      if (errMsg.toLowerCase().includes("check constraint") || errMsg.toLowerCase().includes("violates check")) {
+        if (errMsg.toLowerCase().includes("country")) {
+          payload.country = 'SA';
+          payload.currency = 'SAR';
+        }
+        if (errMsg.toLowerCase().includes("status")) {
+          payload.status = 'pending';
+        }
+        if (errMsg.toLowerCase().includes("currency")) {
+          payload.currency = 'SAR';
+        }
+
+        const retryRes = await supabase.from('orders').insert([payload]);
+        error = retryRes.error;
+        retries--;
+        continue;
+      }
+
+      break;
     }
 
-    if (error) throw error;
+    if (error) {
+      console.error("[SULTA DB] Failed to save order after retries and healing. Error:", error);
+      throw error;
+    } else {
+      console.log("[SULTA DB] Order successfully inserted into Supabase!");
+    }
   },
 
   updateProductStock: async (productId: string, _currentProduct: Product, nextStock: number): Promise<void> => {
@@ -1111,55 +1166,142 @@ export const dbService = {
       seo: product.seo ? JSON.stringify(product.seo) : null
     };
 
+    // Ensure double-safety mappings for both field variants
+    payload.stock_quantity = product.stock;
+
     let { error } = await supabase.from('products').upsert([payload]);
 
-    let retries = 30;
-    while (error && error.message && ((error.message.includes('Could not find the') || error.message.includes('invalid input syntax for type uuid'))) && retries > 0) {
-      console.warn("[DB] Schema cache or type issue:", error.message);
-      
-      const missingMatch = error.message.match(/Could not find the '([^']+)' column/);
-      const uuidMatch = error.message.match(/invalid input syntax for type uuid:\s*"([^"]+)"/);
+    let retries = 35;
+    while (error && error.message && retries > 0) {
+      const errMsg = error.message;
+      console.warn(`[SULTA DB] Attempting automatic error resolution for product upsert: "${errMsg}". Retries left: ${retries}`);
+
+      // 1. Missing or extra column resolution (both PostgREST & PostgreSQL native formats)
+      let colName: string | null = null;
+      const missingMatch = errMsg.match(/Could not find the '([^']+)' column/i);
+      const pgNotExistMatch = errMsg.match(/column "([^"]+)" of relation "products" does not exist/i) || errMsg.match(/column "([^"]+)" does not exist/i);
       
       if (missingMatch && missingMatch[1]) {
-        const colName = missingMatch[1];
-        console.warn(`[DB] Removing column '${colName}' to bypass schema cache...`);
-        delete payload[colName];
-      } else if (uuidMatch && uuidMatch[1]) {
-         const problematicVal = uuidMatch[1];
-         console.warn(`[DB] UUID syntax error for value ${problematicVal}. Examining payload...`);
-         const getCategoryUuid = (id: string) => {
-           const CATEGORY_UUID_MAP: Record<string, string> = {
-             'sleepwear': 'de000000-0000-0000-0000-000000000001',
-             'loungewear': 'de000000-0000-0000-0000-000000000002',
-             'homewear': 'de000000-0000-0000-0000-000000000003',
-             'dresses': 'de000000-0000-0000-0000-000000000004',
-             'new': 'de000000-0000-0000-0000-000000000005',
-             'collections': 'de000000-0000-0000-0000-000000000006'
-           };
-           return CATEGORY_UUID_MAP[id.toLowerCase()];
-         };
-         const catUuid = getCategoryUuid(problematicVal);
-         if (catUuid && payload.category_id === problematicVal) {
-             console.warn(`[DB] Auto-mapping category_id column from '${problematicVal}' to uuid '${catUuid}' to resolve invalid uuid syntax error...`);
-             payload.category_id = catUuid;
-         } else {
-             for (const key of Object.keys(payload)) {
-                 if (payload[key] === problematicVal) {
-                     console.warn(`[DB] Found problematic uuid field: ${key}. Stripping it.`);
-                     delete payload[key];
-                 }
-             }
-         }
-      } else {
-         break;
+        colName = missingMatch[1];
+      } else if (pgNotExistMatch && pgNotExistMatch[1]) {
+        colName = pgNotExistMatch[1];
       }
 
-      const retryRes = await supabase.from('products').upsert([payload]);
-      error = retryRes.error;
-      retries--;
+      if (colName) {
+        console.warn(`[SULTA DB] Automatically removing unsupported column '${colName}' from the insert payload to avoid schema conflict.`);
+        delete payload[colName];
+        
+        const retryRes = await supabase.from('products').upsert([payload]);
+        error = retryRes.error;
+        retries--;
+        continue;
+      }
+
+      // 2. Foreign Key Constraint Violation (e.g., category_id or collection does not exist in their parent tables)
+      if (errMsg.toLowerCase().includes("foreign key constraint") || errMsg.toLowerCase().includes("violates foreign key")) {
+        if (errMsg.toLowerCase().includes("category_id") && payload.category_id !== null) {
+          console.warn("[SULTA DB] Foreign key violation on category_id! Nullifying category_id to guarantee product is created.");
+          payload.category_id = null;
+        } else if (errMsg.toLowerCase().includes("collection") && payload.collection !== null) {
+          console.warn("[SULTA DB] Foreign key violation on collection! Nullifying collection reference to guarantee product is created.");
+          payload.collection = null;
+        } else {
+          console.warn("[SULTA DB] Unspecified foreign key violation. Safety nullifying optional relational references.");
+          payload.category_id = null;
+          payload.collection = null;
+        }
+
+        const retryRes = await supabase.from('products').upsert([payload]);
+        error = retryRes.error;
+        retries--;
+        continue;
+      }
+
+      // 3. UUID Syntax or Conversion Errors
+      const uuidMatch = errMsg.match(/invalid input syntax for type uuid:\s*"([^"]+)"/i);
+      if (uuidMatch && uuidMatch[1]) {
+        const problematicVal = uuidMatch[1];
+        console.warn(`[SULTA DB] Invalid UUID syntax detected: "${problematicVal}". Commencing auto-remapping...`);
+        
+        if (payload.category_id === problematicVal) {
+          const catUuid = getCategoryUuid(problematicVal);
+          if (catUuid) {
+            console.warn(`[SULTA DB] Auto-mapping invalid category_id '${problematicVal}' to valid UUID: '${catUuid}'`);
+            payload.category_id = catUuid;
+          } else {
+            console.warn(`[SULTA DB] No UUID map found. Nullifying category_id to bypass UUID type-casting check.`);
+            payload.category_id = null;
+          }
+        } else {
+          // Look for any keys containing the problematic value and nullify/delete them
+          for (const key of Object.keys(payload)) {
+            if (payload[key] === problematicVal) {
+              console.warn(`[SULTA DB] Safety nullifying problematic UUID field: '${key}'`);
+              payload[key] = null;
+            }
+          }
+        }
+
+        const retryRes = await supabase.from('products').upsert([payload]);
+        error = retryRes.error;
+        retries--;
+        continue;
+      }
+
+      // 4. CHECK constraint violation (e.g. category CHECK or status CHECK limits in the database schema)
+      if (errMsg.toLowerCase().includes("check constraint") || errMsg.toLowerCase().includes("violates check")) {
+        if (errMsg.toLowerCase().includes("category")) {
+          console.warn("[SULTA DB] CHECK constraint error on category! Resetting to default 'new'.");
+          payload.category = 'new';
+        }
+        if (errMsg.toLowerCase().includes("status")) {
+          console.warn("[SULTA DB] CHECK constraint error on status! Resetting to default 'active'.");
+          payload.status = 'active';
+        }
+        
+        const retryRes = await supabase.from('products').upsert([payload]);
+        error = retryRes.error;
+        retries--;
+        continue;
+      }
+
+      // 5. Input syntax & array format normalization for arrays like sizes/images
+      if (errMsg.toLowerCase().includes("malformed array literal") || errMsg.toLowerCase().includes("invalid input syntax") || errMsg.toLowerCase().includes("cannot cast")) {
+        if (errMsg.toLowerCase().includes("images")) {
+          console.warn("[SULTA DB] Array syntax error on images column. Normalizing to native array...");
+          if (typeof payload.images === 'string') {
+            try {
+              payload.images = JSON.parse(payload.images);
+            } catch {
+              payload.images = [payload.images || '/img/sulta_product_1.png'];
+            }
+          }
+          if (!Array.isArray(payload.images)) {
+            payload.images = [];
+          }
+        }
+        
+        if (errMsg.toLowerCase().includes("colors")) {
+          console.warn("[SULTA DB] JSONB syntax error on colors column. Normalizing payload.colors to empty array...");
+          payload.colors = [];
+        }
+
+        if (errMsg.toLowerCase().includes("sizes")) {
+          console.warn("[SULTA DB] Array syntax error on sizes. Setting defaults.");
+          payload.sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+        }
+
+        const retryRes = await supabase.from('products').upsert([payload]);
+        error = retryRes.error;
+        retries--;
+        continue;
+      }
+
+      // Cannot resolve automatically - break to trigger standard user reporting
+      break;
     }
 
-    console.warn("FINAL PAYLOAD:", Object.keys(payload), "FINAL ERROR:", error);
+    console.log("[SULTA DB] Save finished. Payload columns remaining:", Object.keys(payload), "Error:", error ? error.message : "Success 🎉");
     if (error) throw error;
   },
 

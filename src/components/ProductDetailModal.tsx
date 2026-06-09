@@ -779,20 +779,20 @@ export default function ProductDetailModal({
               <div className="flex gap-2 select-none justify-start flex-wrap">
                 {product.sizes.map(sz => {
                   const isSzOutOfStock = isConfigOutOfStock(selectedCol.name, sz);
-                  return (
-                    <button
-                      key={sz}
-                      onClick={() => setSelectedSz(sz)}
-                      className={`relative w-11 h-11 text-xs font-sans font-medium rounded-xl flex items-center justify-center transition-all border cursor-pointer ${
-                        selectedSz === sz
-                          ? isSzOutOfStock
-                            ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold scale-103'
-                            : 'bg-[#0B0B0B] text-[#F6E7A6] border-black shadow-md font-bold scale-103'
-                          : isSzOutOfStock
-                            ? 'bg-gray-50 text-gray-300 border-gray-150 line-through decoration-red-400 decoration-1'
-                            : 'bg-white text-gray-700 border-gray-200 hover:bg-[#FAF4F5]'
-                      }`}
-                    >
+                    return (
+                      <button
+                        key={sz}
+                        onClick={() => setSelectedSz(sz)}
+                        className={`relative min-w-[44px] h-11 px-3.5 text-xs font-sans font-medium rounded-xl flex items-center justify-center transition-all border cursor-pointer ${
+                          selectedSz === sz
+                            ? isSzOutOfStock
+                              ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold scale-103'
+                              : 'bg-[#0B0B0B] text-[#F6E7A6] border-black shadow-md font-bold scale-103'
+                            : isSzOutOfStock
+                              ? 'bg-gray-50 text-gray-300 border-gray-150 line-through decoration-red-400 decoration-1'
+                              : 'bg-white text-gray-700 border-gray-200 hover:bg-[#FAF4F5]'
+                        }`}
+                      >
                       <span>{sz}</span>
                       {isSzOutOfStock && (
                         <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full" title="نفد المخزون - تنبيه التوفر مفعل" />

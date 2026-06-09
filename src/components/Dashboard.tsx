@@ -1394,6 +1394,13 @@ export default function Dashboard({
   ]);
   const [newColorName, setNewColorName] = useState('');
   const [newColorHex, setNewColorHex] = useState('#000000');
+  
+  // Custom sizing management states
+  const [newProdSizes, setNewProdSizes] = useState<string[]>(['S', 'M', 'L', 'XL', 'XXL']);
+  const [editProdSizes, setEditProdSizes] = useState<string[]>(['S', 'M', 'L', 'XL', 'XXL']);
+  const [customSizeInput, setCustomSizeInput] = useState('');
+  const [customEditSizeInput, setCustomEditSizeInput] = useState('');
+
   const [uploadingImage, setUploadingImage] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -2310,7 +2317,7 @@ export default function Dashboard({
       images: finalImages,
       video: newProdVideo.trim() || undefined,
       colors: newProdColors,
-      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+      sizes: newProdSizes,
       isBestSeller: false,
       rating: 5.0,
       reviewsCount: 0,
@@ -2365,6 +2372,8 @@ export default function Dashboard({
       setNewProdStock(10);
       setNewProdPriceEG(0);
       setNewProdPriceSA(0);
+      setNewProdSizes(['S', 'M', 'L', 'XL', 'XXL']);
+      setCustomSizeInput('');
       showNotification('تم ضخ القطعة الراقية لـ SULTA وتوليد بيانات الـ SEO ومحركات البحث وحفظها بنجاح في سوبابيس! ✨', 'success');
     } catch (err: any) {
       console.error("Failed to insert product in DB:", err);
@@ -2388,6 +2397,7 @@ export default function Dashboard({
       descriptionAr: editProdDescAr,
       video: editProdVideo.trim() || undefined,
       colors: editProdColors,
+      sizes: editProdSizes,
       images: editProdImages.length > 0 ? editProdImages : (editingProduct.images || [])
     };
 
@@ -3844,6 +3854,72 @@ export default function Dashboard({
                   </div>
                 </div>
 
+                <div className="space-y-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-150">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-gray-400">حدد المقاسات المتوفرة لهذه القطعة للعملاء</span>
+                    <label className="text-gray-600 block font-bold text-sm">مقاسات القطعة المتوفرة 📏</label>
+                  </div>
+                  
+                  {/* Presets Grid */}
+                  <div className="flex flex-wrap gap-2 justify-end">
+                    {['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'One Size', 'وان سايز'].map((sz) => {
+                      const isSelected = newProdSizes.includes(sz);
+                      return (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              setNewProdSizes(prev => prev.filter(s => s !== sz));
+                            } else {
+                              setNewProdSizes(prev => [...prev, sz]);
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-serif transition-all border ${
+                            isSelected 
+                              ? 'bg-[#c5a059] border-[#c5a059] text-white font-bold shadow-sm' 
+                              : 'bg-white border-gray-200 text-gray-700 hover:border-gray-400'
+                          }`}
+                        >
+                          {sz === 'One Size' ? 'One Size (وان سايز)' : sz}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Custom Size Adder */}
+                  <div className="flex gap-2">
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        const trimmed = customSizeInput.trim();
+                        if (trimmed && !newProdSizes.includes(trimmed)) {
+                          setNewProdSizes(prev => [...prev, trimmed]);
+                          setCustomSizeInput('');
+                        }
+                      }}
+                      className="bg-[#0B0B0B] text-[#F6E7A6] px-4 py-2 rounded-lg text-xs font-serif transition-colors hover:bg-gray-800 shrink-0"
+                    >
+                      إضافة مقاس خاص
+                    </button>
+                    <input 
+                      type="text" 
+                      placeholder="اكتب مقاساً مخصصاً (مثال: وان سايز، فري سايز، 44...)" 
+                      className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs text-right focus:border-[#c5a059] focus:outline-none"
+                      value={customSizeInput}
+                      onChange={e => setCustomSizeInput(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Selected Sizes list */}
+                  <div className="flex flex-wrap gap-1.5 justify-end mt-1 text-[11px] text-gray-500">
+                    <span>المقاسات المختارة حالياً: </span>
+                    <strong className="text-[#c5a059] font-sans">
+                      {newProdSizes.length > 0 ? newProdSizes.join(' ، ') : 'لم يتم تحديد أي مقاس'}
+                    </strong>
+                  </div>
+                </div>
+
                 <div>
                   <button 
                     type="submit" 
@@ -3943,6 +4019,7 @@ export default function Dashboard({
                                   setEditProdVideo(p.video || '');
                                   setEditProdImages(p.images || []);
                                   setEditProdColors(p.colors || []);
+                                  setEditProdSizes(p.sizes || []);
                                 }}
                                 className="text-blue-500 hover:text-[#0B0B0B] text-xs transition-colors cursor-pointer"
                                 title="تعديل تفاصيل القطعة والصور"
@@ -4236,6 +4313,72 @@ export default function Dashboard({
                               </button>
                             </div>
                           ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-150 my-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-gray-400">تعديل المقاسات أو إضافة مقاس خاص (مثل وان سايز)</span>
+                          <label className="text-gray-600 block font-bold text-sm">مقاسات القطعة المتوفرة 📏</label>
+                        </div>
+                        
+                        {/* Presets Grid */}
+                        <div className="flex flex-wrap gap-2 justify-end">
+                          {['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'One Size', 'وان سايز'].map((sz) => {
+                            const isSelected = editProdSizes.includes(sz);
+                            return (
+                              <button
+                                key={sz}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setEditProdSizes(prev => prev.filter(s => s !== sz));
+                                  } else {
+                                    setEditProdSizes(prev => [...prev, sz]);
+                                  }
+                                }}
+                                className={`px-2.5 py-1.5 rounded-lg text-xs font-serif transition-all border ${
+                                  isSelected 
+                                    ? 'bg-[#c5a059] border-[#c5a059] text-white font-bold shadow-sm' 
+                                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-400'
+                                }`}
+                              >
+                                {sz === 'One Size' ? 'One Size (وان سايز)' : sz}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Custom Size Adder */}
+                        <div className="flex gap-2">
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const trimmed = customEditSizeInput.trim();
+                              if (trimmed && !editProdSizes.includes(trimmed)) {
+                                setEditProdSizes(prev => [...prev, trimmed]);
+                                setCustomEditSizeInput('');
+                              }
+                            }}
+                            className="bg-[#0B0B0B] text-[#F6E7A6] px-3 py-1.5 rounded-lg text-xs font-serif shrink-0 transition-colors hover:bg-gray-800"
+                          >
+                            إضافة مقاس خاص
+                          </button>
+                          <input 
+                            type="text" 
+                            placeholder="اكتب مقاساً مخصصاً (مثال: وان سايز، فري سايز، 44...)" 
+                            className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-right focus:border-[#c5a059] focus:outline-none"
+                            value={customEditSizeInput}
+                            onChange={e => setCustomEditSizeInput(e.target.value)}
+                          />
+                        </div>
+
+                        {/* Selected Sizes list */}
+                        <div className="flex flex-wrap gap-1.5 justify-end mt-1 text-[11px] text-gray-500">
+                          <span>المقاسات الحالية: </span>
+                          <strong className="text-[#c5a059] font-sans">
+                            {editProdSizes.length > 0 ? editProdSizes.join(' ، ') : 'لم يتم تحديد أي مقاس'}
+                          </strong>
                         </div>
                       </div>
 
