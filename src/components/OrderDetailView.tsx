@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ArrowRight, Clock, Package, Truck, CheckCircle, 
   MapPin, CreditCard, Download, RefreshCw, MessageSquare, 
-  ShieldCheck, AlertTriangle, Printer, PhoneCall, Copy, Check, FileText
+  ShieldCheck, AlertTriangle, Printer, PhoneCall, Copy, Check, FileText, Star
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase } from '../services/db';
@@ -797,6 +797,37 @@ export default function OrderDetailView({
       </div>
 
       {/* 5. Luxury Order Actions Footer Panel (Download, Re-order, Concierge support, Live help) */}
+      {/* Smart Ratings (If Delivered) */}
+      {order.status === 'delivered' && (
+        <div className="bg-gradient-to-tr from-[#FAF5F0] to-white p-6 md:p-8 rounded-3xl border border-amber-100 shadow-sm mt-8" dir="rtl">
+          <div className="text-center mb-6">
+            <span className="font-serif italic text-xs tracking-[0.2em] text-[#A44C5C] block mb-2 uppercase">تقييم تجربة سولتة</span>
+            <h3 className="font-serif text-xl font-bold text-[#0B0B0B]">يسعدنا سماع رأيك الملكي 👑</h3>
+            <p className="text-xs text-gray-500 mt-2">كيف كانت تجربتك مع هذا الطلب؟ تقييمك يهمنا في تحسين وتطوير خدماتنا.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {['المنتج', 'التغليف', 'الشحن', 'التجربة'].map((aspect, idx) => (
+              <div key={idx} className="bg-white border border-gray-150 p-4 rounded-2xl flex flex-col items-center">
+                <span className="text-xs font-bold font-sans text-gray-700 mb-2">{aspect}</span>
+                <div className="flex gap-1 flex-row-reverse">
+                  {[1,2,3,4,5].map(star => (
+                    <button key={star} className="text-gray-300 hover:text-amber-400 focus:text-amber-500 transition-colors">
+                      <Star size={18} fill="currentColor" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex justify-center">
+            <button className="bg-[#0B0B0B] text-white px-8 py-3 rounded-xl text-xs font-bold hover:bg-[#A44C5C] transition-colors focus:opacity-80" onClick={() => alert('تم إرسال التقييم بنجاح. شكراً لك!')}>
+              إرسال التقييم ✨
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Action panel */}
       <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm mt-8 flex flex-col md:flex-row justify-between items-center gap-4 flex-wrap" dir="rtl">
         <div>
           <h4 className="font-serif text-sm font-semibold text-gray-950 mb-1">لوحة التفاعل والتحكم الملكي بالطلبية:</h4>

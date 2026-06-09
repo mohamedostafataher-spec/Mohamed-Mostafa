@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2, X, Server, Radio, AlertTriangle, Shield, CheckCircle2, RefreshCw, Terminal, Monitor, Smartphone, Tablet as TabletIcon, Layout, FileText, Zap, ShieldAlert, ArrowLeft, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2, X, Server, Radio, AlertTriangle, Shield, CheckCircle2, RefreshCw, Terminal, Monitor, Smartphone, Tablet as TabletIcon, Layout, FileText, Zap, ShieldAlert, ArrowLeft, ArrowRight, Heart } from 'lucide-react';
 import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection, CustomerProfile, Review } from '../types';
 import { dbService, supabase, cleanImgUrl } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
@@ -11,6 +11,7 @@ import AdminActivityLogs from './AdminActivityLogs';
 import AdminPromotions from './AdminPromotions';
 import AdminHomepage from './AdminHomepage';
 import SupportCenterAdmin from './SupportCenterAdmin';
+import CustomerExperienceDashboard from './CustomerExperienceDashboard';
 import AdminMarketingCenter from './AdminMarketingCenter';
 import AdminExperienceCenter from './AdminExperienceCenter';
 import SalesByRegionChart from './SalesByRegionChart';
@@ -1376,7 +1377,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'experience_center'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
@@ -2732,6 +2733,16 @@ export default function Dashboard({
           >
             <ShieldAlert size={16} className="text-emerald-500" />
             <span className="font-bold">مركز الدعم الفني (Support)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveMenu('cx')}
+            className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold border-2 border-blue-200/50 bg-blue-50/20 hover:bg-blue-50/40 mt-1 ${
+              activeMenu === 'cx' ? 'bg-[#0B0B0B] text-blue-400 border-black scale-[1.01]' : 'text-gray-900'
+            }`}
+          >
+            <Heart size={16} className="text-blue-500" />
+            <span className="font-bold">تجربة العملاء (CX Platform)</span>
           </button>
 
           <div className="pt-4 mt-2 border-t border-gray-100">
@@ -4385,6 +4396,10 @@ export default function Dashboard({
 
           {activeMenu === 'support' && (
             <SupportCenterAdmin />
+          )}
+
+          {activeMenu === 'cx' && (
+            <CustomerExperienceDashboard />
           )}
 
           {activeMenu === 'experience_center' && (

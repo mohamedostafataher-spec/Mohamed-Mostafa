@@ -95,7 +95,7 @@ export interface AutomationRule {
 
 export default function AdminMarketingCenter() {
   const [activeTab, setActiveTab] = useState<
-    'socials' | 'feed' | 'whatsapp' | 'coupons' | 'influencers' | 'calendar' | 'email' | 'analytics' | 'automations' | 'seo'
+    'socials' | 'feed' | 'whatsapp' | 'coupons' | 'influencers' | 'calendar' | 'email' | 'analytics' | 'automations' | 'seo' | 'ugc' | 'ai' | 'health'
   >('socials');
 
   const [isLoading, setIsLoading] = useState(false);
@@ -549,7 +549,10 @@ export default function AdminMarketingCenter() {
           { id: 'email', icon: Mail, label: 'إطلاق البريد الملكي ✉️' },
           { id: 'automations', icon: Bell, label: 'أتمتة الإجراءات الذكية ⚡' },
           { id: 'seo', icon: Chrome, label: 'سيو SULTA والميتا 🔍' },
-          { id: 'analytics', icon: BarChart3, label: 'تحليلات الـ UTM والمصادر 📊' }
+          { id: 'analytics', icon: BarChart3, label: 'تحليلات الـ UTM والمصادر 📊' },
+          { id: 'ugc', icon: Eye, label: 'إدارة أصول المستخدمين (UGC) 📷' },
+          { id: 'ai', icon: Sparkles, label: 'مساعد المحتوى الذكي 🤖' },
+          { id: 'health', icon: AlertTriangle, label: 'مراقب صحة التسويق 🩺' }
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -1433,6 +1436,115 @@ export default function AdminMarketingCenter() {
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* TAB 10: UGC CENTER */}
+      {activeTab === 'ugc' && (
+        <div className="space-y-6 animate-fade-in-rapid font-sans">
+          <div className="bg-white border border-gray-150 rounded-2xl p-6">
+            <h3 className="font-serif text-xl text-gray-950 mb-1 flex items-center gap-2">
+              <Eye className="text-[#DF8A9D]" size={20} />
+              مركز المحتوى المُنشأ بواسطة العميلات الفاخرات (UGC)
+            </h3>
+            <p className="text-gray-400 text-xs mb-6">إدارة صور ومراجعات وتغطيات العميلات لاستخدامها في زيادة الموثوقية والمبيعات.</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="border border-gray-150 rounded-xl overflow-hidden group cursor-pointer relative">
+                  <img src={`https://images.unsplash.com/photo-1518${i}00000000-000${i}00000000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`} alt="UGC" className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500 bg-gray-100" />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white">
+                    <p className="text-xs font-bold truncate">@user_lux_{i}</p>
+                    <p className="flex items-center gap-1 text-[10px] mt-1 text-yellow-400">
+                      ★ ★ ★ ★ ★
+                    </p>
+                  </div>
+                  <div className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="bg-white/90 text-black p-1.5 rounded-md hover:bg-emerald-400 hover:text-white transition-colors" title="الموافقة وعرض في المتجر">
+                      <CheckCircle size={14} />
+                    </button>
+                    <button className="bg-white/90 text-black p-1.5 rounded-md hover:bg-red-500 hover:text-white transition-colors" title="رفض وإخفاء">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 11: AI CONTENT ASSISTANT */}
+      {activeTab === 'ai' && (
+        <div className="space-y-6 animate-fade-in-rapid">
+          <div className="bg-[#FAFAF7] border border-[#DF8A9D]/20 rounded-3xl p-8 flex flex-col items-center justify-center text-center min-h-[400px]">
+            <Sparkles className="text-[#DF8A9D] mb-4 animate-pulse" size={48} />
+            <h3 className="font-serif text-2xl font-bold text-gray-950 mb-2">مساعد المحتوى الذكي قيد التجهيز</h3>
+            <p className="text-gray-500 max-w-md text-sm leading-relaxed mb-6">
+              يتم ربط محرك الذكاء الاصطناعي مع Gemini AI لصياغة أوصاف المنتجات الفاخرة، ومقالات المدونة المهيأة للـ SEO، وكتابة كوبي إبداعي لمنشورات السوشيال ميديا تلقائياً. 
+            </p>
+            <button className="bg-black text-[#F6E7A6] px-8 py-3 rounded-xl font-bold text-sm shadow-xl hover:scale-105 transition-transform flex items-center gap-2">
+              <RefreshCw size={16} /> تفعيل المحرك الذكي
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 12: MARKETING HEALTH CENTER */}
+      {activeTab === 'health' && (
+        <div className="space-y-6 animate-fade-in-rapid text-right font-sans">
+          <div className="bg-white border border-gray-150 rounded-2xl p-6">
+            <h3 className="font-serif text-xl font-bold text-gray-950 mb-6 flex items-center gap-2">
+              <AlertTriangle className="text-amber-500" size={20} />
+              الفحص الصحي الشامل للتسويق (Marketing Health)
+            </h3>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600"><CheckCircle size={18} /></div>
+                  <div>
+                    <h4 className="font-bold text-emerald-900">منتجات بدون وصف تسويقي</h4>
+                    <p className="text-xs text-emerald-700 mt-0.5">جميع المنتجات تمتلك أوصافاً نصية فاخرة.</p>
+                  </div>
+                </div>
+                <span className="text-emerald-600 font-bold">0 خطأ</span>
+              </div>
+
+              <div className="flex justify-between items-center p-4 bg-amber-50 border border-amber-100 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-100 rounded-lg text-amber-600"><AlertTriangle size={18} /></div>
+                  <div>
+                    <h4 className="font-bold text-amber-900">مقالات الـ SEO ومجلة سُلطة القديمة</h4>
+                    <p className="text-xs text-amber-700 mt-0.5">يوجد مقال مضى عليه أكثر من 60 يوماً ويحتاج لتحديث.</p>
+                  </div>
+                </div>
+                <button className="bg-amber-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold">تحديث</button>
+              </div>
+
+              <div className="flex justify-between items-center p-4 bg-red-50 border border-red-100 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-100 rounded-lg text-red-600"><Shield size={18} /></div>
+                  <div>
+                    <h4 className="font-bold text-red-900">تتبع الحملات الإعلانية النشطة</h4>
+                    <p className="text-xs text-red-700 mt-0.5">تبدو أن حملة Snapchat تستهلك ميزانية دون تحويلات مسجلة.</p>
+                  </div>
+                </div>
+                <button className="bg-red-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold">تحقق فوراً</button>
+              </div>
+
+              <div className="flex justify-between items-center p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><TrendingUp size={18} /></div>
+                  <div>
+                    <h4 className="font-bold text-blue-900">حالة الربط بمنصات التواصل</h4>
+                    <p className="text-xs text-blue-700 mt-0.5">Instagram و TikTok متصلان بقوة ويقومان باستيراد UGC تلقائياً.</p>
+                  </div>
+                </div>
+                <span className="text-blue-600 font-bold">نشط 100%</span>
+              </div>
+            </div>
           </div>
         </div>
       )}

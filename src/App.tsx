@@ -18,6 +18,7 @@ import DatabaseTest from './components/DatabaseTest';
 import BlogView from './components/BlogView';
 import BlogPostView from './components/BlogPostView';
 import TrackOrder from './components/TrackOrder';
+import SystemStatus from './components/SystemStatus';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import RibbonBowDivider from './components/RibbonBowDivider';
 import SocialLinksView from './components/SocialLinksView';
@@ -955,6 +956,11 @@ function AppContent() {
           <TrackOrder />
         )}
 
+        {/* SYSTEM STATUS */}
+        {currentTab === 'system-status' && (
+          <SystemStatus />
+        )}
+
         {/* VIEW 6: ACCOUNT ACCOUNT SCREEN (حساب العميل والمفضلة) */}
         {currentTab === 'account' && (
           <AccountView
@@ -963,6 +969,7 @@ function AppContent() {
             orders={orders}
             favorites={favorites}
             products={products}
+            recentlyViewed={recentlyViewed}
             toggleFavorite={toggleFavorite}
             onSelectProduct={handleSelectProduct}
             onReorder={handleReorder}
@@ -1120,6 +1127,7 @@ function AppContent() {
               <button type="button" onClick={() => setTab('track-order')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">تتبع طلبيتي ومسار المعالجة</button>
               <button type="button" onClick={() => setTab('returns')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">سياسة الاسترجاع في مصر والسعودية</button>
               <button type="button" onClick={() => setTab('fabrics')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل الخامات الرسمي</button>
+              <button type="button" onClick={() => setTab('system-status')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer text-[10px] uppercase font-bold">حالة المنصة والأنظمة</button>
               <span className="text-[#F4B6C2] font-semibold text-[10px]">تأمين كلي على الطلبيات المعبأة ورقياً</span>
             </div>
           </div>

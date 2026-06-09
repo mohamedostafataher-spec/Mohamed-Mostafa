@@ -36,6 +36,7 @@ interface AccountViewProps {
   orders: Order[];
   favorites: string[];
   products: Product[];
+  recentlyViewed?: Product[];
   toggleFavorite: (productId: string) => void;
   onSelectProduct: (product: Product) => void;
   session: any;
@@ -48,6 +49,7 @@ export default function AccountView({
   orders,
   favorites,
   products,
+  recentlyViewed = [],
   toggleFavorite,
   onSelectProduct,
   session,
@@ -56,7 +58,7 @@ export default function AccountView({
 }: AccountViewProps) {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<
-    "orders" | "addresses" | "wishlist" | "settings" | "loyalty" | "track" | "tickets"
+    "orders" | "addresses" | "wishlist" | "settings" | "loyalty" | "track" | "tickets" | "activity"
   >("loyalty");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -802,6 +804,21 @@ export default function AccountView({
               <ShieldAlert size={16} />
               <span>دعم العملاء</span>
             </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("activity");
+                setTrackedOrder(null);
+              }}
+              className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
+                activeTab === "activity"
+                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  : "hover:bg-gray-50 text-gray-700"
+              }`}
+            >
+              <Clock size={16} />
+              <span>سجل النشاط</span>
+            </button>
           </div>
         </aside>
 
@@ -1397,10 +1414,16 @@ export default function AccountView({
                           >
                             {p.nameAr}
                           </h4>
-                          <p className="font-sans text-gray-400">
+                          <p className="font-sans text-gray-400 mt-1">
                             {p.categoryAr}
                           </p>
-                          <strong className="font-sans text-gray-800 mt-1 block">
+                          <div className="flex gap-2 items-center mt-2">
+                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${p.stock > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                                {p.stock > 0 ? 'متوفر وجاهز' : 'نفدت الكمية'}
+                             </span>
+                             <span className="text-[9px] text-gray-400 italic">أضيفت مسبقاً</span>
+                          </div>
+                          <strong className="font-sans text-[#A44C5C] font-black mt-2 block">
                             {price.toLocaleString()}{" "}
                             {country === "EG" ? "EGP" : "SAR"}
                           </strong>
@@ -1497,6 +1520,57 @@ export default function AccountView({
             <div className="text-right">
               <SupportTicketsClient session={session} />
             </div>
+          )}
+
+          {/* TAB: ACTIVITY LOG */}
+          {activeTab === "activity" && (
+             <div className="animate-fade-in text-right">
+                <h3 className="font-serif text-lg font-light text-[#0B0B0B] pb-3 border-b border-gray-100 mb-6">
+                   سجل النشاط 
+                </h3>
+                
+                <div className="space-y-8">
+                   {/* Recently Viewed */}
+                   <div>
+                      <h4 className="font-bold text-gray-900 mb-4 text-xs font-sans border-r-2 border-amber-300 pr-2">آخر المنتجات المشاهدة</h4>
+                      {recentlyViewed && recentlyViewed.length > 0 ? (
+                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {recentlyViewed.map(p => (
+                               <div key={p.id} className="border border-gray-150 rounded-2xl p-3 cursor-pointer hover:border-gray-300 group" onClick={() => onSelectProduct(p)}>
+                                  <img src={p.images[0]} alt={p.nameAr} className="w-full aspect-[3/4] object-cover rounded-xl mb-2 group-hover:scale-[1.02] transition-transform" />
+                                  <p className="text-xs font-bold font-sans line-clamp-1">{p.nameAr}</p>
+                                  <p className="text-3xs text-gray-500 mt-1">{country === 'EG' ? p.priceEG : p.priceSA} {country === 'EG' ? 'EGP' : 'SAR'}</p>
+                               </div>
+                            ))}
+                         </div>
+                      ) : (
+                         <p className="text-xs text-gray-400 bg-gray-50 p-4 rounded-xl italic">لم تقومي بمشاهدة أي منتجات حتى الآن.</p>
+                      )}
+                   </div>
+
+                   {/* Last Orders Summary */}
+                   <div>
+                      <h4 className="font-bold text-gray-900 mb-4 text-xs font-sans border-r-2 border-emerald-300 pr-2">أحدث الطلبيات الخاصة بك</h4>
+                      {orders.length > 0 ? (
+                         <div className="space-y-3">
+                            {orders.slice(0, 3).map(o => (
+                               <div key={o.id} className="bg-gray-50 border border-gray-150 rounded-xl p-4 flex justify-between items-center text-xs">
+                                  <div>
+                                     <p className="font-bold text-gray-900 font-mono mb-1">{o.id}</p>
+                                     <p className="text-gray-500">{o.date}</p>
+                                  </div>
+                                  <div className="text-left font-bold">
+                                     <p className="text-[#A44C5C]">{o.totalPrice.toLocaleString()} {o.currency}</p>
+                                  </div>
+                               </div>
+                            ))}
+                         </div>
+                      ) : (
+                         <p className="text-xs text-gray-400 bg-gray-50 p-4 rounded-xl italic">لا توجد طلبيات سابقة.</p>
+                      )}
+                   </div>
+                </div>
+             </div>
           )}
 
           {/* TAB 5: DYNAMIC ORDER TRACKING */}
