@@ -20,6 +20,7 @@ import { Order, Product, Country, Review, OrderStatus } from "../types";
 import { jsPDF } from "jspdf";
 import { dbService } from "../services/db";
 import OrderDetailView from "./OrderDetailView";
+import SupportTicketsClient from "./SupportTicketsClient";
 import {
   AreaChart,
   Area,
@@ -55,7 +56,7 @@ export default function AccountView({
 }: AccountViewProps) {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<
-    "orders" | "addresses" | "wishlist" | "settings" | "loyalty" | "track"
+    "orders" | "addresses" | "wishlist" | "settings" | "loyalty" | "track" | "tickets"
   >("loyalty");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -144,6 +145,17 @@ export default function AccountView({
       if (interval) clearInterval(interval);
     };
   }, [trackedOrder]);
+
+  React.useEffect(() => {
+    const handleOpenTab = (e: any) => {
+      if (e.detail && typeof e.detail === 'string') {
+        setActiveTab(e.detail as any);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      }
+    };
+    window.addEventListener('openAccountTab', handleOpenTab);
+    return () => window.removeEventListener('openAccountTab', handleOpenTab);
+  }, []);
 
   const [notifications, setNotifications] = useState<
     {
@@ -774,6 +786,21 @@ export default function AccountView({
             >
               <Settings size={16} />
               <span>الإعدادات الشخصية</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("tickets");
+                setTrackedOrder(null);
+              }}
+              className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
+                activeTab === "tickets"
+                  ? "bg-[#0B0B0B] text-emerald-400 font-bold shadow-sm"
+                  : "hover:bg-gray-50 text-gray-700"
+              }`}
+            >
+              <ShieldAlert size={16} />
+              <span>دعم العملاء</span>
             </button>
           </div>
         </aside>
@@ -1462,6 +1489,13 @@ export default function AccountView({
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: SUPPORT TICKETS */}
+          {activeTab === "tickets" && (
+            <div className="text-right">
+              <SupportTicketsClient session={session} />
             </div>
           )}
 

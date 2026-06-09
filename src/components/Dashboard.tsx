@@ -10,6 +10,7 @@ import AdminCoupons from './AdminCoupons';
 import AdminActivityLogs from './AdminActivityLogs';
 import AdminPromotions from './AdminPromotions';
 import AdminHomepage from './AdminHomepage';
+import SupportCenterAdmin from './SupportCenterAdmin';
 import AdminMarketingCenter from './AdminMarketingCenter';
 import AdminExperienceCenter from './AdminExperienceCenter';
 import SalesByRegionChart from './SalesByRegionChart';
@@ -1375,7 +1376,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'experience_center'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'experience_center'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
@@ -2721,6 +2722,16 @@ export default function Dashboard({
             <Radio size={16} className="text-[#DF8A9D] animate-pulse" />
             <span className="font-bold">لوحة التسويق الملكية (Marketing)</span>
             <Sparkles size={11} className="text-amber-500 animate-pulse" />
+          </button>
+
+          <button
+            onClick={() => setActiveMenu('support')}
+            className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold border-2 border-emerald-200/50 bg-emerald-50/20 hover:bg-emerald-50/40 mt-1 ${
+              activeMenu === 'support' ? 'bg-[#0B0B0B] text-emerald-400 border-black scale-[1.01]' : 'text-gray-900'
+            }`}
+          >
+            <ShieldAlert size={16} className="text-emerald-500" />
+            <span className="font-bold">مركز الدعم الفني (Support)</span>
           </button>
 
           <div className="pt-4 mt-2 border-t border-gray-100">
@@ -4370,6 +4381,10 @@ export default function Dashboard({
 
           {activeMenu === 'marketing' && (
             <AdminMarketingCenter />
+          )}
+
+          {activeMenu === 'support' && (
+            <SupportCenterAdmin />
           )}
 
           {activeMenu === 'experience_center' && (

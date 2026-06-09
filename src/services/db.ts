@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage } from '../types';
 import { createClient } from '@supabase/supabase-js';
 
 // --- ROBUST CONFIGURATION ---
@@ -512,6 +512,32 @@ function mapFaqItem(data: any): FaqItem {
     answer: data.answer,
     category: data.category || 'all',
     orderIndex: Number(data.order_index ?? 0)
+  };
+}
+
+function mapTicketMessage(data: any): TicketMessage {
+  return {
+    id: data.id,
+    ticketId: data.ticket_id,
+    senderType: data.sender_type,
+    senderName: data.sender_name,
+    content: data.content,
+    createdAt: data.created_at
+  };
+}
+
+function mapTicket(data: any): SupportTicket {
+  return {
+    id: data.id,
+    customerId: data.customer_id,
+    customerName: data.customer_name,
+    email: data.email,
+    phone: data.phone,
+    type: data.type,
+    status: data.status,
+    subject: data.subject,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at
   };
 }
 
@@ -1828,6 +1854,103 @@ export const dbService = {
   // Seed Data if DB is empty
   seedInitialData: async (): Promise<void> => {
     console.log('Seeding is disabled for production.');
+  },
+
+  // SUPPORT TICKETS
+  subscribeTickets: (
+    onSuccess: (tickets: SupportTicket[]) => void,
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
+      if (error) {
+        onSuccess([]);
+      } else if (data) {
+        onSuccess(data.map(mapTicket));
+      }
+    }).catch(() => onSuccess([]));
+
+    const channelName = 'public:support_tickets:' + Math.random().toString(36).substring(2, 15);
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, async () => {
+        const { data } = await supabase.from('support_tickets').select('*').order('created_at', { ascending: false });
+        if (data) onSuccess(data.map(mapTicket));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  },
+
+  subscribeTicketMessages: (
+    ticketId: string,
+    onSuccess: (messages: TicketMessage[]) => void,
+    _onError: (error: any) => void
+  ): (() => void) => {
+    supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true }).then(({ data, error }) => {
+      if (error) {
+        onSuccess([]);
+      } else if (data) {
+        onSuccess(data.map(mapTicketMessage));
+      }
+    }).catch(() => onSuccess([]));
+
+    const channelName = 'public:ticket_messages:' + Math.random().toString(36).substring(2, 15);
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ticket_messages', filter: `ticket_id=eq.${ticketId}` }, async () => {
+        const { data } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true });
+        if (data) onSuccess(data.map(mapTicketMessage));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  },
+
+  saveTicket: async (ticket: SupportTicket): Promise<void> => {
+    const payload = {
+      id: ticket.id,
+      customer_id: ticket.customerId,
+      customer_name: ticket.customerName,
+      email: ticket.email,
+      phone: ticket.phone,
+      type: ticket.type,
+      status: ticket.status,
+      subject: ticket.subject,
+      created_at: ticket.createdAt,
+      updated_at: ticket.updatedAt
+    };
+    try {
+      const { error } = await supabase.from('support_tickets').upsert([payload]);
+      if (error) throw error;
+    } catch (e: any) {
+      console.warn('Silent save for ticket in local/localStorage (table might not exist)', e.message);
+      try { localStorage.setItem('support_ticket_' + ticket.id, JSON.stringify(payload)); } catch(err){}
+    }
+  },
+
+  updateTicketStatus: async (ticketId: string, status: SupportTicket['status']): Promise<void> => {
+    try {
+      const { error } = await supabase.from('support_tickets').update({ status, updated_at: new Date().toISOString() }).eq('id', ticketId);
+      if (error) throw error;
+    } catch (e: any) {
+      console.warn('Failed to update ticket status via Supabase:', e.message);
+    }
+  },
+
+  saveTicketMessage: async (message: TicketMessage): Promise<void> => {
+    const payload = {
+      id: message.id,
+      ticket_id: message.ticketId,
+      sender_type: message.senderType,
+      sender_name: message.senderName,
+      content: message.content,
+      created_at: message.createdAt
+    };
+    try {
+      const { error } = await supabase.from('ticket_messages').insert([payload]);
+      if (error) throw error;
+    } catch (e: any) {
+      console.warn('Silent save for ticket message in local/localStorage', e.message);
+      try { localStorage.setItem('ticket_message_' + message.id, JSON.stringify(payload)); } catch(err){}
+    }
   },
 
   // DIAGNOSTIC TEST FOR PRODUCTS TABLE (RLS AND API KEY VERIFICATION)

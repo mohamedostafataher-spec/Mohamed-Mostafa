@@ -129,6 +129,16 @@ function AppContent() {
     }
   }, [products]);
 
+  useEffect(() => {
+    const handleGlobalOpenTab = (e: any) => {
+      if (e.detail) {
+        setTab('account');
+      }
+    };
+    window.addEventListener('openAccountTab', handleGlobalOpenTab);
+    return () => window.removeEventListener('openAccountTab', handleGlobalOpenTab);
+  }, []);
+
   // Live database synchronization via dbService
   useEffect(() => {
     let subscription: { unsubscribe: () => void } | null = null;
@@ -1349,7 +1359,10 @@ function AppContent() {
       )}
 
       <AtelierAudioAtmosphere />
-      <WhatsAppFloat number={settings?.whatsappNumber} />
+      <WhatsAppFloat 
+        number={settings?.whatsappNumber || settings?.whatsapp || "966530454045"} 
+        message={session?.user?.email ? `مرحباً SULTA، أحتاج للمساعدة بخصوص حسابي ${session.user.email}` : "مرحباً SULTA، أحتاج للمساعدة بخصوص"} 
+      />
     </div>
   );
 }

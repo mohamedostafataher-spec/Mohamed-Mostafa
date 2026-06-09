@@ -288,4 +288,25 @@ export interface FaqItem {
   orderIndex: number;
 }
 
+export interface SupportTicket {
+  id: string;
+  customerId?: string;
+  customerName: string;
+  email: string;
+  phone: string;
+  type: 'inquiry' | 'complaint' | 'exchange' | 'return' | 'shipping' | 'payment' | 'suggestion';
+  status: 'new' | 'reviewing' | 'waiting_customer' | 'resolved' | 'closed';
+  subject: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TicketMessage {
+  id: string;
+  ticketId: string;
+  senderType: 'customer' | 'admin';
+  senderName: string;
+  content: string;
+  createdAt: string;
+}
 

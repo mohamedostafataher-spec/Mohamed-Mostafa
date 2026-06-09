@@ -75,15 +75,23 @@ export default function Faq() {
       <div className="bg-[#FAF5F0] py-24 md:py-32 border-b border-[#DF8A9D]/20" dir="rtl">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <span className="font-serif italic text-xs tracking-[0.2em] text-[#A44C5C] block mb-3 uppercase">
-            كونسيرج العملاء والمساعدة
+            مركز المعرفة والدعم
           </span>
           <h2 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] tracking-wide mb-6 uppercase">
-            الأسئلة الشائعة
+            مساعدة SULTA
           </h2>
           <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mb-4" />
-          <p className="text-sm text-gray-500 font-sans max-w-xl mx-auto leading-relaxed">
-            في "سُلْطَة"، نحن مكرسون لتقديم تجربة تسوق متميزة. تصفحي الإجابات الموثقة من خبرائنا لمساعدتكِ.
+          <p className="text-sm text-gray-500 font-sans max-w-xl mx-auto leading-relaxed mb-8">
+            في "سُلْطَة"، نحن مكرسون لتقديم تجربة تسوق متميزة. تصفحي الإجابات الموثقة من خبرائنا لمساعدتكِ، أو تواصلي مع فريق العناية بالعملاء مباشرة.
           </p>
+          <div className="flex justify-center gap-4">
+            <button className="bg-[#0B0B0B] text-white px-8 py-3 text-xs tracking-widest uppercase font-serif hover:bg-[#A44C5C] transition-colors" onClick={() => window.scrollTo({top: 800, behavior: 'smooth'})}>
+              تصفح الأسئلة الشائعة
+            </button>
+            <button className="bg-transparent border border-[#0B0B0B] text-[#0B0B0B] px-8 py-3 text-xs tracking-widest uppercase font-serif hover:bg-white transition-colors" onClick={() => window.dispatchEvent(new CustomEvent('openAccountTab', { detail: 'tickets' }))}>
+              التواصل مع الدعم 
+            </button>
+          </div>
         </div>
       </div>
 
