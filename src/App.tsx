@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe } from 'lucide-react';
+import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe, Search } from 'lucide-react';
 import { ToastProvider, useToast } from './components/Toast';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -24,6 +24,17 @@ import SocialLinksView from './components/SocialLinksView';
 import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
 import FabricGuide from './components/FabricGuide';
 import AtelierAudioAtmosphere from './components/AtelierAudioAtmosphere';
+
+// Luxury Add-on views
+import SultaCollections from './components/SultaCollections';
+import BestSellers from './components/BestSellers';
+import NewArrivals from './components/NewArrivals';
+import TrendingNow from './components/TrendingNow';
+import LuxuryGifts from './components/LuxuryGifts';
+import LimitedPieces from './components/LimitedPieces';
+import SleepExperience from './components/SleepExperience';
+import SultaMagazine from './components/SultaMagazine';
+import SultaConcierge from './components/SultaConcierge';
 
 import { dbService, supabase, cleanImgUrl } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -254,6 +265,7 @@ function AppContent() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<DiscountCoupon | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isBottomSearchOpen, setIsBottomSearchOpen] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
 
 
@@ -819,6 +831,99 @@ function AppContent() {
           />
         )}
 
+        {/* VIEW: SULTA COLLECTIONS */}
+        {currentTab === 'collections' && (
+          <SultaCollections
+            collections={collections}
+            categories={categories}
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+            setTab={setTab}
+          />
+        )}
+
+        {/* VIEW: BEST SELLERS */}
+        {currentTab === 'best-sellers' && (
+          <BestSellers
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+          />
+        )}
+
+        {/* VIEW: NEW ARRIVALS */}
+        {currentTab === 'new-arrivals' && (
+          <NewArrivals
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+          />
+        )}
+
+        {/* VIEW: TRENDING NOW */}
+        {currentTab === 'trending' && (
+          <TrendingNow
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+          />
+        )}
+
+        {/* VIEW: LUXURY GIFTS */}
+        {currentTab === 'luxury-gifts' && (
+          <LuxuryGifts
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+            onAddToCart={(prod, col, sz, qty) => handleAddToCart(prod, col, sz, qty)}
+          />
+        )}
+
+        {/* VIEW: LIMITED PIECES */}
+        {currentTab === 'limited-pieces' && (
+          <LimitedPieces
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+          />
+        )}
+
+        {/* VIEW: SLEEP EXPERIENCE */}
+        {currentTab === 'sleep-experience' && (
+          <SleepExperience
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+          />
+        )}
+
+        {/* VIEW: SULTA CONCIERGE */}
+        {currentTab === 'concierge' && (
+          <SultaConcierge
+            products={products}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={handleSelectProduct}
+            onAddToCart={(prod, col, sz, qty) => handleAddToCart(prod, col, sz, qty)}
+          />
+        )}
+
         {/* VIEW 3: PREMIUM DYNAMIC FABRIC GUIDE PAGE */}
         {currentTab === 'fabrics' && (
           <FabricGuide homepageSections={homepageSections} />
@@ -865,11 +970,11 @@ function AppContent() {
         )}
 
         {/* VIEW 10: BLOG / JOURNAL (مجلة SULTA) */}
-        {currentTab === 'blog' && (
+        {(currentTab === 'blog' || currentTab === 'magazine') && (
           selectedBlogPost ? (
             <BlogPostView post={selectedBlogPost} onBack={() => setSelectedBlogPost(null)} />
           ) : (
-            <BlogView onReadPost={setSelectedBlogPost} />
+            <SultaMagazine onReadPost={setSelectedBlogPost} />
           )
         )}
 
@@ -986,10 +1091,11 @@ function AppContent() {
           <div className="space-y-4">
             <h4 className="font-serif font-semibold text-sm uppercase text-[#F6E7A6] tracking-wider">روابط سريعة</h4>
             <div className="flex flex-col gap-2.5 font-sans items-start text-right">
-              <button type="button" onClick={() => setTab('home')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">الرئيسية</button>
-              <button type="button" onClick={() => setTab('store')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">متجرنا</button>
-              <button type="button" onClick={() => setTab('fabrics')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل الخامات الحريرية</button>
-              <button type="button" onClick={() => setTab('about')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">حول البراند</button>
+              <button type="button" onClick={() => setTab('home')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">🏠 الرئيسية</button>
+              <button type="button" onClick={() => setTab('store')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">🛍️ المتجر</button>
+              <button type="button" onClick={() => setIsBottomSearchOpen(true)} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">🔍 البحث الذكي</button>
+              <button type="button" onClick={() => setTab('account')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">❤️ المفضلة</button>
+              <button type="button" onClick={() => setTab('account')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">👤 حسابي الشخصي</button>
               <button type="button" onClick={() => setTab('dashboard')} className="text-right text-[#F6E7A6] hover:underline font-bold transition-colors cursor-pointer">لوحة الإدارة والتقارير</button>
               <button type="button" onClick={() => setTab('dbtest')} className="text-right text-gray-600 hover:text-[#c5a059] text-[9px] mt-2 transition-colors cursor-pointer">فحص قاعدة البيانات (Diagnostic)</button>
             </div>
@@ -1017,7 +1123,6 @@ function AppContent() {
               <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">Mada</span>
               <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">Apple Pay</span>
               <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">STC Pay</span>
-              <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">Fawry</span>
               <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">Visa</span>
               <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold font-sans">الدفع عند الاستلام</span>
             </div>
@@ -1032,11 +1137,9 @@ function AppContent() {
         </div>
       </footer>
 
-
-
       {/* MOBILE DRAWER MODAL OVERLAY (Simplified and completely bug-free on all mobile viewports) */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden font-sans">
+        <div className="fixed inset-0 z-[100] font-sans">
           {/* Blur backdrop overlay */}
           <div 
             className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
@@ -1044,7 +1147,7 @@ function AppContent() {
           />
           
           {/* Drawer container aligned with RTL right-side slot */}
-          <div className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col p-6 z-50 animate-slide-right-drawer border-l border-pink-100/30 text-right overflow-y-auto justify-between">
+          <div className="fixed top-0 right-0 bottom-0 w-85 max-w-[90vw] bg-white h-full shadow-2xl flex flex-col p-6 z-50 animate-slide-right-drawer border-l border-[#DF8A9D]/12 text-right overflow-y-auto justify-between">
             <div>
               {/* Drawer Top logo bar */}
               <div className="flex items-center justify-between pb-4 border-b border-gray-100">
@@ -1058,19 +1161,26 @@ function AppContent() {
               </div>
 
               {/* Navigation Cards List */}
-              <div className="space-y-2 py-4">
+              <div className="space-y-1.5 py-4">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2 px-1">
-                  تصفحي أقسام البوتيك الفخمة:
+                  تصفحي البوتيك وعالمنا الفاخر ✦
                 </span>
                 
                 {[
                   { id: 'home', label: 'الرئيسية 🏠' },
                   { id: 'store', label: 'المتجر والكتالوج 🛍️' },
-                  { id: 'blog', label: 'المجلة (The Journal) 📰' },
-                  { id: 'fabrics', label: 'دليل الخامات الحريرية 🧵' },
-                  { id: 'about', label: 'رواد قصتنا وعن Sulta ✨' },
-                  { id: 'faq', label: 'الأسئلة الشائعة للعرائس ❓' },
-                  { id: 'returns', label: 'سياسة الاسترجاع والتبديل 🔄' },
+                  { id: 'collections', label: 'SULTA Collections ✨' },
+                  { id: 'best-sellers', label: 'الأكثر مبيعاً 🏆' },
+                  { id: 'new-arrivals', label: 'أحدث الإصدارات 🆕' },
+                  { id: 'trending', label: 'الأكثر رواجاً 🔥' },
+                  { id: 'luxury-gifts', label: 'هدايا SULTA 🎁' },
+                  { id: 'limited-pieces', label: 'القطع المحدودة 💎' },
+                  { id: 'sleep-experience', label: 'Sleep Experience 💤' },
+                  { id: 'magazine', label: 'SULTA Magazine 📰' },
+                  { id: 'concierge', label: 'SULTA Concierge 👑' },
+                  { id: 'faq', label: 'مركز المساعدة ❓' },
+                  { id: 'returns', label: 'سياسة الشحن والاسترجاع 📦' },
+                  { id: 'about', label: 'عالم SULTA 🏛️' },
                 ].map((item) => {
                   const isActive = currentTab === item.id;
                   return (
@@ -1080,14 +1190,14 @@ function AppContent() {
                         setTab(item.id);
                         setMobileMenuOpen(false);
                       }}
-                      className={`w-full text-right text-xs font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                      className={`w-full text-right text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
                         isActive
                           ? 'bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-md scale-[1.01]'
-                          : 'text-gray-700 bg-gray-50/50 hover:bg-pink-50/40 hover:text-black'
+                          : 'text-gray-700 bg-gray-50/50 hover:bg-pink-50/40 hover:text-black border border-transparent hover:border-[#DF8A9D]/10'
                       }`}
                     >
-                      <span>{item.label}</span>
-                      {isActive && <span className="w-2 h-2 rounded-full bg-[#F6E7A6]" />}
+                      <span className="font-sans text-[11.5px]">{item.label}</span>
+                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#F6E7A6]" />}
                     </button>
                   );
                 })}
@@ -1104,7 +1214,7 @@ function AppContent() {
                     setTab('account');
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full text-right text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                  className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
                     currentTab === 'account' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'text-gray-650 bg-gray-50/30 hover:bg-pink-50/30'
                   }`}
                 >
@@ -1117,12 +1227,12 @@ function AppContent() {
                     setTab('dashboard');
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full text-right text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                  className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
                     currentTab === 'dashboard' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'text-gray-655 bg-gray-50/30 hover:bg-pink-50/30'
                   }`}
                 >
                   <span>لوحة تحكم الإدارة والطلبيات ⚙️</span>
-                  <span className="bg-[#F6E7A6] text-gray-900 px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
+                  <span className="bg-[#F6E7A6] text-gray-000 px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
                 </button>
               </div>
             </div>
@@ -1135,7 +1245,7 @@ function AppContent() {
                   onClick={() => {
                     setCountry(country === 'SA' ? 'EG' : 'SA');
                   }}
-                  className="bg-white border border-gray-250 shadow-2xs text-[10.5px] px-2.5 py-1 rounded-full font-bold text-[#0B0B0B] hover:border-[#DF8A9C] transition-colors cursor-pointer"
+                  className="bg-white border border-gray-250 shadow-2xs text-[10.5px] px-2.5 py-1 rounded-full font-bold text-[#0B0B0B] hover:border-[#DF8A9D] transition-colors cursor-pointer"
                 >
                   {country === 'SA' ? '🇸🇦 SAR (السعودية)' : '🇪🇬 EGP (مصر)'}
                 </button>
@@ -1144,7 +1254,7 @@ function AppContent() {
               {/* Bottom footer text inside drawer */}
               <div className="text-center text-[9px] text-gray-400 space-y-0.5 pb-2">
                 <p className="font-serif italic font-medium tracking-wide text-gray-500">Where Comfort Meets Elegance</p>
-                <p>تشحن ومعبأة بعناية فائقة ✦</p>
+                <p>تشحن ومعبأة بعناية فائقة © ٢٠٢٦ ✦</p>
               </div>
             </div>
           </div>
@@ -1155,7 +1265,7 @@ function AppContent() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-150 py-2.5 px-6 z-40 flex justify-around items-center shadow-lg select-none">
         <button 
           onClick={() => setTab('home')}
-          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'home' ? 'text-[#DF8A9C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
+          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'home' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
         >
           <Home size={18} />
           <span className="text-[9px] font-sans font-bold">الرئيسية</span>
@@ -1163,20 +1273,79 @@ function AppContent() {
 
         <button 
           onClick={() => setTab('store')}
-          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'store' ? 'text-[#DF8A9C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
+          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'store' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
         >
           <ShoppingBag size={18} />
-          <span className="text-[9px] font-sans font-bold">الكتالوج</span>
+          <span className="text-[9px] font-sans font-bold">المتجر</span>
+        </button>
+
+        <button 
+          onClick={() => setIsBottomSearchOpen(true)}
+          className="flex flex-col items-center gap-1 transition-all text-gray-400 hover:text-gray-750"
+        >
+          <Search size={18} />
+          <span className="text-[9px] font-sans font-bold">البحث</span>
         </button>
 
         <button 
           onClick={() => setTab('account')}
-          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'account' ? 'text-[#DF8A9C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
+          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'account' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
+        >
+          <Heart size={18} className={favorites.length > 0 ? "text-red-500 fill-red-500" : ""} />
+          <span className="text-[9px] font-sans font-bold">المفضلة</span>
+        </button>
+
+        <button 
+          onClick={() => setTab('account')}
+          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'account' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
         >
           <User size={18} />
-          <span className="text-[9px] font-sans font-bold">طلباتي وحسابي</span>
+          <span className="text-[9px] font-sans font-bold">حسابي</span>
         </button>
       </div>
+
+      {/* FLOATING BOTTOM SEARCH MODAL */}
+      {isBottomSearchOpen && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-[101] flex items-center justify-center p-4 transition-all" dir="rtl">
+          <div className="bg-white rounded-[2.5rem] p-6 sm:p-10 w-full max-w-lg border border-[#DF8A9D]/15 shadow-2xl relative text-right animate-scale-up">
+            <button 
+              onClick={() => setIsBottomSearchOpen(false)}
+              className="absolute top-6 left-6 text-gray-400 hover:text-[#A44C5C] p-2 hover:bg-neutral-100 rounded-full cursor-pointer transition-all border border-transparent"
+            >
+              <X size={18} />
+            </button>
+            <div className="space-y-4">
+              <div className="flex items-center gap-1.5 text-[#A44C5C] text-[10px] font-bold tracking-widest font-sans uppercase">
+                <Search size={12} />
+                <span>البحث الذكي الملكي | SULTA SEARCH ENGINE</span>
+              </div>
+              <h3 className="font-serif text-xl font-light text-gray-900">ما الذي تبحثين عنه اليوم؟</h3>
+              <p className="text-3xs sm:text-2xs text-gray-450 leading-relaxed font-sans">اكتبي ما يلهم طقوسكِ لتعثري عليه فوراً بلمح البصر في بوتيك سُلْطَة الملوكي.</p>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                setIsBottomSearchOpen(false);
+                setTab('store');
+              }} className="relative mt-2">
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="ابحثي عن حرير، عرايس، شتوي..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-[#FAF5F0] rounded-full border border-gray-200 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/15 focus:border-[#A44C5C] text-right shadow-2xs"
+                />
+                <button 
+                  type="submit"
+                  className="absolute left-3 top-2.5 bg-[#A44C5C] hover:bg-[#A44C5C]/90 text-white text-3xs font-bold px-4 py-2.5 rounded-full cursor-pointer transition-all shadow-2xs"
+                >
+                  بحث
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AtelierAudioAtmosphere />
       <WhatsAppFloat number={settings?.whatsappNumber} />

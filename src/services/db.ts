@@ -114,140 +114,60 @@ if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
 
 export const supabase = supabaseInstance;
 
-class LocalModelManager {
-  private static listeners: Record<string, Set<(data: any[]) => void>> = {};
-
-  private static getStorageKey(table: string): string {
-    return `sulta_local_${table}`;
+export const SEED_BLOG_POSTS: BlogPost[] = [
+  {
+    id: "art-001",
+    title: "أسرار اختيار بيجامة العروس المثالية - ليلة من العمر تفوق الواقع",
+    slug: "bride-pajama-secrets",
+    content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الساتان الملكي المفتوح، وتطويقها بالدانتيل الإيطالي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
+    excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
+    imageUrl: "/img/bridal_satin_robe_pink_1.png",
+    author: "SULTA Atelier",
+    category: "Couture",
+    tags: ["Bridal", "Luxury", "Styling"],
+    publishedAt: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "published"
+  },
+  {
+    id: "art-002",
+    title: "الحرير الإيطالي الطبيعي vs الصناعي - علم المنسوجات المترفة",
+    slug: "pure-italian-silk-science",
+    content: "إن لمس أقمشة SULTA هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الحريرية الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
+    excerpt: "تعلمي كيف تفرقين بين التفاصيل الراقية والأقمشة المقلدة لترتدي دوماً ما يليق بوقارك.",
+    imageUrl: "/img/pink_bow_pajama_1780730148591.png",
+    author: "Atelier SULTA",
+    category: "Fabric",
+    tags: ["Tissue Silk", "Authenticity", "Couture"],
+    publishedAt: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "published"
   }
+];
 
-  static getInitialSeed(table: string): any[] {
-    if (table === 'blog_posts') {
-      return [
-        {
-          id: "art-001",
-          title: "أسرار اختيار بيجامة العروس المثالية - ليلة من العمر تفوق الواقع",
-          slug: "bride-pajama-secrets",
-          content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الساتان الملكي المفتوح، وتطويقها بالدانتيل الإيطالي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
-          excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
-          imageUrl: "/img/bridal_satin_robe_pink_1.png",
-          author: "SULTA Atelier",
-          category: "Couture",
-          tags: ["Bridal", "Luxury", "Styling"],
-          publishedAt: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          status: "published"
-        },
-        {
-          id: "art-002",
-          title: "الحرير الإيطالي الطبيعي vs الصناعي - علم المنسوجات المترفة",
-          slug: "pure-italian-silk-science",
-          content: "إن لمس أقمشة SULTA هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الحريرية الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
-          excerpt: "تعلمي كيف تفرقين بين التفاصيل الراقية والأقمشة المقلدة لترتدي دوماً ما يليق بوقارك.",
-          imageUrl: "/img/pink_bow_pajama_1780730148591.png",
-          author: "Atelier SULTA",
-          category: "Fabric",
-          tags: ["Tissue Silk", "Authenticity", "Couture"],
-          publishedAt: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          status: "published"
-        }
-      ];
-    }
-    if (table === 'faq') {
-      return [
-        { id: "faq-1", question: "كيف أقوم بتنظيف فساتين الحرير الطبيعي من سولتة؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
-        { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Atelier SULTA علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
-      ];
-    }
-    if (table === 'advanced_coupons') {
-      return [
-        { id: 'ac-1', code: 'ROYAL30', discount_type: 'percentage', discount_value: 30, limit_per_user: 1, min_order_value: 500, current_usages: 12, is_active: true },
-        { id: 'ac-2', code: 'SULTA100', discount_type: 'fixed', discount_value: 100, limit_per_user: 5, min_order_value: 1000, current_usages: 3, is_active: true }
-      ];
-    }
-    if (table === 'promotions') {
-      return [
-        { id: 'prom-1', name: 'أسبوع الحرير الملكي', description: 'خصم ٢٥٪ على جميع مشغولات الحرير الإيطالي الصافي بمناسبة تدشين مجموعة العروس الملكية الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الحرير الملكي الفاخر - خصم ٢٥٪' }
-      ];
-    }
-    if (table === 'activity_logs') {
-      return [
-        { id: 'log-1', action: 'BOOT_SYSTEM', details: 'Sulta Luxury Control Center booted successfully connected to Supabase.', admin_id: 'system', admin_name: 'إدارة النظام الملكية', date: new Date().toISOString() }
-      ];
-    }
-    if (table === 'inventory_logs') {
-      return [
-        { id: 'invlog-1', product_id: 'royal-pajama', variant: 'S - Bride White', change: 10, reason: 'تسوية رصيد المستودع لافتتاح الصالون', date: new Date().toISOString(), admin_id: 'admin' }
-      ];
-    }
-    return [];
-  }
+export const SEED_FAQ: FaqItem[] = [
+  { id: "faq-1", question: "كيف أقوم بتنظيف فساتين الحرير الطبيعي من سولتة؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
+  { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Atelier SULTA علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
+];
 
-  static get(table: string): any[] {
-    if (typeof window === 'undefined') return this.getInitialSeed(table);
-    const stored = localStorage.getItem(this.getStorageKey(table));
-    if (!stored) {
-      const seed = this.getInitialSeed(table);
-      localStorage.setItem(this.getStorageKey(table), JSON.stringify(seed));
-      return seed;
-    }
-    try {
-      return JSON.parse(stored);
-    } catch {
-      return this.getInitialSeed(table);
-    }
-  }
+export const SEED_ADVANCED_COUPONS: any[] = [
+  { id: 'ac-1', code: 'ROYAL30', discount_type: 'percentage', discount_value: 30, limit_per_user: 1, min_order_value: 500, current_usages: 12, is_active: true },
+  { id: 'ac-2', code: 'SULTA100', discount_type: 'fixed', discount_value: 100, limit_per_user: 5, min_order_value: 1000, current_usages: 3, is_active: true }
+];
 
-  static save(table: string, item: any): void {
-    if (typeof window === 'undefined') return;
-    const items = this.get(table);
-    const index = items.findIndex(i => i.id === item.id);
-    if (index >= 0) {
-      items[index] = { ...items[index], ...item };
-    } else {
-      if (!item.id) item.id = `${table}_${Date.now()}`;
-      items.push(item);
-    }
-    localStorage.setItem(this.getStorageKey(table), JSON.stringify(items));
-    this.notify(table, items);
-  }
+export const SEED_PROMOTIONS: any[] = [
+  { id: 'prom-1', name: 'أسبوع الحرير الملكي', description: 'خصم ٢٥٪ على جميع مشغولات الحرير الإيطالي الصافي بمناسبة تدشين مجموعة العروس الملكية الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الحرير الملكي الفاخر - خصم ٢٥٪' }
+];
 
-  static delete(table: string, id: string): void {
-    if (typeof window === 'undefined') return;
-    const items = this.get(table);
-    const filtered = items.filter(i => i.id !== id);
-    localStorage.setItem(this.getStorageKey(table), JSON.stringify(filtered));
-    this.notify(table, filtered);
-  }
+export const SEED_ACTIVITY_LOGS: any[] = [
+  { id: 'log-1', action: 'BOOT_SYSTEM', details: 'Sulta Luxury Control Center booted successfully connected to Supabase.', admin_id: 'system', admin_name: 'إدارة النظام الملكية', date: new Date().toISOString() }
+];
 
-  static addListener(table: string, callback: (data: any[]) => void): () => void {
-    if (!this.listeners[table]) {
-      this.listeners[table] = new Set();
-    }
-    this.listeners[table].add(callback);
-    callback(this.get(table));
-    return () => {
-      const set = this.listeners[table];
-      if (set) {
-         set.delete(callback);
-      }
-    };
-  }
-
-  private static notify(table: string, data: any[]): void {
-    const list = this.listeners[table];
-    if (list) {
-      list.forEach(cb => {
-        try {
-          cb(data);
-        } catch { }
-      });
-    }
-  }
-}
+export const SEED_INVENTORY_LOGS: any[] = [
+  { id: 'invlog-1', product_id: 'royal-pajama', variant: 'S - Bride White', change: 10, reason: 'تسوية رصيد المستودع لافتتاح الصالون', date: new Date().toISOString(), admin_id: 'admin' }
+];
 
 // ==========================================
 // MOCK FALLBACK BOUTIQUE DATA REMOVED FOR PRODUCTION
@@ -719,69 +639,61 @@ export const dbService = {
     onSuccess: (posts: BlogPost[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    const unsubLocal = LocalModelManager.addListener('blog_posts', (localPosts) => {
+    const fetchPosts = () => {
       supabase.from('blog_posts').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
         if (error || !data || data.length === 0) {
-          onSuccess(localPosts);
+          onSuccess(SEED_BLOG_POSTS);
         } else {
           onSuccess(data.map(mapBlogPost));
         }
       }).catch(() => {
-        onSuccess(localPosts);
+        onSuccess(SEED_BLOG_POSTS);
       });
-    });
+    };
+
+    fetchPosts();
 
     const channelName = 'public:blog_posts:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'blog_posts' }, async () => {
-        const { data } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
-        if (data && data.length > 0) {
-          onSuccess(data.map(mapBlogPost));
-        } else {
-          onSuccess(LocalModelManager.get('blog_posts'));
-        }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'blog_posts' }, () => {
+        fetchPosts();
       })
       .subscribe();
 
     return () => {
-      unsubLocal();
       supabase.removeChannel(channel);
     };
   },
 
   saveBlogPost: async (post: BlogPost): Promise<void> => {
-    LocalModelManager.save('blog_posts', post);
-    try {
-      const { error } = await supabase
-        .from('blog_posts')
-        .upsert([{
-          id: post.id || undefined,
-          title: post.title,
-          slug: post.slug,
-          content: post.content,
-          excerpt: post.excerpt,
-          image_url: post.imageUrl,
-          author: post.author,
-          category: post.category,
-          tags: post.tags,
-          published_at: post.publishedAt,
-          status: post.status,
-          seo: post.seo ? JSON.stringify(post.seo) : null
-        }]);
-      if (error) console.warn("Supabase saveBlogPost failed, using LocalModelManager fallback", error.message);
-    } catch (err: any) {
-      console.warn("Exception saving blog post to Supabase:", err.message);
+    const { error } = await supabase
+      .from('blog_posts')
+      .upsert([{
+        id: post.id || undefined,
+        title: post.title,
+        slug: post.slug,
+        content: post.content,
+        excerpt: post.excerpt,
+        image_url: post.imageUrl,
+        author: post.author,
+        category: post.category,
+        tags: post.tags,
+        published_at: post.publishedAt,
+        status: post.status,
+        seo: post.seo ? JSON.stringify(post.seo) : null
+      }]);
+    if (error) {
+      console.error("Supabase saveBlogPost failed:", error.message);
+      throw error;
     }
   },
 
   deleteBlogPost: async (postId: string): Promise<void> => {
-    LocalModelManager.delete('blog_posts', postId);
-    try {
-      const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
-      if (error) console.warn("Supabase deleteBlogPost failed", error.message);
-    } catch (err: any) {
-      console.warn("Exception deleting blog post from Supabase:", err.message);
+    const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
+    if (error) {
+      console.error("Supabase deleteBlogPost failed:", error.message);
+      throw error;
     }
   },
 
@@ -789,45 +701,35 @@ export const dbService = {
     try {
       const { data, error } = await supabase.from('faq').select('*').order('order_index', { ascending: true });
       if (error || !data || data.length === 0) {
-        return LocalModelManager.get('faq').map(mapFaqItem);
+        return SEED_FAQ;
       }
       return data.map(mapFaqItem);
     } catch {
-      return LocalModelManager.get('faq').map(mapFaqItem);
+      return SEED_FAQ;
     }
   },
 
   saveFaqItem: async (faq: FaqItem): Promise<void> => {
-    LocalModelManager.save('faq', {
-      id: faq.id || `faq-${Date.now()}`,
-      question: faq.question,
-      answer: faq.answer,
-      category: faq.category,
-      orderIndex: faq.orderIndex
-    });
-    try {
-      const { error } = await supabase
-        .from('faq')
-        .upsert([{
-          id: faq.id || undefined,
-          question: faq.question,
-          answer: faq.answer,
-          category: faq.category,
-          order_index: faq.orderIndex
-        }]);
-      if (error) console.warn("Supabase saveFaqItem failed", error.message);
-    } catch (err: any) {
-      console.warn("Exception saving FAQ to Supabase:", err.message);
+    const { error } = await supabase
+      .from('faq')
+      .upsert([{
+        id: faq.id || undefined,
+        question: faq.question,
+        answer: faq.answer,
+        category: faq.category,
+        order_index: faq.orderIndex
+      }]);
+    if (error) {
+      console.error("Supabase saveFaqItem failed:", error.message);
+      throw error;
     }
   },
 
   deleteFaqItem: async (faqId: string): Promise<void> => {
-    LocalModelManager.delete('faq', faqId);
-    try {
-      const { error } = await supabase.from('faq').delete().eq('id', faqId);
-      if (error) console.warn("Supabase deleteFaqItem failed", error.message);
-    } catch (err: any) {
-      console.warn("Exception deleting FAQ from Supabase:", err.message);
+    const { error } = await supabase.from('faq').delete().eq('id', faqId);
+    if (error) {
+      console.error("Supabase deleteFaqItem failed:", error.message);
+      throw error;
     }
   },
 
@@ -1350,19 +1252,17 @@ export const dbService = {
   },
 
   saveContactMessage: async (msg: ContactMessage): Promise<void> => {
-    try {
-      const { error } = await supabase.from('contact_messages').insert([{
-        id: msg.id,
-        name: msg.name,
-        email: msg.email,
-        message: msg.message,
-        date: msg.date
-      }]);
-      if (error) throw error;
-    } catch (e: any) {
-      console.warn("Supabase saveContactMessage failed, saving to local manager:", e.message);
+    const { error } = await supabase.from('contact_messages').insert([{
+      id: msg.id,
+      name: msg.name,
+      email: msg.email,
+      message: msg.message,
+      date: msg.date
+    }]);
+    if (error) {
+      console.error("Supabase saveContactMessage failed:", error.message);
+      throw error;
     }
-    LocalModelManager.save('contact_messages', msg);
   },
 
   // Log Activity
@@ -1374,12 +1274,9 @@ export const dbService = {
       admin_id: adminId,
       date: new Date().toISOString()
     };
-    LocalModelManager.save('activity_logs', log);
-    try {
-      const { error } = await supabase.from('activity_logs').insert([log]);
-      if (error) throw error;
-    } catch {
-      // Fallback
+    const { error } = await supabase.from('activity_logs').insert([log]);
+    if (error) {
+      console.warn("Supabase logActivity failed:", error.message);
     }
   },
 
@@ -1387,34 +1284,30 @@ export const dbService = {
     onSuccess: (logs: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    const unsubLocal = LocalModelManager.addListener('activity_logs', (localLogs) => {
+    const fetchLogs = () => {
       supabase.from('activity_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => {
         if (error || !data || data.length === 0) {
-          onSuccess(localLogs);
+          onSuccess(SEED_ACTIVITY_LOGS);
         } else {
           onSuccess(data);
         }
       }).catch((err) => {
-        console.warn('Supabase fetch failed for activity_logs, returning local', err);
-        onSuccess(localLogs);
+        console.warn('Supabase fetch failed for activity_logs, returning seed', err);
+        onSuccess(SEED_ACTIVITY_LOGS);
       });
-    });
+    };
+
+    fetchLogs();
 
     const channelName = 'public:activity_logs:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs' }, async () => {
-        const { data } = await supabase.from('activity_logs').select('*').order('date', { ascending: false });
-        if (data && data.length > 0) {
-          onSuccess(data);
-        } else {
-          onSuccess(LocalModelManager.get('activity_logs'));
-        }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs' }, () => {
+        fetchLogs();
       })
       .subscribe();
 
     return () => {
-      unsubLocal();
       supabase.removeChannel(channel);
     };
   },
@@ -1430,10 +1323,10 @@ export const dbService = {
       date: new Date().toISOString(),
       admin_id: 'admin'
     };
-    LocalModelManager.save('inventory_logs', log);
-    try {
-      await supabase.from('inventory_logs').insert([log]);
-    } catch { }
+    const { error } = await supabase.from('inventory_logs').insert([log]);
+    if (error) {
+      console.warn("Supabase updateInventory insertion failed:", error.message);
+    }
     await dbService.logActivity('UPDATE_INVENTORY', `Updated stock for ${productId} (${variant}) by ${change}. Reason: ${reason}`);
   },
 
@@ -1473,33 +1366,29 @@ export const dbService = {
     onSuccess: (logs: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    const unsubLocal = LocalModelManager.addListener('inventory_logs', (localLogs) => {
+    const fetchLogs = () => {
       supabase.from('inventory_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => {
         if (error || !data || data.length === 0) {
-          onSuccess(localLogs);
+          onSuccess(SEED_INVENTORY_LOGS);
         } else {
           onSuccess(data);
         }
       }).catch((err) => {
-        console.warn('Supabase fetch failed for inventory_logs, returning local', err);
-        onSuccess(localLogs);
+        console.warn('Supabase fetch failed for inventory_logs, returning seed', err);
+        onSuccess(SEED_INVENTORY_LOGS);
       });
-    });
+    };
+
+    fetchLogs();
 
     const channelName = 'public:inventory_logs:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory_logs' }, async () => {
-        const { data } = await supabase.from('inventory_logs').select('*').order('date', { ascending: false });
-        if (data && data.length > 0) {
-          onSuccess(data);
-        } else {
-          onSuccess(LocalModelManager.get('inventory_logs'));
-        }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory_logs' }, () => {
+        fetchLogs();
       })
       .subscribe();
     return () => {
-      unsubLocal();
       supabase.removeChannel(channel);
     };
   },
@@ -1509,67 +1398,62 @@ export const dbService = {
     onSuccess: (coupons: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    const unsubLocal = LocalModelManager.addListener('advanced_coupons', (localCoupons) => {
+    const fetchCoupons = () => {
       supabase.from('advanced_coupons').select('*').then(({ data, error }) => {
         if (error || !data || data.length === 0) {
-          onSuccess(localCoupons);
+          onSuccess(SEED_ADVANCED_COUPONS);
         } else {
           onSuccess(data);
         }
       }).catch((err) => {
-        console.warn('Supabase fetch failed for advanced_coupons, returning local', err);
-        onSuccess(localCoupons);
+        console.warn('Supabase fetch failed for advanced_coupons, returning seed', err);
+        onSuccess(SEED_ADVANCED_COUPONS);
       });
-    });
+    };
+
+    fetchCoupons();
 
     const channelName = 'public:advanced_coupons:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'advanced_coupons' }, async () => {
-        const { data } = await supabase.from('advanced_coupons').select('*');
-        if (data && data.length > 0) {
-          onSuccess(data);
-        } else {
-          onSuccess(LocalModelManager.get('advanced_coupons'));
-        }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'advanced_coupons' }, () => {
+        fetchCoupons();
       })
       .subscribe();
     return () => {
-      unsubLocal();
       supabase.removeChannel(channel);
     };
   },
 
   saveAdvancedCoupon: async (coupon: any): Promise<void> => {
-    LocalModelManager.save('advanced_coupons', coupon);
-    try {
-      const { error } = await supabase.from('advanced_coupons').upsert([coupon]);
-      if (error) console.warn("Supabase saveAdvancedCoupon failed, using LocalModelManager");
-    } catch { }
+    const { error } = await supabase.from('advanced_coupons').upsert([coupon]);
+    if (error) {
+      console.error("Supabase saveAdvancedCoupon failed:", error.message);
+      throw error;
+    }
     await dbService.logActivity('SAVE_COUPON', `Saved coupon ${coupon.code}`);
   },
 
   deleteAdvancedCoupon: async (id: string): Promise<void> => {
-    LocalModelManager.delete('advanced_coupons', id);
-    try {
-      const { error } = await supabase.from('advanced_coupons').delete().eq('id', id);
-      if (error) console.warn("Supabase deleteAdvancedCoupon failed");
-    } catch { }
+    const { error } = await supabase.from('advanced_coupons').delete().eq('id', id);
+    if (error) {
+      console.error("Supabase deleteAdvancedCoupon failed:", error.message);
+      throw error;
+    }
     await dbService.logActivity('DELETE_COUPON', `Deleted coupon ${id}`);
   },
 
   saveNewsletterSubscription: async (sub: any): Promise<void> => {
-    try {
-      await supabase.from('newsletter_subs').upsert({
-        id: sub.id,
-        email: sub.email,
-        phone: sub.phone,
-        source: sub.source,
-        date: sub.date,
-        subscribed: sub.subscribed
-      });
-    } catch (e) {
-      console.warn("Newsletter Sub upsert fallback:", e);
+    const { error } = await supabase.from('newsletter_subs').upsert({
+      id: sub.id,
+      email: sub.email,
+      phone: sub.phone,
+      source: sub.source,
+      date: sub.date,
+      subscribed: sub.subscribed
+    });
+    if (error) {
+      console.warn("Newsletter Sub upsert failed:", error.message);
     }
   },
 
@@ -1592,65 +1476,58 @@ export const dbService = {
       createdAt: p.created_at || p.createdAt
     });
 
-    const unsubLocal = LocalModelManager.addListener('promotions', (localPromotions) => {
+    const fetchPromos = () => {
       supabase.from('promotions').select('*').then(({ data, error }) => {
         if (error || !data || data.length === 0) {
-          onSuccess(localPromotions.map(mapPromo));
+          onSuccess(SEED_PROMOTIONS.map(mapPromo));
         } else {
           onSuccess(data.map(mapPromo));
         }
       }).catch(() => {
-        onSuccess(localPromotions.map(mapPromo));
+        onSuccess(SEED_PROMOTIONS.map(mapPromo));
       });
-    });
+    };
+
+    fetchPromos();
 
     const channelName = 'public:promotions:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, async () => {
-        const { data } = await supabase.from('promotions').select('*');
-        if (data && data.length > 0) {
-          onSuccess(data.map(mapPromo));
-        } else {
-          onSuccess(LocalModelManager.get('promotions').map(mapPromo));
-        }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, () => {
+        fetchPromos();
       }).subscribe();
     return () => {
-      unsubLocal();
       supabase.removeChannel(channel);
     };
   },
 
   savePromotion: async (promo: any): Promise<void> => {
-    LocalModelManager.save('promotions', promo);
-    try {
-      const { error } = await supabase.from('promotions').upsert([{
-        id: promo.id,
-        name: promo.name,
-        description: promo.description,
-        discount_type: promo.discountType,
-        discount_value: promo.discountValue,
-        start_date: promo.startDate,
-        end_date: promo.endDate,
-        is_active: promo.isActive,
-        applicable_categories: promo.applicableCategories,
-        banner_text: promo.bannerText,
-        created_at: promo.createdAt
-      }]);
-      if (error) {
-        console.error(error);
-        throw error;
-      }
-    } catch { }
+    const { error } = await supabase.from('promotions').upsert([{
+      id: promo.id,
+      name: promo.name,
+      description: promo.description,
+      discount_type: promo.discountType,
+      discount_value: promo.discountValue,
+      start_date: promo.startDate,
+      end_date: promo.endDate,
+      is_active: promo.isActive,
+      applicable_categories: promo.applicableCategories,
+      banner_text: promo.bannerText,
+      created_at: promo.createdAt
+    }]);
+    if (error) {
+      console.error("Supabase savePromotion failed:", error.message);
+      throw error;
+    }
     await dbService.logActivity('SAVE_PROMOTION', `Saved promotion ${promo.name}`);
   },
 
   deletePromotion: async (id: string): Promise<void> => {
-    LocalModelManager.delete('promotions', id);
-    try {
-      const { error } = await supabase.from('promotions').delete().eq('id', id);
-      if (error) throw error;
-    } catch { }
+    const { error } = await supabase.from('promotions').delete().eq('id', id);
+    if (error) {
+      console.error("Supabase deletePromotion failed:", error.message);
+      throw error;
+    }
     await dbService.logActivity('DELETE_PROMOTION', `Deleted promotion ${id}`);
   },
 

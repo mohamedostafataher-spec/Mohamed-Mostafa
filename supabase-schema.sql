@@ -412,3 +412,145 @@ ALTER TABLE public.products ADD COLUMN IF NOT EXISTS search_vector tsvector GENE
 CREATE INDEX IF NOT EXISTS products_search_idx ON public.products USING GIN (search_vector);
 
 
+-- ========================================================
+-- 👑 SULTA EXTENDED ECOSYSTEM: AUTOMATIC LIVE CORRELATION 👑
+-- ========================================================
+
+-- 21. Blog Posts Table (سجلات مقالات المدوّنة وكوتور)
+CREATE TABLE IF NOT EXISTS public.blog_posts (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    excerpt TEXT,
+    image_url TEXT,
+    author TEXT DEFAULT 'SULTA Atelier',
+    category TEXT DEFAULT 'Couture',
+    tags JSONB DEFAULT '[]'::jsonb,
+    published_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    status TEXT DEFAULT 'draft' CHECK (status IN ('published', 'draft', 'archived')),
+    seo JSONB DEFAULT '{}'::jsonb
+);
+
+-- 22. FAQ Table (الأسئلة الشائعة والدعم الفوري)
+CREATE TABLE IF NOT EXISTS public.faq (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    category TEXT DEFAULT 'all',
+    order_index INT DEFAULT 0
+);
+
+-- 23. Advanced Coupons Table (أكواد الخصم المتقدمة)
+CREATE TABLE IF NOT EXISTS public.advanced_coupons (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    code TEXT UNIQUE NOT NULL,
+    discount_type TEXT NOT NULL DEFAULT 'percentage' CHECK (discount_type IN ('percentage', 'fixed')),
+    discount_value NUMERIC NOT NULL,
+    limit_per_user INT DEFAULT 1,
+    min_order_value NUMERIC DEFAULT 0,
+    current_usages INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT true
+);
+
+-- 24. Promotions Table (العروض الترويجية واللافتات)
+CREATE TABLE IF NOT EXISTS public.promotions (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    name TEXT NOT NULL,
+    description TEXT,
+    discount_type TEXT NOT NULL CHECK (discount_type IN ('percentage', 'fixed', 'free_shipping')),
+    discount_value NUMERIC DEFAULT 0,
+    start_date TIMESTAMP WITH TIME ZONE,
+    end_date TIMESTAMP WITH TIME ZONE,
+    is_active BOOLEAN DEFAULT true,
+    applicable_categories TEXT[] DEFAULT '{}'::text[],
+    banner_text TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 25. Inventory Logs Table (سجلات مراقبة المستودع وحركة المخزون)
+CREATE TABLE IF NOT EXISTS public.inventory_logs (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    product_id TEXT NOT NULL,
+    variant TEXT NOT NULL,
+    change INT NOT NULL,
+    reason TEXT,
+    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    admin_id TEXT DEFAULT 'admin'
+);
+
+-- 26. Contact Messages Table (صندوق البريد ورسائل الزوار)
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    message TEXT NOT NULL,
+    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 27. Newsletter Subscriptions Table (النشرة البريدية الملكية)
+CREATE TABLE IF NOT EXISTS public.newsletter_subs (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    email TEXT UNIQUE NOT NULL,
+    phone TEXT,
+    source TEXT DEFAULT 'footer',
+    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    subscribed BOOLEAN DEFAULT true
+);
+
+-- Enable RLS and standard policies for these tables:
+ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.faq ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.advanced_coupons ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.promotions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.inventory_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.newsletter_subs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public select of blog_posts" ON public.blog_posts FOR SELECT USING (true);
+CREATE POLICY "Allow public select of faq" ON public.faq FOR SELECT USING (true);
+CREATE POLICY "Allow public select of advanced_coupons" ON public.advanced_coupons FOR SELECT USING (true);
+CREATE POLICY "Allow public select of promotions" ON public.promotions FOR SELECT USING (true);
+
+CREATE POLICY "Allow public insert of contact_messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert of newsletter_subs" ON public.newsletter_subs FOR INSERT WITH CHECK (true);
+
+-- Allow full admin operations for everyone (for local controls compatibility)
+CREATE POLICY "Allow full control of blog_posts" ON public.blog_posts FOR ALL USING (true);
+CREATE POLICY "Allow full control of faq" ON public.faq FOR ALL USING (true);
+CREATE POLICY "Allow full control of advanced_coupons" ON public.advanced_coupons FOR ALL USING (true);
+CREATE POLICY "Allow full control of promotions" ON public.promotions FOR ALL USING (true);
+CREATE POLICY "Allow full control of inventory_logs" ON public.inventory_logs FOR ALL USING (true);
+CREATE POLICY "Allow full control of contact_messages" ON public.contact_messages FOR ALL USING (true);
+CREATE POLICY "Allow full control of newsletter_subs" ON public.newsletter_subs FOR ALL USING (true);
+
+-- Enable Realtime safely for these tables as well:
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'blog_posts') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.blog_posts;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'faq') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.faq;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'advanced_coupons') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.advanced_coupons;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'promotions') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.promotions;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'inventory_logs') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.inventory_logs;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'contact_messages') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.contact_messages;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'newsletter_subs') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.newsletter_subs;
+    END IF;
+END $$;
+
+
+
