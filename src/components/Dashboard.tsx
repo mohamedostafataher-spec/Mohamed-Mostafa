@@ -4416,6 +4416,11 @@ export default function Dashboard({
             </div>
           )}
 
+          {/* MENU: WAREHOUSE INVENTORY */}
+          {activeMenu === 'inventory' && (
+            <AdminInventory />
+          )}
+
           {/* MENU 6: DISCOUNTS CODE CONTROL */}
           {activeMenu === 'discounts' && (
             <AdminCoupons />

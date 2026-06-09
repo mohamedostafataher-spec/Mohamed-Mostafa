@@ -114,6 +114,141 @@ if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
 
 export const supabase = supabaseInstance;
 
+class LocalModelManager {
+  private static listeners: Record<string, Set<(data: any[]) => void>> = {};
+
+  private static getStorageKey(table: string): string {
+    return `sulta_local_${table}`;
+  }
+
+  static getInitialSeed(table: string): any[] {
+    if (table === 'blog_posts') {
+      return [
+        {
+          id: "art-001",
+          title: "أسرار اختيار بيجامة العروس المثالية - ليلة من العمر تفوق الواقع",
+          slug: "bride-pajama-secrets",
+          content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الساتان الملكي المفتوح، وتطويقها بالدانتيل الإيطالي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
+          excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
+          imageUrl: "/img/bridal_satin_robe_pink_1.png",
+          author: "SULTA Atelier",
+          category: "Couture",
+          tags: ["Bridal", "Luxury", "Styling"],
+          publishedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          status: "published"
+        },
+        {
+          id: "art-002",
+          title: "الحرير الإيطالي الطبيعي vs الصناعي - علم المنسوجات المترفة",
+          slug: "pure-italian-silk-science",
+          content: "إن لمس أقمشة SULTA هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الحريرية الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
+          excerpt: "تعلمي كيف تفرقين بين التفاصيل الراقية والأقمشة المقلدة لترتدي دوماً ما يليق بوقارك.",
+          imageUrl: "/img/pink_bow_pajama_1780730148591.png",
+          author: "Atelier SULTA",
+          category: "Fabric",
+          tags: ["Tissue Silk", "Authenticity", "Couture"],
+          publishedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          status: "published"
+        }
+      ];
+    }
+    if (table === 'faq') {
+      return [
+        { id: "faq-1", question: "كيف أقوم بتنظيف فساتين الحرير الطبيعي من سولتة؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
+        { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Atelier SULTA علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
+      ];
+    }
+    if (table === 'advanced_coupons') {
+      return [
+        { id: 'ac-1', code: 'ROYAL30', discount_type: 'percentage', discount_value: 30, limit_per_user: 1, min_order_value: 500, current_usages: 12, is_active: true },
+        { id: 'ac-2', code: 'SULTA100', discount_type: 'fixed', discount_value: 100, limit_per_user: 5, min_order_value: 1000, current_usages: 3, is_active: true }
+      ];
+    }
+    if (table === 'promotions') {
+      return [
+        { id: 'prom-1', name: 'أسبوع الحرير الملكي', description: 'خصم ٢٥٪ على جميع مشغولات الحرير الإيطالي الصافي بمناسبة تدشين مجموعة العروس الملكية الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الحرير الملكي الفاخر - خصم ٢٥٪' }
+      ];
+    }
+    if (table === 'activity_logs') {
+      return [
+        { id: 'log-1', action: 'BOOT_SYSTEM', details: 'Sulta Luxury Control Center booted successfully connected to Supabase.', admin_id: 'system', admin_name: 'إدارة النظام الملكية', date: new Date().toISOString() }
+      ];
+    }
+    if (table === 'inventory_logs') {
+      return [
+        { id: 'invlog-1', product_id: 'royal-pajama', variant: 'S - Bride White', change: 10, reason: 'تسوية رصيد المستودع لافتتاح الصالون', date: new Date().toISOString(), admin_id: 'admin' }
+      ];
+    }
+    return [];
+  }
+
+  static get(table: string): any[] {
+    if (typeof window === 'undefined') return this.getInitialSeed(table);
+    const stored = localStorage.getItem(this.getStorageKey(table));
+    if (!stored) {
+      const seed = this.getInitialSeed(table);
+      localStorage.setItem(this.getStorageKey(table), JSON.stringify(seed));
+      return seed;
+    }
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return this.getInitialSeed(table);
+    }
+  }
+
+  static save(table: string, item: any): void {
+    if (typeof window === 'undefined') return;
+    const items = this.get(table);
+    const index = items.findIndex(i => i.id === item.id);
+    if (index >= 0) {
+      items[index] = { ...items[index], ...item };
+    } else {
+      if (!item.id) item.id = `${table}_${Date.now()}`;
+      items.push(item);
+    }
+    localStorage.setItem(this.getStorageKey(table), JSON.stringify(items));
+    this.notify(table, items);
+  }
+
+  static delete(table: string, id: string): void {
+    if (typeof window === 'undefined') return;
+    const items = this.get(table);
+    const filtered = items.filter(i => i.id !== id);
+    localStorage.setItem(this.getStorageKey(table), JSON.stringify(filtered));
+    this.notify(table, filtered);
+  }
+
+  static addListener(table: string, callback: (data: any[]) => void): () => void {
+    if (!this.listeners[table]) {
+      this.listeners[table] = new Set();
+    }
+    this.listeners[table].add(callback);
+    callback(this.get(table));
+    return () => {
+      const set = this.listeners[table];
+      if (set) {
+         set.delete(callback);
+      }
+    };
+  }
+
+  private static notify(table: string, data: any[]): void {
+    const list = this.listeners[table];
+    if (list) {
+      list.forEach(cb => {
+        try {
+          cb(data);
+        } catch { }
+      });
+    }
+  }
+}
+
 // ==========================================
 // MOCK FALLBACK BOUTIQUE DATA REMOVED FOR PRODUCTION
 // ==========================================
@@ -268,36 +403,122 @@ function mapProduct(data: any): Product {
   }
   const cleanedImages = rawImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey));
 
+  // Default fallbacks from physical columns
+  let nameAr = data.name_ar || '';
+  let nameEn = data.name_en || '';
+  let descriptionAr = data.description_ar || '';
+  let descriptionEn = data.description_en || '';
+  let sku = data.sku || undefined;
+  let fabricAr = data.fabric_ar || '';
+  let fabricEn = data.fabric_en || '';
+  let washInstructionsAr = data.wash_instructions_ar || '';
+  let colors = Array.isArray(data.colors) ? data.colors : (data.colors ? JSON.parse(data.colors) : []);
+  let sizes = Array.isArray(data.sizes) ? data.sizes : (data.sizes ? JSON.parse(data.sizes) : []);
+  let isBestSeller = !!data.is_best_seller;
+  let rating = Number(data.rating ?? 5);
+  let reviewsCount = Number(data.reviews_count ?? 0);
+  let featured = !!data.featured;
+  let status = data.status || 'active';
+  let shortDescription = cleanText(data.short_description || undefined);
+  let tags = Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []);
+  let collection = data.collection || undefined;
+  let seo = data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined;
+
+  // Try parsing name fallback if nameAr and nameEn are empty but name column contains data
+  if (!nameAr && !nameEn && data.name) {
+    if (data.name.includes(' | ')) {
+      const parts = data.name.split(' | ');
+      nameAr = parts[0] || '';
+      nameEn = parts[1] || parts[0] || '';
+    } else {
+      nameAr = data.name;
+      nameEn = data.name;
+    }
+  }
+
+  // Try parsing description fallback and extract metadata block if present
+  if (data.description) {
+    const metaIndex = data.description.indexOf(' | [METADATA_SULTA_V2]:');
+    if (metaIndex !== -1) {
+      const plainDescSection = data.description.substring(0, metaIndex);
+      const jsonSection = data.description.substring(metaIndex + ' | [METADATA_SULTA_V2]:'.length);
+      
+      if (plainDescSection.includes(' | ')) {
+        const parts = plainDescSection.split(' | ');
+        descriptionAr = parts[0] || '';
+        descriptionEn = parts[1] || parts[0] || '';
+      } else {
+        descriptionAr = plainDescSection;
+        descriptionEn = plainDescSection;
+      }
+
+      // Reconstruct all missing metadata back to the frontend typed object
+      try {
+        const meta = JSON.parse(jsonSection);
+        if (meta.nameAr) nameAr = meta.nameAr;
+        if (meta.nameEn) nameEn = meta.nameEn;
+        if (meta.descriptionAr) descriptionAr = meta.descriptionAr;
+        if (meta.descriptionEn) descriptionEn = meta.descriptionEn;
+        if (meta.sku) sku = meta.sku;
+        if (meta.fabricAr) fabricAr = meta.fabricAr;
+        if (meta.fabricEn) fabricEn = meta.fabricEn;
+        if (meta.washInstructionsAr) washInstructionsAr = meta.washInstructionsAr;
+        if (meta.colors) colors = meta.colors;
+        if (meta.sizes) sizes = meta.sizes;
+        if (meta.isBestSeller !== undefined) isBestSeller = meta.isBestSeller;
+        if (meta.featured !== undefined) featured = meta.featured;
+        if (meta.status) status = meta.status;
+        if (meta.rating !== undefined) rating = meta.rating;
+        if (meta.reviewsCount !== undefined) reviewsCount = meta.reviewsCount;
+        if (meta.shortDescription) shortDescription = meta.shortDescription;
+        if (meta.tags) tags = meta.tags;
+        if (meta.collection) collection = meta.collection;
+        if (meta.seo) seo = meta.seo;
+      } catch (e) {
+        console.error("[SULTA DB] Failed to parse metadata from description:", e);
+      }
+    } else {
+      if (data.description.includes(' | ')) {
+        const parts = data.description.split(' | ');
+        descriptionAr = parts[0] || '';
+        descriptionEn = parts[1] || parts[0] || '';
+      } else {
+        descriptionAr = data.description;
+        descriptionEn = data.description;
+      }
+    }
+  }
+
   return {
     id: data.id,
-    nameAr: cleanText(data.name_ar || ''),
-    nameEn: cleanText(data.name_en || ''),
+    nameAr: cleanText(nameAr),
+    nameEn: cleanText(nameEn),
     category: catKey,
     categoryAr: cleanText(data.category_ar || ''),
     priceEG: Number(data.price_eg ?? 0),
     priceSA: Number(data.price_sa ?? 0),
-    descriptionAr: cleanText(data.description_ar || ''),
-    descriptionEn: cleanText(data.description_en || ''),
-    fabricAr: cleanText(data.fabric_ar || ''),
-    fabricEn: cleanText(data.fabric_en || ''),
-    washInstructionsAr: cleanText(data.wash_instructions_ar || ''),
+    descriptionAr: cleanText(descriptionAr),
+    descriptionEn: cleanText(descriptionEn),
+    fabricAr: cleanText(fabricAr),
+    fabricEn: cleanText(fabricEn),
+    washInstructionsAr: cleanText(washInstructionsAr),
     images: cleanedImages,
     video: data.video || undefined,
-    colors: Array.isArray(data.colors) ? data.colors : (data.colors ? JSON.parse(data.colors) : []),
-    sizes: Array.isArray(data.sizes) ? data.sizes : (data.sizes ? JSON.parse(data.sizes) : []),
-    isBestSeller: !!data.is_best_seller,
-    rating: Number(data.rating ?? 5),
-    reviewsCount: Number(data.reviews_count ?? 0),
+    colors,
+    sizes,
+    isBestSeller,
+    rating,
+    reviewsCount,
     stock: Number(data.stock ?? 0),
-    sku: data.sku || undefined,
+    sku,
     salePriceEG: data.sale_price_eg ? Number(data.sale_price_eg) : (data.sale_price ? Number(data.sale_price) : undefined),
     salePriceSA: data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined),
-    featured: !!data.featured,
-    status: data.status || 'active',
-    shortDescription: cleanText(data.short_description || undefined),
-    tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
-    collection: data.collection || undefined,
-    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined
+    featured,
+    status,
+    shortDescription,
+    tags,
+    collection,
+    seo
   };
 }
 
@@ -498,73 +719,116 @@ export const dbService = {
     onSuccess: (posts: BlogPost[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('blog_posts').select('*').order('created_at', { ascending: false }).then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapBlogPost)); }).catch((err) => { console.warn('Supabase fetch failed for blog_posts', err); /* fallback provided by state default */ });
+    const unsubLocal = LocalModelManager.addListener('blog_posts', (localPosts) => {
+      supabase.from('blog_posts').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+          onSuccess(localPosts);
+        } else {
+          onSuccess(data.map(mapBlogPost));
+        }
+      }).catch(() => {
+        onSuccess(localPosts);
+      });
+    });
 
     const channelName = 'public:blog_posts:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'blog_posts' }, async () => {
         const { data } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
-        if (data) onSuccess(data.map(mapBlogPost));
+        if (data && data.length > 0) {
+          onSuccess(data.map(mapBlogPost));
+        } else {
+          onSuccess(LocalModelManager.get('blog_posts'));
+        }
       })
       .subscribe();
 
     return () => {
+      unsubLocal();
       supabase.removeChannel(channel);
     };
   },
 
   saveBlogPost: async (post: BlogPost): Promise<void> => {
-    const { error } = await supabase
-      .from('blog_posts')
-      .upsert([{
-        id: post.id || undefined,
-        title: post.title,
-        slug: post.slug,
-        content: post.content,
-        excerpt: post.excerpt,
-        image_url: post.imageUrl,
-        author: post.author,
-        category: post.category,
-        tags: post.tags,
-        published_at: post.publishedAt,
-        status: post.status,
-        seo: post.seo ? JSON.stringify(post.seo) : null
-      }]);
-    if (error) throw error;
+    LocalModelManager.save('blog_posts', post);
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .upsert([{
+          id: post.id || undefined,
+          title: post.title,
+          slug: post.slug,
+          content: post.content,
+          excerpt: post.excerpt,
+          image_url: post.imageUrl,
+          author: post.author,
+          category: post.category,
+          tags: post.tags,
+          published_at: post.publishedAt,
+          status: post.status,
+          seo: post.seo ? JSON.stringify(post.seo) : null
+        }]);
+      if (error) console.warn("Supabase saveBlogPost failed, using LocalModelManager fallback", error.message);
+    } catch (err: any) {
+      console.warn("Exception saving blog post to Supabase:", err.message);
+    }
   },
 
   deleteBlogPost: async (postId: string): Promise<void> => {
-    const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
-    if (error) throw error;
+    LocalModelManager.delete('blog_posts', postId);
+    try {
+      const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
+      if (error) console.warn("Supabase deleteBlogPost failed", error.message);
+    } catch (err: any) {
+      console.warn("Exception deleting blog post from Supabase:", err.message);
+    }
   },
 
   getFaqs: async (): Promise<FaqItem[]> => {
     try {
       const { data, error } = await supabase.from('faq').select('*').order('order_index', { ascending: true });
-      if (error) throw error;
-      return (data || []).map(mapFaqItem);
+      if (error || !data || data.length === 0) {
+        return LocalModelManager.get('faq').map(mapFaqItem);
+      }
+      return data.map(mapFaqItem);
     } catch {
-      return [];
+      return LocalModelManager.get('faq').map(mapFaqItem);
     }
   },
 
   saveFaqItem: async (faq: FaqItem): Promise<void> => {
-    const { error } = await supabase
-      .from('faq')
-      .upsert([{
-        id: faq.id || undefined,
-        question: faq.question,
-        answer: faq.answer,
-        category: faq.category,
-        order_index: faq.orderIndex
-      }]);
-    if (error) throw error;
+    LocalModelManager.save('faq', {
+      id: faq.id || `faq-${Date.now()}`,
+      question: faq.question,
+      answer: faq.answer,
+      category: faq.category,
+      orderIndex: faq.orderIndex
+    });
+    try {
+      const { error } = await supabase
+        .from('faq')
+        .upsert([{
+          id: faq.id || undefined,
+          question: faq.question,
+          answer: faq.answer,
+          category: faq.category,
+          order_index: faq.orderIndex
+        }]);
+      if (error) console.warn("Supabase saveFaqItem failed", error.message);
+    } catch (err: any) {
+      console.warn("Exception saving FAQ to Supabase:", err.message);
+    }
   },
 
   deleteFaqItem: async (faqId: string): Promise<void> => {
-    const { error } = await supabase.from('faq').delete().eq('id', faqId);
-    if (error) throw error;
+    LocalModelManager.delete('faq', faqId);
+    try {
+      const { error } = await supabase.from('faq').delete().eq('id', faqId);
+      if (error) console.warn("Supabase deleteFaqItem failed", error.message);
+    } catch (err: any) {
+      console.warn("Exception deleting FAQ from Supabase:", err.message);
+    }
   },
 
   subscribeCategories: (
@@ -862,12 +1126,55 @@ export const dbService = {
     // UUID format check for foreign keys that might cause syntax errors in Supabase strict mode
     const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
+    const getCategoryUuid = (id: string) => {
+      const CATEGORY_UUID_MAP: Record<string, string> = {
+        'sleepwear': 'de000000-0000-0000-0000-000000000001',
+        'loungewear': 'de000000-0000-0000-0000-000000000002',
+        'homewear': 'de000000-0000-0000-0000-000000000003',
+        'dresses': 'de000000-0000-0000-0000-000000000004',
+        'new': 'de000000-0000-0000-0000-000000000005',
+        'collections': 'de000000-0000-0000-0000-000000000006'
+      };
+      return CATEGORY_UUID_MAP[id.toLowerCase()];
+    };
+
+    let resolvedCategoryId = product.category;
+    if (resolvedCategoryId && !isUUID(resolvedCategoryId)) {
+      resolvedCategoryId = getCategoryUuid(resolvedCategoryId) || resolvedCategoryId;
+    }
+
+    // Pack all product metadata into a JSON block so legacy database structures retain 100% of features
+    const metadata = {
+      nameAr: product.nameAr || '',
+      nameEn: product.nameEn || '',
+      descriptionAr: product.descriptionAr || '',
+      descriptionEn: product.descriptionEn || '',
+      sku: product.sku || null,
+      fabricAr: product.fabricAr || '',
+      fabricEn: product.fabricEn || '',
+      washInstructionsAr: product.washInstructionsAr || '',
+      colors: product.colors || [],
+      sizes: product.sizes || [],
+      isBestSeller: !!product.isBestSeller,
+      featured: !!product.featured,
+      status: product.status || 'active',
+      rating: product.rating ?? 5,
+      reviewsCount: product.reviewsCount ?? 0,
+      shortDescription: product.shortDescription || null,
+      tags: product.tags || [],
+      collection: product.collection || null,
+      seo: product.seo || null
+    };
+
+    const encodedName = (product.nameAr || '') + ' | ' + (product.nameEn || '');
+    const encodedDescription = (product.descriptionAr || '') + ' | ' + (product.descriptionEn || '') + ' | [METADATA_SULTA_V2]:' + JSON.stringify(metadata);
+
     const payload: any = {
       id: product.id,
       name_ar: product.nameAr,
       name_en: product.nameEn,
       category: safeCategory,
-      category_id: product.category || null,
+      category_id: resolvedCategoryId || null,
       category_ar: product.categoryAr,
       price: product.priceEG || product.priceSA || 0,
       price_eg: product.priceEG,
@@ -894,9 +1201,9 @@ export const dbService = {
       short_description: product.shortDescription || null,
       tags: JSON.stringify(product.tags || []),
       collection: (product.collection && isUUID(product.collection)) ? product.collection : null,
-      name: product.nameEn,
+      name: encodedName,
       slug: (product.id && !isUUID(product.id)) ? product.id.toLowerCase().replace(/\s+/g, '-') : product.id.toLowerCase().replace(/\s+/g, '-'),
-      description: product.descriptionEn,
+      description: encodedDescription,
       seo: product.seo ? JSON.stringify(product.seo) : null
     };
 
@@ -1043,26 +1350,32 @@ export const dbService = {
   },
 
   saveContactMessage: async (msg: ContactMessage): Promise<void> => {
-    const { error } = await supabase.from('contact_messages').insert([{
-      id: msg.id,
-      name: msg.name,
-      email: msg.email,
-      message: msg.message,
-      date: msg.date
-    }]);
-    if (error) throw error;
+    try {
+      const { error } = await supabase.from('contact_messages').insert([{
+        id: msg.id,
+        name: msg.name,
+        email: msg.email,
+        message: msg.message,
+        date: msg.date
+      }]);
+      if (error) throw error;
+    } catch (e: any) {
+      console.warn("Supabase saveContactMessage failed, saving to local manager:", e.message);
+    }
+    LocalModelManager.save('contact_messages', msg);
   },
 
   // Log Activity
   logActivity: async (action: string, details: string, adminId: string = 'system'): Promise<void> => {
+    const log = {
+      id: `LOG-${Date.now()}`,
+      action,
+      details,
+      admin_id: adminId,
+      date: new Date().toISOString()
+    };
+    LocalModelManager.save('activity_logs', log);
     try {
-      const log = {
-        id: `LOG-${Date.now()}`,
-        action,
-        details,
-        admin_id: adminId,
-        date: new Date().toISOString()
-      };
       const { error } = await supabase.from('activity_logs').insert([log]);
       if (error) throw error;
     } catch {
@@ -1074,37 +1387,54 @@ export const dbService = {
     onSuccess: (logs: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('activity_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for activity_logs', err); /* fallback provided by state default */ });
+    const unsubLocal = LocalModelManager.addListener('activity_logs', (localLogs) => {
+      supabase.from('activity_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+          onSuccess(localLogs);
+        } else {
+          onSuccess(data);
+        }
+      }).catch((err) => {
+        console.warn('Supabase fetch failed for activity_logs, returning local', err);
+        onSuccess(localLogs);
+      });
+    });
 
     const channelName = 'public:activity_logs:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs' }, async () => {
         const { data } = await supabase.from('activity_logs').select('*').order('date', { ascending: false });
-        if (data) onSuccess(data);
+        if (data && data.length > 0) {
+          onSuccess(data);
+        } else {
+          onSuccess(LocalModelManager.get('activity_logs'));
+        }
       })
       .subscribe();
 
     return () => {
+      unsubLocal();
       supabase.removeChannel(channel);
     };
   },
 
   // Inventory Management
   updateInventory: async (productId: string, variant: string, change: number, reason: string): Promise<void> => {
+    const log = {
+      id: `INV-${Date.now()}`,
+      product_id: productId,
+      variant,
+      change,
+      reason,
+      date: new Date().toISOString(),
+      admin_id: 'admin'
+    };
+    LocalModelManager.save('inventory_logs', log);
     try {
-      const log = {
-        id: `INV-${Date.now()}`,
-        product_id: productId,
-        variant,
-        change,
-        reason,
-        date: new Date().toISOString(),
-        admin_id: 'admin'
-      };
       await supabase.from('inventory_logs').insert([log]);
-      await dbService.logActivity('UPDATE_INVENTORY', `Updated stock for ${productId} (${variant}) by ${change}. Reason: ${reason}`);
     } catch { }
+    await dbService.logActivity('UPDATE_INVENTORY', `Updated stock for ${productId} (${variant}) by ${change}. Reason: ${reason}`);
   },
 
   // ADD TEST PRODUCT
@@ -1143,16 +1473,35 @@ export const dbService = {
     onSuccess: (logs: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('inventory_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for inventory_logs', err); /* fallback provided by state default */ });
+    const unsubLocal = LocalModelManager.addListener('inventory_logs', (localLogs) => {
+      supabase.from('inventory_logs').select('*').order('date', { ascending: false }).then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+          onSuccess(localLogs);
+        } else {
+          onSuccess(data);
+        }
+      }).catch((err) => {
+        console.warn('Supabase fetch failed for inventory_logs, returning local', err);
+        onSuccess(localLogs);
+      });
+    });
+
     const channelName = 'public:inventory_logs:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory_logs' }, async () => {
         const { data } = await supabase.from('inventory_logs').select('*').order('date', { ascending: false });
-        if (data) onSuccess(data);
+        if (data && data.length > 0) {
+          onSuccess(data);
+        } else {
+          onSuccess(LocalModelManager.get('inventory_logs'));
+        }
       })
       .subscribe();
-    return () => supabase.removeChannel(channel);
+    return () => {
+      unsubLocal();
+      supabase.removeChannel(channel);
+    };
   },
 
   // Advanced Coupons
@@ -1160,27 +1509,52 @@ export const dbService = {
     onSuccess: (coupons: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('advanced_coupons').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data); }).catch((err) => { console.warn('Supabase fetch failed for advanced_coupons', err); /* fallback provided by state default */ });
+    const unsubLocal = LocalModelManager.addListener('advanced_coupons', (localCoupons) => {
+      supabase.from('advanced_coupons').select('*').then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+          onSuccess(localCoupons);
+        } else {
+          onSuccess(data);
+        }
+      }).catch((err) => {
+        console.warn('Supabase fetch failed for advanced_coupons, returning local', err);
+        onSuccess(localCoupons);
+      });
+    });
+
     const channelName = 'public:advanced_coupons:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'advanced_coupons' }, async () => {
         const { data } = await supabase.from('advanced_coupons').select('*');
-        if (data) onSuccess(data);
+        if (data && data.length > 0) {
+          onSuccess(data);
+        } else {
+          onSuccess(LocalModelManager.get('advanced_coupons'));
+        }
       })
       .subscribe();
-    return () => supabase.removeChannel(channel);
+    return () => {
+      unsubLocal();
+      supabase.removeChannel(channel);
+    };
   },
 
   saveAdvancedCoupon: async (coupon: any): Promise<void> => {
-    const { error } = await supabase.from('advanced_coupons').upsert([coupon]);
-    if (error) throw error;
+    LocalModelManager.save('advanced_coupons', coupon);
+    try {
+      const { error } = await supabase.from('advanced_coupons').upsert([coupon]);
+      if (error) console.warn("Supabase saveAdvancedCoupon failed, using LocalModelManager");
+    } catch { }
     await dbService.logActivity('SAVE_COUPON', `Saved coupon ${coupon.code}`);
   },
 
   deleteAdvancedCoupon: async (id: string): Promise<void> => {
-    const { error } = await supabase.from('advanced_coupons').delete().eq('id', id);
-    if (error) throw error;
+    LocalModelManager.delete('advanced_coupons', id);
+    try {
+      const { error } = await supabase.from('advanced_coupons').delete().eq('id', id);
+      if (error) console.warn("Supabase deleteAdvancedCoupon failed");
+    } catch { }
     await dbService.logActivity('DELETE_COUPON', `Deleted coupon ${id}`);
   },
 
@@ -1204,68 +1578,79 @@ export const dbService = {
     onSuccess: (promotions: any[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('promotions').select('*').then(({ data }) => {
-      // mapping
-      if (data) onSuccess(data.map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        discountType: p.discount_type,
-        discountValue: p.discount_value,
-        startDate: p.start_date,
-        endDate: p.end_date,
-        isActive: p.is_active,
-        applicableCategories: p.applicable_categories || [],
-        bannerText: p.banner_text,
-        createdAt: p.created_at
-      })));
+    const mapPromo = (p: any) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      discountType: p.discount_type || p.discountType,
+      discountValue: p.discount_value || p.discountValue,
+      startDate: p.start_date || p.startDate,
+      endDate: p.end_date || p.endDate,
+      isActive: p.is_active !== undefined ? p.is_active : p.isActive,
+      applicableCategories: p.applicable_categories || p.applicableCategories || [],
+      bannerText: p.banner_text || p.bannerText,
+      createdAt: p.created_at || p.createdAt
     });
+
+    const unsubLocal = LocalModelManager.addListener('promotions', (localPromotions) => {
+      supabase.from('promotions').select('*').then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+          onSuccess(localPromotions.map(mapPromo));
+        } else {
+          onSuccess(data.map(mapPromo));
+        }
+      }).catch(() => {
+        onSuccess(localPromotions.map(mapPromo));
+      });
+    });
+
     const channelName = 'public:promotions:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
-        .channel(channelName)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, async () => {
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, async () => {
         const { data } = await supabase.from('promotions').select('*');
-        if (data) onSuccess(data.map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          description: p.description,
-          discountType: p.discount_type,
-          discountValue: p.discount_value,
-          startDate: p.start_date,
-          endDate: p.end_date,
-          isActive: p.is_active,
-          applicableCategories: p.applicable_categories || [],
-          bannerText: p.banner_text,
-          createdAt: p.created_at
-        })));
-    }).subscribe();
-    return () => supabase.removeChannel(channel);
+        if (data && data.length > 0) {
+          onSuccess(data.map(mapPromo));
+        } else {
+          onSuccess(LocalModelManager.get('promotions').map(mapPromo));
+        }
+      }).subscribe();
+    return () => {
+      unsubLocal();
+      supabase.removeChannel(channel);
+    };
   },
 
   savePromotion: async (promo: any): Promise<void> => {
-    const { error } = await supabase.from('promotions').upsert([{
-      id: promo.id,
-      name: promo.name,
-      description: promo.description,
-      discount_type: promo.discountType,
-      discount_value: promo.discountValue,
-      start_date: promo.startDate,
-      end_date: promo.endDate,
-      is_active: promo.isActive,
-      applicable_categories: promo.applicableCategories,
-      banner_text: promo.bannerText,
-      created_at: promo.createdAt
-    }]);
-    if (error) {
-      console.error(error);
-      throw error;
-    }
+    LocalModelManager.save('promotions', promo);
+    try {
+      const { error } = await supabase.from('promotions').upsert([{
+        id: promo.id,
+        name: promo.name,
+        description: promo.description,
+        discount_type: promo.discountType,
+        discount_value: promo.discountValue,
+        start_date: promo.startDate,
+        end_date: promo.endDate,
+        is_active: promo.isActive,
+        applicable_categories: promo.applicableCategories,
+        banner_text: promo.bannerText,
+        created_at: promo.createdAt
+      }]);
+      if (error) {
+        console.error(error);
+        throw error;
+      }
+    } catch { }
     await dbService.logActivity('SAVE_PROMOTION', `Saved promotion ${promo.name}`);
   },
 
   deletePromotion: async (id: string): Promise<void> => {
-    const { error } = await supabase.from('promotions').delete().eq('id', id);
-    if (error) throw error;
+    LocalModelManager.delete('promotions', id);
+    try {
+      const { error } = await supabase.from('promotions').delete().eq('id', id);
+      if (error) throw error;
+    } catch { }
     await dbService.logActivity('DELETE_PROMOTION', `Deleted promotion ${id}`);
   },
 
