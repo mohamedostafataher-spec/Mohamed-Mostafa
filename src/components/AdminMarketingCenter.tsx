@@ -5,7 +5,7 @@ import {
   Trash2, Edit, Save, Share2, Clipboard, TrendingUp, RefreshCw, Layers, 
   Settings, Bell, AlertTriangle, Eye, ArrowUpRight, DollarSign, Chrome, Sparkles
 } from 'lucide-react';
-import { supabase } from '../services/db';
+import { supabase, dbService } from '../services/db';
 
 // --- MARKETING SYSTEM TYPES ---
 export interface SocialAccount {
@@ -96,7 +96,13 @@ export interface AutomationRule {
 export default function AdminMarketingCenter() {
   const [activeTab, setActiveTab] = useState<
     'socials' | 'feed' | 'whatsapp' | 'coupons' | 'influencers' | 'calendar' | 'email' | 'analytics' | 'automations' | 'seo' | 'ugc' | 'ai' | 'health'
-  >('socials');
+  >('analytics');
+
+  // --- LIVE STATISTICS FOR REVOLUTIONARY REAL BRAND OVERVIEW ---
+  const [realProducts, setRealProducts] = useState<any[]>([]);
+  const [realOrders, setRealOrders] = useState<any[]>([]);
+  const [realCustomers, setRealCustomers] = useState<any[]>([]);
+  const [isLoadingReal, setIsLoadingReal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -116,6 +122,93 @@ export default function AdminMarketingCenter() {
   const [utmMedium, setUtmMedium] = useState('influencer_promo');
   const [utmCampaign, setUtmCampaign] = useState('pink_bow_summer_2026');
   const [generatedUtmUrl, setGeneratedUtmUrl] = useState('');
+
+  // Auto-generate UTM Link on change
+  useEffect(() => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://sulta.store';
+    setGeneratedUtmUrl(`${origin}/?utm_source=${encodeURIComponent(utmSource)}&utm_medium=${encodeURIComponent(utmMedium)}&utm_campaign=${encodeURIComponent(utmCampaign)}`);
+  }, [utmSource, utmMedium, utmCampaign]);
+
+  // --- ANALYTICS UTILS FOR REAL DATA RETRIEVAL ---
+  const getBestSellers = () => {
+    const salesMap: Record<string, number> = {};
+    realOrders.forEach(order => {
+      const items = Array.isArray(order.items) ? order.items : [];
+      items.forEach((item: any) => {
+        const pId = item.id || item.productId;
+        if (pId) {
+          const qty = Number(item.quantity || 1);
+          salesMap[pId] = (salesMap[pId] || 0) + qty;
+        }
+      });
+    });
+
+    return realProducts
+      .map(p => ({
+        ...p,
+        unitsSold: salesMap[p.id] || 0
+      }))
+      .filter(p => p.unitsSold > 0)
+      .sort((a, b) => b.unitsSold - a.unitsSold);
+  };
+
+  const getMostViewed = () => {
+    return [...realProducts]
+      .sort((a, b) => {
+        const scoreA = (Number(a.reviewsCount || 0) * Number(a.rating || 5)) + (a.isBestSeller ? 20 : 0);
+        const scoreB = (Number(b.reviewsCount || 0) * Number(b.rating || 5)) + (b.isBestSeller ? 20 : 0);
+        return scoreB - scoreA;
+      })
+      .slice(0, 5);
+  };
+
+  const getLatestClients = () => {
+    const clients: { name: string; phone: string; location: string; lastOrderDate?: string; orderCount: number; totalSpent: number }[] = [];
+    const clientMap: Record<string, typeof clients[0]> = {};
+
+    realOrders.forEach(order => {
+      const phone = order.phone || '';
+      const name = order.customerName || 'عميلة ملكية';
+      const key = phone || name;
+      if (!clientMap[key]) {
+        clientMap[key] = {
+          name,
+          phone,
+          location: `${order.city || ''} (${order.country === 'EG' ? 'مصر' : 'السعودية'})`,
+          lastOrderDate: order.date,
+          orderCount: 1,
+          totalSpent: Number(order.totalPrice || 0)
+        };
+      } else {
+        clientMap[key].orderCount += 1;
+        clientMap[key].totalSpent += Number(order.totalPrice || 0);
+      }
+    });
+
+    realCustomers.forEach(c => {
+      const phone = c.phone || '';
+      const name = c.name || '';
+      const key = phone || name;
+      if (!clientMap[key]) {
+        clientMap[key] = {
+          name,
+          phone,
+          location: c.city || 'منطقة غير محددة',
+          lastOrderDate: c.created_at,
+          orderCount: Number(c.orders_count || 0),
+          totalSpent: Number(c.total_spent || 0)
+        };
+      }
+    });
+
+    return Object.values(clientMap)
+      .sort((a, b) => {
+        const dateA = a.lastOrderDate ? new Date(a.lastOrderDate).getTime() : 0;
+        const dateB = b.lastOrderDate ? new Date(b.lastOrderDate).getTime() : 0;
+        return dateB - dateA;
+      })
+      .slice(0, 5);
+  };
 
   // --- NEW ITEM INPUT FORMS STATES ---
   // Social link inputs
@@ -160,7 +253,24 @@ export default function AdminMarketingCenter() {
 
   const loadAllData = async () => {
     setIsLoading(true);
+    setIsLoadingReal(true);
     try {
+      // Fetch Real Products, Orders and Customers for Royal Panel
+      try {
+        const { data: realProds } = await supabase.from('products').select('*');
+        if (realProds) setRealProducts(realProds);
+
+        const { data: realOrds } = await supabase.from('orders').select('*');
+        if (realOrds) setRealOrders(realOrds);
+
+        const { data: realCusts } = await supabase.from('customers').select('*');
+        if (realCusts) setRealCustomers(realCusts);
+      } catch (err) {
+        console.error("Error loading real marketing stats:", err);
+      } finally {
+        setIsLoadingReal(false);
+      }
+
       // 1. Social Accounts
       const { data: dbSocials } = await supabase.from('social_accounts').select('*');
       if (dbSocials && dbSocials.length > 0) {
@@ -541,6 +651,7 @@ export default function AdminMarketingCenter() {
       {/* Nav tabs bar */}
       <div className="flex flex-wrap gap-2 border-b border-gray-100 pb-4 mb-6 text-xs overflow-x-auto">
         {[
+          { id: 'analytics', icon: BarChart3, label: 'لوحة التسويق والتحليلات الملكية 📊' },
           { id: 'socials', icon: Instagram, label: 'منصات التواصل الملكية 🌐' },
           { id: 'feed', icon: Play, label: 'معرض السوشيال بالموقع 🎀' },
           { id: 'whatsapp', icon: MessageCircle, label: 'أتمتة الواتساب الفورية 💬' },
@@ -549,7 +660,6 @@ export default function AdminMarketingCenter() {
           { id: 'email', icon: Mail, label: 'إطلاق البريد الملكي ✉️' },
           { id: 'automations', icon: Bell, label: 'أتمتة الإجراءات الذكية ⚡' },
           { id: 'seo', icon: Chrome, label: 'سيو SULTA والميتا 🔍' },
-          { id: 'analytics', icon: BarChart3, label: 'تحليلات الـ UTM والمصادر 📊' },
           { id: 'ugc', icon: Eye, label: 'إدارة أصول المستخدمين (UGC) 📷' },
           { id: 'ai', icon: Sparkles, label: 'مساعد المحتوى الذكي 🤖' },
           { id: 'health', icon: AlertTriangle, label: 'مراقب صحة التسويق 🩺' }
@@ -1354,20 +1464,66 @@ export default function AdminMarketingCenter() {
 
       {/* TAB 9: MARKETING ANALYTICS & UTM GENERATOR */}
       {activeTab === 'analytics' && (
-        <div className="space-y-6 animate-fade-in-rapid">
+        <div className="space-y-8 animate-fade-in-rapid font-sans text-right" dir="rtl" style={{ direction: 'rtl' }}>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Top Royal KPI Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
+            <div className="bg-[#FAF9F5] border border-[#f0ece1] p-6 rounded-2xl flex items-center justify-between text-right">
+              <div>
+                <span className="text-gray-400 text-xs font-bold block mb-1">إجمالي المنتجات المعروضة بالموقع</span>
+                {isLoadingReal ? (
+                  <span className="text-xl font-serif font-black text-gray-400 animate-pulse">جاري التحميل...</span>
+                ) : (
+                  <span className="text-3xl font-serif font-black text-[#0B0B0B]">{realProducts.length} <span className="text-xs font-sans text-gray-500">منتجات فعلية</span></span>
+                )}
+              </div>
+              <div className="w-12 h-12 rounded-full bg-white border border-[#eae5d8] flex items-center justify-center text-xl shadow-2xs">
+                👗
+              </div>
+            </div>
+
+            <div className="bg-[#FAF9F5] border border-[#f0ece1] p-6 rounded-2xl flex items-center justify-between text-right">
+              <div>
+                <span className="text-gray-400 text-xs font-bold block mb-1">قاعدة العملاء النشطين</span>
+                {isLoadingReal ? (
+                  <span className="text-xl font-serif font-black text-gray-400 animate-pulse">جاري التحميل...</span>
+                ) : (
+                  <span className="text-3xl font-serif font-black text-[#0B0B0B]">{getLatestClients().length} <span className="text-xs font-sans text-gray-500">عميلات مسجلات</span></span>
+                )}
+              </div>
+              <div className="w-12 h-12 rounded-full bg-white border border-[#eae5d8] flex items-center justify-center text-xl shadow-2xs">
+                👑
+              </div>
+            </div>
+
+            <div className="bg-[#FAF9F5] border border-[#f0ece1] p-6 rounded-2xl flex items-center justify-between text-right">
+              <div>
+                <span className="text-gray-400 text-xs font-bold block mb-1">الطلبات الكلية الحقيقية</span>
+                {isLoadingReal ? (
+                  <span className="text-xl font-serif font-black text-gray-400 animate-pulse">جاري التحميل...</span>
+                ) : (
+                  <span className="text-3xl font-serif font-black text-[#0B0B0B]">{realOrders.length} <span className="text-xs font-sans text-gray-500">طلبات حية</span></span>
+                )}
+              </div>
+              <div className="w-12 h-12 rounded-full bg-white border border-[#eae5d8] flex items-center justify-center text-xl shadow-2xs">
+                🛍️
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
             
-            <div className="bg-gray-50 border border-gray-150 rounded-2xl p-5 space-y-4">
-              <h3 className="font-serif text-lg text-gray-900 mb-1 flex items-center gap-2">
+            {/* Left Column: UTM Link Builder */}
+            <div className="bg-gray-50 border border-gray-150 rounded-2xl p-5 space-y-4 h-fit text-right" style={{ direction: 'rtl' }}>
+              <h3 className="font-serif text-lg text-gray-900 mb-1 flex items-center gap-2 justify-start">
                 <Share2 className="text-[#DF8A9D]" size={18} />
                  منشئ ومحرك الروابط التتبعية المدمجة (UTM Code Builder)
               </h3>
-              <p className="text-gray-400 text-xs">أطلقي روابط فريدة للمؤثرين لمتابعة نقرات المبيعات وحساب العائدات فورياً بكل شفافية.</p>
+              <p className="text-gray-400 text-xs leading-relaxed">أطلقي روابط فريدة لمؤثري ومندوبي SULTA لمتابعة نقرات المبيعات وحساب العائدات فورياً بكل شفافية.</p>
 
               <div className="space-y-3 text-xs font-sans">
                 <div>
-                  <label className="block text-gray-500 mb-1">مصدر الزوار والحملة (utm_source)</label>
+                  <label className="block text-gray-500 mb-1 text-right">مصدر الزوار والحملة (utm_source)</label>
                   <input
                     type="text"
                     value={utmSource}
@@ -1376,7 +1532,7 @@ export default function AdminMarketingCenter() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-500 mb-1">الوسيط الإعلاني (utm_medium)</label>
+                  <label className="block text-gray-500 mb-1 text-right">الوسيط الإعلاني (utm_medium)</label>
                   <input
                     type="text"
                     value={utmMedium}
@@ -1385,7 +1541,7 @@ export default function AdminMarketingCenter() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-500 mb-1">اسم الحملة التسويقية (utm_campaign)</label>
+                  <label className="block text-gray-500 mb-1 text-right">اسم الحملة التسويقية (utm_campaign)</label>
                   <input
                     type="text"
                     value={utmCampaign}
@@ -1394,14 +1550,17 @@ export default function AdminMarketingCenter() {
                   />
                 </div>
 
-                <div className="bg-white border border-gray-150 p-4 rounded-xl space-y-2">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">الرابط الإعلاني الناتج:</span>
-                  <p className="text-[11px] font-mono select-all text-[#DF8A9D] break-all text-left bg-gray-50 p-2.5 rounded border border-gray-100">
+                <div className="bg-white border border-gray-150 p-4 rounded-xl space-y-2 mt-4 text-right">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block text-right">الرابط الإعلاني الناتج:</span>
+                  <p className="text-[11px] font-mono select-all text-[#A44C5C] break-all text-left bg-gray-50 p-2.5 rounded border border-gray-100">
                     {generatedUtmUrl}
                   </p>
                   <button
-                    onClick={() => copyToClipboard(generatedUtmUrl)}
-                    className="mt-2 w-full bg-black text-[#F6E7A6] font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 transition hover:scale-[1.01]"
+                    onClick={() => {
+                      copyToClipboard(generatedUtmUrl);
+                      showToast('تم نسخ رابط الـ UTM التتبعي الملكي بنجاح 📋');
+                    }}
+                    className="mt-2 w-full bg-black hover:bg-neutral-800 text-[#F6E7A6] font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 transition duration-200 cursor-pointer"
                   >
                     <Clipboard size={14} />
                     نسخ الرابط الملكي والمنشور 📋
@@ -1410,30 +1569,110 @@ export default function AdminMarketingCenter() {
               </div>
             </div>
 
-            <div className="bg-white border border-gray-150 rounded-2xl p-5 space-y-4">
-              <h3 className="font-serif text-lg text-gray-900 mb-1">تحليلات مصادر الزوار والمبيعات الحية بالموقع 📊</h3>
-              <p className="text-gray-400 text-xs">تعقب مصدر المبيعات فوري من سوبابيس (Supabase UTM Sync).</p>
-
-              <div className="space-y-4 font-sans text-xs text-gray-900">
-                {[
-                  { channel: 'زيارات مباشرة عبر إنستقرام (Instagram Promo)', clicks: 1420, rate: '45%', sales: '142,000 SAR' },
-                  { channel: 'شراكات وتأثير تيك توك (TikTok Trends)', clicks: 980, rate: '31%', sales: '98,000 SAR' },
-                  { channel: 'مؤثري سناب شات (Snapchat Ads)', clicks: 450, rate: '14%', sales: '45,000 SAR' },
-                  { channel: 'محرك بحث غوغل العضوي (Google SEO)', clicks: 230, rate: '7%', sales: '23,000 SAR' },
-                  { channel: 'حملات البريد الملكي (Email Newsletters)', clicks: 120, rate: '3%', sales: '12,000 SAR' }
-                ].map((item, idx) => (
-                  <div key={idx} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-gray-800">{item.channel}</span>
-                      <span className="text-emerald-600 font-bold">{item.sales}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-400 text-[10px]">
-                      <span>{item.clicks} زائر فريد</span>
-                      <span>توزع نسبي: {item.rate}</span>
-                    </div>
+            {/* Right Columns: Most-Sold, Most-Viewed, and Newest Customers (Span 2) */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              {/* SECTION: MOST SOLD */}
+              <div className="bg-white border border-gray-150 rounded-2xl p-5 space-y-4 text-right">
+                <h3 className="font-serif text-md font-bold text-gray-900 border-b border-gray-100 pb-2">👗 أفضل قطع كوتور مبيعاً بالمنصة (Real Best Sellers)</h3>
+                
+                {isLoadingReal ? (
+                  <p className="text-gray-400 text-xs text-center py-6 animate-pulse">جاري جلب أرقام المبيعات الحية...</p>
+                ) : getBestSellers().length === 0 ? (
+                  <div className="p-8 text-center text-gray-400 font-serif border border-dashed border-gray-200 rounded-xl bg-[#FAF9F5]/30">
+                    <p className="text-sm text-gray-600 font-bold">لم يتم تسجيل أي مبيعات حقيقية بعد</p>
+                    <p className="text-[10px] mt-1 text-gray-450">ستظهر مبيعات المنتجات المحدثة وتصنيفاتها بمجرد إتمام أي طلبات شراء حية.</p>
                   </div>
-                ))}
+                ) : (
+                  <div className="divide-y divide-gray-100">
+                    {getBestSellers().slice(0, 5).map((p, idx) => (
+                      <div key={p.id} className="flex justify-between items-center py-3 first:pt-0 last:pb-0 font-sans text-xs">
+                        <div className="flex items-center gap-3">
+                          <span className="w-5 h-5 rounded-full bg-[#FAF5F0] text-[#A44C5C] font-black text-center text-[10px] flex items-center justify-center">{idx + 1}</span>
+                          <div>
+                            <span className="font-bold text-gray-800">{p.nameAr || p.nameEn}</span>
+                            <span className="text-[10px] text-gray-400 block font-mono">ID: {p.id}</span>
+                          </div>
+                        </div>
+                        <div className="text-left">
+                          <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 rounded px-2.5 py-1 font-bold font-sans">
+                            بيع منها {p.unitsSold} قطعة 🏷️
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+
+              {/* SECTION: MOST VIEWED */}
+              <div className="bg-white border border-gray-150 rounded-2xl p-5 space-y-4 text-right">
+                <h3 className="font-serif text-md font-bold text-gray-900 border-b border-gray-100 pb-2">👁️ المنتجات المحددة وتفاعل العملاء (Most Engaged Products)</h3>
+                
+                {isLoadingReal ? (
+                  <p className="text-gray-400 text-xs text-center py-6 animate-pulse">جاري قياس تفاعلات ومراجعات العملاء...</p>
+                ) : getMostViewed().length === 0 ? (
+                  <div className="p-8 text-center text-gray-400 font-serif border border-dashed border-gray-200 rounded-xl bg-[#FAF9F5]/30 animate-pulse">
+                    <p className="text-sm">لا تتوفر منتجات نشطة حالياً بقاعدة البيانات</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {getMostViewed().slice(0, 4).map((p) => (
+                      <div key={p.id} className="p-3 bg-gray-50/50 border border-gray-100 rounded-xl flex items-center justify-between text-xs font-sans">
+                        <div>
+                          <p className="font-bold text-gray-800 text-right">{p.nameAr || p.nameEn}</p>
+                          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1 text-right">
+                            <span>⭐ {p.rating} / 5</span>
+                            <span>({p.reviewsCount || 0} مراجعات حقيقية)</span>
+                          </p>
+                        </div>
+                        {p.isBestSeller && (
+                          <span className="bg-[#A44C5C]/10 text-[#A44C5C] text-[9px] font-bold px-2 py-0.5 rounded shrink-0">شارة مبيع</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* SECTION: LATEST CUSTOMERS */}
+              <div className="bg-white border border-[#f0ece1] rounded-2xl p-5 space-y-4 text-right">
+                <h3 className="font-serif text-md font-bold text-gray-900 border-b border-gray-100 pb-2">👥 سجل عميلات وولاء SULTA الأحدث (Latest Loyalty Clients)</h3>
+                
+                {isLoadingReal ? (
+                  <p className="text-gray-400 text-xs text-center py-6 animate-pulse">جاري استدعاء سجل المشتريات والولاء...</p>
+                ) : getLatestClients().length === 0 ? (
+                  <div className="p-8 text-center text-gray-400 font-serif border border-dashed border-gray-200 rounded-xl bg-[#FAF9F5]/30">
+                    <p className="text-sm text-gray-600 font-bold">لا يوجد عمليات شراء مسجلة من عميلات حقيقية بعد</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-right border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-gray-100 text-gray-400 text-[10px] uppercase font-bold text-right" style={{ direction: 'rtl' }}>
+                          <th className="pb-2 text-right">الاسم</th>
+                          <th className="pb-2 text-right">الهاتف</th>
+                          <th className="pb-2 text-right">العنوان / المندوبية</th>
+                          <th className="pb-2 text-right">النشاط الانفاقي</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 text-right" style={{ direction: 'rtl' }}>
+                        {getLatestClients().map((c, idx) => (
+                          <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                            <td className="py-2.5 font-bold text-gray-800 text-right">{c.name}</td>
+                            <td className="py-2.5 font-mono text-gray-500 text-right">{c.phone || "بدون هاتف"}</td>
+                            <td className="py-2.5 text-gray-500 text-right">{c.location}</td>
+                            <td className="py-2.5 font-bold text-[#A44C5C] text-right font-sans">
+                              {c.orderCount} طلبات ({c.totalSpent} EGP)
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
             </div>
 
           </div>

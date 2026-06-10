@@ -64,6 +64,36 @@ export default function ProductDetailModal({
     setIsMacroZoomActive(false);
     setIs360Active(false);
   };
+
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  const [imageScaleMode, setImageScaleMode] = useState<'contain' | 'cover'>('contain');
+
+  // Swipe threshold in pixels
+  const minSwipeDistance = 40;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEndX(null);
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextImage();
+    } else if (isRightSwipe) {
+      prevImage();
+    }
+  };
+
   const [selectedSz, setSelectedSz] = useState(product.sizes[0] || 'S');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'wash' | 'pack' | 'size' | 'ship' | 'reviews' | 'questions'>('desc');
@@ -327,8 +357,34 @@ export default function ProductDetailModal({
           <div
             onMouseMove={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleMouseMove}
             onMouseLeave={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleMouseLeave}
-            className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gray-250 shadow-sm mb-4 select-none cursor-zoom-in"
+            onTouchStart={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleTouchStart}
+            onTouchMove={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleTouchMove}
+            onTouchEnd={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleTouchEnd}
+            className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#FAF9F6] border border-gray-150 shadow-xs mb-4 select-none cursor-zoom-in"
           >
+            
+            {/* Dynamic Instagram-style story indicator bars */}
+            {!videoPlaying && !is360Active && !isMacroZoomActive && displayImages.length > 1 && (
+              <div className="absolute top-3 inset-x-8 z-20 flex gap-1.5 justify-center">
+                {displayImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDirection(idx > activeImageIdx ? 1 : -1);
+                      setActiveImageIdx(idx);
+                    }}
+                    className="flex-1 h-1 rounded-full cursor-pointer transition-all duration-300"
+                    style={{
+                      backgroundColor: idx === activeImageIdx ? '#F4B6C2' : 'rgba(255, 255, 255, 0.45)',
+                      maxWidth: '32px'
+                    }}
+                    title={`عرض صورة ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
             
             {videoPlaying ? (
               <div className="absolute inset-0 bg-[#0B0B0B] text-white flex flex-col items-center justify-center text-center">
@@ -538,7 +594,7 @@ export default function ProductDetailModal({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: direction > 0 ? -300 : 300 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="absolute inset-0"
+                    className="absolute inset-0 flex items-center justify-center bg-[#FAF9F6]"
                   >
                     {displayImages[activeImageIdx]?.match(/\.(mp4|webm|ogg|mov)$/i) || displayImages[activeImageIdx]?.includes('video') ? (
                        <video
@@ -551,7 +607,7 @@ export default function ProductDetailModal({
                          src={displayImages[activeImageIdx]}
                          alt={product.nameAr}
                          style={zoomStyle}
-                         className="w-full h-full object-cover object-center transition-transform duration-150 ease-out origin-center select-none"
+                         className={`w-full h-full transition-transform duration-150 ease-out origin-center select-none ${imageScaleMode === 'contain' ? 'object-contain px-2' : 'object-cover'} object-center`}
                          referrerPolicy="no-referrer"
                        />
                     )}
@@ -563,26 +619,41 @@ export default function ProductDetailModal({
                   <>
                     <button 
                       onClick={prevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/40 hover:bg-white/80 p-2 rounded-full backdrop-blur-md transition-all opacity-0 group-hover/main:opacity-100 z-10 cursor-pointer"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white p-2.5 rounded-full backdrop-blur-md transition-all opacity-100 md:opacity-0 md:group-hover/main:opacity-100 z-15 cursor-pointer shadow-sm border border-gray-150"
                     >
-                      <ChevronLeft size={20} className="text-gray-900" />
+                      <ChevronLeft size={20} className="text-gray-950" />
                     </button>
                     <button 
                       onClick={nextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/40 hover:bg-white/80 p-2 rounded-full backdrop-blur-md transition-all opacity-0 group-hover/main:opacity-100 z-10 cursor-pointer"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white p-2.5 rounded-full backdrop-blur-md transition-all opacity-100 md:opacity-0 md:group-hover/main:opacity-100 z-15 cursor-pointer shadow-sm border border-gray-150"
                     >
-                      <ChevronRight size={20} className="text-gray-900" />
+                      <ChevronRight size={20} className="text-gray-950" />
                     </button>
                   </>
                 )}
               </div>
             )}
 
-            {/* Corner label indicator */}
-            {!videoPlaying && !isMacroZoomActive && (
-              <span className="absolute bottom-3 right-3 bg-white/70 backdrop-blur-xs text-[10px] uppercase font-sans text-gray-600 px-3 py-1 rounded-full">
-                صورة رقم {activeImageIdx + 1}
-              </span>
+            {/* Corner label and fit mode indicators */}
+            {!videoPlaying && !is360Active && !isMacroZoomActive && (
+              <div className="absolute bottom-3 inset-x-3 flex justify-between items-center z-10 pointer-events-none select-none">
+                {/* Fit Mode Toggle - Left aligned */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setImageScaleMode(prev => prev === 'contain' ? 'cover' : 'contain');
+                  }}
+                  className="pointer-events-auto bg-white/75 hover:bg-white backdrop-blur-xs text-[10px] font-sans font-bold text-gray-800 px-3 py-1.5 rounded-full border border-gray-200/50 shadow-sm transition-all hover:scale-103 cursor-pointer flex items-center gap-1"
+                >
+                  {imageScaleMode === 'contain' ? '🔍 ملء الإطار' : '📱 كامل القطعة'}
+                </button>
+
+                {/* Picture Number indicator - Right aligned */}
+                <span className="bg-white/75 backdrop-blur-xs text-[10px] font-sans font-bold text-gray-800 px-3 py-1.5 rounded-full border border-gray-200/50 shadow-sm">
+                  صورة {activeImageIdx + 1} / {displayImages.length}
+                </span>
+              </div>
             )}
           </div>
 
