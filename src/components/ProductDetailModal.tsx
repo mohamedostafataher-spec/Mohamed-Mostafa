@@ -293,13 +293,13 @@ export default function ProductDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6 md:p-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-10">
       
       {/* Blurred background overlay */}
       <div className="fixed inset-0 bg-[#0B0B0B]/75 backdrop-blur-md transition-opacity" onClick={onClose} />
 
       {/* Main Luxury Frame */}
-      <div className="relative bg-[#FAFAF7] w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl border border-gray-100 flex flex-col md:flex-row max-h-[95vh] md:max-h-[85vh] z-30 animate-scale-up">
+      <div className="relative bg-[#FAFAF7] w-full h-full md:h-auto md:max-w-5xl rounded-none md:rounded-3xl shadow-2xl border border-gray-100 flex flex-col md:flex-row max-h-[100vh] md:max-h-[85vh] z-30 animate-scale-up overflow-y-auto md:overflow-visible overflow-x-hidden">
           {/* Floating WhatsApp Action Button */}
           <button
             onClick={handleOrderWhatsApp}
@@ -321,7 +321,7 @@ export default function ProductDetailModal({
         </button>
 
         {/* Column Left: Visual Assets Center */}
-        <div className="md:w-1/2 bg-gray-50 flex flex-col justify-between p-4 sm:p-6 border-b md:border-b-0 md:border-l border-gray-100 overflow-y-auto max-h-[42vh] md:max-h-none">
+        <div className="md:w-1/2 bg-gray-50 flex flex-col justify-start p-4 sm:p-6 border-b md:border-b-0 md:border-l border-gray-100 md:overflow-y-auto md:max-h-none shrink-0 w-full min-w-0">
           
           {/* Main Visual box */}
           <div
@@ -674,7 +674,7 @@ export default function ProductDetailModal({
         </div>
 
         {/* Column Right: Order Configuration details */}
-        <div className="md:w-1/2 p-4 sm:p-6 md:p-8 overflow-y-auto flex flex-col justify-between max-h-[53vh] md:max-h-none bg-white">
+        <div className="md:w-1/2 p-4 sm:p-6 md:p-8 md:overflow-y-auto flex flex-col justify-start md:max-h-none bg-white w-full min-w-0">
           
           {/* Section A: Core definitions */}
           <div>
