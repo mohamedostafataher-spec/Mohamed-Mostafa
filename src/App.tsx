@@ -19,7 +19,6 @@ import BlogView from './components/BlogView';
 import BlogPostView from './components/BlogPostView';
 import TrackOrder from './components/TrackOrder';
 import SystemStatus from './components/SystemStatus';
-import WhatsAppFloat from './components/WhatsAppFloat';
 import RibbonBowDivider from './components/RibbonBowDivider';
 import SocialLinksView from './components/SocialLinksView';
 import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
@@ -1475,10 +1474,6 @@ function AppContent() {
         onSelectProduct={handleSelectProduct}
         onAddToCart={handleAddToCart}
         session={session}
-      />
-      <WhatsAppFloat 
-        number={settings?.whatsappNumber || settings?.whatsapp || "966530454045"} 
-        message={session?.user?.email ? `مرحباً SULTA، أحتاج للمساعدة بخصوص حسابي ${session.user.email}` : "مرحباً SULTA، أحتاج للمساعدة بخصوص"} 
       />
     </div>
   );

@@ -205,7 +205,14 @@ export default function AtelierAudioAtmosphere({
   };
 
   return (
-    <div className="fixed bottom-24 left-6 z-40 font-serif" dir="rtl">
+    <div 
+      className={`fixed z-40 font-serif transition-all duration-305 ${
+        isOpen 
+          ? "bottom-24 left-4 right-4 sm:left-6 sm:right-auto max-w-[calc(100vw-32px)] sm:max-w-[360px]" 
+          : "bottom-24 left-4 sm:left-6"
+      }`} 
+      dir="rtl"
+    >
       <AnimatePresence>
         {isOpen ? (
           <motion.div
@@ -214,51 +221,51 @@ export default function AtelierAudioAtmosphere({
               opacity: 1, 
               scale: 1, 
               y: 0,
-              height: isMinimized ? '80px' : 'auto',
-              width: isMinimized ? '280px' : '360px'
+              height: isMinimized ? '72px' : 'auto',
+              width: isMinimized ? '240px' : '100%'
             }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
-            className="bg-[#FAFAF7]/95 backdrop-blur-md rounded-[2rem] shadow-2xl border border-[#DF8A9D]/18 ring-8 ring-[#FAF4F5]/40 select-none overflow-hidden max-w-[92vw] sm:max-w-[360px] text-right font-sans"
+            className="bg-[#FAFAF7]/95 backdrop-blur-md rounded-[2rem] shadow-2xl border border-[#DF8A9D]/18 ring-8 ring-[#FAF4F5]/40 select-none overflow-hidden text-right font-sans w-full"
           >
             {/* Elegant Background ambient gradient (Phase 10) */}
             <div className="absolute inset-0 bg-gradient-to-tr from-[#FAF4F5] via-transparent to-amber-50/10 pointer-events-none" />
 
-            {/* HEADER AREA */}
-            <div className="relative z-10 bg-gradient-to-l from-[#0B0B0B] to-[#1C1C1C] px-5 py-4 flex justify-between items-center flex-row-reverse border-b border-[#FAF5F0]/10">
-              {/* Left Utilities */}
-              <div className="flex items-center gap-2">
+            {/* HEADER AREA - Intuitive RTL spacing: Title on Right, Close on Left */}
+            <div className="relative z-10 bg-gradient-to-l from-[#0B0B0B] to-[#1C1C1C] px-4 py-3 flex justify-between items-center border-b border-[#FAF5F0]/10">
+              {/* Title & Brand (Floats to the right side on RTL) */}
+              <div className="flex items-center gap-2 text-right min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#FAFAF7]/10 py-1 flex items-center justify-center border border-[#F6E7A6]/30 shadow-inner shrink-0">
+                  <span className="text-sm">👑</span>
+                </div>
+                <div className="text-right min-w-0">
+                  <h4 className="text-xs sm:text-[13px] font-bold text-[#F6E7A6] tracking-wide font-serif truncate">SULTA Concierge</h4>
+                  <span className="text-[9px] text-gray-300 font-serif italic block truncate">مرشد SULTA الملكي الفاخر</span>
+                </div>
+              </div>
+
+              {/* Left Utilities with touch target safety (Floats to the left side on RTL) */}
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
-                  className="text-gray-400 hover:text-white p-1 transition-colors cursor-pointer"
+                  className="text-gray-300 hover:text-white w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all cursor-pointer"
                   title={isMinimized ? "توسيع" : "تصغير"}
                 >
                   {isMinimized ? <Maximize2 size={13} /> : <Minimize2 size={13} />}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-white p-1 transition-colors cursor-pointer"
+                  className="text-gray-300 hover:text-red-400 w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all cursor-pointer border border-transparent hover:border-red-500/15"
                   title="إغلاق المرشد"
                 >
                   <X size={15} />
                 </button>
               </div>
-
-              {/* Title & Brand */}
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-[#FAFAF7]/9 py-1 flex items-center justify-center border border-[#F6E7A6]/30 shadow-inner">
-                  <span className="text-sm">👑</span>
-                </div>
-                <div className="text-right">
-                  <h4 className="text-xs sm:text-[13px] font-bold text-[#F6E7A6] tracking-wide font-serif">SULTA Concierge</h4>
-                  <span className="text-[9px] text-gray-300 font-serif italic block">مرشد SULTA الملكي الفاخر</span>
-                </div>
-              </div>
             </div>
 
             {/* EXPANDED CONTENT VIEW */}
             {!isMinimized && (
-              <div className="relative z-10 max-h-[480px] overflow-y-auto custom-scrollbar p-5 space-y-4">
+              <div className="relative z-10 max-h-[300px] xs:max-h-[340px] sm:max-h-[450px] overflow-y-auto custom-scrollbar p-5 space-y-4">
                 
                 {/* INTERACTIVE NAVIGATION TAB BUTTONS */}
                 <div className="grid grid-cols-3 gap-1 bg-[#0B0B0B]/5 p-1 rounded-xl border border-gray-100 font-semibold text-[10.5px] text-gray-600 mb-2">
@@ -595,17 +602,17 @@ export default function AtelierAudioAtmosphere({
           <motion.button
             layoutId="atelier-radio-btn"
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2.5 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white px-4 py-3.5 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-[#F6E7A6]/20 ring-4 ring-neutral-500/10"
+            className="flex items-center gap-2 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-[#F6E7A6]/20 ring-4 ring-neutral-500/10"
             title="افتح مرشد SULTA الملكي الفاخر 👑"
           >
             <div className="relative flex items-center justify-center">
-              <span className="text-sm group-hover:scale-110 transition-transform">👑</span>
+              <span className="text-xs sm:text-sm group-hover:scale-110 transition-transform">👑</span>
               <span className="absolute inset-0 rounded-full bg-[#F6E7A6]/10 animate-ping" />
             </div>
             
-            <div className="flex flex-col text-right pr-0.5">
-              <span className="text-[9.5px] font-serif font-black tracking-wide">SULTA Concierge</span>
-              <span className="text-[7.5px] text-gray-300 font-sans block mt-0.5 font-semibold">استشارتك الملكية ✦</span>
+            <div className="flex flex-col text-right pr-0.5 leading-none">
+              <span className="text-[8.5px] sm:text-[9px] font-serif font-black tracking-wide">SULTA Concierge</span>
+              <span className="text-[6.5px] text-gray-300 font-sans block mt-0.5 font-medium">استشارتك الملكية ✦</span>
             </div>
           </motion.button>
         )}

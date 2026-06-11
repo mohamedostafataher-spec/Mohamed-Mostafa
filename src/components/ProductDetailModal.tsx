@@ -461,126 +461,320 @@ export default function ProductDetailModal({
                 </div>
               </div>
             ) : is360Active ? (
-              // Stunning V3.0 Zero-Paid-Cost 360 Spin Viewer
-              <div className="absolute inset-0 bg-neutral-900 text-white flex flex-col justify-between p-5 text-right font-sans">
+              // Stunning V3.0 Zero-Paid-Cost 360 Spin Viewer with smooth 3D parallax, shiny sheen reflection, and ground platform
+              <div className="absolute inset-0 bg-neutral-950 text-white flex flex-col justify-between p-5 text-right font-sans">
+                {/* Visual Ambient Grid */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:16px_20px] pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-[#F6E7A6]/5 to-transparent pointer-events-none" />
                 
-                <div className="flex-1 flex flex-col justify-center items-center space-y-4">
-                  <div className="relative w-48 h-60 rounded-xl overflow-hidden border border-[#F6E7A6]/20 bg-black/40 flex items-center justify-center shadow-lg group">
-                    <img 
-                      src={displayImages[rotationFrameIndex % displayImages.length]} 
-                      alt="360 view"
-                      className="w-full h-full object-cover transition-all duration-100 ease-out transform"
-                    />
+                {/* Interactive 3D Turntable Scene */}
+                <div className="flex-1 flex flex-col justify-center items-center relative overflow-hidden select-none">
+                  {/* Glowing Spotlights background */}
+                  <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#F6E7A6]/10 rounded-full filter blur-[50px] pointer-events-none" />
+                  
+                  {/* Main Rotating Card Frame */}
+                  {(() => {
+                    const rotationAngle = ((rotationFrameIndex / 11) - 0.5) * 80; // maps to -40° to +40°
+                    const calculatedImgIdx = Math.min(
+                      Math.floor((rotationFrameIndex / 12) * displayImages.length),
+                      displayImages.length - 1
+                    );
+                    const activeImage360 = displayImages[calculatedImgIdx];
+                    const sheenPercent = (rotationFrameIndex / 11) * 100;
+                    const sheenGradient = `linear-gradient(${135 + rotationAngle}deg, transparent 20%, rgba(255, 255, 255, ${0.16 + Math.abs(rotationAngle)/300}) ${sheenPercent}%, transparent ${Math.min(100, sheenPercent + 25)}%)`;
                     
-                    {/* Visual 360 badges Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-between p-2">
-                      <span className="bg-black/70 border border-[#F6E7A6]/30 text-[#F6E7A6] text-[8px] font-bold px-2 py-0.5 rounded-full self-start">
-                        زاويا التدوير: {rotationFrameIndex * 30}° ممتازة
-                      </span>
-                      <p className="text-[9px] text-[#F6E7A6]/80 text-center font-bold">
-                        اسحبي شريط التمرير بالأسفل لتدوير البيجامة بـ 360 درجة 🔄
-                      </p>
-                    </div>
-                  </div>
+                    return (
+                      <div className="relative flex flex-col items-center justify-center pt-2 pb-8 w-full h-full max-h-[290px] sm:max-h-[350px]">
+                        
+                        {/* 3D Floor Marble Rotating Pedestal */}
+                        <div 
+                          className="absolute bottom-1 w-44 h-16 rounded-full border border-[#F6E7A6]/20 bg-gradient-to-t from-neutral-900 to-zinc-800 shadow-[0_15px_30px_rgba(0,0,0,0.8)] flex items-center justify-center transition-transform duration-100 ease-out"
+                          style={{
+                            transform: `perspective(600px) rotateX(72deg) rotateZ(${-rotationAngle}deg) scale(1.15)`,
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(246,231,166,0.1)'
+                          }}
+                        >
+                          {/* Compass/dial increments lines around pedestal */}
+                          <div className="absolute inset-0 rounded-full border-4 border-dashed border-[#F6E7A6]/10 animate-spin-slow opacity-60" />
+                          <div className="w-16 h-16 rounded-full border border-yellow-500/10" />
+                        </div>
+
+                        {/* Interactive Floating 3D Model Card */}
+                        <div 
+                          className="relative w-40 sm:w-48 h-56 sm:h-64 rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-zinc-950 flex items-center justify-center transition-all duration-100 ease-out z-10"
+                          style={{
+                            transform: `perspective(1000px) rotateY(${rotationAngle}deg) scale(${1 - Math.abs(rotationAngle)/1000}) translateY(${-10 + Math.abs(rotationAngle)/5}px)`,
+                            boxShadow: `${-rotationAngle * 0.4}px 25px 40px -10px rgba(0,0,0,0.7), 0 0 25px rgba(246,231,166,0.03)`
+                          }}
+                        >
+                          {/* The active camera-oriented image matching the angle */}
+                          <img 
+                            src={activeImage360} 
+                            alt="360 rotation angle"
+                            className="w-full h-full object-cover object-center pointer-events-none select-none transition-all duration-300"
+                            referrerPolicy="no-referrer"
+                          />
+
+                          {/* Sweeping Lustrous Specular Light Sheen Overlay */}
+                          <div 
+                            className="absolute inset-0 mix-blend-overlay pointer-events-none transition-all duration-100"
+                            style={{ background: sheenGradient }}
+                          />
+
+                          {/* Scanning grid overlay on model */}
+                          <div className="absolute inset-0 bg-radial-gradient(ellipse_at_center,transparent_50%,rgba(0,0,0,0.2)_100%) pointer-events-none" />
+                        </div>
+
+                        {/* Soft floating dynamic drop shadow matching current tilt */}
+                        <div 
+                          className="absolute bottom-5 w-32 h-6 bg-black/75 rounded-full filter blur-[10px] pointer-events-none z-0 transition-transform duration-100 ease-out"
+                          style={{
+                            transform: `translateX(${-rotationAngle * 0.65}px) scaleX(${1.2 - Math.abs(rotationAngle)/180}) scaleY(${1 - Math.abs(rotationAngle)/250}) opacity(${0.8 - Math.abs(rotationAngle)/120})`,
+                          }}
+                        />
+
+                        {/* Visual 360 Degrees floating HUD feedback */}
+                        <div className="absolute top-2 inset-x-4 flex justify-between items-center pointer-events-none select-none opacity-90">
+                          <span className="bg-black/80 border border-[#F6E7A6]/30 text-[#F6E7A6] text-[8.5px] font-sans font-bold px-2.5 py-1 rounded-full shrink-0">
+                            محاكاة كوتور ثلاثية الأبعاد 🏷️
+                          </span>
+                          <span className="bg-[#FAF4F5]/10 text-white text-[9px] font-mono px-2 py-0.5 rounded-sm">
+                            الزاوية: {Math.round(rotationAngle)}°
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-3 rounded-xl space-y-2.5">
+                {/* Dashboard Controllers Area */}
+                <div className="bg-neutral-900/90 border border-white/10 p-3 rounded-2xl space-y-2.5 backdrop-blur-xs">
+                  {/* Title of trackbar controller */}
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="font-mono text-[#F6E7A6]">محيط الدوران الرقمي</span>
-                    <span className="text-gray-400">فحص القصات الجانبية والخلفية</span>
+                    <span className="font-sans font-bold text-[#F6E7A6] flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-ping inline-block" />
+                      <span>محاكاة السطح ثلاثي الأبعاد 360°</span>
+                    </span>
+                    <span className="text-gray-300 font-sans">اسحبي التمرير لتدوير وضبط زاوية الإضاءة</span>
                   </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="11" 
-                    value={rotationFrameIndex}
-                    onChange={(e) => setRotationFrameIndex(Number(e.target.value))}
-                    className="w-full accent-[#F6E7A6] h-1.5 bg-white/20 rounded-full cursor-ew-resize"
-                  />
-                  <div className="flex justify-between items-center text-[10px]">
+
+                  {/* High tactile custom-styled slider */}
+                  <div className="relative flex items-center gap-2 py-1">
+                    <span className="text-[10px] font-mono text-gray-500">من الأمام</span>
+                    <div className="flex-1 relative flex items-center">
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="11" 
+                        value={rotationFrameIndex}
+                        onChange={(e) => setRotationFrameIndex(Number(e.target.value))}
+                        className="w-full accent-[#F6E7A6] h-1.5 bg-white/15 rounded-full cursor-ew-resize hover:bg-white/20 transition-all"
+                      />
+                    </div>
+                    <span className="text-[10px] font-mono text-gray-500">الفحص الخلفي</span>
+                  </div>
+
+                  {/* Bottom triggers/meta within widget */}
+                  <div className="flex justify-between items-center text-[10.5px] border-t border-white/5 pt-2 flex-row-reverse">
+                    <span className="text-[9.5px] text-[#F6E7A6]/80 font-serif flex items-center gap-1">
+                      <span>✦ تم الترسيم بنسبة 100% واقعي</span>
+                    </span>
                     <button
                       type="button"
                       onClick={() => setIs360Active(false)}
-                      className="text-xs text-[#F4B6C2] hover:text-white transition-colors cursor-pointer"
+                      className="text-xs text-[#F4B6C2] hover:text-[#facbd4] transition-colors cursor-pointer font-sans font-semibold flex items-center gap-1.5"
                     >
-                      إغلاق تدوير 360° ↩️
+                      <span>العودة للمعرض العام ↩️</span>
                     </button>
-                    <span className="text-[9px] text-gray-400 font-serif">معاينة تفصيلية مجانية تماماً ✨</span>
                   </div>
                 </div>
               </div>
             ) : isMacroZoomActive ? (
-              // Stunning V2.0 Fabric Micro-Zoom 50x Layer
-              <div className="absolute inset-0 bg-neutral-900 text-white flex flex-col justify-between p-5 text-right font-sans">
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#DF8A9C]/10 to-transparent pointer-events-none" />
+              // Stunning V3.0 Fabric Micro-Zoom 50x Microscope simulator
+              <div className="absolute inset-0 bg-neutral-950 text-white flex flex-col justify-between p-5 text-right font-sans">
+                <div className="absolute inset-0 bg-[#0B0B0B]/80 pointer-events-none" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:12px_12px] opacity-40 pointer-events-none" />
                 
-                {/* Simulated magnified thread weave canvas with reactive scale */}
-                <div className="flex-1 flex flex-col items-center justify-center space-y-3">
-                  <div className="relative w-40 h-40 sm:w-44 sm:h-44 rounded-full border-4 border-[#F6E7A6] shadow-2xl overflow-hidden bg-[#241316] flex items-center justify-center">
-                    {/* Simulated visual threads */}
-                    <div 
-                      className="absolute inset-0 opacity-65 flex flex-wrap content-start select-none p-1 transition-transform duration-300"
-                      style={{ transform: `scale(${1 + (macroMagnification - 30)*0.035})` }}
-                    >
-                      {/* Generates a gorgeous woven textile look dynamically */}
-                      {Array.from({ length: 280 }).map((_, i) => (
-                        <div 
-                          key={i} 
-                          className="w-[6px] h-[6px] rounded-xs border-r border-b opacity-45"
-                          style={{ 
-                            backgroundColor: selectedCol.hex, 
-                            borderColor: i % 2 === 0 ? 'rgba(255,255,255,0.4)' : '#FAF4F5' 
-                          }} 
-                        />
-                      ))}
-                    </div>
+                {/* Beautiful tactile textile microscope display */}
+                <div className="flex-1 flex flex-col items-center justify-center space-y-3 relative overflow-hidden select-none">
+                  {/* Floating radar lines background */}
+                  <div className="absolute inset-x-0 h-[1px] bg-[#DF8A9C]/10 top-1/4 animate-pulse pointer-events-none" />
+                  <div className="absolute inset-x-0 h-[1px] bg-[#DF8A9C]/10 top-2/4 animate-pulse pointer-events-none" />
+                  
+                  {/* Textile microscope lens holder */}
+                  {(() => {
+                    const isLace = product.nameAr?.includes('دانتيل') || product.nameEn?.toLowerCase().includes('lace') || product.fabricAr?.includes('دانتيل');
+                    const isCotton = product.nameAr?.includes('قطن') || product.nameEn?.toLowerCase().includes('cotton') || product.fabricAr?.includes('قطن');
+                    const isVelvet = product.nameAr?.includes('مخمل') || product.fabricAr?.includes('مخمل');
+                    
+                    let fabricLabelAr = "ساتان حريري إيطالي معالج دقيق";
+                    let fabricThreadInfoAr = "ألياف فائقة النعومة بسماكة خيط كوتور تبلغ 0.08dtex";
+                    let fabricSourceAr = "حياكة ناعمة لطيفة 100% مع غزل حراري واقي للبشرة";
+                    
+                    if (isLace) {
+                      fabricLabelAr = "دانتيل فرنسي شانتيلي مطاطي";
+                      fabricThreadInfoAr = "خيوط قطنية مطرزة ميكروية منسوجة يدوياً للفخامة";
+                      fabricSourceAr = "أرقى الزخارف المرنة ملمس مريح للغاية وغير مسبب للحكة";
+                    } else if (isCotton) {
+                      fabricLabelAr = "قطن بيكيه مصري طويل التيلة مبرد";
+                      fabricThreadInfoAr = "غزل عالي الكثافة معالج مسبقاً لمقاومة التجاعيد الدقيقة";
+                      fabricSourceAr = "تنفس طبيعي كامل مخصص لبيئة دافئة ومثالي للاستلقاء";
+                    } else if (isVelvet) {
+                      fabricLabelAr = "مخمل وبيل ملكي فائق الرقة";
+                      fabricThreadInfoAr = "نسج طولي مفعم بالنعومة والعمق للون دائم الترف والسطوع";
+                      fabricSourceAr = "عازل مريح وقائي بوزن ريشي رائع للنوم الفاخر";
+                    }
 
-                    {/* Laser scanning target */}
-                    <div className="absolute inset-0 border border-[#DF8A9C]/55 rounded-full animate-pulse flex items-center justify-center">
-                      <div className="w-12 h-[2px] bg-red-400 shadow-[0_0_10px_#f87171] animate-bounce" />
-                    </div>
+                    // Dynamically generate texture based on style: scale changes based on slider.
+                    // The focus factor also slight rotates the mesh as it zooms, giving the physical illusion of lens manual focusing!
+                    const zoomScale = macroMagnification / 32;
+                    const rotateAngle = (macroMagnification - 30) * 0.15;
+                    const lensColorHex = selectedCol.hex || '#e2afb7';
 
-                    {/* Magnification Floating Pill */}
-                    <span className="absolute bottom-2 bg-black/80 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold text-[#F6E7A6]">
-                      تكبير المجهر x{macroMagnification}
-                    </span>
-                  </div>
+                    return (
+                      <div className="flex flex-col items-center space-y-3.5 w-full">
+                        
+                        {/* High precision Microscope Circular Lens Frame */}
+                        <div className="relative w-44 h-44 sm:w-48 sm:h-48 rounded-full border-4 border-[#F6E7A6] shadow-[0_0_40px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(0,0,0,0.8)] overflow-hidden flex items-center justify-center bg-black/60 z-10 select-none">
+                          
+                          {/* Inner grid fibers display */}
+                          <div 
+                            className="absolute inset-0 w-full h-full transition-transform duration-150 ease-out origin-center"
+                            style={{ 
+                              transform: `scale(${zoomScale.toFixed(2)}) rotate(${rotateAngle.toFixed(1)}deg)`,
+                            }}
+                          >
+                            {/* Color backplate */}
+                            <div 
+                              className="absolute inset-0 opacity-95 transition-colors duration-300" 
+                              style={{ backgroundColor: lensColorHex }}
+                            />
 
-                  <div className="text-center space-y-1">
-                    <h5 className="text-[#F6E7A6] text-xs font-bold font-serif flex items-center justify-center gap-1.5">
-                      <Sparkles size={11} className="text-[#DF8A9C]" />
-                      <span>ميكروسكوب أنسجة Sulta الفاخر 🔬</span>
-                    </h5>
-                    <p className="text-[10px] text-gray-450 max-w-xs mx-auto px-2">
-                      مستوى تقريب نسيج الـ {product.fabricAr} بلون {selectedCol.name} المترف لرؤية جودة الغزل على الطبيعة.
-                    </p>
-                  </div>
+                            {/* Woven Pattern Overlay */}
+                            {isLace ? (
+                              /* Chantilly French Lace Netting Pattern */
+                              <div className="absolute inset-0 mix-blend-overlay opacity-80 bg-[size:24px_24px]"
+                                style={{
+                                  backgroundImage: `radial-gradient(circle, transparent 60%, rgba(0,0,0,0.3) 61%), 
+                                                    radial-gradient(circle, transparent 50%, rgba(255,255,255,0.4) 52%, transparent 58%), 
+                                                    repeating-linear-gradient(45deg, rgba(255,255,255,0.15) 0px, rgba(255,255,255,0.15) 1px, transparent 1.5px, transparent 8px)`
+                                }}
+                              />
+                            ) : isCotton ? (
+                              /* Combed Cotton Cross weave */
+                              <div className="absolute inset-0 mix-blend-overlay opacity-65 bg-[size:10px_10px]"
+                                style={{
+                                  backgroundImage: `linear-gradient(0deg, rgba(255,255,255,0.2) 1px, transparent 1px),
+                                                    linear-gradient(90deg, rgba(0,0,0,0.2) 1px, transparent 1px),
+                                                    radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 80%)`
+                                }}
+                              />
+                            ) : (
+                              /* Satin/Silk Liquid Flow with diagonal micro grain threading */
+                              <div className="absolute inset-0 w-full h-full">
+                                {/* Flowing satin soft drape curves */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-black/25 via-white/10 to-black/20 mix-blend-overlay" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FAFAF7]/15 to-transparent mix-blend-soft-light" />
+                                {/* Micro threads */}
+                                <div className="absolute inset-0 mix-blend-overlay opacity-55 bg-[size:4px_4px]"
+                                  style={{
+                                    backgroundImage: `repeating-linear-gradient(45deg, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 1px, transparent 1px, transparent 4px),
+                                                      repeating-linear-gradient(-45deg, rgba(0,0,0,0.25) 0px, rgba(0,0,0,0.25) 1px, transparent 1px, transparent 4px)`
+                                  }}
+                                />
+                              </div>
+                            )}
+
+                            {/* Dusty textile fibers under microscope */}
+                            <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(circle_at_20%_40%,rgba(255,255,255,0.5)_1px,transparent_1px),radial-gradient(circle_at_75%_25%,rgba(255,255,255,0.6)_1.5px,transparent_1.5px),radial-gradient(circle_at_50%_80%,rgba(0,0,0,0.5)_2px,transparent_2px)] bg-[size:50px_50px]" />
+                          </div>
+
+                          {/* Optical Magnifier Glass Gloss Ring */}
+                          <div className="absolute inset-0 border border-white/20 rounded-full bg-gradient-to-tr from-white/10 via-transparent to-white/20 mix-blend-screen pointer-events-none" />
+                          <div className="absolute inset-2 border border-dashed border-[#F6E7A6]/20 rounded-full animate-spin-slow pointer-events-none" />
+
+                          {/* Microscope Crosshair & Scale Ruler Overlay */}
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-45">
+                            {/* Reticle Lines */}
+                            <div className="absolute w-[90%] h-[1px] bg-red-400" />
+                            <div className="absolute h-[90%] w-[1px] bg-red-400" />
+                            {/* Inner reticle target */}
+                            <div className="absolute w-8 h-8 border border-red-400 rounded-full" />
+                            {/* Caliper ticks */}
+                            <div className="absolute top-1/2 left-4 right-4 h-2 flex justify-between transform -translate-y-1/2">
+                              {Array.from({ length: 9 }).map((_, slotIdx) => (
+                                <div key={slotIdx} className={`w-[1px] bg-red-300 ${slotIdx === 4 ? 'h-3 -translate-y-0.5' : 'h-1.5'}`} />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Interactive Laser Scan Line */}
+                          <div className="absolute left-0 right-0 h-0.5 bg-red-400 shadow-[0_0_15px_#f87171] z-10 pointer-events-none animate-shimmer" 
+                            style={{ animationDuration: '3.5s' }}
+                          />
+
+                          {/* Lens Floating Multiplier Tag */}
+                          <span className="absolute bottom-3 bg-black/85 border border-[#F6E7A6]/30 px-3 py-1 rounded-full text-[10px] font-mono font-bold text-[#F6E7A6] shadow-md z-20 select-none">
+                            مستوى الزوم: {macroMagnification}x
+                          </span>
+                        </div>
+
+                        {/* Microscope metadata indicators card */}
+                        <div className="text-center space-y-1.5 p-3 rounded-xl bg-white/5 border border-white/5 max-w-[280px] xs:max-w-xs self-center">
+                          <h6 className="text-[#F6E7A6] text-xs font-bold font-serif flex items-center justify-center gap-1">
+                            <Sparkles size={11} className="text-[#DF8A9C]" />
+                            <span>ميكروسكوب الأنسجة العضوية 🔬</span>
+                          </h6>
+                          <div className="space-y-1 text-right">
+                            <p className="text-[10px] font-semibold text-white/90">
+                              🧬 <span className="text-gray-400">النوع:</span> {fabricLabelAr}
+                            </p>
+                            <p className="text-[9.5px] text-gray-300 leading-snug">
+                              📐 <span className="text-gray-400">التفاصيل:</span> {fabricThreadInfoAr}
+                            </p>
+                            <p className="text-[9.5px] text-[#F6E7A6] leading-snug">
+                              💎 <span className="text-gray-400">الميزة الفاخرة:</span> {fabricSourceAr}
+                            </p>
+                          </div>
+                        </div>
+
+                      </div>
+                    );
+                  })()}
                 </div>
 
-                {/* Slider and close magnifier actions */}
-                <div className="space-y-3 bg-white/5 p-3 rounded-xl border border-white/10">
+                {/* Tactile Control Unit inside microscope */}
+                <div className="space-y-3 bg-[#0B0B0B]/80 p-3.5 rounded-2xl border border-white/10 backdrop-blur-xs shadow-2xl">
+                  {/* Slider descriptions */}
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="font-mono text-[#F6E7A6]">مستوى التقريب: {macroMagnification}x</span>
-                    <span className="text-gray-300">تكبير تفاصيل القماش لرؤية جودة الغزل</span>
+                    <span className="font-mono text-[#DF8A9C] font-semibold">بكرة الضبط البؤري الرقمية</span>
+                    <span className="text-gray-400">حركي شريط التقريب لتعديل البعد البؤري x15 - x80</span>
                   </div>
-                  <input 
-                    type="range" 
-                    min="15" 
-                    max="80" 
-                    value={macroMagnification}
-                    onChange={(e) => setMacroMagnification(Number(e.target.value))}
-                    className="w-full accent-[#DF8A9C] h-1.5 bg-white/20 rounded-full"
-                  />
-                  <div className="flex justify-between">
+
+                  {/* Tactile Range slider */}
+                  <div className="relative flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-gray-500">15x</span>
+                    <input 
+                      type="range" 
+                      min="15" 
+                      max="80" 
+                      value={macroMagnification}
+                      onChange={(e) => setMacroMagnification(Number(e.target.value))}
+                      className="w-full accent-[#DF8A9C] h-1.5 bg-white/20 rounded-full cursor-ew-resize hover:bg-white/30 transition-all"
+                    />
+                    <span className="text-[10px] font-mono text-gray-500">80x Max</span>
+                  </div>
+
+                  {/* Actions buttons inside */}
+                  <div className="flex justify-between items-center text-[10.5px] border-t border-white/5 pt-2">
+                    <span className="text-[10px] text-gray-400 font-sans">معيار منسوج بلون: {selectedCol.name}</span>
                     <button
                       type="button"
                       onClick={() => setIsMacroZoomActive(false)}
-                      className="text-xs text-[#F4B6C2] hover:text-white transition-colors cursor-pointer"
+                      className="text-xs text-[#F4B6C2] hover:text-[#facbd4] transition-colors cursor-pointer font-sans font-semibold"
                     >
-                      إغلاق العدسة الرجوع للصور ↩️
+                      خروج للصور العادية ↩️
                     </button>
-                    <span className="text-[10px] text-gray-400 font-serif">نسج إيطالي مضمون 🇮🇹</span>
                   </div>
                 </div>
               </div>
