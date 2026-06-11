@@ -130,7 +130,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
             {aboutData.section1.imageUrl && (
               <div className="md:w-1/2 order-1 md:order-2 aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-white relative rounded-3xl shadow-md border border-pink-100">
                 <img 
-                  src={aboutData.section1.imageUrl} 
+                  src={cleanImgUrl(aboutData.section1.imageUrl, 'sleepwear')} 
                   alt={aboutData.section1.title} 
                   className="w-full h-full object-cover opacity-95 hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"
@@ -146,7 +146,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
             {aboutData.section2.imageUrl && (
               <div className="md:w-1/2 aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-white relative rounded-3xl shadow-md border border-pink-100">
                 <img 
-                  src={aboutData.section2.imageUrl} 
+                  src={cleanImgUrl(aboutData.section2.imageUrl, 'loungewear')} 
                   alt={aboutData.section2.title} 
                   className="w-full h-full object-cover opacity-95 hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"

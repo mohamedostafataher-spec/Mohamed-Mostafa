@@ -41,6 +41,7 @@ interface DashboardProps {
 
 const getStatusBadge = (status: Order['status']) => {
   switch (status) {
+    case 'pending':
     case 'new':
       return {
         label: 'طلب جديد ⏳',

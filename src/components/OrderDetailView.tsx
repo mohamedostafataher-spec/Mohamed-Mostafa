@@ -5,7 +5,7 @@ import {
   ShieldCheck, AlertTriangle, Printer, PhoneCall, Copy, Check, FileText, Star
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { supabase } from '../services/db';
+import { supabase, cleanImgUrl } from '../services/db';
 import { Order, Product, OrderStatus } from '../types';
 import { jsPDF } from 'jspdf';
 
@@ -96,8 +96,11 @@ export default function OrderDetailView({
                 const cat = rawP.category || 'sleepwear';
                 const imgs = Array.isArray(rawP.images) ? rawP.images : (rawP.images ? JSON.parse(rawP.images) : []);
                 const cleanImgs = imgs.map((img: any) => {
-                  if (!img || img.startsWith('/') || img.startsWith('http')) return img;
-                  return `/img/${img}.png`;
+                  let path = img;
+                  if (img && !img.startsWith('/') && !img.startsWith('http')) {
+                    path = `/img/${img}.png`;
+                  }
+                  return cleanImgUrl(path, cat);
                 });
 
                 dict[rawP.id] = {
@@ -600,7 +603,7 @@ export default function OrderDetailView({
                         className="w-full h-full object-cover" 
                         referrerPolicy="no-referrer"
                         onError={(e) => {
-                          e.currentTarget.src = '/img/bridal_satin_robe_pink_1.png'; // Beautiful safe fallback
+                          e.currentTarget.src = cleanImgUrl('/img/bridal_satin_robe_pink_1.png', 'sleepwear'); // Beautiful safe fallback
                         }}
                       />
                     </div>

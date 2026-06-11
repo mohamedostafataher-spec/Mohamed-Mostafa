@@ -80,6 +80,122 @@ export default function AtelierAudioAtmosphere({
   const [tipIndex, setTipIndex] = useState(0);
   const [copiedCoupon, setCopiedCoupon] = useState<string | null>(null);
 
+  // Real Boutique Ambient Sound Engine state for the physical boutique atmosphere
+  const [ambientActive, setAmbientActive] = useState(false);
+  const audioCtxRef = React.useRef<AudioContext | null>(null);
+  const synthNodesRef = React.useRef<any[]>([]);
+
+  // Start the background boutique music
+  const startAmbientSynth = () => {
+    try {
+      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtxClass) return;
+      
+      const ctx = new AudioCtxClass();
+      audioCtxRef.current = ctx;
+
+      // Master ambient gain node
+      const masterGain = ctx.createGain();
+      // Set peaceful soft volume limit
+      masterGain.gain.setValueAtTime(0.04, ctx.currentTime);
+
+      // Warm low-pass filter to replicate elite lounge acoustic spacing
+      const lowpassFilter = ctx.createBiquadFilter();
+      lowpassFilter.type = 'lowpass';
+      lowpassFilter.frequency.setValueAtTime(290, ctx.currentTime);
+      lowpassFilter.Q.setValueAtTime(1.2, ctx.currentTime);
+
+      masterGain.connect(lowpassFilter);
+      lowpassFilter.connect(ctx.destination);
+
+      const oscs: any[] = [];
+
+      // Cozy lush major 9th progression chords (Dbmaj9 -> Gbmaj9 -> Bbm9)
+      const chordGroups = [
+        [138.59, 174.61, 207.65, 261.63, 311.13], // Dbmaj9
+        [185.00, 233.08, 277.18, 349.23, 415.30], // Gbmaj9
+        [116.54, 138.59, 174.61, 207.65, 277.18]  // Bbm9
+      ];
+
+      // Construct warm physical modeling threads
+      chordGroups[0].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+
+        // Alternating triangle & pure sine waves for deep organ-like luxurious texture
+        osc.type = idx % 2 === 0 ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        const volumeScale = idx === 0 ? 0.04 : 0.02; // emphasize rich sub bass root note
+        oscGain.gain.setValueAtTime(volumeScale, ctx.currentTime);
+
+        osc.connect(oscGain);
+        oscGain.connect(masterGain);
+        osc.start();
+
+        oscs.push({ osc, oscGain, baseFreq: freq });
+      });
+
+      // Ultra slow progressive chord switcher
+      let chordIndex = 0;
+      const intervalId = setInterval(() => {
+        if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') return;
+        chordIndex = (chordIndex + 1) % chordGroups.length;
+        const nextChord = chordGroups[chordIndex];
+
+        oscs.forEach((item, idx) => {
+          if (idx < nextChord.length) {
+            // Ethereal portamento slide to smoothly morph between chords
+            item.osc.frequency.exponentialRampToValueAtTime(nextChord[idx], audioCtxRef.current!.currentTime + 3.8);
+          }
+        });
+      }, 7500);
+
+      synthNodesRef.current = [masterGain, lowpassFilter, ...oscs, { intervalId }];
+      setAmbientActive(true);
+    } catch (e) {
+      console.warn("Audio Context init blocked or not supported on this device:", e);
+    }
+  };
+
+  const stopAmbientSynth = () => {
+    try {
+      if (synthNodesRef.current.length > 0) {
+        synthNodesRef.current.forEach((nodeItem) => {
+          if (nodeItem.osc) {
+            try { nodeItem.osc.stop(); } catch (e) {}
+          }
+          if (nodeItem.intervalId) {
+            clearInterval(nodeItem.intervalId);
+          }
+        });
+      }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close().catch(() => {});
+      }
+    } catch (e) {
+      console.warn("Audio clean error:", e);
+    }
+    synthNodesRef.current = [];
+    audioCtxRef.current = null;
+    setAmbientActive(false);
+  };
+
+  const toggleAmbientSynth = () => {
+    if (ambientActive) {
+      stopAmbientSynth();
+    } else {
+      startAmbientSynth();
+    }
+  };
+
+  // Safe release on unmount
+  useEffect(() => {
+    return () => {
+      stopAmbientSynth();
+    };
+  }, []);
+
   // Auto-cycle brand messages periodically (Phase 3)
   useEffect(() => {
     const messageInterval = setInterval(() => {
@@ -356,6 +472,44 @@ export default function AtelierAudioAtmosphere({
                           </p>
                         </motion.div>
                       </AnimatePresence>
+                    </div>
+
+                    {/* Audio Ambience Synthesizer Board */}
+                    <div className="bg-gradient-to-r from-neutral-900 to-zinc-900 text-white p-3.5 rounded-2xl border border-white/5 space-y-2 text-right relative overflow-hidden">
+                      {/* background ambient blur */}
+                      <span className="absolute top-0 right-0 w-8 h-8 rounded-full bg-[#DF8A9C]/10 filter blur-md" />
+                      
+                      <div className="flex justify-between items-center flex-row-reverse relative z-10">
+                        <div className="flex items-center gap-1.5 flex-row-reverse">
+                          <span className="text-xs">🎵</span>
+                          <span className="text-[10.5px] font-bold text-[#F6E7A6] font-serif">الخلفية الموسيقية لصالون Sulta</span>
+                        </div>
+                        <span className="text-[8px] bg-white/15 px-1.5 py-0.5 rounded text-gray-300 font-mono">Lounge Audio</span>
+                      </div>
+
+                      <p className="text-[9.5px] text-gray-300 leading-relaxed font-sans font-light relative z-10">
+                        عيشي تجربة تفاعلية غامرة وكأنكِ داخل الأتيلييه الفعلي! يمكنكِ تشغيل الموسيقى الهادئة المصممة للراحة النفسية أثناء تسوقكِ الفاخر.
+                      </p>
+
+                      <div className="flex justify-between items-center flex-row-reverse pt-2 border-t border-white/5 relative z-10">
+                        <button
+                          onClick={toggleAmbientSynth}
+                          className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                            ambientActive 
+                              ? 'bg-neutral-100 hover:bg-white text-neutral-900 border-white font-semibold' 
+                              : 'bg-transparent border-white/20 hover:border-white/40 text-[#F6E7A6] font-semibold'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${ambientActive ? 'bg-emerald-500 animate-ping' : 'bg-gray-400'}`} />
+                          <span>{ambientActive ? 'إيقاف المعزوفة الملكية ⏸' : 'تشغيل الموسيقى الملكية ▶'}</span>
+                        </button>
+                        
+                        {ambientActive && (
+                          <span className="text-[8.5px] text-emerald-400 font-sans flex items-center gap-1 animate-pulse">
+                            <span>✦ جودة 3D Acoustic مفعلة</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Why SULTA (Phase 8) */}

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
 import { PACKAGING_INFO } from '../data';
-import { dbService } from '../services/db';
+import { dbService, cleanImgUrl } from '../services/db';
 
 interface ProductDetailModalProps {
   product: Product;
@@ -38,9 +38,9 @@ export default function ProductDetailModal({
   const [selectedCol, setSelectedCol] = useState(product.colors[0] || { name: 'Default', hex: '#000000', images: [] });
   
   // Luxury Gallery Logic: Show color-specific images if they exist, otherwise show all product images
-  const displayImages = (selectedCol && selectedCol.images && selectedCol.images.length > 0) 
+  const displayImages = ((selectedCol && selectedCol.images && selectedCol.images.length > 0) 
     ? selectedCol.images 
-    : product.images;
+    : product.images).map(img => cleanImgUrl(img, product.category));
 
   // Sync active image if it goes out of bounds for the current display images
   React.useEffect(() => {
@@ -1473,19 +1473,138 @@ export default function ProductDetailModal({
                 </div>
               )}
               {activeTab === 'reviews' && (
-                <div className="space-y-3 text-right">
-                  <div className="flex items-center justify-between text-[10px] bg-amber-50 rounded-lg p-2 border border-amber-100">
-                    <span className="text-gray-500 font-sans font-bold">تطابق الصورة مع الواقع: 98% ✔</span>
-                    <span className="text-amber-800 font-bold">مراجعات وصور زبائن SULTA الفاخرة</span>
+                <div className="space-y-4 text-right">
+                  {/* Reviews Summary Section */}
+                  <div className="flex flex-col md:flex-row gap-4 items-center justify-between text-[10px] bg-amber-50 rounded-xl p-3 border border-amber-100">
+                    <div className="flex items-center gap-2">
+                       <span className="text-2xl text-amber-500 font-bold">{Number(product.rating || 5).toFixed(1)}</span>
+                       <div className="flex flex-col">
+                         <div className="text-amber-400">{'⭐'.repeat(Math.round(Number(product.rating || 5)))}</div>
+                         <span className="text-gray-500">بناءً على {product.reviewsCount || 0} تقييم</span>
+                       </div>
+                    </div>
+                    {/* Add Review Button Trigger */}
+                    <button 
+                      onClick={() => {
+                        const el = document.getElementById('review-form-container');
+                        if (el) el.classList.toggle('hidden');
+                      }}
+                      className="bg-black text-white px-3 py-1.5 rounded-lg font-sans font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      كتابة تقييم وإرفاق صورة
+                    </button>
                   </div>
 
+                  {/* Review Submission Form Container */}
+                  <div id="review-form-container" className="hidden bg-white p-4 rounded-xl border border-gray-150 shadow-sm space-y-3 font-sans">
+                    <h4 className="font-bold text-[#0B0B0B] text-xs">شاركينا رأيك وأرفقي صورة لقطعتكِ الفاخرة</h4>
+                    
+                    <div className="space-y-2">
+                      <label className="text-[10px] text-gray-600 block">التقييم (النجوم)</label>
+                      <select id="new-review-rating" className="w-full p-2 border border-gray-150 rounded-lg text-right text-[10px] bg-gray-50 focus:outline-[#DF8A9C]">
+                        <option value="5">⭐⭐⭐⭐⭐ ممتاز (5 نجوم)</option>
+                        <option value="4">⭐⭐⭐⭐ جيد جداً (4 نجوم)</option>
+                        <option value="3">⭐⭐⭐ جيد (3 نجوم)</option>
+                        <option value="2">⭐⭐ مقبول (نجمتين)</option>
+                        <option value="1">⭐ ضعيف (نجمة واحدة)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] text-gray-600 block">الاسم</label>
+                      <input id="new-review-name" type="text" placeholder="اسمكِ الفني أو الحقيقي..." className="w-full p-2 border border-gray-150 rounded-lg text-right text-[10px] bg-gray-50 focus:outline-[#DF8A9C]" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] text-gray-600 block">انطباعك عن المقاس، الخامة والراحة</label>
+                      <textarea id="new-review-comment" rows={3} placeholder="اكتبي تجربتك..." className="w-full p-2 border border-gray-150 rounded-lg text-right text-[10px] bg-gray-50 focus:outline-[#DF8A9C]"></textarea>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] text-gray-600 block">إرفاق صور (روابط أو مسارات)</label>
+                      <input id="new-review-images" type="text" placeholder="/img/my_pajama.png, https://..." className="w-full p-2 border border-gray-150 rounded-lg text-left text-[10px] bg-gray-50 focus:outline-[#DF8A9C] font-mono" dir="ltr" />
+                      <p className="text-[8px] text-gray-400">افصلي بين الروابط بفاصلة في حال وجود أكثر من صورة</p>
+                    </div>
+
+                    <button 
+                      onClick={async () => {
+                        const nameEl = document.getElementById('new-review-name') as HTMLInputElement;
+                        const commentEl = document.getElementById('new-review-comment') as HTMLTextAreaElement;
+                        const ratingEl = document.getElementById('new-review-rating') as HTMLSelectElement;
+                        const imagesEl = document.getElementById('new-review-images') as HTMLInputElement;
+                        
+                        if (!nameEl.value || !commentEl.value) {
+                          toast.error('يرجى كتابة الاسم والتعليق');
+                          return;
+                        }
+
+                        const rawImages = imagesEl.value.split(',').map(s => s.trim()).filter(s => !!s);
+                        
+                        try {
+                          await dbService.addReview({
+                            productId: product.id,
+                            productName: product.nameAr,
+                            username: nameEl.value,
+                            rating: parseInt(ratingEl.value),
+                            comment: commentEl.value,
+                            images: rawImages,
+                            isVerifiedPurchase: true // simulate buyer logic automatically checks order history
+                          });
+                          
+                          toast.success('تم إرسال تقييمك بنجاح وسيكون متاحاً بعد المراجعة');
+                          document.getElementById('review-form-container')?.classList.add('hidden');
+                          
+                          // reset
+                          nameEl.value = '';
+                          commentEl.value = '';
+                          imagesEl.value = '';
+                        } catch (err) {
+                          toast.error('لم نتمكن من الحفظ، يبدو أن هناك مشكلة بالاتصال.');
+                        }
+                      }}
+                      className="w-full bg-[#DF8A9C] text-white py-2 rounded-lg font-bold hover:bg-pink-500 transition-colors text-[11px]"
+                    >
+                      إرسال المراجعة الفاخرة
+                    </button>
+                  </div>
+
+                  {/* Customer Gallery (Photos from Reviews) */}
+                  {(() => {
+                    const realReviews = (reviews || []).filter(
+                      (r) => r.productId === product.id || r.productName === product.nameAr || r.productName === product.nameEn
+                    ).filter(r => r.status !== 'hidden' && r.status !== 'deleted');
+
+                    const photoReviews = realReviews.filter(r => r.images && r.images.length > 0);
+                    
+                    if (photoReviews.length > 0) {
+                      return (
+                         <div className="bg-white border border-gray-150 p-3 rounded-xl mb-3 shadow-4xs">
+                            <h5 className="text-[10px] font-bold text-gray-800 mb-2 border-b border-gray-100 pb-1">معرض صور العميلات</h5>
+                            <div className="flex gap-2 overflow-x-auto snap-x scrollbar-hide pb-1">
+                               {photoReviews.map(r => 
+                                  (r.images || []).map((imgUrl, iIdx) => (
+                                      <div key={`cust-img-${r.id}-${iIdx}`} className="shrink-0 w-16 h-20 rounded-lg overflow-hidden border border-gray-200 snap-start bg-gray-50 relative group">
+                                         <img src={cleanImgUrl(imgUrl, product.category)} className="w-full h-full object-cover" alt="Customer Photo" />
+                                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                            <span className="text-white text-[8px] font-bold">{r.username}</span>
+                                         </div>
+                                      </div>
+                                  ))
+                               )}
+                            </div>
+                         </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
                   {/* Review lists */}
-                  <div className="space-y-3 font-sans max-h-56 overflow-y-auto pr-1">
-                    {/* Live reviews from Firestore */}
+                  <div className="space-y-3 font-sans max-h-80 overflow-y-auto pr-1 pb-4">
+                    {/* Live reviews from Database */}
                     {(() => {
                       const realReviews = (reviews || []).filter(
-                        (r) => r.productName === product.nameAr || r.productName === product.nameEn
-                      );
+                        (r) => r.productId === product.id || r.productName === product.nameAr || r.productName === product.nameEn
+                      ).filter(r => r.status !== 'hidden' && r.status !== 'deleted');
                       
                       if (realReviews.length === 0) {
                         return (
@@ -1497,15 +1616,31 @@ export default function ProductDetailModal({
                       }
 
                       return realReviews.map((r, rIdx) => (
-                        <div key={`live-rev-${rIdx}`} className="bg-amber-100/30 p-2.5 rounded-xl border border-amber-200/50 space-y-1 shadow-4xs animate-scale-up">
-                          <div className="flex justify-between items-center text-[10px]">
-                            <span className="text-gray-400">{r.date} • {r.country === 'EG' ? 'مصر 🇪🇬' : 'السعودية 🇸🇦'}</span>
-                            <div className="flex items-center gap-1.5">
+                        <div key={`live-rev-${rIdx}`} className="bg-white p-3 rounded-xl border border-gray-150 space-y-2 shadow-4xs animate-scale-up">
+                          <div className="flex justify-between items-start text-[10px]">
+                            <div className="flex items-center gap-1.5 flex-wrap flex-row-reverse">
                               <span className="font-bold text-gray-805">{r.username}</span>
-                              <span className="text-amber-400">{'⭐'.repeat(r.rating)}</span>
+                              {r.isVerifiedPurchase && (
+                                <span className="bg-green-50 text-green-700 text-[8px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border border-green-100/50">
+                                  <Check className="w-2.5 h-2.5" /> مشتري موثق
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-col items-end">
+                               <span className="text-amber-400 text-xs">{'⭐'.repeat(r.rating || 5)}{'☆'.repeat(5 - (r.rating || 5))}</span>
+                               <span className="text-gray-400 text-[9px]">{new Date(r.date).toLocaleDateString('ar-EG')} • {r.country === 'EG' ? 'مصر 🇪🇬' : 'السعودية 🇸🇦'}</span>
                             </div>
                           </div>
-                          <p className="text-[10px] text-gray-700 leading-relaxed">{r.comment}</p>
+                          <p className="text-[11px] text-gray-700 leading-relaxed font-medium">{r.comment}</p>
+                          
+                          {/* Individual Review Images */}
+                          {r.images && r.images.length > 0 && (
+                            <div className="flex gap-2 mt-2">
+                               {r.images.map((imgUrl, iIdx) => (
+                                 <img key={`rev-img-${iIdx}`} src={cleanImgUrl(imgUrl, product.category)} className="w-12 h-12 object-cover rounded-md border border-gray-200" alt="Review Evidence" />
+                               ))}
+                            </div>
+                          )}
                         </div>
                       ));
                     })()}
@@ -1763,7 +1898,7 @@ ${shareUrl}`;
                 </span>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-15 rounded-lg overflow-hidden border border-gray-150 bg-gray-100 shrink-0">
-                    <img referrerPolicy="no-referrer" src={matchedPairProduct.images[0]} alt="Pairing Match" className="w-full h-full object-cover" />
+                    <img referrerPolicy="no-referrer" src={cleanImgUrl(matchedPairProduct.images[0], matchedPairProduct.category)} alt="Pairing Match" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] font-bold text-gray-900 truncate">{matchedPairProduct.nameAr}</p>

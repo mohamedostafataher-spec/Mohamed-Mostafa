@@ -23,6 +23,7 @@ import { Product, Order, CustomerProfile, Review, Category, Settings } from '../
 // Import our modular centers
 import SmartNotificationsCenter from './SmartNotificationsCenter';
 import BrandReputationDashboard from './BrandReputationDashboard';
+import AdminReviewsCenter from './AdminReviewsCenter';
 import SultaExperienceScore from './SultaExperienceScore';
 import CustomerIntelligence from './CustomerIntelligence';
 import ProductPerformance from './ProductPerformance';
@@ -50,7 +51,7 @@ export default function ExecutiveCommandCenter({
   onRefreshData,
 }: ExecutiveCommandCenterProps) {
   // Tabs for sub-controls
-  const [activeTab, setActiveTab] = useState<'kpis' | 'notifications' | 'customers_intel' | 'products_performance' | 'inventory_insights' | 'brand_reputation' | 'store_health' | 'merchandising' | 'global_ready'>('kpis');
+  const [activeTab, setActiveTab] = useState<'kpis' | 'reviews_center' | 'notifications' | 'customers_intel' | 'products_performance' | 'inventory_insights' | 'brand_reputation' | 'store_health' | 'merchandising' | 'global_ready'>('kpis');
 
   // Aggregated analytics values
   const report = useMemo(() => {
@@ -149,11 +150,13 @@ export default function ExecutiveCommandCenter({
               <SmartNotificationsCenter
                 orders={orders}
                 products={products}
+                reviews={reviews}
                 healthIssuesCount={report.healthIssues}
                 onNavigateToTab={(tab) => {
                   if (tab === 'orders') setActiveTab('kpis'); // Navigate or adjust tab
                   if (tab === 'inventory') setActiveTab('inventory_insights');
                   if (tab === 'system_health') setActiveTab('store_health');
+                  if (tab === 'reviews') setActiveTab('reviews_center');
                   if (tab === 'kpis') setActiveTab('kpis');
                 }}
               />
@@ -175,10 +178,12 @@ export default function ExecutiveCommandCenter({
             <SmartNotificationsCenter
               orders={orders}
               products={products}
+              reviews={reviews}
               healthIssuesCount={report.healthIssues}
               onNavigateToTab={(tab) => {
                 if (tab === 'inventory') setActiveTab('inventory_insights');
                 if (tab === 'system_health') setActiveTab('store_health');
+                if (tab === 'reviews') setActiveTab('reviews_center');
                 if (tab === 'kpis') setActiveTab('kpis');
               }}
             />
@@ -200,6 +205,12 @@ export default function ExecutiveCommandCenter({
         return (
           <div className="animate-fade-in-rapid">
             <SmartInventoryInsights products={products} orders={orders} />
+          </div>
+        );
+      case 'reviews_center':
+        return (
+          <div className="animate-fade-in-rapid">
+            <AdminReviewsCenter reviews={reviews} products={products} />
           </div>
         );
       case 'brand_reputation':
@@ -331,6 +342,15 @@ export default function ExecutiveCommandCenter({
           }`}
         >
           تحليل المخزون والأصول 📦
+        </button>
+
+        <button
+          onClick={() => setActiveTab('reviews_center')}
+          className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
+            activeTab === 'reviews_center' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+          }`}
+        >
+          إدارة التقييمات والمراجعات ⭐
         </button>
 
         <button

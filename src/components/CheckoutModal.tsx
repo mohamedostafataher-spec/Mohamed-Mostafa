@@ -161,7 +161,7 @@ export default function CheckoutModal({
         totalPrice: totalAmount,
         currency: country === 'EG' ? 'EGP' : 'SAR',
         paymentMethod: activePayments.find(p => p.id === selectedPayment)?.name || 'الدفع عند الاستلام',
-        status: 'new',
+        status: 'pending',
         date: new Date().toISOString().split('T')[0]
       };
 

@@ -204,7 +204,7 @@ export default function AiMirror({
   };
 
   // Render static demo model image if none uploaded, to give beautiful preview instantly
-  const demoModelUrl = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600";
+  const demoModelUrl = "/img/sulta_collections_1_1781140831329.png";
 
   // Phase 7: Export mockup to user machine using HTML5 Canvas Compositing
   const handleSaveMockup = () => {

@@ -6,7 +6,7 @@ import {
   ExternalLink, Check, Copy, HelpCircle, Compass, Scissors, Box, Smile 
 } from 'lucide-react';
 import { Product, CartItem, DiscountCoupon } from '../types';
-import { dbService, supabase } from '../services/db';
+import { dbService, supabase, cleanImgUrl } from '../services/db';
 
 interface PremiumExperienceProps {
   products: Product[];
@@ -1066,7 +1066,7 @@ export default function PremiumLuxuryExperience({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="relative group overflow-hidden rounded-3xl border border-gray-250 bg-[#0B0B0B]">
                   <img 
-                    src="/img/sulta_loungewear.png" 
+                    src={cleanImgUrl("/img/sulta_loungewear.png", "loungewear")} 
                     className="w-full h-[400px] object-cover opacity-80" 
                     alt="Lookbook Winter Campaign" 
                   />
@@ -1268,7 +1268,7 @@ export default function PremiumLuxuryExperience({
                     )) : (
                       <>
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src="/img/sulta_product_1.png" className="w-full h-40 object-cover" alt="" />
+                          <img src={cleanImgUrl("/img/sulta_product_1.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">ميار أسامة - الرياض</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" خام الساتان ثقيل وبديع، التغليف الملكي عطر الدار يجنن! "</p>
@@ -1276,7 +1276,7 @@ export default function PremiumLuxuryExperience({
                         </div>
 
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src="/img/sulta_product_2.png" className="w-full h-40 object-cover" alt="" />
+                          <img src={cleanImgUrl("/img/sulta_product_2.png", "homewear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">دينا جلال - القاهرة</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" منسق كوتور للأطقم فادني لتجهيز جهازي، شكراً دار سولتة. "</p>
@@ -1284,7 +1284,7 @@ export default function PremiumLuxuryExperience({
                         </div>
 
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src="/img/sulta_sleepwear.png" className="w-full h-40 object-cover" alt="" />
+                          <img src={cleanImgUrl("/img/sulta_sleepwear.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">حصة فهد - جدة</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" قطن السولتة مريح وصحي جداً أثناء النوم والترطيب مثالي. "</p>

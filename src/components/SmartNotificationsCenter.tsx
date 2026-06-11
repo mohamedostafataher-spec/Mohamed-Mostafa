@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
-import { Bell, ShoppingBag, ShieldAlert, CheckCircle2, Package, Sparkles, Megaphone, ArrowRight } from 'lucide-react';
-import { Order, Product } from '../types';
+import { Bell, ShoppingBag, ShieldAlert, CheckCircle2, Package, Sparkles, Megaphone, ArrowRight, Star } from 'lucide-react';
+import { Order, Product, Review } from '../types';
 
 interface SmartNotificationsCenterProps {
   orders: Order[];
   products: Product[];
+  reviews?: Review[];
   healthScore?: number;
   healthIssuesCount?: number;
   onNavigateToTab: (tab: string) => void;
@@ -13,6 +14,7 @@ interface SmartNotificationsCenterProps {
 export default function SmartNotificationsCenter({
   orders,
   products,
+  reviews = [],
   healthScore = 100,
   healthIssuesCount = 0,
   onNavigateToTab,
@@ -22,14 +24,28 @@ export default function SmartNotificationsCenter({
       id: string;
       title: string;
       desc: string;
-      type: 'order' | 'warning' | 'info' | 'success';
+      type: 'order' | 'warning' | 'info' | 'success' | 'review';
       time: string;
       actionLabel?: string;
       actionTab?: string;
     }[] = [];
 
+    // Pending Reviews
+    const pendingReviews = reviews.filter(r => r.status === 'pending');
+    if (pendingReviews.length > 0) {
+      list.push({
+        id: 'new-reviews-alert',
+        title: `لديك ${pendingReviews.length} تقييمات جديدة بانتظار الموافقة ⭐`,
+        desc: `قام عملاؤك بمشاركة لحظاتهم الفاخرة مع منتجات SULTA، راجعيها الآن.`,
+        type: 'review',
+        time: 'الآن',
+        actionLabel: 'مركز المراجعات',
+        actionTab: 'reviews'
+      });
+    }
+
     // 1. Pending/New Orders Group
-    const pendingOrders = orders.filter((o) => o.status === 'new');
+    const pendingOrders = orders.filter((o) => o.status === 'pending');
     if (pendingOrders.length > 0) {
       list.push({
         id: 'new-orders-alert',
@@ -130,6 +146,9 @@ export default function SmartNotificationsCenter({
           } else if (notif.type === 'success') {
             bgClass = 'bg-emerald-50/50 border-emerald-100 text-emerald-900';
             icon = <CheckCircle2 size={16} className="text-emerald-600" />;
+          } else if (notif.type === 'review') {
+            bgClass = 'bg-yellow-50/50 border-yellow-100 text-yellow-900';
+            icon = <Star size={16} className="text-yellow-600" />;
           }
 
           return (

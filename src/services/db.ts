@@ -190,18 +190,18 @@ export function cleanImgUrl(url: any, fallbackCategory?: string): string {
   const getUnsplashFallback = (category?: string): string => {
     const cat = String(category || 'sleepwear').toLowerCase();
     if (cat === 'sleepwear') {
-      return '/img/sulta_sleepwear.png';
+      return '/img/sulta_sleepwear_1_1781140797178.png';
     }
     if (cat === 'loungewear') {
-      return '/img/sulta_loungewear.png';
+      return '/img/sulta_loungewear_1_1781140813379.png';
     }
     if (cat === 'homewear' || cat === 'dresses') {
-      return '/img/sulta_product_2.png';
+      return '/img/sulta_homewear_1_1781140849645.png';
     }
     if (cat === 'collections' || cat === 'new') {
-      return '/img/sulta_hero_banner.png';
+      return '/img/sulta_collections_1_1781140831329.png';
     }
-    return '/img/sulta_product_1.png'; // Default peach blush luxury pajama
+    return '/img/sulta_default_1_1781140865386.png';
   };
 
   if (!url || typeof url !== 'string' || url.trim() === '' || url.includes('placeholder') || url.includes('or_url.png')) {
@@ -210,26 +210,34 @@ export function cleanImgUrl(url: any, fallbackCategory?: string): string {
 
   let cleaned = url.trim();
   if (cleaned.startsWith('/src/assets/')) {
-    cleaned = cleaned.replace(/^\/src\/assets\//, '/assets/');
+    cleaned = cleaned.replace(/^\/src\/assets\//, '/img/');
   } else if (cleaned.startsWith('src/assets/')) {
-    cleaned = cleaned.replace(/^src\/assets\//, '/assets/');
+    cleaned = cleaned.replace(/^src\/assets\//, '/img/');
+  } else if (cleaned.startsWith('/assets/images/')) {
+    cleaned = cleaned.replace(/^\/assets\/images\//, '/img/');
   }
 
-  // Pre-configured high-resolution Unsplash mappings so local asset paths load beautiful images
+  // Pre-configured mappings so local asset paths load our new generated beautiful SULTA imagery
   const IMAGE_MAPPING: Record<string, string> = {
-    'hero_pajama_lifestyle_1_1780682110287.png': '/img/sulta_sleepwear.png',
-    'hero_pajama_editorial_2_1780682126486.png': '/img/sulta_loungewear.png',
-    'hero_pajama_detail_3_1780682140472.png': '/img/sulta_product_1.png',
-    'hero_sleepwear_luxury_1780620325112.png': '/img/sulta_product_2.png',
-    'pink_bow_pajama_1780730148591.png': '/img/sulta_hero_banner.png',
-    'sulta_boutique_display_1_1780682812541.png': '/img/sulta_sleepwear.png',
-    'sulta_box_closed_1780609086750.png': '/img/sulta_product_2.png',
-    'sulta_box_open_1780609104306.png': '/img/sulta_product_1.png',
-    'sulta_luxury_lifestyle_about_1_1780682261409.png': '/img/sulta_loungewear.png',
-    'sulta_luxury_lifestyle_about_2_1780682276428.png': '/img/sulta_sleepwear.png',
-    'sulta_luxury_pajama_1_1780681467351.png': '/img/sulta_product_1.png',
-    'sulta_luxury_pajama_2_1780681482748.png': '/img/sulta_product_2.png',
-    'sulta_luxury_pajama_hero_2_1780682794821.png': '/img/sulta_hero_banner.png',
+    'hero_pajama_lifestyle_1_1780682110287.png': '/img/sulta_sleepwear_1_1781140797178.png',
+    'hero_pajama_editorial_2_1780682126486.png': '/img/sulta_collections_1_1781140831329.png',
+    'hero_pajama_detail_3_1780682140472.png': '/img/sulta_loungewear_1_1781140813379.png',
+    'hero_sleepwear_luxury_1780620325112.png': '/img/sulta_homewear_1_1781140849645.png',
+    'pink_bow_pajama_1780730148591.png': '/img/sulta_default_1_1781140865386.png',
+    'sulta_boutique_display_1_1780682812541.png': '/img/sulta_sleepwear_1_1781140797178.png',
+    'sulta_box_closed_1780609086750.png': '/img/sulta_collections_1_1781140831329.png',
+    'sulta_box_open_1780609104306.png': '/img/sulta_default_1_1781140865386.png',
+    'sulta_luxury_lifestyle_about_1_1780682261409.png': '/img/sulta_loungewear_1_1781140813379.png',
+    'sulta_luxury_lifestyle_about_2_1780682276428.png': '/img/sulta_sleepwear_1_1781140797178.png',
+    'sulta_luxury_pajama_1_1780681467351.png': '/img/sulta_default_1_1781140865386.png',
+    'sulta_luxury_pajama_2_1780681482748.png': '/img/sulta_collections_1_1781140831329.png',
+    'sulta_luxury_pajama_hero_2_1780682794821.png': '/img/sulta_collections_1_1781140831329.png',
+    'sulta_sleepwear.png': '/img/sulta_sleepwear_1_1781140797178.png',
+    'sulta_loungewear.png': '/img/sulta_loungewear_1_1781140813379.png',
+    'sulta_product_1.png': '/img/sulta_default_1_1781140865386.png',
+    'sulta_product_2.png': '/img/sulta_homewear_1_1781140849645.png',
+    'sulta_hero_banner.png': '/img/sulta_collections_1_1781140831329.png',
+    'sulta_hero_banner_real.png': '/img/sulta_loungewear_1_1781140813379.png',
   };
 
   // Convert local /img/ or /assets/ paths to beautiful Unsplash fallbacks
@@ -242,8 +250,9 @@ export function cleanImgUrl(url: any, fallbackCategory?: string): string {
     return getUnsplashFallback(fallbackCategory);
   }
 
-  // Also trap existing seeded unsplash mock images that might be in the database
+  // Map existing unsplash images from database back to our custom branded images
   if (cleaned.includes('images.unsplash.com')) {
+    // try to fuzzy match category based on fallback
     return getUnsplashFallback(fallbackCategory);
   }
 
@@ -445,15 +454,33 @@ function mapProduct(data: any): Product {
 }
 
 function mapReview(data: any): Review {
+  let imagesParsed = [];
+  if (data.images) {
+    if (typeof data.images === 'string') {
+      try {
+        imagesParsed = JSON.parse(data.images);
+      } catch (e) {
+        // failed to parse
+      }
+    } else if (Array.isArray(data.images)) {
+      imagesParsed = data.images;
+    }
+  }
+
   return {
     id: data.id,
+    productId: data.product_id,
+    userId: data.user_id,
     username: data.username || '',
     avatar: data.avatar || '',
     rating: Number(data.rating ?? 5),
     comment: data.comment || '',
-    date: data.date || '',
+    date: data.date || data.created_at || new Date().toISOString(),
     country: data.country || 'SA',
-    productName: data.product_name || ''
+    productName: data.product_name || '',
+    isVerifiedPurchase: !!data.is_verified_purchase,
+    status: data.status || 'approved',
+    images: imagesParsed
   };
 }
 
@@ -1594,6 +1621,40 @@ export const dbService = {
       console.warn("Supabase updateInventory insertion failed:", error.message);
     }
     await dbService.logActivity('UPDATE_INVENTORY', `Updated stock for ${productId} (${variant}) by ${change}. Reason: ${reason}`);
+  },
+
+  // Review Management
+  addReview: async (review: Partial<Review>): Promise<any> => {
+    const payload = {
+      product_id: review.productId,
+      user_id: review.userId || null,
+      username: review.username,
+      avatar: review.avatar || '',
+      rating: review.rating,
+      comment: review.comment,
+      is_verified_purchase: review.isVerifiedPurchase || false,
+      status: review.status || 'pending',
+      country: review.country || 'SA',
+      product_name: review.productName || '',
+      images: review.images ? JSON.stringify(review.images) : '[]'
+    };
+    
+    const { data, error } = await supabase.from('reviews').insert([payload]).select();
+    if (error) {
+      console.warn("Supabase addReview failed", error);
+      throw error;
+    }
+    await dbService.logActivity('REVIEW_ADDED', `New review added for product: ${review.productId}`);
+    return data;
+  },
+
+  updateReviewStatus: async (reviewId: string, status: 'approved' | 'hidden' | 'deleted'): Promise<void> => {
+    if (status === 'deleted') {
+      await supabase.from('reviews').delete().eq('id', reviewId);
+    } else {
+      await supabase.from('reviews').update({ status }).eq('id', reviewId);
+    }
+    await dbService.logActivity('REVIEW_MODERATED', `Review ${reviewId} marked as ${status}`);
   },
 
   // ADD TEST PRODUCT

@@ -155,7 +155,7 @@ export default function StoreView({
         titleAr: 'الكتالوج الملكي لعلامة SULTA',
         titleEn: 'THE IMPERIAL SULTA CATALOGUE',
         descAr: 'تحفة الحرير الملكي الإيطالي والقطن العضوي طويل التيلة المصمم ليزين لياليك بالفخامة والراحة المطلقة.',
-        bgImage: '/img/sulta_hero_banner_real.png',
+        bgImage: cleanImgUrl('/img/sulta_hero_banner_real.png'),
         quote: '"الجمال ليس اختيارًا، بل أسلوب حياة تتبنينه داخل عالمك الخاص.."',
         author: 'SULTA ATELIER'
       };
@@ -165,7 +165,7 @@ export default function StoreView({
       titleAr: catObj?.nameAr || catObj?.name || 'مجموعة فاخرة',
       titleEn: (catObj?.nameEn || catObj?.name || 'COUTURE DESIGN').toUpperCase(),
       descAr: `قطع مفعمة بالفخامة والجاذبية مصممة بدقة من خامة ${catObj?.nameAr || 'البراند'} العريقة لتطوق جسدكِ كالغيم المريح.`,
-      bgImage: catObj?.imageUrl || cleanImgUrl('fallback', 'collections'),
+      bgImage: cleanImgUrl(catObj?.imageUrl || 'fallback', catObj?.slug || 'collections'),
       quote: `"صيغت لتلبي شغف العرائس وتلامس رقة الروح بنعومة حريرية لا تفنى."`,
       author: 'إصدارات ليمتد كوتور'
     };
@@ -535,7 +535,7 @@ export default function StoreView({
                   const isEditorialFeature = index % 5 === 0 && mobileLayout === 'single'; // Break grid with larger content on single layout
                   
                   // Select source image
-                  let currentImg = cleanImgUrl(product.images?.[activeImgIdx]);
+                  let currentImg = cleanImgUrl(product.images?.[activeImgIdx], product.category);
                   
                   return (
                     <div 

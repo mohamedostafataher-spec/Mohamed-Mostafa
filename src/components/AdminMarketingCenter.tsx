@@ -5,7 +5,7 @@ import {
   Trash2, Edit, Save, Share2, Clipboard, TrendingUp, RefreshCw, Layers, 
   Settings, Bell, AlertTriangle, Eye, ArrowUpRight, DollarSign, Chrome, Sparkles
 } from 'lucide-react';
-import { supabase, dbService } from '../services/db';
+import { supabase, dbService, cleanImgUrl } from '../services/db';
 
 // --- MARKETING SYSTEM TYPES ---
 export interface SocialAccount {
@@ -899,7 +899,7 @@ export default function AdminMarketingCenter() {
                 {feedPosts.map((post) => (
                   <div key={post.id} className="border border-gray-150 rounded-xl overflow-hidden shadow-xs flex flex-col justify-between">
                     <div className="relative aspect-square">
-                      <img src={post.mediaUrl} className="w-full h-full object-cover" alt="Feed" />
+                      <img src={cleanImgUrl(post.mediaUrl)} className="w-full h-full object-cover" alt="Feed" />
                       <span className="absolute top-2 right-2 bg-black/80 text-white text-[9px] px-2 py-0.5 rounded-full capitalize font-sans">
                         {post.platform}
                       </span>

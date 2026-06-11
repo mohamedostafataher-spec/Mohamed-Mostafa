@@ -105,6 +105,8 @@ export interface Product {
 
 export interface Review {
   id: string;
+  productId?: string;
+  userId?: string;
   username: string;
   avatar: string;
   rating: number;
@@ -112,6 +114,9 @@ export interface Review {
   date: string;
   country: Country;
   productName: string;
+  isVerifiedPurchase?: boolean;
+  status?: 'pending' | 'approved' | 'hidden';
+  images?: string[];
 }
 
 export interface CartItem {
@@ -121,7 +126,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export type OrderStatus = 'new' | 'confirmed' | 'processing' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'returned';
+export type OrderStatus = 'pending' | 'new' | 'confirmed' | 'processing' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'returned';
 
 export interface InventoryLog {
   id: string;
