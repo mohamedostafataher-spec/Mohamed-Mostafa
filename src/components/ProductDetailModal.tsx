@@ -1591,6 +1591,20 @@ ${shareUrl}`;
               </div>
             )}
 
+            {/* SULTA AI Mirror try-on helper link */}
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.setItem('mirror_preselected_product', JSON.stringify(product));
+                onClose();
+                window.dispatchEvent(new CustomEvent('setTab', { detail: 'ai_mirror' }));
+              }}
+              className="w-full mb-3.5 bg-gradient-to-r from-amber-50 to-amber-100/50 hover:from-amber-200/50 hover:to-amber-100 text-[#A44C5C] hover:text-black border border-[#D4AF37]/50 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs"
+            >
+              <Sparkles size={13} className="text-[#DF8A9D]" />
+              <span>جربي هذا الموديل افتراضياً الآن بمرآة SULTA 🪞🪄</span>
+            </button>
+
             {/* Quick buy and WhatsApp layout buttons */}
             <div className="grid grid-cols-2 gap-2">
               {isCurrentConfigOutOfStock ? (

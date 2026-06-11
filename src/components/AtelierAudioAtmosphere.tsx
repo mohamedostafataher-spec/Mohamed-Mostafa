@@ -1,254 +1,612 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Music, VolumeX, Volume2, Play, Pause, ChevronRight, ChevronLeft, Sparkles, Wand2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  Sparkles, 
+  MapPin, 
+  BookOpen, 
+  Gift, 
+  Percent, 
+  ShoppingBag, 
+  Truck, 
+  Award, 
+  ShieldCheck, 
+  MessageCircle, 
+  ChevronRight, 
+  ChevronLeft, 
+  Heart, 
+  User, 
+  Star, 
+  X, 
+  Layers, 
+  Maximize2, 
+  Minimize2, 
+  Search,
+  Check
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Product } from '../types';
 
-interface Track {
-  nameAr: string;
-  nameEn: string;
-  url: string;
-  duration: string;
+interface AtelierAudioAtmosphereProps {
+  products?: Product[];
+  collections?: any[];
+  coupons?: any[];
+  country?: 'EG' | 'SA';
+  setTab?: (tab: string) => void;
+  onSelectProduct?: (product: Product) => void;
+  onAddToCart?: (product: Product, color: { name: string; hex: string }, size: string, qty: number) => void;
+  session?: any;
 }
 
-const ATELIER_PLAYLIST: Track[] = [
+// Phase 3 & 4 Luxury quotes and Tips data
+const LUXURY_BRAND_MESSAGES = [
+  "✨ أهلاً بكِ في عوالم SULTA حيث تلتقي الراحة المطلقة بترف التفاصيل.",
+  "✨ جميع منتجاتنا مغزولة بعناية فائقة لتمنح جسدك تجربة نوم ملوكية تليق بكِ.",
+  "✨ خاماتنا من الساتان المبرد والقطيفة مصممة لتوفر روعة الملمس ونعومة فائقة في كل لحظة.",
+  "✨ شكراً لثقتكِ الغالية ببراند SULTA. يسعدنا دائماً مرافقة طقوس أناقتك اليومية."
+];
+
+const LUXURY_TIPS = [
   {
-    nameAr: "عود ملكي - ليالي الرياض ✨",
-    nameEn: "Royal Oud - Riyadh Nights",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    duration: "6:12"
+    title: "🌸 دليل اختيار أفضل خامات الصيف",
+    desc: "نوصي بالساتان الملكي المبرد المعالج لمقاومة الحرارة، فهو لطيف على البشرة ومقاوم للتعرق والخطوط الرفيعة لتنامي برفاهية تامة."
   },
   {
-    nameAr: "نسيم النيل المخملي - استرخاء 🌊",
-    nameEn: "Velvet Nile Breeze",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-    duration: "5:04"
+    title: "📐 كيف تختارين قياسك الإيطالي بدقة؟",
+    desc: "استخدمي دليلك الخاص في صفحة حسابك لتحديد المقاس عبر الوزن والطول. إن لم تكوني متأكدة، فإن السروال الفضفاض (Loose-fit) هو خيار مريح ممتاز دوماً."
   },
   {
-    nameAr: "أجواء صالون Sulta - كلاسيك 🕊️",
-    nameEn: "Sulta Salon - Classic",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-    duration: "4:42"
+    title: "🧵 نصائح العناية بقطع الكوتور الفاخرة",
+    desc: "للحفاظ على الريش الطبيعي والدانتيل الفرنسي سليمين، نوصي دائماً بالغسيل اليدوي اللطيف بالماء الفاتر أو الغسيل الجاف (Dry Clean) والكي البخاري الخفيف."
+  },
+  {
+    title: "👰 دليل هدايا العروس وصندوق الأحلام",
+    desc: "نوفر علباً ملكية مخصصة للعرائس. ننصح باختيار اللون الأبيض العاجي (Ivory) مطعماً بالدانتيل كأول طقم لصباحية زفاف ملوكية."
   }
 ];
 
-export default function AtelierAudioAtmosphere() {
+export default function AtelierAudioAtmosphere({
+  products = [],
+  collections = [],
+  coupons = [],
+  country = 'SA',
+  setTab,
+  onSelectProduct,
+  onAddToCart,
+  session
+}: AtelierAudioAtmosphereProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [volume, setVolume] = useState(0.4);
-  const [isMuted, setIsMuted] = useState(false);
-  const [songProgress, setSongProgress] = useState(0);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [activeTab, setActiveTab] = useState<'welcome' | 'spotlight' | 'actions'>('welcome');
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [tipIndex, setTipIndex] = useState(0);
+  const [copiedCoupon, setCopiedCoupon] = useState<string | null>(null);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const progressIntervalRef = useRef<any>(null);
-
-  const activeTrack = ATELIER_PLAYLIST[currentIndex];
-
+  // Auto-cycle brand messages periodically (Phase 3)
   useEffect(() => {
-    // Lazy initialize the HTML audio element to prevent page load blocking and respect browser autoplay directives
-    audioRef.current = new Audio(activeTrack.url);
-    audioRef.current.loop = true;
-    audioRef.current.volume = volume;
+    const messageInterval = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % LUXURY_BRAND_MESSAGES.length);
+    }, 6000);
+
+    const tipInterval = setInterval(() => {
+      setTipIndex((prev) => (prev + 1) % LUXURY_TIPS.length);
+    }, 12000);
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      clearInterval(messageInterval);
+      clearInterval(tipInterval);
     };
   }, []);
 
-  // Handle source track changes
-  useEffect(() => {
-    if (!audioRef.current) return;
-
-    const wasPlaying = isPlaying;
-    audioRef.current.pause();
-    audioRef.current.src = activeTrack.url;
-    audioRef.current.load();
-    setSongProgress(0);
-
-    if (wasPlaying) {
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => {
-          console.warn("Audio autoplay blocked by browser policy:", err);
-          setIsPlaying(false);
-        });
+  // Set country specific greeting text (Phase 6)
+  const getCountryGreeting = () => {
+    if (country === 'EG') {
+      return {
+        flag: "🇪🇬",
+        text: "أهلاً ومرحباً بجميلاتنا العزيزات في جمهورية مصر العربية 🖤 يسعدنا تواصلك مع بوتيك SULTA الفاخر."
+      };
     }
-  }, [currentIndex]);
+    return {
+      flag: "🇸🇦",
+      text: "أهلاً وسهلاً بعميلاتنا الراقيات في المملكة العربية السعودية 🤍 ركن كوتور SULTA يرحب بحضورك الفخم."
+    };
+  };
 
-  // Handle Play / Pause state
-  useEffect(() => {
-    if (!audioRef.current) return;
+  const countryGreeting = getCountryGreeting();
 
-    if (isPlaying) {
-      audioRef.current.play()
-        .catch(err => {
-          console.warn("Audio play blocked:", err);
-          setIsPlaying(false);
-        });
+  // Pick luxury product spotlight dynamically from DB (Phase 7)
+  const getProductSpotlight = (): Product | null => {
+    if (!products || products.length === 0) return null;
+    // Prefer best seller or featured, fallback to first product
+    const premiumItems = products.filter(p => p.stock > 0);
+    if (premiumItems.length === 0) return null;
+    
+    // Choose product of the day based on date to keep it consistent daily
+    const day = new Date().getDate();
+    return premiumItems[day % premiumItems.length];
+  };
 
-      // Start progress simulation
-      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = setInterval(() => {
-        if (audioRef.current) {
-          const curr = audioRef.current.currentTime;
-          const dur = audioRef.current.duration || 280;
-          setSongProgress((curr / dur) * 100);
-        }
-      }, 1000);
+  const spotlightProduct = getProductSpotlight();
+
+  // Get bride guide products (Phase 9)
+  const getBrideProducts = (): Product[] => {
+    if (!products || products.length === 0) return [];
+    return products.filter(p => 
+      p.stock > 0 && 
+      (p.nameAr.includes("عروس") || 
+       p.nameAr.includes("ريش") || 
+       p.descriptionAr?.includes("عروس") || 
+       p.category === 'sleepwear')
+    ).slice(0, 2);
+  };
+
+  const brideProducts = getBrideProducts();
+
+  // Copy coupon action helper
+  const handleCopyCoupon = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCoupon(code);
+    setTimeout(() => setCopiedCoupon(null), 2500);
+  };
+
+  const currentPriceLabel = country === 'EG' ? 'EGP' : 'SAR';
+
+  // Quick Action Triggers (Phase 13)
+  const triggerQuickAction = (action: string) => {
+    if (!setTab) return;
+    
+    switch (action) {
+      case 'bestsellers':
+        setTab('store');
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('filterStore', { detail: 'best_sellers' }));
+        }, 100);
+        break;
+      case 'new':
+        setTab('store');
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('filterStore', { detail: 'new_arrivals' }));
+        }, 100);
+        break;
+      case 'coupons':
+        setActiveTab('actions');
+        break;
+      case 'bride':
+        // Wedding/Bride selections
+        setTab('store');
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('searchStore', { detail: 'عروس' }));
+        }, 100);
+        break;
+      case 'track':
+        setTab('account');
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('openAccountTab', { detail: 'orders' }));
+        }, 100);
+        break;
+      case 'support':
+        setTab('account');
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('openAccountTab', { detail: 'support' }));
+        }, 100);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Safe Add to Cart helper inside widget
+  const handleSpotlightAddToCart = (product: Product) => {
+    if (onAddToCart) {
+      const defaultColor = product.colors && product.colors.length > 0 ? product.colors[0] : { name: "أساسي", hex: "#000000" };
+      const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : "Free Size";
+      onAddToCart(product, defaultColor, defaultSize, 1);
     } else {
-      audioRef.current.pause();
-      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      if (onSelectProduct) onSelectProduct(product);
     }
-  }, [isPlaying]);
-
-  // Handle volume changes
-  useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = isMuted ? 0 : volume;
-  }, [volume, isMuted]);
-
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % ATELIER_PLAYLIST.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + ATELIER_PLAYLIST.length) % ATELIER_PLAYLIST.length);
-  };
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
   };
 
   return (
-    <div className="fixed bottom-24 left-6 z-40 font-sans" dir="rtl">
+    <div className="fixed bottom-24 left-6 z-40 font-serif" dir="rtl">
       <AnimatePresence>
         {isOpen ? (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 15 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 15 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="bg-[#FAFAF7]/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-gray-150 w-64 ring-4 ring-[#FAF4F5]/30 select-none overflow-hidden"
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1, 
+              y: 0,
+              height: isMinimized ? '80px' : 'auto',
+              width: isMinimized ? '280px' : '360px'
+            }}
+            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+            transition={{ type: "spring", stiffness: 260, damping: 26 }}
+            className="bg-[#FAFAF7]/95 backdrop-blur-md rounded-[2rem] shadow-2xl border border-[#DF8A9D]/18 ring-8 ring-[#FAF4F5]/40 select-none overflow-hidden max-w-[92vw] sm:max-w-[360px] text-right font-sans"
           >
-            {/* Elegant Background ambient gradient */}
+            {/* Elegant Background ambient gradient (Phase 10) */}
             <div className="absolute inset-0 bg-gradient-to-tr from-[#FAF4F5] via-transparent to-amber-50/10 pointer-events-none" />
-            
-            <div className="relative z-10 space-y-3">
-              {/* Header Title */}
-              <div className="flex justify-between items-center flex-row-reverse border-b border-gray-100 pb-2">
+
+            {/* HEADER AREA */}
+            <div className="relative z-10 bg-gradient-to-l from-[#0B0B0B] to-[#1C1C1C] px-5 py-4 flex justify-between items-center flex-row-reverse border-b border-[#FAF5F0]/10">
+              {/* Left Utilities */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsMinimized(!isMinimized)}
+                  className="text-gray-400 hover:text-white p-1 transition-colors cursor-pointer"
+                  title={isMinimized ? "توسيع" : "تصغير"}
+                >
+                  {isMinimized ? <Maximize2 size={13} /> : <Minimize2 size={13} />}
+                </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-[10px] text-gray-400 hover:text-black font-semibold cursor-pointer"
+                  className="text-gray-400 hover:text-white p-1 transition-colors cursor-pointer"
+                  title="إغلاق المرشد"
                 >
-                  إخفاء ✕
-                </button>
-                <div className="flex items-center gap-1">
-                  <Sparkles size={11} className="text-[#DF8A9C] animate-pulse" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#0B0B0B] font-serif">SULTA Atelier Radio</span>
-                </div>
-              </div>
-
-              {/* Album Art / Glow Disc Representation */}
-              <div className="flex items-center gap-3 bg-[#0B0B0B]/5 p-2 rounded-xl border border-white/50">
-                <div className={`w-11 h-11 rounded-full bg-gradient-to-tr from-amber-100 via-pink-100 to-[#0B0B0B] flex items-center justify-center shadow-inner relative overflow-hidden shrink-0 ${isPlaying ? "animate-spin-[12s] linear" : ""}`}>
-                  {/* CD Vinyl effect circles */}
-                  <div className="absolute inset-2 border border-white/40 rounded-full" />
-                  <div className="absolute inset-3.5 border-2 border-[#0B0B0B]/20 rounded-full bg-white" />
-                  <Music size={14} className="text-[#0B0B0B] relative z-10" />
-                </div>
-                
-                <div className="min-w-0 flex-1 text-right">
-                  <h5 className="text-[11px] font-bold text-gray-900 truncate leading-tight">{activeTrack.nameAr}</h5>
-                  <span className="text-[9px] text-gray-400 font-serif italic block tracking-wide truncate mt-0.5">{activeTrack.nameEn}</span>
-                </div>
-              </div>
-
-              {/* Progress Bar slider */}
-              <div className="space-y-1">
-                <div className="h-1 bg-gray-200 rounded-full overflow-hidden relative">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#DF8A9C] to-amber-300 rounded-full transition-all duration-1000"
-                    style={{ width: `${songProgress}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-[8px] font-mono text-gray-400">
-                  <span>{activeTrack.duration}</span>
-                  <span>أجواء كوتور مخصصة ✨</span>
-                </div>
-              </div>
-
-              {/* Music Players Navigation Buttons */}
-              <div className="flex items-center justify-center gap-4 py-1.5 flex-row-reverse">
-                <button
-                  onClick={handleNext}
-                  className="p-1 text-gray-500 hover:text-black transition-all cursor-pointer"
-                  title="المقطع التالي"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-
-                <button
-                  onClick={togglePlay}
-                  className="w-8 h-8 rounded-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#DF8A9C] hover:text-white flex items-center justify-center shadow-md transition-all cursor-pointer scale-105 active:scale-95"
-                  title={isPlaying ? "إيقاف مؤقت" : "تشغيل الأجواء الملكية"}
-                >
-                  {isPlaying ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" className="mr-0.5" />}
-                </button>
-
-                <button
-                  onClick={handlePrev}
-                  className="p-1 text-gray-500 hover:text-black transition-all cursor-pointer"
-                  title="المقطع السابق"
-                >
-                  <ChevronRight size={16} />
+                  <X size={15} />
                 </button>
               </div>
 
-              {/* Volume Controller sliders & mute toggle */}
-              <div className="flex items-center gap-2 justify-end pt-1 flex-row-reverse">
-                <button
-                  onClick={toggleMute}
-                  className="text-gray-400 hover:text-[#0B0B0B] transition-colors cursor-pointer"
-                  title={isMuted ? "إلغاء كتم" : "كتم الصوت"}
-                >
-                  {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={isMuted ? 0 : volume}
-                  onChange={(e) => {
-                    setVolume(parseFloat(e.target.value));
-                    setIsMuted(false);
-                  }}
-                  className="w-20 accent-[#0B0B0B] h-0.5 bg-gray-200 rounded-lg cursor-pointer"
-                />
+              {/* Title & Brand */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#FAFAF7]/9 py-1 flex items-center justify-center border border-[#F6E7A6]/30 shadow-inner">
+                  <span className="text-sm">👑</span>
+                </div>
+                <div className="text-right">
+                  <h4 className="text-xs sm:text-[13px] font-bold text-[#F6E7A6] tracking-wide font-serif">SULTA Concierge</h4>
+                  <span className="text-[9px] text-gray-300 font-serif italic block">مرشد SULTA الملكي الفاخر</span>
+                </div>
               </div>
             </div>
+
+            {/* EXPANDED CONTENT VIEW */}
+            {!isMinimized && (
+              <div className="relative z-10 max-h-[480px] overflow-y-auto custom-scrollbar p-5 space-y-4">
+                
+                {/* INTERACTIVE NAVIGATION TAB BUTTONS */}
+                <div className="grid grid-cols-3 gap-1 bg-[#0B0B0B]/5 p-1 rounded-xl border border-gray-100 font-semibold text-[10.5px] text-gray-600 mb-2">
+                  <button 
+                    onClick={() => setActiveTab('welcome')}
+                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'welcome' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
+                  >
+                    الصالون الملكي ✨
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('spotlight')}
+                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'spotlight' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
+                  >
+                    أحدث الروائع 💎
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('actions')}
+                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'actions' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
+                  >
+                    خيارات سريعة 🛍️
+                  </button>
+                </div>
+
+                {/* TAB 1: WELCOME & MOTTO & TIPS */}
+                {activeTab === 'welcome' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4 text-right"
+                  >
+                    {/* Country Greeting Message (Phase 6) */}
+                    <div className="bg-emerald-50/40 p-3 rounded-2xl border border-emerald-500/10 flex gap-2.5 items-center flex-row-reverse">
+                      <span className="text-xl shrink-0">{countryGreeting.flag}</span>
+                      <p className="text-[10px] sm:text-[11px] font-semibold text-emerald-900 leading-normal">
+                        {countryGreeting.text}
+                      </p>
+                    </div>
+
+                    {/* Luxury brand motivational quote (Phase 3) */}
+                    <div className="bg-white/80 p-4 rounded-2xl border border-neutral-100 shadow-3xs relative overflow-hidden min-h-[68px] flex items-center">
+                      <div className="absolute right-0 top-0 bottom-0 w-1 bg-[#A44C5C]" />
+                      <AnimatePresence mode="wait">
+                        <motion.p
+                          key={messageIndex}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 10 }}
+                          transition={{ duration: 0.4 }}
+                          className="text-[11px] sm:text-xs text-gray-800 leading-relaxed italic pr-2 font-serif font-light"
+                        >
+                          {LUXURY_BRAND_MESSAGES[messageIndex]}
+                        </motion.p>
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Tip of the day (Phase 4) */}
+                    <div className="bg-amber-50/30 p-4 rounded-2xl border border-amber-300/15 space-y-1.5 text-right relative">
+                      <div className="flex justify-between items-center flex-row-reverse mb-1">
+                        <span className="text-[9px] uppercase font-bold tracking-wider text-amber-800 font-sans">نصيحة اليوم للأناقة ✦</span>
+                        <div className="flex gap-1">
+                          <button 
+                            onClick={() => setTipIndex(prev => (prev - 1 + LUXURY_TIPS.length) % LUXURY_TIPS.length)}
+                            className="p-1 hover:bg-amber-100 rounded text-amber-700 cursor-pointer"
+                          >
+                            <ChevronLeft size={10} />
+                          </button>
+                          <button 
+                            onClick={() => setTipIndex(prev => (prev + 1) % LUXURY_TIPS.length)}
+                            className="p-1 hover:bg-amber-100 rounded text-amber-700 cursor-pointer"
+                          >
+                            <ChevronRight size={10} />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={tipIndex}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          transition={{ duration: 0.3 }}
+                          className="space-y-1"
+                        >
+                          <h5 className="text-[11px] sm:text-xs font-bold text-gray-950">{LUXURY_TIPS[tipIndex].title}</h5>
+                          <p className="text-[10px] sm:text-[10.5px] text-gray-500 leading-relaxed font-sans font-normal">
+                            {LUXURY_TIPS[tipIndex].desc}
+                          </p>
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Why SULTA (Phase 8) */}
+                    <div className="bg-white/50 p-4 rounded-2xl border border-gray-100 space-y-2.5">
+                      <span className="text-[9.5px] uppercase font-bold tracking-widest text-[#A44C5C] block border-b border-gray-50 pb-1">لماذا تتألقين مع SULTA؟ ✨</span>
+                      <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold text-gray-700">
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <span>خامات فاخرة</span>
+                          <Award size={11} className="text-[#A44C5C]" />
+                        </div>
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <span>شحن فوري سريع</span>
+                          <Truck size={11} className="text-[#A44C5C]" />
+                        </div>
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <span>جودة كوتور إيطالية</span>
+                          <Star size={11} className="text-[#A44C5C]" />
+                        </div>
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <span>دعم مخصص عالي الترف</span>
+                          <User size={11} className="text-[#A44C5C]" />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center gap-1 text-[9.5px] text-emerald-600 bg-emerald-50 py-1 rounded-lg">
+                        <ShieldCheck size={11} />
+                        <span>بوابة دفع آمنة بنسبة 100% وموثوقة</span>
+                      </div>
+                    </div>
+
+                  </motion.div>
+                )}
+
+                {/* TAB 2: SPOTLIGHT & NEWS & BRIDAL GUIDE */}
+                {activeTab === 'spotlight' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4"
+                  >
+                    {/* Spotlight Product of the day (Phase 7) */}
+                    {spotlightProduct && (
+                      <div className="bg-white border border-[#DF8A9D]/18 rounded-2.5xl p-3 shadow-3xs space-y-3">
+                        <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                          <span className="text-[9px] text-[#A44C5C] font-extrabold uppercase tracking-wider bg-[#FAF4F5] px-2 py-0.5 rounded-full block">👑 نجم اليوم الفاخر</span>
+                          <span className="text-[8.5px] text-gray-400">توصية المستشار الشخصي</span>
+                        </div>
+
+                        <div className="flex gap-3 items-start flex-row-reverse" onClick={() => onSelectProduct && onSelectProduct(spotlightProduct)}>
+                          <div className="w-16 h-22 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0 cursor-pointer">
+                            <img src={spotlightProduct.images[0]} alt="" className="w-full h-full object-cover" />
+                          </div>
+                          
+                          <div className="flex-1 min-w-0 pr-1 text-right space-y-1 flex flex-col justify-between">
+                            <div>
+                              <h5 className="font-serif text-xs font-bold text-gray-950 truncate hover:text-[#A44C5C] cursor-pointer">
+                                {spotlightProduct.nameAr}
+                              </h5>
+                              <span className="text-[9.5px] text-gray-400 block font-light">{spotlightProduct.categoryAr}</span>
+                            </div>
+                            
+                            <strong className="text-xs text-[#A44C5C] block font-mono font-black mt-1">
+                              {(country === 'EG' ? spotlightProduct.priceEG : spotlightProduct.priceSA).toLocaleString()} {currentPriceLabel}
+                            </strong>
+                          </div>
+                        </div>
+
+                        {/* Interactive Click triggers */}
+                        <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-[11px] font-bold">
+                          <button
+                            onClick={() => onSelectProduct && onSelectProduct(spotlightProduct)}
+                            className="bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 text-gray-700 py-2 rounded-xl text-center cursor-pointer"
+                          >
+                            عرض التفاصيل 🔍
+                          </button>
+                          <button
+                            onClick={() => handleSpotlightAddToCart(spotlightProduct)}
+                            className="bg-[#A44C5C] text-white hover:bg-[#8D3F4E] py-2 rounded-xl text-center cursor-pointer flex items-center justify-center gap-1"
+                          >
+                            <ShoppingBag size={11} />
+                            <span>حقيبة تسوق</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Boutique updates & real state news (Phase 5) */}
+                    <div className="bg-[#FAF5F0]/60 p-3.5 rounded-2xl border border-[#DF8A9D]/12 space-y-2 text-right">
+                      <span className="text-[9.5px] font-bold text-[#A44C5C] uppercase tracking-widest block border-b border-[#DF8A9D]/10 pb-1">أخبار ومجموعات البوتيك الحالية ⚜️</span>
+                      
+                      <div className="space-y-2 text-[10px] text-gray-700">
+                        <div className="bg-white/80 p-2 rounded-lg border border-gray-100 leading-relaxed">
+                          📌 <span className="font-bold text-gray-950">التشكيلة الجديدة:</span> تم توفير قطع صيفية جديدة من الساتان المعالج مضافة للتو فحصي "أحدث المنتجات".
+                        </div>
+                        <div className="bg-white/80 p-2 rounded-lg border border-gray-100 leading-relaxed">
+                          📌 <span className="font-bold text-gray-950">الحالة العامة:</span> خامات فخمة بأرقى درجات الخياطة مع توفر {products.filter(p => p.stock > 0).length} قطعة فاخرة جاهزة للتجهيز والتغليف اليومي.
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bride Wedding Guide Section (Phase 9) */}
+                    {brideProducts.length > 0 && (
+                      <div className="bg-white p-3.5 rounded-2xl border border-gray-150 space-y-2.5">
+                        <div className="flex justify-between items-center flex-row-reverse border-b border-gray-50 pb-1.5">
+                          <span className="text-[10px] font-bold text-gray-900 font-serif">👰 دليل زفاف العروس (Bridal Guide)</span>
+                          <span className="text-[8px] text-gray-400 bg-pink-50 text-[#A44C5C] px-1.5 py-0.5 rounded">موصى به</span>
+                        </div>
+                        <p className="text-[9.5px] text-gray-550 leading-relaxed text-right font-light">
+                          قطع فاخرة مصممة خصيصاً باللون الأبيض والوردي مع ريش طبيعي ودانتيل إيطالي لتخليد أجمل زفاف وصباحية:
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          {brideProducts.map(p => (
+                            <div 
+                              key={p.id} 
+                              onClick={() => onSelectProduct && onSelectProduct(p)}
+                              className="group cursor-pointer bg-neutral-50 hover:bg-pink-50/20 p-2 rounded-xl border border-neutral-100 transition-all text-center space-y-1.5"
+                            >
+                              <div className="aspect-[3/4] w-full rounded-lg overflow-hidden bg-gray-50">
+                                <img src={p.images[0]} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                              </div>
+                              <h6 className="text-[9.5px] font-bold text-gray-900 line-clamp-1">{p.nameAr}</h6>
+                              <span className="text-[9px] text-[#A44C5C] font-mono font-bold block">
+                                {(country === 'EG' ? p.priceEG : p.priceSA).toLocaleString()} {currentPriceLabel}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* TAB 3: QUICK ACTIONS & COUPONS */}
+                {activeTab === 'actions' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4"
+                  >
+                    {/* Active Promo Coupons (Phase 5) */}
+                    {coupons && coupons.length > 0 ? (
+                      <div className="bg-amber-50/40 p-3.5 rounded-2xl border border-amber-300/15 text-right space-y-2">
+                        <span className="text-[9.5px] font-extrabold text-amber-800 uppercase tracking-widest block font-sans">🎁 عروض الخصم الملكي اليومية:</span>
+                        <div className="space-y-2">
+                          {coupons.slice(0, 2).map((c: any) => (
+                            <div key={c.id || c.code} className="bg-white p-2.5 rounded-xl border border-amber-250 flex justify-between items-center flex-row-reverse border-dashed gap-2">
+                              <div className="text-right">
+                                <span className="text-[10px] font-bold text-gray-900 block">{c.descriptionAr || `خصم بقيمة ${c.discountPercent}%`}</span>
+                                <span className="text-[8.5px] text-gray-450 block font-light">استخدمي الكود عند الدفع لحفظ قيمتك</span>
+                              </div>
+                              
+                              <button
+                                onClick={() => handleCopyCoupon(c.code)}
+                                className="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-amber-250 transition-all cursor-pointer flex items-center gap-1"
+                              >
+                                {copiedCoupon === c.code ? <Check size={11} className="text-emerald-600" /> : <Percent size={11} />}
+                                <span>{copiedCoupon === c.code ? "تم نسخ" : c.code}</span>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-amber-50/20 p-3.5 rounded-2xl border border-amber-200/10 text-center text-gray-400 font-sans text-[10px]">
+                        <span>لا تتوفر قسائم خصم عامة معلنة حالياً. عروشنا تواصل فوري! 💖</span>
+                      </div>
+                    )}
+
+                    {/* Quick Access Navigation Panel (Phase 13) */}
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest block text-right">أوامر الوصول السريع ⚡</span>
+                      
+                      <div className="grid grid-cols-2 gap-2 font-semibold text-[10.5px]">
+                        <button
+                          onClick={() => triggerQuickAction('bestsellers')}
+                          className="bg-white hover:bg-[#FAF5F0] border border-gray-100 hover:border-[#DF8A9D]/20 p-3 rounded-xl cursor-pointer text-center flex flex-col items-center gap-1 transition-all"
+                        >
+                          <span className="text-base">🛍️</span>
+                          <span>الأكثر مبيعاً ورواجاً</span>
+                        </button>
+
+                        <button
+                          onClick={() => triggerQuickAction('new')}
+                          className="bg-white hover:bg-[#FAF5F0] border border-gray-100 hover:border-[#DF8A9D]/20 p-3 rounded-xl cursor-pointer text-center flex flex-col items-center gap-1 transition-all"
+                        >
+                          <span className="text-base font-serif">✨</span>
+                          <span>أحدث تشكيلة بالصالون</span>
+                        </button>
+
+                        <button
+                          onClick={() => triggerQuickAction('bride')}
+                          className="bg-white hover:bg-[#FAF5F0] border border-gray-100 hover:border-[#DF8A9D]/20 p-3 rounded-xl cursor-pointer text-center flex flex-col items-center gap-1 transition-all"
+                        >
+                          <span className="text-base">👰</span>
+                          <span>تشكيلات زفاف العرائس</span>
+                        </button>
+
+                        <button
+                          onClick={() => triggerQuickAction('track')}
+                          className="bg-white hover:bg-[#FAF5F0] border border-gray-100 hover:border-[#DF8A9D]/20 p-3 rounded-xl cursor-pointer text-center flex flex-col items-center gap-1 transition-all"
+                        >
+                          <span className="text-base">📦</span>
+                          <span>تتبع طلبيتك وشحنتك</span>
+                        </button>
+
+                        <button
+                          onClick={() => triggerQuickAction('support')}
+                          className="bg-white hover:bg-[#FAF5F0] border border-gray-100 hover:border-[#DF8A9D]/20 p-2.5 rounded-xl cursor-pointer text-center flex flex-col items-center gap-1 transition-all col-span-2 text-[#A44C5C] font-bold"
+                        >
+                          <div className="flex items-center gap-1 justify-center">
+                            <span>💬</span>
+                            <span>استشارة وفريق الدعم الملكي الفوري</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* FOOTER COUNTER */}
+                <div className="text-center pt-3 border-t border-gray-100 font-sans text-[8.5px] text-gray-400">
+                  SULTA Boutique Concierge © {new Date().getFullYear()} • دائم الخدمة لجمالكِ الرفيع
+                </div>
+
+              </div>
+            )}
+
+            {/* MINIMIZED VIEW STATE CONTENT */}
+            {isMinimized && (
+              <div 
+                className="relative z-10 px-4 py-3 flex justify-between items-center flex-row-reverse cursor-pointer bg-white/40"
+                onClick={() => setIsMinimized(false)}
+              >
+                <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded">اضغطي للتوسيع ⤢</span>
+                <p className="text-[11px] font-semibold text-gray-800 truncate pr-2">
+                  ✨ {LUXURY_BRAND_MESSAGES[messageIndex].slice(0, 36)}...
+                </p>
+              </div>
+            )}
+
           </motion.div>
         ) : (
+          /* FLOATING BUTTON (TRULY PREMIUM LOOK WITH RIPPLE RINGS) */
           <motion.button
             layoutId="atelier-radio-btn"
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#DF8A9C] hover:text-white px-3.5 py-3.5 rounded-full shadow-lg transition-all z-40 select-none cursor-pointer group active:scale-90 border border-[#F6E7A6]/20"
-            title="افتح راديو وأجواء صالون Sulta الهادئ 📻"
+            className="flex items-center gap-2.5 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white px-4 py-3.5 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-[#F6E7A6]/20 ring-4 ring-neutral-500/10"
+            title="افتح مرشد SULTA الملكي الفاخر 👑"
           >
-            <div className={`relative flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''}`}>
-              <Wand2 size={15} className="group-hover:rotate-12 transition-transform duration-300" />
-              {isPlaying && (
-                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-[#DF8A9C] rounded-full animate-ping" />
-              )}
+            <div className="relative flex items-center justify-center">
+              <span className="text-sm group-hover:scale-110 transition-transform">👑</span>
+              <span className="absolute inset-0 rounded-full bg-[#F6E7A6]/10 animate-ping" />
             </div>
-            <span className="text-[10px] font-sans font-bold select-none max-w-0 overflow-hidden group-hover:max-w-[4.2rem] transition-all duration-500 whitespace-nowrap">راديو الصالون 📻</span>
+            
+            <div className="flex flex-col text-right pr-0.5">
+              <span className="text-[9.5px] font-serif font-black tracking-wide">SULTA Concierge</span>
+              <span className="text-[7.5px] text-gray-300 font-sans block mt-0.5 font-semibold">استشارتك الملكية ✦</span>
+            </div>
           </motion.button>
         )}
       </AnimatePresence>

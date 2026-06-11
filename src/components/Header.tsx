@@ -114,6 +114,7 @@ export default function Header({
   const menuItems = [
     { id: 'home', label: 'الرئيسية' },
     { id: 'store', label: 'المتجر' },
+    { id: 'ai_mirror', label: 'مرآة SULTA 🪞' },
     { id: 'luxury-salon', label: 'صالون التجربة ✦' },
     { id: 'collections', label: 'التشكيلات' },
     { id: 'blog', label: 'المجلة' },

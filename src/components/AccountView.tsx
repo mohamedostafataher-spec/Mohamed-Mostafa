@@ -42,6 +42,7 @@ interface AccountViewProps {
   session: any;
   onReorder?: (order: Order) => void;
   onNavigateToDashboard?: () => void;
+  onAddToCart?: (product: Product, color: { name: string; hex: string }, size: string, qty: number) => void;
 }
 
 export default function AccountView({
@@ -55,6 +56,7 @@ export default function AccountView({
   session,
   onReorder,
   onNavigateToDashboard,
+  onAddToCart,
 }: AccountViewProps) {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<
@@ -819,6 +821,15 @@ export default function AccountView({
               <Clock size={16} />
               <span>سجل النشاط</span>
             </button>
+
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('setTab', { detail: 'ai_mirror' }));
+              }}
+              className="flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold border border-dashed border-amber-300 shadow-3xs"
+            >
+              <span>🪞 مرآة SULTA الملكية</span>
+            </button>
           </div>
         </aside>
 
@@ -1385,7 +1396,7 @@ export default function AccountView({
               </h3>
 
               {favProducts.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 rounded-2xl text-right p-6">
+                <div className="text-center py-12 bg-gray-50/50 rounded-2xl text-right p-6 border border-dashed border-gray-200">
                   <p className="text-gray-400 font-sans text-xs mb-4">
                     المفضلة فارغة الآن! اضغطي على زر القلب على أي بيجامة لتتوج
                     هنا فوراً.
@@ -1393,46 +1404,115 @@ export default function AccountView({
                   <span className="text-3xl block text-center">💖</span>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-right">
                   {favProducts.map((p) => {
                     const price = country === "EG" ? p.priceEG : p.priceSA;
+                    const defaultColor = p.colors && p.colors.length > 0 ? p.colors[0] : { name: "أساسي", hex: "#000000" };
+                    const defaultSize = p.sizes && p.sizes.length > 0 ? p.sizes[0] : "Free Size";
+                    
+                    const handleTryOnMirror = (e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      // Preselect in LocalStorage and send CustomEvent to App.tsx
+                      localStorage.setItem('mirror_preselected_product', JSON.stringify(p));
+                      toast(`جاري تشغيل مرآة SULTA الذكية للمعاينة الافتراضية لـ "${p.nameAr}" 🪞🪄`, 'success');
+                      window.dispatchEvent(new CustomEvent('setTab', { detail: 'ai_mirror' }));
+                    };
+
+                    const handleMoveToCart = (e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      if (onAddToCart) {
+                        onAddToCart(p, defaultColor, defaultSize, 1);
+                        toast(`تم إضافة "${p.nameAr}" إلى حقيبة تسوق SULTA 🛍️`, 'success');
+                      } else {
+                        // fallback open details
+                        onSelectProduct(p);
+                      }
+                    };
+
                     return (
                       <div
                         key={p.id}
-                        className="border border-gray-200 rounded-2xl p-3 flex gap-3 items-center hover:border-gray-300 transition-colors flex-row-reverse"
+                        className="bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg hover:border-[#DF8A9D]/30 transition-all duration-300 text-right group"
                       >
-                        <img
-                          src={p.images[0]}
-                          alt={p.nameAr}
-                          className="w-14 h-18 rounded-lg object-cover cursor-pointer shrink-0"
-                          onClick={() => onSelectProduct(p)}
-                        />
-                        <div className="flex-1 text-xs">
-                          <h4
-                            className="font-bold text-gray-900 line-clamp-1 cursor-pointer"
-                            onClick={() => onSelectProduct(p)}
-                          >
-                            {p.nameAr}
-                          </h4>
-                          <p className="font-sans text-gray-400 mt-1">
-                            {p.categoryAr}
-                          </p>
-                          <div className="flex gap-2 items-center mt-2">
-                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${p.stock > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
-                                {p.stock > 0 ? 'متوفر وجاهز' : 'نفدت الكمية'}
-                             </span>
-                             <span className="text-[9px] text-gray-400 italic">أضيفت مسبقاً</span>
+                        <div className="flex gap-4 items-start flex-row-reverse">
+                          <div className="relative shrink-0 overflow-hidden rounded-xl border border-gray-50 aspect-[3/4] w-20 sm:w-24 bg-gray-50 cursor-pointer" onClick={() => onSelectProduct(p)}>
+                            <img
+                              src={p.images[0]}
+                              alt={p.nameAr}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="text-[10px] text-white bg-black/60 px-2 py-1 rounded-full font-serif">عرض التفاصيل</span>
+                            </div>
                           </div>
-                          <strong className="font-sans text-[#A44C5C] font-black mt-2 block">
-                            {price.toLocaleString()}{" "}
-                            {country === "EG" ? "EGP" : "SAR"}
-                          </strong>
+                          
+                          <div className="flex-1 min-w-0 pr-1">
+                            <h4
+                              className="font-serif text-sm sm:text-base font-medium text-gray-950 line-clamp-1 cursor-pointer hover:text-[#A44C5C] transition-colors"
+                              onClick={() => onSelectProduct(p)}
+                            >
+                              {p.nameAr}
+                            </h4>
+                            <p className="font-sans text-xs text-gray-400 mt-0.5">
+                              {p.categoryAr}
+                            </p>
+                            
+                            {/* Color Circles */}
+                            {p.colors && p.colors.length > 0 && (
+                              <div className="flex gap-1.5 items-center justify-end mt-2">
+                                <span className="text-[9px] text-gray-400">الألوان:</span>
+                                <div className="flex gap-1">
+                                  {p.colors.map((c: any, index: number) => (
+                                    <span
+                                      key={index}
+                                      className="w-2.5 h-2.5 rounded-full border border-gray-200 block"
+                                      style={{ backgroundColor: c.hex }}
+                                      title={c.name}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="flex gap-2 items-center justify-end mt-2.5 flex-wrap">
+                               <span className={`text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold ${p.stock > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                                  {p.stock > 0 ? 'متوفر وجاهز' : 'نفدت الكمية'}
+                               </span>
+                               <span className="text-[9px] text-gray-400 italic">في أمنياتك 💖</span>
+                            </div>
+
+                            <strong className="font-sans text-[#A44C5C] font-black text-sm sm:text-base mt-2.5 block">
+                              {price.toLocaleString()}{" "}
+                              {country === "EG" ? "EGP" : "SAR"}
+                            </strong>
+                          </div>
                         </div>
+
+                        {/* Actions line */}
+                        <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100">
+                          <button
+                            onClick={handleTryOnMirror}
+                            className="bg-[#FAF5F0] text-[#A44C5C] hover:bg-[#A44C5C] hover:text-[#FAF5F0] text-[10px] sm:text-xs font-bold py-2.5 px-1.5 text-center rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 border border-[#A44C5C]/10"
+                            title="جربي المنتج على صورتك فوراً بنظام القياس الافتراضي"
+                          >
+                            <span>جربي للمرآة 🪞🪄</span>
+                          </button>
+                          
+                          <button
+                            onClick={handleMoveToCart}
+                            disabled={p.stock <= 0}
+                            className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#8D3F4E] disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed text-[10px] sm:text-xs font-bold py-2.5 px-1.5 text-center rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                          >
+                            <span>حقيبة تسوق 🛍️</span>
+                          </button>
+                        </div>
+                        
                         <button
-                          onClick={() => toggleFavorite(p.id)}
-                          className="text-red-500 hover:text-red-700 font-bold pr-2 pl-1 cursor-pointer"
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(p.id); }}
+                          className="text-[10px] text-gray-400 hover:text-red-500 transition-colors mt-3 text-center cursor-pointer w-full flex items-center justify-center gap-1.5"
                         >
-                          إزالة
+                          <span>إزالة من المفضلة</span>
+                          <span>🖤</span>
                         </button>
                       </div>
                     );

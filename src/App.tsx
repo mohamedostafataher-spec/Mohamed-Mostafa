@@ -36,6 +36,7 @@ import LimitedPieces from './components/LimitedPieces';
 import SleepExperience from './components/SleepExperience';
 import SultaMagazine from './components/SultaMagazine';
 import SultaConcierge from './components/SultaConcierge';
+import AiMirror from './components/AiMirror';
 
 import { dbService, supabase, cleanImgUrl } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -106,7 +107,19 @@ function AppContent() {
 
   const [country, setCountry] = useState<Country>('SA'); // Default to SA
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]); // Clean slate
+  
+  // Load initial favorites from LocalStorage with fallback support
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const activeSessionUser = typeof window !== 'undefined' ? localStorage.getItem('sulta_active_user_id') : null;
+      const storageKey = activeSessionUser ? `sulta_favorites_${activeSessionUser}` : 'sulta_favorites_guest';
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [products, setProducts] = useState<Product[]>([]);
   const [coupons, setCoupons] = useState<DiscountCoupon[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -136,8 +149,17 @@ function AppContent() {
         setTab('account');
       }
     };
+    const handleGlobalSetTab = (e: any) => {
+      if (e.detail) {
+        setTab(e.detail);
+      }
+    };
     window.addEventListener('openAccountTab', handleGlobalOpenTab);
-    return () => window.removeEventListener('openAccountTab', handleGlobalOpenTab);
+    window.addEventListener('setTab', handleGlobalSetTab);
+    return () => {
+      window.removeEventListener('openAccountTab', handleGlobalOpenTab);
+      window.removeEventListener('setTab', handleGlobalSetTab);
+    };
   }, []);
 
   // Live database synchronization via dbService
@@ -268,6 +290,58 @@ function AppContent() {
 
   // UI Theme & Overlay States
   const [isMidnightVelvet, setIsMidnightVelvet] = useState<boolean>(false);
+
+  // Synchronise or merge favorites when user session changes
+  useEffect(() => {
+    if (session?.user?.id) {
+      localStorage.setItem('sulta_active_user_id', session.user.id);
+      
+      const userKey = `sulta_favorites_${session.user.id}`;
+      const savedUserFavs = localStorage.getItem(userKey);
+      let userFavs: string[] = savedUserFavs ? JSON.parse(savedUserFavs) : [];
+      
+      // Seamless guest to user favorites transfer/merge on login
+      const guestFavsRaw = localStorage.getItem('sulta_favorites_guest');
+      if (guestFavsRaw) {
+        try {
+          const guestFavs: string[] = JSON.parse(guestFavsRaw);
+          if (guestFavs.length > 0) {
+            const merged = Array.from(new Set([...userFavs, ...guestFavs]));
+            userFavs = merged;
+            localStorage.setItem(userKey, JSON.stringify(merged));
+            localStorage.removeItem('sulta_favorites_guest');
+            console.log("[SULTA FAVORITES] Merged guest bookmarks into customer account:", merged);
+          }
+        } catch (e) {
+          console.error("[SULTA FAVORITES] Merging guest bookmarks failed:", e);
+        }
+      }
+      setFavorites(userFavs);
+    } else {
+      localStorage.removeItem('sulta_active_user_id');
+      const guestFavsRaw = localStorage.getItem('sulta_favorites_guest');
+      if (guestFavsRaw) {
+        try {
+          setFavorites(JSON.parse(guestFavsRaw));
+        } catch {
+          setFavorites([]);
+        }
+      } else {
+        setFavorites([]);
+      }
+    }
+  }, [session]);
+
+  // Persist updated favorites to appropriate storage bucket on state edits
+  useEffect(() => {
+    try {
+      const activeUser = session?.user?.id;
+      const storageKey = activeUser ? `sulta_favorites_${activeUser}` : 'sulta_favorites_guest';
+      localStorage.setItem(storageKey, JSON.stringify(favorites));
+    } catch (e) {
+      console.error("[SULTA FAVORITES] Saving failure:", e);
+    }
+  }, [favorites, session]);
   
   // UI overlays states
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -287,13 +361,20 @@ function AppContent() {
 
   // Handle Favorites toggle
   const toggleFavorite = (productId: string) => {
-    setFavorites(prev =>
-      prev.includes(productId)
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
+    const matchedProduct = products.find(p => p.id === productId);
+    const prodName = matchedProduct ? matchedProduct.nameAr : 'المنتج الفاخر';
 
-    // Elegant silent console notifier
+    setFavorites(prev => {
+      const isFav = prev.includes(productId);
+      if (isFav) {
+        toast(`تم إزالة "${prodName}" من مفضلتك الملكية 🖤`, "info");
+        return prev.filter(id => id !== productId);
+      } else {
+        toast(`تم إضافة "${prodName}" إلى مفضلتك الملكية ✨💖`, "success");
+        return [...prev, productId];
+      }
+    });
+
     console.log(`Updated Wishlist item: ${productId}`);
   };
 
@@ -571,7 +652,12 @@ function AppContent() {
         settings={settings}
         products={products}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenFavorites={() => setTab('account')} // wishlist is in Account screen tab
+        onOpenFavorites={() => {
+          setTab('account');
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('openAccountTab', { detail: 'wishlist' }));
+          }, 60);
+        }} // wishlist is in Account screen tab
         onSearch={(query) => {
           setSearchQuery(query);
           setTab('store');
@@ -974,6 +1060,7 @@ function AppContent() {
             onSelectProduct={handleSelectProduct}
             onReorder={handleReorder}
             onNavigateToDashboard={() => setTab('dashboard')}
+            onAddToCart={handleAddToCart}
           />
         )}
 
@@ -1007,6 +1094,18 @@ function AppContent() {
             onBuyNow={handleBuyNow}
             toast={toast}
             onClose={() => setTab('home')}
+          />
+        )}
+
+        {/* VIEW: SULTA AI MIRROR */}
+        {currentTab === 'ai_mirror' && (
+          <AiMirror
+            products={products}
+            setTab={setTab}
+            country={country}
+            onSelectProduct={handleSelectProduct}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
           />
         )}
 
@@ -1188,6 +1287,7 @@ function AppContent() {
                 {[
                   { id: 'home', label: 'الرئيسية 🏠' },
                   { id: 'store', label: 'المتجر والكتالوج 🛍️' },
+                  { id: 'ai_mirror', label: 'مرآة SULTA الذكية 🪞' },
                   { id: 'collections', label: 'SULTA Collections ✨' },
                   { id: 'best-sellers', label: 'الأكثر مبيعاً 🏆' },
                   { id: 'new-arrivals', label: 'أحدث الإصدارات 🆕' },
@@ -1366,7 +1466,16 @@ function AppContent() {
         </div>
       )}
 
-      <AtelierAudioAtmosphere />
+      <AtelierAudioAtmosphere 
+        products={products}
+        collections={collections}
+        coupons={coupons}
+        country={country}
+        setTab={setTab}
+        onSelectProduct={handleSelectProduct}
+        onAddToCart={handleAddToCart}
+        session={session}
+      />
       <WhatsAppFloat 
         number={settings?.whatsappNumber || settings?.whatsapp || "966530454045"} 
         message={session?.user?.email ? `مرحباً SULTA، أحتاج للمساعدة بخصوص حسابي ${session.user.email}` : "مرحباً SULTA، أحتاج للمساعدة بخصوص"} 
