@@ -302,6 +302,21 @@ function mapSettings(data: any): Settings {
 
   let mappedSiteName = cleanText(data.site_name || 'SULTA');
 
+  let mappedWhatsapp = data.whatsapp;
+  if (!mappedWhatsapp || mappedWhatsapp === '966500000000' || mappedWhatsapp.includes('966530454045')) {
+    mappedWhatsapp = '201110095403';
+  }
+
+  let mappedContactPhone = data.contact_phone;
+  if (!mappedContactPhone || mappedContactPhone === '+966500000000' || mappedContactPhone.includes('966530454045')) {
+    mappedContactPhone = '+20 111 009 5403';
+  }
+
+  let mappedContactEmail = data.contact_email;
+  if (!mappedContactEmail || mappedContactEmail.includes('brightgirlksa') || mappedContactEmail === 'royal@sultawear.com') {
+    mappedContactEmail = 'support@sulta-atelier.com';
+  }
+
   return {
     siteName: mappedSiteName,
     logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_luxury_pajama_hero_2_1780682794821.png',
@@ -311,9 +326,9 @@ function mapSettings(data: any): Settings {
     heroSubtitleAr: cleanText(data.hero_subtitle_ar),
     heroDescriptionAr: cleanText(data.hero_description_ar),
     heroImages: checkedHero.map((imgUrl: any) => cleanImgUrl(imgUrl, 'sleepwear')),
-    contactEmail: data.contact_email,
-    contactPhone: data.contact_phone,
-    whatsapp: data.whatsapp,
+    contactEmail: mappedContactEmail,
+    contactPhone: mappedContactPhone,
+    whatsapp: mappedWhatsapp,
     instagram: data.instagram,
     facebook: data.facebook,
     tiktok: data.tiktok,
@@ -509,7 +524,8 @@ function mapOrder(data: any): Order {
     paymentMethod: data.payment_method || '',
     status: data.status || 'pending',
     date: data.date || '',
-    trackingNumber: data.tracking_number || undefined
+    trackingNumber: data.tracking_number || undefined,
+    trackingUrl: data.tracking_url || `https://sulta.store/track-order/${data.id}`
   };
 }
 
@@ -632,10 +648,30 @@ export const dbService = {
   getSettings: async (): Promise<Settings | null> => {
     const { data, error } = await supabase.from('settings').select('*').limit(1).single();
     if (error) return null;
-    if (data && data.site_name && data.site_name.toLowerCase().includes('zoria')) {
-      const cleanedSiteName = data.site_name.replace(/zoria/ig, 'SULTA');
-      await supabase.from('settings').update({ site_name: cleanedSiteName }).eq('id', data.id);
-      data.site_name = cleanedSiteName;
+    if (data) {
+      let needsUpdate = false;
+      const updatePayload: any = {};
+
+      if (data.site_name && data.site_name.toLowerCase().includes('zoria')) {
+        const cleanedSiteName = data.site_name.replace(/zoria/ig, 'SULTA');
+        updatePayload.site_name = cleanedSiteName;
+        data.site_name = cleanedSiteName;
+        needsUpdate = true;
+      }
+
+      if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500')) {
+        const fixedWhatsapp = '201110095403';
+        const fixedPhone = '+201110095403';
+        updatePayload.whatsapp = fixedWhatsapp;
+        updatePayload.contact_phone = fixedPhone;
+        data.whatsapp = fixedWhatsapp;
+        data.contact_phone = fixedPhone;
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
+        await supabase.from('settings').update(updatePayload).eq('id', data.id);
+      }
     }
     return data ? mapSettings(data) : null;
   },
@@ -1060,6 +1096,9 @@ export const dbService = {
   },
 
   saveOrder: async (order: Order): Promise<void> => {
+    // Phase 4: Automatically generate and store official tracking URL
+    order.trackingUrl = order.trackingUrl || `https://sulta.store/track-order/${order.id}`;
+
     // 1. Dual-write to localStorage for 100% transaction resilience
     try {
       const offlineOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
@@ -1099,6 +1138,7 @@ export const dbService = {
       status: safeStatus,
       date: order.date,
       tracking_number: order.trackingNumber || null,
+      tracking_url: order.trackingUrl,
       subtotal: Number(order.totalPrice ?? 0) - Number(order.shippingFee ?? 0),
       shipping_cost: Number(order.shippingFee ?? 0),
       discount: 0,
@@ -1491,17 +1531,25 @@ export const dbService = {
   },
 
   updateOrder: async (order: Order): Promise<void> => {
+    // Phase 4: Automatically make sure trackingUrl is set
+    order.trackingUrl = order.trackingUrl || `https://sulta.store/track-order/${order.id}`;
+
     try {
       const localOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
       const idx = localOrders.findIndex((o: any) => o.id === order.id);
       if (idx !== -1) {
-        localOrders[idx].status = order.status;
+        localOrders[idx] = { ...localOrders[idx], ...order };
         localStorage.setItem('sulta_offline_orders', JSON.stringify(localOrders));
       }
     } catch (e) {
       console.warn("Failed to update status in localStorage orders log:", e);
     }
-    const { error } = await supabase.from('orders').update({ status: order.status }).eq('id', order.id);
+
+    const updatePayload: any = { status: order.status };
+    if (order.trackingNumber) updatePayload.tracking_number = order.trackingNumber;
+    if (order.trackingUrl) updatePayload.tracking_url = order.trackingUrl;
+
+    const { error } = await supabase.from('orders').update(updatePayload).eq('id', order.id);
     if (error) {
       console.error("Non-blocking warning: Supabase cloud updateOrder status sync skipped:", error);
     }

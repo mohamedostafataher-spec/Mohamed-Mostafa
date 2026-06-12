@@ -277,7 +277,7 @@ CREATE TABLE IF NOT EXISTS public.homepage_sections (
 
 -- Seed initial boutique settings
 INSERT INTO public.settings (id, site_name, contact_email, contact_phone, whatsapp, instagram, facebook, tiktok)
-VALUES (1, 'Sulta High Couture Sleepwear', 'royal@sultawear.com', '+966500000000', '966500000000', 'sulta_couture', 'sulta_couture', 'sulta_couture')
+VALUES (1, 'Sulta High Couture Sleepwear', 'royal@sultawear.com', '+201110095403', '201110095403', 'sulta_couture', 'sulta_couture', 'sulta_couture')
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed default VIP Categories

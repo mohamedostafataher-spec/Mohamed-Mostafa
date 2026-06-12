@@ -192,6 +192,7 @@ export interface Order {
   ribbon?: string;
   shippingFee?: number;
   trackingNumber?: string;
+  trackingUrl?: string;
   items: {
     productId: string;
     productName: string;

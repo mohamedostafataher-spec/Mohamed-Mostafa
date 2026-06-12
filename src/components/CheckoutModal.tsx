@@ -38,6 +38,7 @@ export default function CheckoutModal({
   const [errorMsg, setErrorMsg] = useState('');
   const [successOrder, setSuccessOrder] = useState<Order | null>(null);
   const [confirmViaWhatsapp, setConfirmViaWhatsapp] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
 
@@ -180,6 +181,7 @@ export default function CheckoutModal({
 
       if (confirmViaWhatsapp) {
         const itemsText = newOrder.items.map(item => `• ${item.productName} (${item.color} - ${item.size}) [الكمية: ${item.quantity}]`).join('\n');
+        const trackingUrl = `https://sulta.store/track-order/${newOrder.id}`;
         const text = `✦ ملخص الطلب الفاخر من متجر SULTA ✦\n\n` +
                      `رقم الطلب: ${newOrder.id}\n` +
                      `اسم العميلة الموقرة: ${newOrder.customerName}\n` +
@@ -187,6 +189,7 @@ export default function CheckoutModal({
                      `شحنت إلى: ${newOrder.city} - ${newOrder.address} (${newOrder.country === 'EG' ? 'مصر' : 'السعودية'})\n` +
                      `لون الشريط: ${ribbons.find(r => r.id === newOrder.ribbon)?.nameAr || 'شريط شامبين ميتاليك فخم'}\n` +
                      `طريقة الدفع: ${newOrder.paymentMethod}\n\n` +
+                     `رابط تتبع الطلب المباشر: ${trackingUrl}\n\n` +
                      `المنتجات الحريرية المحجوزة:\n${itemsText}\n\n` +
                      `تكلفة الشحن لـ ${newOrder.country === 'EG' ? 'مصر' : 'السعودية'}: ${newOrder.shippingFee || 0} ${newOrder.currency}\n` +
                      `إجمالي الاستحقاق النهائي: ${newOrder.totalPrice.toLocaleString()} ${newOrder.currency}\n\n` +
@@ -208,6 +211,7 @@ export default function CheckoutModal({
   if (successOrder) {
     const handleSendWhatsApp = () => {
       const itemsText = successOrder.items.map(item => `• ${item.productName} (${item.color} - ${item.size}) [الكمية: ${item.quantity}]`).join('\n');
+      const trackingUrl = `https://sulta.store/track-order/${successOrder.id}`;
       const text = `✦ ملخص الطلب الفاخر من متجر SULTA ✦\n\n` +
                    `رقم الطلب: ${successOrder.id}\n` +
                    `اسم العميلة الموقرة: ${successOrder.customerName}\n` +
@@ -215,6 +219,7 @@ export default function CheckoutModal({
                    `شحنت إلى: ${successOrder.city} - ${successOrder.address} (${successOrder.country === 'EG' ? 'مصر' : 'السعودية'})\n` +
                    `لون الشريط: ${ribbons.find(r => r.id === successOrder.ribbon)?.nameAr || 'شريط شامبين ميتاليك فخم'}\n` +
                    `طريقة الدفع: ${successOrder.paymentMethod}\n\n` +
+                   `رابط تتبع الطلب المباشر: ${trackingUrl}\n\n` +
                    `المنتجات الحريرية المحجوزة:\n${itemsText}\n\n` +
                    `تكلفة الشحن لـ ${successOrder.country === 'EG' ? 'مصر' : 'السعودية'}: ${successOrder.shippingFee || 0} ${successOrder.currency}\n` +
                    `إجمالي الاستحقاق النهائي: ${successOrder.totalPrice.toLocaleString()} ${successOrder.currency}\n\n` +
@@ -275,6 +280,31 @@ export default function CheckoutModal({
             <div className="flex justify-between border-t border-gray-100 pt-2.5 text-sm font-black text-gray-950">
               <span>الإجمالي النهائي (شاملاً الشحن):</span>
               <span>{successOrder.totalPrice.toLocaleString()} {successOrder.currency}</span>
+            </div>
+          </div>
+
+          {/* Tracking Link display */}
+          <div className="bg-[#DF8A9C]/5 border border-[#DF8A9C]/10 rounded-2xl p-4.5 mb-5 text-right font-sans max-w-md mx-auto space-y-2 shadow-xs">
+            <span className="text-xs text-[#DF8A9C] font-semibold block">رابط تتبع الطلب الرسمي SULTA 👑</span>
+            <div className="flex gap-2 items-center bg-white border border-gray-150 p-2 rounded-xl">
+              <input 
+                type="text" 
+                readOnly 
+                value={`https://sulta.store/track-order/${successOrder.id}`} 
+                className="w-full text-xs font-mono text-gray-500 bg-transparent text-left focus:outline-none select-all font-bold"
+                dir="ltr"
+              />
+              <button 
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(`https://sulta.store/track-order/${successOrder.id}`);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="text-[11px] text-[#DF8A9C] bg-[#DF8A9C]/10 border border-[#DF8A9C]/20 px-3 py-1.5 rounded-lg shrink-0 hover:bg-[#DF8A9C]/20 transition-all active:scale-95 cursor-pointer font-bold leading-none"
+              >
+                {copied ? 'تم النسخ! 🌸' : 'نسخ الرابط'}
+              </button>
             </div>
           </div>
 

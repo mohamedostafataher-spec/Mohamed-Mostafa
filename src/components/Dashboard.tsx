@@ -1381,6 +1381,7 @@ export default function Dashboard({
   const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
+  const [copiedOrderIds, setCopiedOrderIds] = useState<Record<string, boolean>>({});
 
   // Input states for adding new product
   const [newProdNameAr, setNewProdNameAr] = useState('');
@@ -2167,7 +2168,22 @@ export default function Dashboard({
     const targetOrder = orders.find(o => o.id === orderId);
     if (targetOrder) {
       try {
-        await dbService.updateOrder({ ...targetOrder, status });
+        const updatedOrder = { ...targetOrder, status };
+        await dbService.updateOrder(updatedOrder);
+
+        // Phase 8: Auto WhatsApp Notification upon status milestone
+        if (['confirmed', 'processing', 'packed', 'shipped', 'out_for_delivery', 'delivered'].includes(status)) {
+          const fallbackUrl = targetOrder.trackingUrl || `https://sulta.store/track-order/${orderId}`;
+          // Phase 7 format
+          const text = `مرحباً ${targetOrder.customerName} 🌸\n\nتم تحديث طلبك لدى SULTA.\n\nيمكنك متابعة حالة الطلب مباشرة من الرابط:\n${fallbackUrl}\n\nشكراً لاختيارك SULTA 👑`;
+
+          let cleanedPhone = targetOrder.phone.replace(/[^0-9]/g, '');
+          if (cleanedPhone.startsWith('0') && cleanedPhone.length === 11) {
+            cleanedPhone = '2' + cleanedPhone; // Egypt country code fallback
+          }
+          const url = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(text)}`;
+          window.open(url, '_blank');
+        }
       } catch (err) {
         console.error("Failed to update status in DB:", err);
       }
@@ -4268,9 +4284,38 @@ export default function Dashboard({
                               <p className="font-bold text-gray-900 mt-2 text-sm">الحساب النهائي: {o.totalPrice.toLocaleString()} {o.currency}</p>
                             </div>
 
-                            {/* Status controls & Tracking Link WhatsApp Share */}
-                            <div className="flex flex-col gap-3 mt-4 pt-3 border-t border-gray-100 select-none">
-                              <div className="flex flex-wrap items-center justify-between gap-3">
+                            {/* Tracking Controls Panel (Phases 5, 6, 7 & 8) */}
+                            <div className="flex flex-col gap-3.5 mt-4 pt-3.5 border-t border-gray-100 select-none text-right">
+                              {/* Phase 5: Tracking Link Input Field */}
+                              <div className="space-y-1">
+                                <label className="text-[10px] text-gray-400 font-bold block">رابط تتبع الطلب الرسمي SULTA (Phase 5):</label>
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    readOnly
+                                    value={o.trackingUrl || `https://sulta.store/track-order/${o.id}`}
+                                    className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-[11px] font-mono font-bold text-gray-500 focus:outline-none"
+                                    dir="ltr"
+                                  />
+                                  {/* Phase 6: Copy Button */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const fallbackUrl = o.trackingUrl || `https://sulta.store/track-order/${o.id}`;
+                                      navigator.clipboard.writeText(fallbackUrl);
+                                      setCopiedOrderIds(prev => ({ ...prev, [o.id]: true }));
+                                      setTimeout(() => {
+                                        setCopiedOrderIds(prev => ({ ...prev, [o.id]: false }));
+                                      }, 2000);
+                                    }}
+                                    className="px-3 py-1 bg-gray-200 hover:bg-gray-250 text-gray-700 rounded-lg text-[10px] font-sans font-bold transition-all shrink-0 active:scale-95 cursor-pointer"
+                                  >
+                                    {copiedOrderIds[o.id] ? 'تم النسخ! ✅' : 'نسخ الرابط 📋'}
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                                 <div className="flex items-center gap-2">
                                   <span className="text-gray-400 text-[10px] uppercase font-bold">حالة الطلب:</span>
                                   <select
@@ -4290,10 +4335,14 @@ export default function Dashboard({
                                   </select>
                                 </div>
 
+                                {/* Phase 7 & 9: Send WhatsApp with custom exact message */}
                                 <button
+                                  type="button"
                                   onClick={() => {
-                                    const trackingUrl = `${window.location.origin}/?page=track-order&id=${o.id}`;
-                                    const text = `مرحباً ${o.customerName} 🌸\n\nيمكنكِ الآن متابعة حالة طلبكِ الحريري الملكي من SULTA خطوة بخطوة عبر الرابط التالي:\n${trackingUrl}\n\nشكراً لاختياركِ رقي وأناقة SULTA 👑`;
+                                    const fallbackUrl = o.trackingUrl || `https://sulta.store/track-order/${o.id}`;
+                                    // Phase 7: Exact specified message format
+                                    const text = `مرحباً ${o.customerName} 🌸\n\nتم تحديث طلبك لدى SULTA.\n\nيمكنك متابعة حالة الطلب مباشرة من الرابط:\n${fallbackUrl}\n\nشكراً لاختيارك SULTA 👑`;
+                                    
                                     let cleanedPhone = o.phone.replace(/[^0-9]/g, '');
                                     if (cleanedPhone.startsWith('0') && cleanedPhone.length === 11) {
                                       cleanedPhone = '2' + cleanedPhone; // Egypt country code fallback
@@ -4301,9 +4350,9 @@ export default function Dashboard({
                                     const url = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(text)}`;
                                     window.open(url, '_blank');
                                   }}
-                                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-[10px] font-sans font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer align-middle"
+                                  className="bg-[#25D366] hover:bg-[#20ba5a] text-white px-3.5 py-1.5 rounded-xl text-[10px] font-sans font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer align-middle"
                                 >
-                                  <span>📲 إرسال رابط التتبع</span>
+                                  <span>📲 إرسال واتساب</span>
                                 </button>
                               </div>
                             </div>
