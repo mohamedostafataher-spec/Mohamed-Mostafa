@@ -5,8 +5,8 @@ import {
   ShieldCheck, AlertTriangle, Printer, PhoneCall, Copy, Check, FileText, Star
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { supabase, cleanImgUrl } from '../services/db';
-import { Order, Product, OrderStatus } from '../types';
+import { supabase, cleanImgUrl, dbService } from '../services/db';
+import { Order, Product, OrderStatus, Settings } from '../types';
 import { jsPDF } from 'jspdf';
 
 interface OrderDetailViewProps {
@@ -30,6 +30,29 @@ export default function OrderDetailView({
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false);
+  const [ratings, setRatings] = useState<Record<string, number>>({
+    'المنتج': 5,
+    'التغليف': 5,
+    'الشحن': 5,
+    'التجربة': 5
+  });
+
+  // Fetch shop settings to utilize the live dynamic WhatsApp number
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const s = await dbService.getSettings();
+        if (s) {
+          setSettings(s);
+        }
+      } catch (err) {
+        console.error("Failed to load settings in tracking page:", err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   // 1. Map products array into dictionary for fast access
   useEffect(() => {
@@ -194,7 +217,9 @@ export default function OrderDetailView({
       `الحالة الحالية: ${getStatusTitle(order.status)}\n` +
       `يرجى موافاتي بالتفاصيل الملكية الإضافية. شكراً لكم 🌸`
     );
-    window.open(`https://wa.me/201110095403?text=${msg}`, '_blank'); // Update dynamically to Sulta whatsapp number
+    const targetWhatsapp = settings?.whatsapp || '201110095403';
+    const cleanWhatsapp = targetWhatsapp.replace(/\D/g, '');
+    window.open(`https://wa.me/${cleanWhatsapp}?text=${msg}`, '_blank');
   };
 
   // PDF Download Helper
@@ -856,31 +881,61 @@ export default function OrderDetailView({
       {/* 5. Luxury Order Actions Footer Panel (Download, Re-order, Concierge support, Live help) */}
       {/* Smart Ratings (If Delivered) */}
       {order.status === 'delivered' && (
-        <div className="bg-gradient-to-tr from-[#FAF5F0] to-white p-6 md:p-8 rounded-3xl border border-amber-100 shadow-sm mt-8" dir="rtl">
-          <div className="text-center mb-6">
-            <span className="font-serif italic text-xs tracking-[0.2em] text-[#A44C5C] block mb-2 uppercase">تقييم تجربة سولتة</span>
-            <h3 className="font-serif text-xl font-bold text-[#0B0B0B]">يسعدنا سماع رأيك الملكي 👑</h3>
-            <p className="text-xs text-gray-500 mt-2">كيف كانت تجربتك مع هذا الطلب؟ تقييمك يهمنا في تحسين وتطوير خدماتنا.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {['المنتج', 'التغليف', 'الشحن', 'التجربة'].map((aspect, idx) => (
-              <div key={idx} className="bg-white border border-gray-150 p-4 rounded-2xl flex flex-col items-center">
-                <span className="text-xs font-bold font-sans text-gray-700 mb-2">{aspect}</span>
-                <div className="flex gap-1 flex-row-reverse">
-                  {[1,2,3,4,5].map(star => (
-                    <button key={star} className="text-gray-300 hover:text-amber-400 focus:text-amber-500 transition-colors">
-                      <Star size={18} fill="currentColor" />
-                    </button>
-                  ))}
-                </div>
+        <div className="bg-gradient-to-tr from-[#FAF5F0] to-white p-6 md:p-8 rounded-3xl border border-amber-100 shadow-sm mt-8 text-right" dir="rtl">
+          {ratingSubmitted ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-6 text-emerald-800"
+            >
+              <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+                <Check size={20} className="text-emerald-600 font-bold" />
               </div>
-            ))}
-          </div>
-          <div className="mt-6 flex justify-center">
-            <button className="bg-[#0B0B0B] text-white px-8 py-3 rounded-xl text-xs font-bold hover:bg-[#A44C5C] transition-colors focus:opacity-80" onClick={() => alert('تم إرسال التقييم بنجاح. شكراً لك!')}>
-              إرسال التقييم ✨
-            </button>
-          </div>
+              <h3 className="font-serif text-lg font-bold">نشكر ثقتك ورأيكِ المرموق 🌸</h3>
+              <p className="text-xs text-gray-500 mt-1.5 max-w-md mx-auto leading-relaxed">
+                تم تسجيل معايير الجودة بنجاح ونقل تقديراتكِ لمدراء بوتيك SULTA لضمان الأفضل دائماً لتاج طلّتكِ البهيّة.
+              </p>
+            </motion.div>
+          ) : (
+            <>
+              <div className="text-center mb-6">
+                <span className="font-serif italic text-[#A44C5C] text-xs tracking-[0.2em] block mb-2 uppercase">تقييم تجربة سولتة كوتور</span>
+                <h3 className="font-serif text-lg font-bold text-[#0B0B0B]">يسعدنا سماع رأيك الملكي 👑</h3>
+                <p className="text-xs text-gray-500 mt-2">كيف كانت تجربتكِ معنا؟ لمساتكِ ورأيك يدعمان مسيرتنا لتقديم أعلى معايير الرفاهية.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {Object.keys(ratings).map((aspect) => (
+                  <div key={aspect} className="bg-white border border-gray-150 p-4 rounded-2xl flex flex-col items-center">
+                    <span className="text-xs font-bold font-sans text-gray-750 mb-2">{aspect}</span>
+                    <div className="flex gap-1 flex-row-reverse">
+                      {[5, 4, 3, 2, 1].map((star) => {
+                        const currentVal = ratings[aspect] || 5;
+                        return (
+                          <button 
+                            key={star} 
+                            type="button"
+                            onClick={() => setRatings(prev => ({ ...prev, [aspect]: star }))}
+                            className={`transition-colors cursor-pointer ${star <= currentVal ? 'text-amber-400 font-semibold' : 'text-gray-200'}`}
+                          >
+                            <Star size={18} fill={star <= currentVal ? "currentColor" : "none"} />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 flex justify-center">
+                <button 
+                  type="button"
+                  onClick={() => setRatingSubmitted(true)}
+                  className="bg-[#0B0B0B] text-white px-8 py-3 rounded-xl text-xs font-bold hover:bg-[#A44C5C] hover:shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  إرسال التقييم ✨
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 

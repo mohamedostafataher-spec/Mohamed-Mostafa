@@ -4287,14 +4287,16 @@ export default function Dashboard({
                             {/* Tracking Controls Panel (Phases 5, 6, 7 & 8) */}
                             <div className="flex flex-col gap-3.5 mt-4 pt-3.5 border-t border-gray-100 select-none text-right">
                               {/* Phase 5: Tracking Link Input Field */}
-                              <div className="space-y-1">
-                                <label className="text-[10px] text-gray-400 font-bold block">رابط تتبع الطلب الرسمي SULTA (Phase 5):</label>
-                                <div className="flex gap-2">
+                              <div className="space-y-2">
+                                <label className="text-[10px] text-gray-400 font-bold block">رابط تتبع الطلب (رسمي وتجريبي):</label>
+                                
+                                <div className="flex gap-2 items-center">
+                                  <span className="text-[10px] text-gray-400 font-semibold w-16 text-left shrink-0">رسمي 👑</span>
                                   <input
                                     type="text"
                                     readOnly
                                     value={o.trackingUrl || `https://sulta.store/track-order/${o.id}`}
-                                    className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-[11px] font-mono font-bold text-gray-500 focus:outline-none"
+                                    className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold text-gray-500 focus:outline-none"
                                     dir="ltr"
                                   />
                                   {/* Phase 6: Copy Button */}
@@ -4303,14 +4305,40 @@ export default function Dashboard({
                                     onClick={() => {
                                       const fallbackUrl = o.trackingUrl || `https://sulta.store/track-order/${o.id}`;
                                       navigator.clipboard.writeText(fallbackUrl);
-                                      setCopiedOrderIds(prev => ({ ...prev, [o.id]: true }));
+                                      setCopiedOrderIds(prev => ({ ...prev, [o.id + '-prod']: true }));
                                       setTimeout(() => {
-                                        setCopiedOrderIds(prev => ({ ...prev, [o.id]: false }));
+                                        setCopiedOrderIds(prev => ({ ...prev, [o.id + '-prod']: false }));
                                       }, 2000);
                                     }}
-                                    className="px-3 py-1 bg-gray-200 hover:bg-gray-250 text-gray-700 rounded-lg text-[10px] font-sans font-bold transition-all shrink-0 active:scale-95 cursor-pointer"
+                                    className="px-2.5 py-1 bg-gray-200 hover:bg-gray-250 text-gray-700 rounded-lg text-[10px] font-sans font-bold transition-all shrink-0 active:scale-95 cursor-pointer leading-tight h-7 flex items-center justify-center min-w-16"
                                   >
-                                    {copiedOrderIds[o.id] ? 'تم النسخ! ✅' : 'نسخ الرابط 📋'}
+                                    {copiedOrderIds[o.id + '-prod'] ? 'نسخ! ✅' : 'نسخ 📋'}
+                                  </button>
+                                </div>
+
+                                <div className="flex gap-2 items-center">
+                                  <span className="text-[10px] text-emerald-600 font-semibold w-16 text-left shrink-0">معاينة 🧪</span>
+                                  <input
+                                    type="text"
+                                    readOnly
+                                    value={`${window.location.origin}/?page=track-order&id=${o.id}`}
+                                    className="w-full bg-emerald-50/25 border border-emerald-100 rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold text-emerald-800 focus:outline-none"
+                                    dir="ltr"
+                                  />
+                                  {/* Sandbox Copy Button */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const sandboxUrl = `${window.location.origin}/?page=track-order&id=${o.id}`;
+                                      navigator.clipboard.writeText(sandboxUrl);
+                                      setCopiedOrderIds(prev => ({ ...prev, [o.id + '-sandbox']: true }));
+                                      setTimeout(() => {
+                                        setCopiedOrderIds(prev => ({ ...prev, [o.id + '-sandbox']: false }));
+                                      }, 2000);
+                                    }}
+                                    className="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-150 text-emerald-800 rounded-lg text-[10px] font-sans font-bold transition-all shrink-0 active:scale-95 cursor-pointer leading-tight h-7 flex items-center justify-center min-w-16"
+                                  >
+                                    {copiedOrderIds[o.id + '-sandbox'] ? 'نسخ! ✅' : 'نسخ 📋'}
                                   </button>
                                 </div>
                               </div>

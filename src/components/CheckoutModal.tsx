@@ -284,28 +284,62 @@ export default function CheckoutModal({
           </div>
 
           {/* Tracking Link display */}
-          <div className="bg-[#DF8A9C]/5 border border-[#DF8A9C]/10 rounded-2xl p-4.5 mb-5 text-right font-sans max-w-md mx-auto space-y-2 shadow-xs">
-            <span className="text-xs text-[#DF8A9C] font-semibold block">رابط تتبع الطلب الرسمي SULTA 👑</span>
-            <div className="flex gap-2 items-center bg-white border border-gray-150 p-2 rounded-xl">
-              <input 
-                type="text" 
-                readOnly 
-                value={`https://sulta.store/track-order/${successOrder.id}`} 
-                className="w-full text-xs font-mono text-gray-500 bg-transparent text-left focus:outline-none select-all font-bold"
-                dir="ltr"
-              />
-              <button 
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(`https://sulta.store/track-order/${successOrder.id}`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-                className="text-[11px] text-[#DF8A9C] bg-[#DF8A9C]/10 border border-[#DF8A9C]/20 px-3 py-1.5 rounded-lg shrink-0 hover:bg-[#DF8A9C]/20 transition-all active:scale-95 cursor-pointer font-bold leading-none"
-              >
-                {copied ? 'تم النسخ! 🌸' : 'نسخ الرابط'}
-              </button>
+          <div className="bg-[#DF8A9C]/5 border border-[#DF8A9C]/10 rounded-2xl p-4.5 mb-5 text-right font-sans max-w-md mx-auto space-y-3.5 shadow-xs">
+            <span className="text-xs text-[#DF8A9C] font-semibold block">روابط تتبع الطلب الملكي SULTA 👑</span>
+            
+            <div className="space-y-1">
+              <span className="text-[10px] text-gray-500 font-bold block">رابط تتبع المتجر الرسمي:</span>
+              <div className="flex gap-2 items-center bg-white border border-gray-150 p-2 rounded-xl">
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={`https://sulta.store/track-order/${successOrder.id}`} 
+                  className="w-full text-[11px] font-mono text-gray-400 bg-transparent text-left focus:outline-none select-all font-bold"
+                  dir="ltr"
+                />
+                <button 
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://sulta.store/track-order/${successOrder.id}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="text-[10px] text-[#DF8A9C] bg-[#DF8A9C]/15 border border-[#DF8A9C]/25 px-2.5 py-1.5 rounded-lg shrink-0 hover:bg-[#DF8A9C]/20 transition-all active:scale-95 cursor-pointer font-bold leading-none"
+                >
+                  نسخ الرابط
+                </button>
+              </div>
             </div>
+
+            <div className="space-y-1">
+              <span className="text-[10px] text-emerald-600 font-bold block">رابط المعاينة التجريبي الفوري (Sandbox):</span>
+              <div className="flex gap-2 items-center bg-white border border-emerald-100 p-2 rounded-xl">
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={`${window.location.origin}/?page=track-order&id=${successOrder.id}`} 
+                  className="w-full text-[11px] font-mono text-emerald-800 bg-transparent text-left focus:outline-none select-all font-bold"
+                  dir="ltr"
+                />
+                <button 
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/?page=track-order&id=${successOrder.id}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg shrink-0 hover:bg-emerald-100 transition-all active:scale-95 cursor-pointer font-bold leading-none"
+                >
+                  نسخ المعاينة الفورية
+                </button>
+              </div>
+            </div>
+
+            {copied && (
+              <span className="text-[11px] text-emerald-700 font-semibold block text-center bg-emerald-50 py-1 rounded-lg animate-pulse">
+                🌸 تم نسخ الرابط المختار بنجاح للذاكرة المؤقتة!
+              </span>
+            )}
           </div>
 
           {/* Informing Notice about WhatsApp */}
