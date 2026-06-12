@@ -4268,27 +4268,42 @@ export default function Dashboard({
                               <p className="font-bold text-gray-900 mt-2 text-sm">الحساب النهائي: {o.totalPrice.toLocaleString()} {o.currency}</p>
                             </div>
 
-                            {/* Status controls */}
-                            <div className="flex flex-wrap items-center mt-4 gap-2 pt-3 border-t border-gray-100 select-none">
-                              <span className="text-gray-400 text-[10px] uppercase font-semibold">تغيير مرحلة الشحنة:</span>
-                              <div className="flex items-center gap-1.5">
+                            {/* Status controls & Tracking Link WhatsApp Share */}
+                            <div className="flex flex-col gap-3 mt-4 pt-3 border-t border-gray-100 select-none">
+                              <div className="flex flex-wrap items-center justify-between gap-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-400 text-[10px] uppercase font-bold">حالة الطلب:</span>
+                                  <select
+                                    value={o.status || 'pending'}
+                                    onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value as any)}
+                                    className="border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-700 bg-white font-sans focus:outline-none focus:border-[#DF8A9C] cursor-pointer"
+                                  >
+                                    <option value="pending">جديد / قيد التحقق ⏳</option>
+                                    <option value="confirmed">تم التأكيد والمراجعة ✅</option>
+                                    <option value="processing">جاري التجهيز والتغليف 📦</option>
+                                    <option value="packed">جاهز للشحن والتسليم 🏷️</option>
+                                    <option value="shipped">تم الشحن للناقل 🚚</option>
+                                    <option value="out_for_delivery">في الطريق مع المندوب 📍</option>
+                                    <option value="delivered">تم التسليم النهائي 🎉</option>
+                                    <option value="cancelled">ملغي ❌</option>
+                                    <option value="returned">مسترجع ↩️</option>
+                                  </select>
+                                </div>
+
                                 <button
-                                  onClick={() => handleUpdateOrderStatus(o.id, 'processing')}
-                                  className={`px-2 py-1 rounded text-[10px] font-sans font-medium transition-colors ${o.status === 'processing' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                  onClick={() => {
+                                    const trackingUrl = `${window.location.origin}/?page=track-order&id=${o.id}`;
+                                    const text = `مرحباً ${o.customerName} 🌸\n\nيمكنكِ الآن متابعة حالة طلبكِ الحريري الملكي من SULTA خطوة بخطوة عبر الرابط التالي:\n${trackingUrl}\n\nشكراً لاختياركِ رقي وأناقة SULTA 👑`;
+                                    let cleanedPhone = o.phone.replace(/[^0-9]/g, '');
+                                    if (cleanedPhone.startsWith('0') && cleanedPhone.length === 11) {
+                                      cleanedPhone = '2' + cleanedPhone; // Egypt country code fallback
+                                    }
+                                    const url = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(text)}`;
+                                    window.open(url, '_blank');
+                                  }}
+                                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-[10px] font-sans font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer align-middle"
                                 >
-                                  تغليف
-                                </button>
-                                <button
-                                  onClick={() => handleUpdateOrderStatus(o.id, 'shipped')}
-                                  className={`px-2 py-1 rounded text-[10px] font-sans font-medium transition-colors ${o.status === 'shipped' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                >
-                                  شحن
-                                </button>
-                                <button
-                                  onClick={() => handleUpdateOrderStatus(o.id, 'delivered')}
-                                  className={`px-2 py-1 rounded text-[10px] font-sans font-medium transition-colors ${o.status === 'delivered' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                >
-                                  تسليم
+                                  <span>📲 إرسال رابط التتبع</span>
                                 </button>
                               </div>
                             </div>

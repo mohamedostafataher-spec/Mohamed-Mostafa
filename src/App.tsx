@@ -142,6 +142,30 @@ function AppContent() {
     }
   }, [products]);
 
+  // SULTA Order Tracking Center Deep-link Routing (Phase 1 & Phase 6 specs)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pathname = window.location.pathname;
+    
+    // Check search queries
+    const pageParam = params.get('page');
+    const trackParam = params.get('track') || params.get('id');
+    
+    // Check pathname routing: /track-order/[order_number] or /order-tracking/[order_number]
+    const trackPathMatch = pathname.match(/^\/(track-order|order-tracking)\/(.+)$/);
+    
+    if (pageParam === 'track-order' || trackParam) {
+      setTab('track-order');
+      if (trackParam) {
+        window.localStorage.setItem('sulta_auto_track_order_id', trackParam);
+      }
+    } else if (trackPathMatch) {
+      setTab('track-order');
+      const foundOrderId = decodeURIComponent(trackPathMatch[2]);
+      window.localStorage.setItem('sulta_auto_track_order_id', foundOrderId);
+    }
+  }, []);
+
   useEffect(() => {
     const handleGlobalOpenTab = (e: any) => {
       if (e.detail) {

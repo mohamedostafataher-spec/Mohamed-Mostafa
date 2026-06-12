@@ -1534,7 +1534,7 @@ export default function ProductDetailModal({
                         const imagesEl = document.getElementById('new-review-images') as HTMLInputElement;
                         
                         if (!nameEl.value || !commentEl.value) {
-                          toast.error('يرجى كتابة الاسم والتعليق');
+                          toast('يرجى كتابة الاسم والتعليق', 'error');
                           return;
                         }
 
@@ -1551,7 +1551,7 @@ export default function ProductDetailModal({
                             isVerifiedPurchase: true // simulate buyer logic automatically checks order history
                           });
                           
-                          toast.success('تم إرسال تقييمك بنجاح وسيكون متاحاً بعد المراجعة');
+                          toast('تم إرسال تقييمك بنجاح وسيكون متاحاً بعد المراجعة', 'success');
                           document.getElementById('review-form-container')?.classList.add('hidden');
                           
                           // reset
@@ -1559,7 +1559,7 @@ export default function ProductDetailModal({
                           commentEl.value = '';
                           imagesEl.value = '';
                         } catch (err) {
-                          toast.error('لم نتمكن من الحفظ، يبدو أن هناك مشكلة بالاتصال.');
+                          toast('لم نتمكن من الحفظ، يبدو أن هناك مشكلة بالاتصال.', 'error');
                         }
                       }}
                       className="w-full bg-[#DF8A9C] text-white py-2 rounded-lg font-bold hover:bg-pink-500 transition-colors text-[11px]"
@@ -1572,7 +1572,7 @@ export default function ProductDetailModal({
                   {(() => {
                     const realReviews = (reviews || []).filter(
                       (r) => r.productId === product.id || r.productName === product.nameAr || r.productName === product.nameEn
-                    ).filter(r => r.status !== 'hidden' && r.status !== 'deleted');
+                    ).filter(r => r.status !== 'hidden');
 
                     const photoReviews = realReviews.filter(r => r.images && r.images.length > 0);
                     
@@ -1604,7 +1604,7 @@ export default function ProductDetailModal({
                     {(() => {
                       const realReviews = (reviews || []).filter(
                         (r) => r.productId === product.id || r.productName === product.nameAr || r.productName === product.nameEn
-                      ).filter(r => r.status !== 'hidden' && r.status !== 'deleted');
+                      ).filter(r => r.status !== 'hidden');
                       
                       if (realReviews.length === 0) {
                         return (

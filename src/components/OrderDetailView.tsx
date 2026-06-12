@@ -374,9 +374,24 @@ export default function OrderDetailView({
       case 'processing': return 3;
       case 'packed': return 4;
       case 'shipped': return 5;
-      case 'out_for_delivery': return 5; // sharing the same physical delivery step
+      case 'out_for_delivery': return 6; // sharing the same physical delivery step
       case 'delivered': return 6;
       default: return 1;
+    }
+  };
+
+  // Percentage complete calculation matching Phase 8 specs
+  const getProgressPercentage = (status: OrderStatus | string): number => {
+    switch (status) {
+      case 'new': case 'pending': return 15;
+      case 'confirmed': return 35;
+      case 'processing': return 55;
+      case 'packed': return 65;
+      case 'shipped': return 75;
+      case 'out_for_delivery': return 85;
+      case 'delivered': return 100;
+      case 'cancelled': case 'returned': case 'refunded': return 0;
+      default: return 15;
     }
   };
 
@@ -504,9 +519,48 @@ export default function OrderDetailView({
 
       {/* 3. Luxury Order Stepper Timeline */}
       <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm mb-8">
-        <h3 className="font-serif text-sm font-semibold text-gray-900 border-r-4 border-[#DF8A9C] pr-3 pb-0.5 mb-8">
+        <h3 className="font-serif text-sm font-semibold text-gray-900 border-r-4 border-[#DF8A9C] pr-3 pb-0.5 mb-6 opacity-90">
           الخط الزمني المباشر وتتبع رحلة الباقة:
         </h3>
+
+        {/* Visual progress bar with checkmarks (Phase 8 details) */}
+        {order.status !== 'cancelled' && order.status !== 'returned' && (
+          <div className="mb-8 font-sans bg-[#FCFAF6] p-5 rounded-2.5xl border border-amber-900/5 text-right shadow-xs" dir="rtl">
+            <div className="flex justify-between items-center mb-2.5 flex-row-reverse">
+              <span className="text-xs font-bold text-gray-700">معدل اكتمال خط المعالجة:</span>
+              <span className="text-sm font-serif font-bold text-[#A44C5C]">{getProgressPercentage(order.status)}%</span>
+            </div>
+            <div className="w-full bg-[#EFECE6] h-2.5 rounded-full overflow-hidden mb-5">
+              <div 
+                className="bg-gradient-to-l from-[#DF8A9C] to-[#A44C5C] h-full transition-all duration-1000 ease-out rounded-full"
+                style={{ width: `${getProgressPercentage(order.status)}%` }}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5 text-[11px] text-gray-600 font-sans border-t border-gray-150/40 pt-3.5">
+              <div className="flex items-center gap-1.5 justify-start">
+                <span className="text-[12px]">{getProgressPercentage(order.status) >= 15 ? '✅' : '⏳'}</span>
+                <span className={getProgressPercentage(order.status) >= 15 ? 'font-bold text-gray-800' : 'text-gray-400'}>تم استلام الطلب</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-start">
+                <span className="text-[12px]">{getProgressPercentage(order.status) >= 55 ? '✅' : '⏳'}</span>
+                <span className={getProgressPercentage(order.status) >= 55 ? 'font-bold text-gray-800' : 'text-gray-400'}>تم التجهيز</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-start">
+                <span className="text-[12px]">{getProgressPercentage(order.status) >= 75 ? '✅' : '⏳'}</span>
+                <span className={getProgressPercentage(order.status) >= 75 ? 'font-bold text-gray-800' : 'text-gray-400'}>تم الشحن</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-start">
+                <span className="text-[12px]">{getProgressPercentage(order.status) >= 85 ? '✅' : '⏳'}</span>
+                <span className={getProgressPercentage(order.status) >= 85 ? 'font-bold text-gray-800' : 'text-gray-400'}>في الطريق</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-start">
+                <span className="text-[12px]">{getProgressPercentage(order.status) >= 100 ? '✅' : '⏳'}</span>
+                <span className={getProgressPercentage(order.status) >= 100 ? 'font-bold text-gray-800' : 'text-gray-400'}>تم التسليم</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Vertical/Horizontal Stepper Container */}
         <div className="relative py-4 px-2" dir="rtl">
