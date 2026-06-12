@@ -36,6 +36,7 @@ import SleepExperience from './components/SleepExperience';
 import SultaMagazine from './components/SultaMagazine';
 import SultaConcierge from './components/SultaConcierge';
 import AiMirror from './components/AiMirror';
+import RoyalSensesSalon from './components/RoyalSensesSalon';
 
 import { dbService, supabase, cleanImgUrl } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -402,7 +403,7 @@ function AppContent() {
   };
 
   // Add Item to Shopping Cart Bag
-  const handleAddToCart = (product: Product, color: { name: string; hex: string }, size: string, qty: number = 1) => {
+  const handleAddToCart = (product: Product, color: { name: string; hex: string }, size: string, qty: number = 1, customOpts?: any) => {
     recordCartAddition(product.id);
     setCart(prev => {
       const existingIdx = prev.findIndex(
@@ -413,10 +414,13 @@ function AppContent() {
         const copy = [...prev];
         const newQty = copy[existingIdx].quantity + qty;
         copy[existingIdx].quantity = newQty > product.stock ? product.stock : newQty;
+        if (customOpts) {
+          copy[existingIdx] = { ...copy[existingIdx], ...customOpts };
+        }
         return copy;
       }
 
-      return [...prev, { product, selectedColor: color, selectedSize: size, quantity: qty }];
+      return [...prev, { product, selectedColor: color, selectedSize: size, quantity: qty, ...customOpts }];
     });
 
     setIsCartOpen(true);
@@ -1129,6 +1133,19 @@ function AppContent() {
             onSelectProduct={handleSelectProduct}
             favorites={favorites}
             toggleFavorite={toggleFavorite}
+          />
+        )}
+
+        {/* VIEW: ROYAL SENSES SALON */}
+        {currentTab === 'royal-senses' && (
+          <RoyalSensesSalon
+            products={products}
+            country={country}
+            onAddToCart={handleAddToCart}
+            onSelectProduct={handleSelectProduct}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            setTab={setTab}
           />
         )}
 

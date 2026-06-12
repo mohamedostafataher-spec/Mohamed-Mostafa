@@ -151,10 +151,21 @@ export default function CheckoutModal({
         shippingFee: shippingCost,
         items: cart.map(item => {
           const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
+          let colorString = item.selectedColor?.name || 'افتراضي';
+          
+          const custom = item as any;
+          if (custom.scent || custom.waxInitial || custom.ribbonColor) {
+            const upgrades: string[] = [];
+            if (custom.scent) upgrades.push(`عطر: ${custom.scent.split(' ')[0]}`);
+            if (custom.waxInitial) upgrades.push(`شمع: ${custom.waxInitial}`);
+            if (custom.ribbonColor) upgrades.push(`شريط: ${custom.ribbonColor.split(' ')[0]}`);
+            colorString += ` [تخصيص: ${upgrades.join(' | ')}]`;
+          }
+          
           return {
             productId: item.product.id,
             productName: item.product.nameAr,
-            color: item.selectedColor?.name || 'افتراضي',
+            color: colorString,
             size: item.selectedSize,
             quantity: item.quantity,
             price: itemPrice

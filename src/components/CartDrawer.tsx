@@ -156,6 +156,28 @@ export default function CartDrawer({
                               {item.selectedColor?.name || 'افتراضي'}
                             </span>
                             <span className="bg-gray-100 px-2 py-0.5 rounded-md">المقاس: {item.selectedSize}</span>
+                            
+                            {/* Render Custom Sensory Upgrades */}
+                            {(item as any).scent && (
+                              <span className="bg-pink-50 text-[#A44C5C] border border-pink-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                🌸 {(item as any).scent.split('(')[0]}
+                              </span>
+                            )}
+                            {(item as any).waxInitial && (
+                              <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                ✉️ شمع: {(item as any).waxInitial} {(item as any).waxColor && `(${(item as any).waxColor.split(' ')[0]})`}
+                              </span>
+                            )}
+                            {(item as any).ribbonColor && (
+                              <span className="bg-stone-100 text-stone-700 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                🎗️ {(item as any).ribbonColor.split(' ')[0] || (item as any).ribbonColor}
+                              </span>
+                            )}
+                            {(item as any).partnerProduct && (
+                              <span className="bg-emerald-50 text-emerald-800 border border-emerald-150 px-2 py-0.5 rounded-md flex items-center gap-1 w-full mt-1">
+                                👗 منسق مع: {(item as any).partnerProduct}
+                              </span>
+                            )}
                           </div>
                         </div>
 
