@@ -103,6 +103,58 @@ export default function AdminExperienceCenter({
   const [quickStockChange, setQuickStockChange] = useState<number>(10);
   const [broadcastMessage, setBroadcastMessage] = useState<string>('');
 
+  // 15th Sensory Luxury Control states
+  const [scents, setScents] = useState<any[]>(() => {
+    try {
+      const stored = localStorage.getItem('sulta_custom_scents');
+      return stored ? JSON.parse(stored) : [
+        { id: 'oud', nameAr: 'بخور العود الساطح (Elite Pure Oud)', descAr: 'نوتات عود كمبودي ملكي دافئة تمنح ثوبك هيبة وجاذبية تدوم لأسابيع.', color: '#78350F' },
+        { id: 'musk', nameAr: 'مسك الحرير الأبيض (Royal White Musk)', descAr: 'عبير البودرة الناعم مع المسك المنعش، يثير إحساساً بالنقاء والدلال المطلق.', color: '#D4D4D4' },
+        { id: 'jasmine', nameAr: 'الياسمين الدمشقي والورد (Jasmine Rose)', descAr: 'رائحة قطرات الندى على بتلات الورد وصالونات كوتور فلورنسا المنعشة.', color: '#FCE7F3' },
+        { id: 'cambodi', nameAr: 'خلطة سلطانة الخاصة (Sultana Elixir)', descAr: 'مزيج فاخر سري يجمع بين ترانيم العنبر الملكي وقشور البرغموت المبردة.', color: '#B45309' }
+      ];
+    } catch {
+      return [];
+    }
+  });
+
+  const [waxColors, setWaxColors] = useState<any[]>(() => {
+    try {
+      const stored = localStorage.getItem('sulta_custom_wax_colors');
+      return stored ? JSON.parse(stored) : [
+        { id: 'gold', nameAr: 'ذهبي أوراق الغار', hex: '#D4AF37' },
+        { id: 'emerald', nameAr: 'أخضر الزمرد الملكي', hex: '#097969' },
+        { id: 'crimson', nameAr: 'أحمر قاني كلاسيكي', hex: '#800020' },
+        { id: 'pearl', nameAr: 'وردي اللؤلؤ المصقول', hex: '#EAE0D5' }
+      ];
+    } catch {
+      return [];
+    }
+  });
+
+  const [ribbons, setRibbons] = useState<any[]>(() => {
+    try {
+      const stored = localStorage.getItem('sulta_custom_ribbons');
+      return stored ? JSON.parse(stored) : [
+        { id: 'champagne', nameAr: 'شريط شامبين ميتاليك فخم', hex: '#F6E7A6' },
+        { id: 'pink', nameAr: 'شريط ستان وردي كراميل ناعم', hex: '#F4B6C2' },
+        { id: 'black', nameAr: 'شريط حريري أسود فاحم دراماتيكي', hex: '#0B0B0B' }
+      ];
+    } catch {
+      return [];
+    }
+  });
+
+  const [newScentName, setNewScentName] = useState('');
+  const [newScentDesc, setNewScentDesc] = useState('');
+  const [newScentColor, setNewScentColor] = useState('#78350F');
+
+  const [newWaxName, setNewWaxName] = useState('');
+  const [newWaxHex, setNewWaxHex] = useState('#D4AF37');
+
+  const [newRibbonName, setNewRibbonName] = useState('');
+  const [newRibbonHex, setNewRibbonHex] = useState('#F6E7A6');
+
   // Initial Data Synchronization
   useEffect(() => {
     fetchSultaPlatformData();
@@ -704,6 +756,13 @@ export default function AdminExperienceCenter({
             >
               <Globe size={14} className={activeSystem === 'visual_sitemap' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>05. خارطة المتجر التفاعلية</span>
+            </button>
+            <button 
+              onClick={() => setActiveSystem('sensory_control')} 
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'sensory_control' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+            >
+              <Sparkles size={14} className={activeSystem === 'sensory_control' ? 'text-pink-500 animate-pulse' : 'text-gray-400'} />
+              <span>15. لوحة التحكم وجناح الحواس كوتور 👑</span>
             </button>
           </div>
 
@@ -1630,6 +1689,204 @@ export default function AdminExperienceCenter({
                 <div className="bg-neutral-50 p-4 border rounded-2xl space-y-2 text-gray-600 leading-relaxed pr-6 list-disc text-3xs flex flex-col justify-center">
                   <p>• ضغط الصور بترميز WebP يوفر لزائر الخليج ما يعادل ٦٥٪ من باقات الجوال المتنقل مقتبلاً أبعاد انسياب فائقة السرعة.</p>
                   <p>• يوصى برفع تصاميم الأرواب بأبعاد طولية عمودية (Aspect Ratio 3:4) لإظهار انسيابية ذيل فساتين العرايس الفاخرة.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+
+          {/* SYSTEM 15: LUXURY COUTURE PACKAGING CONTROL CENTER */}
+          {activeSystem === 'sensory_control' && (
+            <div className="bg-white border border-gray-150 rounded-3xl p-6 md:p-8 space-y-8 shadow-xs animate-fade-in text-right" dir="rtl">
+              <div className="border-b border-gray-100 pb-5">
+                <span className="bg-pink-100 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">👑 الـتـغـلـيـف الـفـاخـر كـوتـور • SULTA Luxury Couture Wrapping Suite</span>
+                <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold">15. لوحة التحكم وجناح التعبئة كوتور (Couture Wrapping Control Panel)</h3>
+                <p className="text-gray-500 text-xs mt-1 leading-relaxed">
+                  تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش وأشرطة الستان التي تختارها العرائس لتزيين الصناديق الفاخرة للبيجامات وأطقم المنسوجات.
+                </p>
+              </div>
+
+              {/* Stat Briefs */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
+                <div className="bg-stone-50 p-4 border border-stone-150 rounded-2xl flex flex-col justify-between">
+                  <span className="text-gray-500 block">ألوان الشمع الحالية:</span>
+                  <div className="flex justify-between items-baseline mt-2 font-sans font-bold">
+                    <span className="text-2xl text-gray-950">{waxColors.length} خيارات للختم</span>
+                    <span className="text-[10px] text-[#A44C5C] font-bold bg-pink-100 px-2 py-0.5 rounded">عقد القران الملكي</span>
+                  </div>
+                </div>
+
+                <div className="bg-stone-50 p-4 border border-stone-150 rounded-2xl flex flex-col justify-between">
+                  <span className="text-gray-500 block">أشرطة حرير كوتور:</span>
+                  <div className="flex justify-between items-baseline mt-2">
+                    <span className="text-2xl font-serif font-bold text-gray-950">{ribbons.length} موديلات</span>
+                    <span className="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded">ستان منسوج حصرياً</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-8 text-xs font-sans">
+                
+                {/* WAX SEAL & RIBBONS MANAGEMENT */}
+                <div className="space-y-6">
+                  
+                  {/* WAX COLORS */}
+                  <div className="bg-neutral-50/50 p-5 rounded-2xl border border-gray-150 space-y-4 text-right">
+                    <div className="border-b border-gray-200 pb-2 flex justify-between items-center text-sans">
+                      <h4 className="font-bold text-gray-900 border-r-2 border-[#A44C5C] pr-2 text-sm font-sans">ثانياً: ألوان شمع الأختام (Wax Seal Palette)</h4>
+                      <span className="text-[10px] text-gray-400 font-sans">تخصيص الصندوق الملكي</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {waxColors.map((w) => (
+                        <div key={w.id} className="bg-white p-2.5 border rounded-xl flex justify-between items-center gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full inline-block border shrink-0" style={{ backgroundColor: w.hex }} />
+                            <span className="font-bold text-gray-950 text-3xs">{w.nameAr}</span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              const updated = waxColors.filter((x) => x.id !== w.id);
+                              const finalWax = updated.length > 0 ? updated : waxColors;
+                              setWaxColors(finalWax);
+                              localStorage.setItem('sulta_custom_wax_colors', JSON.stringify(finalWax));
+                              window.dispatchEvent(new Event('sulta-sensory-updated'));
+                              toast('👑 تم إزالة لون الشمع بنجاح!', 'success');
+                            }}
+                            className="text-red-500 hover:text-red-700 text-3xs cursor-pointer"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="bg-white p-3.5 border rounded-xl space-y-2">
+                      <span className="font-bold text-[#A44C5C] block text-[11px] font-sans">🎨 إضافة لون شمع منصهر:</span>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newWaxName}
+                          onChange={(e) => setNewWaxName(e.target.value)}
+                          className="flex-1 bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-900"
+                          placeholder="مثال: كستنائي ملكي مذهّب"
+                        />
+                        <input
+                          type="color"
+                          value={newWaxHex}
+                          onChange={(e) => setNewWaxHex(e.target.value)}
+                          className="w-8 h-8 rounded border p-0 cursor-pointer"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (!newWaxName) {
+                            toast('⚠️ يرجى كتابة اسم للون الشمع الجديد!', 'error');
+                            return;
+                          }
+                          const updated = [
+                            ...waxColors,
+                            { id: 'wax_' + Date.now(), nameAr: newWaxName, hex: newWaxHex }
+                          ];
+                          setWaxColors(updated);
+                          localStorage.setItem('sulta_custom_wax_colors', JSON.stringify(updated));
+                          window.dispatchEvent(new Event('sulta-sensory-updated'));
+
+                          setNewWaxName('');
+                          toast('👑 تم حفظ وإضافة لون الشمع المنصهر بنجاح!', 'success');
+                        }}
+                        className="w-full bg-[#0B0B0B] text-white hover:bg-amber-600/90 font-bold py-1.5 rounded-lg text-[10.5px] cursor-pointer"
+                      >
+                        + تسجيل لون الشمع للحقائب والصناديق
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* RIBBONS */}
+                  <div className="bg-neutral-50/50 p-5 rounded-2xl border border-gray-150 space-y-4 text-right">
+                    <div className="border-b border-gray-200 pb-2 flex justify-between items-center font-sans">
+                      <h4 className="font-bold text-gray-900 border-r-2 border-[#A44C5C] pr-2 text-sm font-sans">ثالثاً: لفائف أشرطة الحرير كوتور (Satin Ribbons Collection)</h4>
+                      <span className="text-[10px] text-gray-400 font-sans">تغليف فساتين العرايس والمنسوجات</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {ribbons.map((r) => (
+                        <div key={r.id} className="bg-white p-2.5 border rounded-xl flex justify-between items-center gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="w-6 h-2 inline-block border rounded shrink-0" style={{ backgroundColor: r.hex }} />
+                            <span className="font-bold text-gray-950 text-3xs">{r.nameAr}</span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              const updated = ribbons.filter((x) => x.id !== r.id);
+                              const finalRibbons = updated.length > 0 ? updated : ribbons;
+                              setRibbons(finalRibbons);
+                              localStorage.setItem('sulta_custom_ribbons', JSON.stringify(finalRibbons));
+                              window.dispatchEvent(new Event('sulta-sensory-updated'));
+                              toast('🎗️ تم إقصاء صنف الشريط بنجاح!', 'success');
+                            }}
+                            className="text-red-500 hover:text-red-700 text-3xs cursor-pointer"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="bg-white p-3.5 border rounded-xl space-y-2">
+                      <span className="font-bold text-[#A44C5C] block text-[11px] font-sans">🎗️ إضافة شريط تزيين كوتور:</span>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newRibbonName}
+                          onChange={(e) => setNewRibbonName(e.target.value)}
+                          className="flex-1 bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-900"
+                          placeholder="مثال: شريط حرير تيفاني سماوي"
+                        />
+                        <input
+                          type="color"
+                          value={newRibbonHex}
+                          onChange={(e) => setNewRibbonHex(e.target.value)}
+                          className="w-8 h-8 rounded border p-0 cursor-pointer"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (!newRibbonName) {
+                            toast('⚠️ يرجى تعيين اسم لشريط التزيين الجديد!', 'error');
+                            return;
+                          }
+                          const updated = [
+                            ...ribbons,
+                            { id: 'ribbon_' + Date.now(), nameAr: newRibbonName, hex: newRibbonHex }
+                          ];
+                          setRibbons(updated);
+                          localStorage.setItem('sulta_custom_ribbons', JSON.stringify(updated));
+                          window.dispatchEvent(new Event('sulta-sensory-updated'));
+
+                          setNewRibbonName('');
+                          toast('🎗️ تم حفظ وإضافة الشريط لصناديق التعبئة بنجاح!', 'success');
+                        }}
+                        className="w-full bg-[#0B0B0B] text-white hover:bg-pink-600 font-bold py-1.5 rounded-lg text-[10.5px] cursor-pointer"
+                      >
+                        + تسجيل التغليف بالصالون
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* Box customization metrics and simulator advice */}
+              <div className="bg-amber-50/20 p-5 rounded-2xl border border-amber-100 space-y-3 font-sans text-xs">
+                <h4 className="font-bold text-gray-900 flex items-center justify-start gap-2">
+                  <span>💡 نصيحة أخصائي تجارب الأوتيليه الملكي:</span>
+                </h4>
+                <div className="text-gray-650 leading-relaxed pr-6 list-disc space-y-1">
+                  <p>• يتم فحص وتجهيز البجامات والملابس الحريرية بالبخار لزيادة دقة فرد الخيوط ومنع التجعد قبل الطي والتثبيت داخل علبة الشحن الفاخرة.</p>
+                  <p>• الشمع المستعمل هو شمع عسل طبيعي مصفى ١٠٠٪ وخالي من الإضافات الكيميائية لضمان تماسك مثالي ونقش ختم دقيق فخم عند صبه بالختم النحاسي المصبوب.</p>
+                  <p>• يوصى بالنحت ومصادقة الطلب بختم الشمع في حضور فريق فحص الجودة المترأس لتأكيد الباركود وسريان رحلة شحن البوتيك بجدة والرياض وباقي عواصم الخليج.</p>
                 </div>
               </div>
             </div>

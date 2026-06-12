@@ -17,21 +17,14 @@ interface RoyalSensesSalonProps {
   setTab?: (tab: string) => void;
 }
 
-const PREMIUM_SCENTS = [
-  { id: 'oud', nameAr: 'بخور العود الساطح (Elite Pure Oud)', descAr: 'نوتات عود كمبودي ملكي دافئة تمنح ثوبك هيبة وجاذبية تدوم لأسابيع.', color: '#78350F' },
-  { id: 'musk', nameAr: 'مسك الحرير الأبيض (Royal White Musk)', descAr: 'عبير البودرة الناعم مع المسك المنعش، يثير إحساساً بالنقاء والدلال المطلق.', color: '#D4D4D4' },
-  { id: 'jasmine', nameAr: 'الياسمين الدمشقي والورد (Jasmine Rose)', descAr: 'رائحة قطرات الندى على بتلات الورد وصالونات كوتور فلورنسا المنعشة.', color: '#FCE7F3' },
-  { id: 'cambodi', nameAr: 'خلطة سلطانة الخاصة (Sultana Elixir)', descAr: 'مزيج فاخر سري يجمع بين ترانيم العنبر الملكي وقشور البرغموت المبردة.', color: '#B45309' }
-];
-
-const WAX_COLORS = [
+const DEFAULT_WAX_COLORS = [
   { id: 'gold', nameAr: 'ذهبي أوراق الغار', hex: '#D4AF37' },
   { id: 'emerald', nameAr: 'أخضر الزمرد الملكي', hex: '#097969' },
   { id: 'crimson', nameAr: 'أحمر قاني كلاسيكي', hex: '#800020' },
   { id: 'pearl', nameAr: 'وردي اللؤلؤ المصقول', hex: '#EAE0D5' }
 ];
 
-const RIBBONS = [
+const DEFAULT_RIBBONS = [
   { id: 'champagne', nameAr: 'شريط شامبين ميتاليك فخم', hex: '#F6E7A6' },
   { id: 'pink', nameAr: 'شريط ستان وردي كراميل ناعم', hex: '#F4B6C2' },
   { id: 'black', nameAr: 'شريط حريري أسود فاحم دراماتيكي', hex: '#0B0B0B' }
@@ -46,13 +39,11 @@ export default function RoyalSensesSalon({
   toggleFavorite,
   setTab
 }: RoyalSensesSalonProps) {
-  const [activeSuite, setActiveSuite] = useState<'fabric' | 'scent' | 'wax' | 'outfit'>('fabric');
+  const [activeSuite, setActiveSuite] = useState<'fabric' | 'wax' | 'outfit'>('fabric');
   
-  // Scent Suite States
-  const [selectedProductScent, setSelectedProductScent] = useState<Product | null>(null);
-  const [activeScent, setActiveScent] = useState(PREMIUM_SCENTS[1]);
-  const [isSpritzing, setIsSpritzing] = useState(false);
-  const [spritzCount, setSpritzCount] = useState(0);
+  // Custom Dynamic Sensory Options lists
+  const [waxColorsList, setWaxColorsList] = useState(DEFAULT_WAX_COLORS);
+  const [ribbonsList, setRibbonsList] = useState(DEFAULT_RIBBONS);
 
   // Fabric Suite States
   const [selectedProductFabric, setSelectedProductFabric] = useState<Product | null>(null);
@@ -63,8 +54,8 @@ export default function RoyalSensesSalon({
 
   // Wax & Ribbon Personalizer States
   const [customInitial, setCustomInitial] = useState('S');
-  const [waxColor, setWaxColor] = useState(WAX_COLORS[0]);
-  const [ribbonColor, setRibbonColor] = useState(RIBBONS[0]);
+  const [waxColor, setWaxColor] = useState(DEFAULT_WAX_COLORS[0]);
+  const [ribbonColor, setRibbonColor] = useState(DEFAULT_RIBBONS[0]);
   const [isStamping, setIsStamping] = useState(false);
   const [stampCompleted, setStampCompleted] = useState(false);
 
@@ -76,6 +67,41 @@ export default function RoyalSensesSalon({
   const [addedBundleToCart, setAddedBundleToCart] = useState(false);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
+
+  // Synchronize custom lists on changes or mount
+  useEffect(() => {
+    const loadSensoryConfig = () => {
+      try {
+        const storedWax = localStorage.getItem('sulta_custom_wax_colors');
+        if (storedWax) {
+          const parsed = JSON.parse(storedWax);
+          if (parsed && parsed.length > 0) {
+            setWaxColorsList(parsed);
+            setWaxColor(curr => parsed.find((p: any) => p.id === curr.id) || parsed[0]);
+          }
+        }
+        const storedRibbons = localStorage.getItem('sulta_custom_ribbons');
+        if (storedRibbons) {
+          const parsed = JSON.parse(storedRibbons);
+          if (parsed && parsed.length > 0) {
+            setRibbonsList(parsed);
+            setRibbonColor(curr => parsed.find((p: any) => p.id === curr.id) || parsed[0]);
+          }
+        }
+      } catch (e) {
+        console.warn('Sensory data load error:', e);
+      }
+    };
+
+    loadSensoryConfig();
+    window.addEventListener('storage', loadSensoryConfig);
+    window.addEventListener('sulta-sensory-updated', loadSensoryConfig);
+
+    return () => {
+      window.removeEventListener('storage', loadSensoryConfig);
+      window.removeEventListener('sulta-sensory-updated', loadSensoryConfig);
+    };
+  }, []);
 
   // Standard safe synthesizer for immersive experiential audio effects
   const playLuxuryTone = (freq1: number, freq2: number, duration: number, type: 'sine' | 'triangle' = 'sine') => {
@@ -120,7 +146,6 @@ export default function RoyalSensesSalon({
       const activeItems = products.filter(p => (p.status === 'active' || !p.status) && p.stock > 0);
       if (activeItems.length > 0) {
         if (!selectedProductFabric) setSelectedProductFabric(activeItems[0]);
-        if (!selectedProductScent) setSelectedProductScent(activeItems[0]);
         if (!outfitTop) {
           const abayas = activeItems.filter(p => p.categoryAr?.includes('عباء') || p.category?.toLowerCase().includes('abaya'));
           setOutfitTop(abayas.length > 0 ? abayas[0] : activeItems[0]);
@@ -168,18 +193,6 @@ export default function RoyalSensesSalon({
     }
   }, [outfitTop, outfitBottom]);
 
-  // Spritz Perfume Animation trigger
-  const handleSpritz = () => {
-    if (isSpritzing) return;
-    setIsSpritzing(true);
-    playLuxuryTone(523.25, 659.25, 0.8, 'sine'); // crystalline luxury spray audio
-    setSpritzCount(prev => prev + 1);
-    
-    setTimeout(() => {
-      setIsSpritzing(false);
-    }, 1200);
-  };
-
   // Stamp Wax Crest Animation trigger
   const handleStamp = () => {
     if (isStamping) return;
@@ -194,17 +207,16 @@ export default function RoyalSensesSalon({
     }, 1600);
   };
 
-  // Add customized Single Product (with Scent/Wax Initial/Ribbon settings) to cart!
-  const handleAddCustomizedToCart = (prod: Product, mode: 'fabric' | 'scent') => {
+  // Add customized Single Product (with Wax Initial/Ribbon settings) to cart!
+  const handleAddCustomizedToCart = (prod: Product, mode: 'fabric') => {
     const defaultColor = prod.colors?.[0] || { name: 'أساسي', hex: '#000000' };
     const defaultSize = prod.sizes?.[0] || 'Free Size';
     
     const extraMetadata = {
-      scent: activeScent.nameAr,
       waxInitial: customInitial,
       waxColor: waxColor.nameAr,
       ribbonColor: ribbonColor.nameAr,
-      customNote: `تم تصميم الساتان وتجهيزه عبر صالون الحواس الذكي لـ SULTA koutour.`
+      customNote: `تم تصميم الساتان وتجهيزه عبر صالون الأناقة الذكي لـ SULTA koutour.`
     };
 
     onAddToCart(prod, defaultColor, defaultSize, 1, extraMetadata);
@@ -218,7 +230,6 @@ export default function RoyalSensesSalon({
     const extraMetadataTop = {
       bundle: "طقم صالون التنسيق الملكي",
       partnerProduct: outfitBottom.nameAr,
-      scent: activeScent.nameAr,
       waxInitial: customInitial,
       waxColor: waxColor.nameAr,
       ribbonColor: ribbonColor.nameAr,
@@ -227,7 +238,6 @@ export default function RoyalSensesSalon({
     const extraMetadataBottom = {
       bundle: "طقم صالون التنسيق الملكي",
       partnerProduct: outfitTop.nameAr,
-      scent: activeScent.nameAr,
       waxInitial: customInitial,
       waxColor: waxColor.nameAr,
       ribbonColor: ribbonColor.nameAr,
@@ -272,12 +282,12 @@ export default function RoyalSensesSalon({
           <span className="text-[#A44C5C] text-2xl sm:text-3xl">⚜️</span>
         </h2>
         <p className="text-xs sm:text-sm text-gray-500 font-sans max-w-2xl mx-auto leading-relaxed">
-          عيشي أبعاد الرفاهية السبع! اختبري فيزياء وهج الحرير الطبيعي، حددي عطر ثوبك ومهر أختام الشمع الملكية، أو نسقي أطقم مخصصة لك وشاركيها كتحفة فنية غير مسبوقة.
+          عيشي أبعاد الرفاهية السبع! اختبري فيزياء وهج الحرير الطبيعي، حددي مهر أختام الشمع الملكية، أو نسقي أطقم مخصصة لك وشاركيها كتحفة فنية غير مسبوقة.
         </p>
       </div>
 
       {/* Main Suite Tab Buttons */}
-      <div className="flex flex-wrap justify-center gap-1.5 p-1 bg-neutral-100 rounded-2xl max-w-2xl mx-auto mb-10 border border-neutral-200 text-xs sm:text-sm font-semibold text-gray-600 font-sans">
+      <div className="flex flex-wrap justify-center gap-1.5 p-1 bg-neutral-100 rounded-2xl max-w-2xl mx-auto mb-10 border border-neutral-200 text-xs sm:text-sm font-semibold text-gray-600 font-sans font-sans">
         <button
           onClick={() => { setActiveSuite('fabric'); playLuxuryTone(329.63, 392.00, 0.3, 'sine'); }}
           className={`flex-1 py-3 px-4 rounded-xl text-center transition-all cursor-pointer ${
@@ -285,14 +295,6 @@ export default function RoyalSensesSalon({
           }`}
         >
           ✨ بريق وهج الحرير
-        </button>
-        <button
-          onClick={() => { setActiveSuite('scent'); playLuxuryTone(349.23, 440.00, 0.3, 'sine'); }}
-          className={`flex-1 py-3 px-4 rounded-xl text-center transition-all cursor-pointer ${
-            activeSuite === 'scent' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-md font-bold' : 'hover:bg-white hover:text-gray-900'
-          }`}
-        >
-          🌸 أتيليه رش العطور
         </button>
         <button
           onClick={() => { setActiveSuite('wax'); playLuxuryTone(392.00, 493.88, 0.3, 'sine'); }}
@@ -304,8 +306,8 @@ export default function RoyalSensesSalon({
         </button>
         <button
           onClick={() => { setActiveSuite('outfit'); playLuxuryTone(523.25, 659.25, 0.3, 'sine'); }}
-          className={`flex-1 py-3 px-4 rounded-xl text-center transition-all cursor-pointer ${
-            activeSuite === 'outfit' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-md font-bold' : 'hover:bg-white hover:text-gray-900'
+          className={`flex-1 py-3 px-4 rounded-xl text-center transition-all cursor-pointer hover:bg-white hover:text-gray-900 ${
+            activeSuite === 'outfit' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-md font-bold' : ''
           }`}
         >
           👗 منسق الأطقم
@@ -322,13 +324,12 @@ export default function RoyalSensesSalon({
             {/* Ambient Lighting Overlay Gradient effect */}
             <div className={`absolute inset-0 bg-gradient-to-tr ${getLightGradientClass()} transition-all duration-1000 pointer-events-none`} />
 
-            {/* Title / Scent indicator */}
+            {/* Title / Packaging indicator */}
             <div className="relative z-10 flex justify-between items-center mb-6 font-sans">
               <div className="text-right">
-                <span className="text-[10px] text-[#A44C5C] font-extrabold uppercase tracking-widest block">جناح الحواس التفاعلي الفاخر</span>
+                <span className="text-[10px] text-[#A44C5C] font-extrabold uppercase tracking-widest block">جناح الحواس والتعبئة الفاخرة</span>
                 <h4 className="text-sm font-bold text-gray-900">
                   {activeSuite === 'fabric' && "غرفة محاكاة فيزياء وهج الأقمشة والرياح 🌬️"}
-                  {activeSuite === 'scent' && "أتيليه استخلاص ورش العطور النادرة على ثوبك 🌸"}
                   {activeSuite === 'wax' && "مكبس مهر ختم الشمع الملكي وبطاقات Vintage الزيتية ✉️"}
                   {activeSuite === 'outfit' && "طاولة خزانة المزج والتنسيق الإرستقراطية 🏰"}
                 </h4>
@@ -391,77 +392,7 @@ export default function RoyalSensesSalon({
               </div>
             )}
 
-            {/* SUITE 2 PREVIEW: PERFUME SPRAY */}
-            {activeSuite === 'scent' && selectedProductScent && (
-              <div className="flex-1 flex flex-col items-center justify-center py-6 relative z-10">
-                <div className="relative w-60 h-80 rounded-2xl overflow-hidden shadow-2xl bg-white border border-neutral-100">
-                  <img 
-                    src={selectedProductScent.images[0]} 
-                    alt="" 
-                    className="w-full h-full object-cover select-none pointer-events-none" 
-                  />
 
-                  {/* Custom Scent Overlay Hue matching selection */}
-                  <div className="absolute inset-0 bg-rose-500/5 mix-blend-color pointer-events-none" />
-
-                  {/* Spritz Atomization Ripple Rings */}
-                  <AnimatePresence>
-                    {isSpritzing && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <motion.div 
-                          initial={{ scale: 0.1, opacity: 0.9 }}
-                          animate={{ scale: 3.5, opacity: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.9, ease: "easeOut" }}
-                          className="w-16 h-16 rounded-full border border-3 border-white/80 filter blur-xs"
-                          style={{ borderColor: activeScent.color }}
-                        />
-                        <motion.div 
-                          initial={{ scale: 0.1, opacity: 0.8 }}
-                          animate={{ scale: 2.2, opacity: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 1.1, ease: "easeOut", delay: 0.15 }}
-                          className="w-12 h-12 rounded-full border border-1 border-white/60"
-                        />
-                        <motion.div 
-                          initial={{ scale: 0, opacity: 1 }}
-                          animate={{ scale: 1.5, opacity: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.5, ease: "easeOut" }}
-                          className="absolute w-4 h-4 rounded-full bg-white filter blur-md"
-                        />
-                      </div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Active Scent Indicator Overlay Card */}
-                  <div className="absolute top-3 right-3 bg-[#0B0B0B]/80 text-[#F6E7A6] rounded-xl px-2.5 py-1 text-[9.5px] border border-[#F6E7A6]/20 font-sans font-bold">
-                    🌸 العطر المحدد: {activeScent.nameAr.split('(')[0]}
-                  </div>
-
-                  {/* Spritz counter Badge */}
-                  {spritzCount > 0 && (
-                    <motion.div 
-                      key={spritzCount}
-                      initial={{ scale: 0.7, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="absolute bottom-3 right-3 bg-emerald-600 text-white font-sans text-[10px] px-2 py-0.5 rounded-lg font-bold border border-emerald-400"
-                    >
-                      ✓ عُطر {spritzCount} بخّات ملكية
-                    </motion.div>
-                  )}
-                </div>
-
-                <div className="mt-5 text-center max-w-sm space-y-1.5 font-sans">
-                  <span className="text-xs text-yellow-800 font-extrabold flex items-center justify-center gap-1">
-                    <span>✨ بخة ملوكية دافئة مفعمة</span>
-                  </span>
-                  <p className="text-[11px] text-gray-500 leading-relaxed font-sans">
-                    أنفاس العطور ترش يدوياً أثناء التجهيز على ورق الحرير، ثم يتم سحب الأكسجين لإغلاق طيات كوتور مع رائحة تدوم وتدوم.
-                  </p>
-                </div>
-              </div>
-            )}
 
             {/* SUITE 3 PREVIEW: WAX CREST BOX PERSONALIZATION */}
             {activeSuite === 'wax' && (
@@ -731,79 +662,7 @@ export default function RoyalSensesSalon({
               </div>
             )}
 
-            {/* PANEL 2: SCENT PAIRING CONTROLS */}
-            {activeSuite === 'scent' && (
-              <div className="space-y-6 flex-1 flex flex-col justify-between">
-                <div className="space-y-4">
-                  <div className="border-b border-gray-150 pb-3">
-                    <h5 className="text-sm font-extrabold text-[#0B0B0B] block">1. حددي القطعة لتعطيرها:</h5>
-                    <span className="text-[10px] text-gray-400 font-sans">تضمين العطور الرويال مع مغلف الشحنة</span>
-                  </div>
 
-                  {/* List of active products for cloth selector */}
-                  <div className="max-h-32 overflow-y-auto space-y-2 custom-scrollbar text-right pr-1">
-                    {products.slice(0, 4).map(p => (
-                      <button
-                        key={p.id}
-                        onClick={() => setSelectedProductScent(p)}
-                        className={`w-full p-2 rounded-xl border flex gap-2 items-center flex-row-reverse text-right transition-all cursor-pointer ${
-                          selectedProductScent?.id === p.id 
-                            ? 'border-[#A44C5C] bg-[#A44C5C]/5 font-bold text-gray-950' 
-                            : 'border-gray-150 bg-white hover:bg-neutral-50'
-                        }`}
-                      >
-                        <img src={p.images[0]} alt="" className="w-8 h-10 object-cover rounded-md shrink-0" />
-                        <div className="flex-1 min-w-0 font-sans text-xs">
-                          <h6 className="font-bold truncate text-gray-900">{p.nameAr}</h6>
-                          <span className="text-[9.5px] text-gray-400 block">{p.categoryAr}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Scent selector radio buttons */}
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-gray-750 block">2. اختاري تركيبة العقد العطري:</span>
-                    <div className="space-y-2">
-                      {PREMIUM_SCENTS.map(sc => (
-                        <div
-                          key={sc.id}
-                          onClick={() => { setActiveScent(sc); playLuxuryTone(392.00, 493.88, 0.25, 'sine'); }}
-                          className={`p-2.5 rounded-xl border cursor-pointer text-right flex gap-3 items-center flex-row-reverse font-sans text-xs transition-all ${
-                            activeScent.id === sc.id 
-                              ? 'border-[#A44C5C] bg-white text-gray-950 font-bold ring-2 ring-[#A44C5C]/10' 
-                              : 'bg-white border-gray-150 hover:bg-stone-50 text-gray-600'
-                          }`}
-                        >
-                          <span className="w-3 h-3 rounded-full shrink-0 border border-neutral-300" style={{ backgroundColor: sc.color }} />
-                          <div className="flex-1 min-w-0">
-                            <span className="font-bold block text-gray-950">{sc.nameAr}</span>
-                            <span className="text-[9.5px] text-gray-400 leading-normal block">{sc.descAr}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-150 grid grid-cols-3 gap-2">
-                  <button
-                    onClick={handleSpritz}
-                    disabled={isSpritzing}
-                    className="bg-[#A44C5C] text-white hover:bg-[#853947] py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-sm disabled:opacity-60"
-                  >
-                    <span>بخ العطر 💨</span>
-                  </button>
-                  <button
-                    onClick={() => selectedProductScent && handleAddCustomizedToCart(selectedProductScent, 'scent')}
-                    className="col-span-2 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <ShoppingBag size={13} />
-                    <span>تأكيد وتعطير القطعة 🛍️</span>
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* PANEL 3: WAX SEAL CONTROLS */}
             {activeSuite === 'wax' && (
@@ -836,7 +695,7 @@ export default function RoyalSensesSalon({
                   <div className="space-y-2">
                     <span className="text-xs font-bold text-gray-700 block text-right">2. لون الشمع المنصهر (Melted Wax color):</span>
                     <div className="grid grid-cols-2 gap-2 font-sans text-[10px]">
-                      {WAX_COLORS.map(wc => (
+                      {waxColorsList.map(wc => (
                         <button
                           key={wc.id}
                           onClick={() => { setWaxColor(wc); setStampCompleted(false); playLuxuryTone(260, 0, 0.1); }}
@@ -855,7 +714,7 @@ export default function RoyalSensesSalon({
                   <div className="space-y-2">
                     <span className="text-xs font-bold text-gray-700 block text-right">3. لون شريط الساتان المحيط:</span>
                     <div className="space-y-2 font-sans text-xs">
-                      {RIBBONS.map(ri => (
+                      {ribbonsList.map(ri => (
                         <div
                           key={ri.id}
                           onClick={() => { setRibbonColor(ri); playLuxuryTone(294.18, 0, 0.1); }}
@@ -926,10 +785,9 @@ export default function RoyalSensesSalon({
                     </select>
                   </div>
 
-                  {/* Active Scent and Wrapping carry-over notice */}
+                  {/* Wrapping carry-over notice */}
                   <div className="bg-stone-50 p-3 rounded-xl border border-gray-150 font-sans text-[10px] text-gray-500 text-right space-y-1">
-                    <span className="font-extrabold text-[#A44C5C] block">✓ تفضيلات التعبئة والتوليف الفاخر المطبقة:</span>
-                    <p>العطر: {activeScent.nameAr.split('(')[0]}</p>
+                    <span className="font-extrabold text-[#A44C5C] block">✓ تفضيلات التعبئة والتغليف المطبقة:</span>
                     <p>العلبة: ختم شمعي بحرف "{customInitial}" (لون {waxColor.nameAr}) مع {ribbonColor.nameAr}</p>
                   </div>
 
