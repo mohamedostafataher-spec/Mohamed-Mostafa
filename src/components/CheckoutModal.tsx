@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CreditCard, ShieldCheck, CheckCircle, Smartphone, Truck, ArrowRight, ArrowLeft, Gift, Sparkles, Send, Box, Award } from 'lucide-react';
+import { X, CreditCard, ShieldCheck, CheckCircle, Smartphone, Truck, ArrowRight, ArrowLeft, Gift, Sparkles, Send, Box, Award, Check } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { dbService } from '../services/db';
 
@@ -37,6 +37,7 @@ export default function CheckoutModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successOrder, setSuccessOrder] = useState<Order | null>(null);
+  const [confirmViaWhatsapp, setConfirmViaWhatsapp] = useState(true);
 
   const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
 
@@ -176,6 +177,26 @@ export default function CheckoutModal({
       }
 
       setSuccessOrder(newOrder);
+
+      if (confirmViaWhatsapp) {
+        const itemsText = newOrder.items.map(item => `• ${item.productName} (${item.color} - ${item.size}) [الكمية: ${item.quantity}]`).join('\n');
+        const text = `✦ ملخص الطلب الفاخر من متجر SULTA ✦\n\n` +
+                     `رقم الطلب: ${newOrder.id}\n` +
+                     `اسم العميلة الموقرة: ${newOrder.customerName}\n` +
+                     `رقم الجوال: ${newOrder.phone}\n` +
+                     `شحنت إلى: ${newOrder.city} - ${newOrder.address} (${newOrder.country === 'EG' ? 'مصر' : 'السعودية'})\n` +
+                     `لون الشريط: ${ribbons.find(r => r.id === newOrder.ribbon)?.nameAr || 'شريط شامبين ميتاليك فخم'}\n` +
+                     `طريقة الدفع: ${newOrder.paymentMethod}\n\n` +
+                     `المنتجات الحريرية المحجوزة:\n${itemsText}\n\n` +
+                     `تكلفة الشحن لـ ${newOrder.country === 'EG' ? 'مصر' : 'السعودية'}: ${newOrder.shippingFee || 0} ${newOrder.currency}\n` +
+                     `إجمالي الاستحقاق النهائي: ${newOrder.totalPrice.toLocaleString()} ${newOrder.currency}\n\n` +
+                     `شكراً لاختياركِ رقي وأناقة SULTA 👑\n\n` +
+                     `يرجى تأكيد ومعالجة طلبي هذا في أسرع وقت ممكن! ❤️`;
+        
+        const encodedText = encodeURIComponent(text);
+        const whatsappUrl = `https://wa.me/${settings?.whatsapp || '201110095403'}?text=${encodedText}`;
+        window.open(whatsappUrl, '_blank');
+      }
     } catch (err) {
       console.error("Failed to save order:", err);
       setErrorMsg('نعتذر، حدث تعذر فني عند حفظ طلبكِ في منظومة البيانات. يرجى المحاولة لاحقاً.');
@@ -197,7 +218,8 @@ export default function CheckoutModal({
                    `المنتجات الحريرية المحجوزة:\n${itemsText}\n\n` +
                    `تكلفة الشحن لـ ${successOrder.country === 'EG' ? 'مصر' : 'السعودية'}: ${successOrder.shippingFee || 0} ${successOrder.currency}\n` +
                    `إجمالي الاستحقاق النهائي: ${successOrder.totalPrice.toLocaleString()} ${successOrder.currency}\n\n` +
-                   `شكراً لاختياركِ رقي وأناقة SULTA 👑`;
+                   `شكراً لاختياركِ رقي وأناقة SULTA 👑\n\n` +
+                   `يرجى تأكيد ومعالجة طلبي هذا في أسرع وقت ممكن! ❤️`;
       
       const encodedText = encodeURIComponent(text);
       const whatsappUrl = `https://wa.me/${settings?.whatsapp || '201110095403'}?text=${encodedText}`;
@@ -257,12 +279,12 @@ export default function CheckoutModal({
           </div>
 
           {/* Informing Notice about WhatsApp */}
-          <div className="bg-[#FAF4F5]/60 border border-[#DF8A9C]/20 rounded-2xl p-4 mb-8 text-right font-sans max-w-md mx-auto">
-            <h4 className="text-xs font-bold text-gray-100 mb-1 flex items-center gap-1.5 justify-end">
-              <span className="text-[#0B0B0B] font-bold">تأكيد ومتابعة فورية عبر واتساب خدمة العملاء 💬</span>
+          <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4.5 mb-8 text-right font-sans max-w-md mx-auto shadow-xs">
+            <h4 className="text-xs font-bold text-emerald-850 mb-1.5 flex items-center gap-1.5 justify-end">
+              <span>تسريع عملية المعالجة والتأكيد الفوري ⚡</span>
             </h4>
-            <p className="text-[10.5px] text-gray-500 leading-relaxed">
-              يمكنكِ الآن إرسال نسخة من ملخص الفاتورة مباشرة إلى فريق كونسيرج خدمتكم لمتابعة الاستعلام وحالة التوصيل بأقصى سرعة ممكنة.
+            <p className="text-[11px] text-emerald-950 leading-relaxed font-semibold">
+              يرجى إرسال رقم الطلب <strong className="font-mono text-xs bg-white px-2 py-0.5 rounded border border-emerald-300 mx-1">{successOrder.id}</strong> إلى واتساب خدمة العملاء الموحد <strong className="text-emerald-700 font-mono text-xs" dir="ltr">(+201110095403)</strong> لمتابعة الشحنة وتثبيت الحجز بأقصى سرعة ممكنة.
             </p>
           </div>
 
@@ -500,6 +522,24 @@ export default function CheckoutModal({
                   </div>
                   <div className="p-3.5 text-gray-600">
                     <p>المستحق الدفع به عبر: <strong>{activePayments.find(p => p.id === selectedPayment)?.name}</strong></p>
+                  </div>
+                </div>
+
+                {/* Option to confirm order via WhatsApp immediately */}
+                <div 
+                  onClick={() => setConfirmViaWhatsapp(!confirmViaWhatsapp)} 
+                  className={`flex items-center gap-3 p-4 border rounded-2xl cursor-pointer select-none transition-all flex-row-reverse text-right ${
+                    confirmViaWhatsapp ? 'bg-emerald-50/50 border-emerald-200' : 'bg-white border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                    confirmViaWhatsapp ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-gray-300 bg-white'
+                  }`}>
+                    {confirmViaWhatsapp && <Check size={14} strokeWidth={3} />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-bold text-gray-900 block font-sans">تأكيد طلبي الملكي عبر واتساب فوراً 💬</span>
+                    <p className="text-[10px] text-gray-500 leading-normal mt-0.5">سيتم فتح محادثة كونسيرج خدمة العملاء الموحد تلقائياً عبر الرقم <strong className="text-emerald-700 font-mono" dir="ltr">(+201110095403)</strong> لإرسال ملخص الفاتورة وتسريع عملية تتبع البكج الملكي.</p>
                   </div>
                 </div>
 

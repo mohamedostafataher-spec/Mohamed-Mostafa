@@ -194,7 +194,7 @@ export default function OrderDetailView({
       `الحالة الحالية: ${getStatusTitle(order.status)}\n` +
       `يرجى موافاتي بالتفاصيل الملكية الإضافية. شكراً لكم 🌸`
     );
-    window.open(`https://wa.me/966500000000?text=${msg}`, '_blank'); // Update dynamically to Sulta whatsapp number
+    window.open(`https://wa.me/201110095403?text=${msg}`, '_blank'); // Update dynamically to Sulta whatsapp number
   };
 
   // PDF Download Helper

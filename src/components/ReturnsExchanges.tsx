@@ -282,14 +282,14 @@ export default function ReturnsExchanges() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors">
                 <span className="text-gray-400 block mb-2 text-sm uppercase tracking-wider font-bold">واتساب:</span>
-                <a href="https://wa.me/966530454045" dir="ltr" className="text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-serif">
-                  +966530454045
+                <a href="https://wa.me/201110095403" dir="ltr" className="text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-serif">
+                  +201110095403
                 </a>
               </div>
               <div className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors">
                 <span className="text-gray-400 block mb-2 text-sm uppercase tracking-wider font-bold">البريد الإلكتروني:</span>
-                <a href="mailto:brightgirlksa@gmail.com" dir="ltr" className="text-lg md:text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-serif">
-                  brightgirlksa@gmail.com
+                <a href="mailto:support@sulta-atelier.com" dir="ltr" className="text-lg md:text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-serif">
+                  support@sulta-atelier.com
                 </a>
               </div>
             </div>

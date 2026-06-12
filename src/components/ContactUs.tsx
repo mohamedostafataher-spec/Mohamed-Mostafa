@@ -100,8 +100,8 @@ export default function ContactUs({ settings }: ContactUsProps) {
                     <Mail size={14} className="text-[#A44C5C] shrink-0" />
                     <p className="font-serif text-[10px] tracking-widest uppercase text-gray-400">المراسلات والدعم الإلكتروني</p>
                   </div>
-                  <a href={`mailto:${settings?.contactEmail || 'support@sulta-sleepwear.com'}`} className="font-sans font-medium text-[#0B0B0B] hover:text-[#A44C5C]">
-                    {settings?.contactEmail || 'support@sulta-sleepwear.com'}
+                  <a href={`mailto:${settings?.contactEmail || 'support@sulta-atelier.com'}`} className="font-sans font-medium text-[#0B0B0B] hover:text-[#A44C5C]">
+                    {settings?.contactEmail || 'support@sulta-atelier.com'}
                   </a>
                 </div>
 
