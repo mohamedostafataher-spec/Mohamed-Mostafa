@@ -6,11 +6,13 @@ import { Product, Country, Review, Settings } from '../types';
 import { PACKAGING_INFO } from '../data';
 import { dbService, cleanImgUrl } from '../services/db';
 import RealPackagingPreview from './RealPackagingPreview';
+import SmartRecommendations from './SmartRecommendations';
 
 interface ProductDetailModalProps {
   product: Product;
   products: Product[];
   onClose: () => void;
+  onSelectProduct?: (product: Product) => void;
   country: Country;
   onAddToCart: (product: Product, color: { name: string; hex: string }, size: string, quantity: number) => void;
   onBuyNow: (product: Product, color: { name: string; hex: string }, size: string, quantity: number) => void;
@@ -24,6 +26,7 @@ export default function ProductDetailModal({
   product,
   products,
   onClose,
+  onSelectProduct,
   country,
   onAddToCart,
   onBuyNow,
@@ -184,6 +187,8 @@ export default function ProductDetailModal({
   const [fitAge, setFitAge] = useState(27);
   const [fitShape, setFitShape] = useState<'hourglass' | 'pear' | 'rectangle' | 'apple'>('hourglass');
   const [fitCalculatedSize, setFitCalculatedSize] = useState<string | null>(null);
+  const [fitConfidenceScore, setFitConfidenceScore] = useState<number>(0);
+  const [fitDiagnosticNote, setFitDiagnosticNote] = useState<string>('');
   const [isQuizMode, setIsQuizMode] = useState(true);
 
   const runFitCalculation = () => {
@@ -193,36 +198,52 @@ export default function ProductDetailModal({
     const bmi = fitWeight / (heightInMeters * heightInMeters);
 
     let size = 'M / L';
+    let conf = 92;
+    let note = 'سيمنحك هذا المقاس مرونة وانسيابية طبيعية مع تقاسيم جسدك.';
 
     // Rule 1: Lightweight petite silhouette
     if (fitWeight <= 54 || (bmi < 19.5 && fitWeight < 58)) {
       size = 'XS / S';
+      conf = 95;
+      note = 'المقاس الأصغر يحتضن القوام الناعم بشكل أنيق دون تكتل قماشي.';
     } 
     // Rule 2: Generous or tall comfort silhouette
     else if (fitWeight >= 78 || bmi >= 27.5 || (fitShape === 'apple' && fitWeight >= 74)) {
       size = 'XL';
+      conf = 90;
+      note = 'مقاس واسع لمنحك حرية الحركة الكاملة وراحة استثنائية عند النوم.';
     }
     // Rule 3: Grand curves or extra room preference
     else if (fitWeight >= 92 || bmi >= 32) {
       size = 'XXL';
+      conf = 88;
+      note = 'تم اختياره لتفادي أي احتكاك ولضمان تدفق حرير مريح ومثالي.';
     }
     
     // Rule 4: Age-based ergonomic drape adjustments for premium silk sleepwear
     // Clients aged 38+ overwhelmingly prefer looser drape lines for luxurious nighttime air circulation and comfort.
     if (fitAge >= 38 && size === 'XS / S' && fitWeight >= 51) {
       size = 'M / L'; // Upgrade to M/L for elegant luxury drape
+      conf = 94;
+      note = 'رُقيّ مقاس M/L سيمنحكِ اتساعاً مريحاً لتنفس البشرة أثناء ساعات الليل.';
     }
     if (fitAge >= 45 && size === 'M / L' && fitWeight >= 70) {
       size = 'XL'; // Upgrade for maximum sleeping comfort
+      conf = 96;
+      note = 'لتجربة نوم فندقية فارهة، قمنا بترقية التوقع لـ XL لمنع تقييد حركتك.';
     }
 
     // Rule 5: Silhouette curves modifiers
     if (fitShape === 'pear' && size === 'XS / S' && fitHeight <= 158) {
       // Pear-shaped silhouettes need slightly more workspace at hip-line
       size = 'M / L';
+      conf = 97;
+      note = 'نظراً لاختيارك (قوام الكمثرى)، مقاس M/L سيغطي محيط الورك براحة فاخرة.';
     }
 
     setFitCalculatedSize(size);
+    setFitConfidenceScore(conf);
+    setFitDiagnosticNote(note);
 
     // Automatically synchronize and activate the selectable size state
     if (size === 'XS / S') {
@@ -1334,15 +1355,25 @@ export default function ProductDetailModal({
                           درسي قياسات جسدي واحسبي المقاس 📐✨
                         </button>
                       ) : (
-                        <div className="bg-emerald-50 border border-green-200/60 p-2.5 rounded-xl text-center space-y-1.5 animation-scale-up">
-                          <p className="text-[10px] text-gray-500 font-sans">المقاس الذهبي المناسب لقوامكِ هو:</p>
-                          <p className="text-lg font-serif font-black text-green-800">{fitCalculatedSize}</p>
-                          <div className="flex justify-center items-center gap-2 text-[9px] text-green-700">
-                            <span className="font-bold">مستوى الدقة المقدرة: 95%+</span>
-                            <span>•</span>
+                        <div className="bg-emerald-50 border border-emerald-200/60 p-3 rounded-xl text-center space-y-2.5 animation-scale-up">
+                          <div>
+                            <p className="text-[10px] text-emerald-800/70 font-sans font-bold">المقاس الذهبي المناسب لقوامكِ هو:</p>
+                            <p className="text-2xl font-serif font-black text-emerald-900 mt-1">{fitCalculatedSize}</p>
+                          </div>
+                          
+                          <div className="bg-white/60 p-2 rounded-lg border border-emerald-100/50">
+                            <p className="text-[10.5px] leading-relaxed text-emerald-900/85 font-sans font-medium text-right">
+                              💡 الملاحظة: {fitDiagnosticNote}
+                            </p>
+                          </div>
+
+                          <div className="flex justify-center items-center gap-2 text-[9.5px] text-emerald-700 bg-emerald-100/40 p-1.5 rounded-md">
+                            <span className="font-black">درجة الثقة: {fitConfidenceScore}%</span>
+                            <span className="text-emerald-300">•</span>
                             <span className="font-bold">استبدال مجاني مجنّد بالمنزل 🛡️</span>
                           </div>
-                          <p className="text-[9px] text-gray-400">تم اختيار وتنشيط المقاس لكِ في الأعلى تلقائياً لتسهيل الشراء.</p>
+                          
+                          <p className="text-[9px] text-emerald-800/60 pt-1 border-t border-emerald-200/50">تم اختيار وتنشيط المقاس لكِ في الأعلى تلقائياً لتسهيل الشراء.</p>
                         </div>
                       )}
 
@@ -1994,6 +2025,20 @@ ${shareUrl}`;
           </div>
 
         </div>
+
+        {/* AI SMART PRODUCT RECOMMENDATIONS SYSTEM (MODULE 02) */}
+        {onSelectProduct && (
+          <div className="w-full mt-6 pb-6 border-t border-stone-200">
+            <SmartRecommendations
+              product={product}
+              products={products}
+              country={country}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              onSelectProduct={onSelectProduct}
+            />
+          </div>
+        )}
 
       </div>
 

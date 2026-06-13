@@ -21,6 +21,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Product, Order, CustomerProfile, Review, Category, Settings } from '../types';
 
 // Import our modular centers
+import SultaAiIntelligence from './SultaAiIntelligence';
 import SmartNotificationsCenter from './SmartNotificationsCenter';
 import BrandReputationDashboard from './BrandReputationDashboard';
 import AdminReviewsCenter from './AdminReviewsCenter';
@@ -51,7 +52,7 @@ export default function ExecutiveCommandCenter({
   onRefreshData,
 }: ExecutiveCommandCenterProps) {
   // Tabs for sub-controls
-  const [activeTab, setActiveTab] = useState<'kpis' | 'reviews_center' | 'notifications' | 'customers_intel' | 'products_performance' | 'inventory_insights' | 'brand_reputation' | 'store_health' | 'merchandising' | 'global_ready'>('kpis');
+  const [activeTab, setActiveTab] = useState<'kpis' | 'ai_intelligence' | 'reviews_center' | 'notifications' | 'customers_intel' | 'products_performance' | 'inventory_insights' | 'brand_reputation' | 'store_health' | 'merchandising' | 'global_ready'>('kpis');
 
   // Aggregated analytics values
   const report = useMemo(() => {
@@ -189,6 +190,18 @@ export default function ExecutiveCommandCenter({
             />
           </div>
         );
+      case 'ai_intelligence':
+        return (
+          <div className="animate-fade-in-rapid">
+            <SultaAiIntelligence
+              products={products}
+              orders={orders}
+              customers={customers}
+              reviews={reviews}
+              onRefreshData={onRefreshData}
+            />
+          </div>
+        );
       case 'customers_intel':
         return (
           <div className="animate-fade-in-rapid">
@@ -315,6 +328,18 @@ export default function ExecutiveCommandCenter({
           }`}
         >
           لوحة الإدارة التنفيذية
+        </button>
+
+        <button
+          onClick={() => setActiveTab('ai_intelligence')}
+          className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer relative overflow-hidden flex items-center gap-1.5 ${
+            activeTab === 'ai_intelligence'
+              ? 'bg-gradient-to-r from-stone-900 to-rose-950 text-[#F6E7A6]'
+              : 'bg-[#FAF5F0] hover:bg-[#DF8A9D]/15 text-stone-900 border border-[#DF8A9D]/20'
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping absolute top-1 right-1" />
+          <span>مركز الذكاء الاصطناعي SULTA AI 👑✨</span>
         </button>
 
         <button

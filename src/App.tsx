@@ -105,7 +105,17 @@ function AppContent() {
     }
   }, [loadingProgress, showSplash]);
 
-  const [country, setCountry] = useState<Country>('SA'); // Default to SA
+  const [country, setCountry] = useState<Country>(() => {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz === 'Africa/Cairo' || tz.includes('Cairo') || tz.includes('Egypt')) {
+        return 'EG';
+      }
+      return 'SA';
+    } catch {
+      return 'SA';
+    }
+  });
   const [cart, setCart] = useState<CartItem[]>([]);
   
   // Load initial favorites from LocalStorage with fallback support
@@ -521,6 +531,21 @@ function AppContent() {
       }
       return [product, ...prev].slice(0, 4); // max 4 items
     });
+    
+    // Save AI preference markers to localStorage
+    try {
+      const marker = `${product.nameAr} ${product.categoryAr || ''} ${product.tagAr || ''} ${product.fabricAr || ''} ${product.fabricEn || ''} ${product.keywords?.join(' ') || ''}`;
+      localStorage.setItem('sulta_recently_viewed', marker);
+    } catch { }
+  };
+
+  const handleSearchQueryChange = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim().length > 2) {
+      try {
+        localStorage.setItem('sulta_search_history', query);
+      } catch { }
+    }
   };
 
   // Newsletter Subscription Form Trigger
@@ -686,7 +711,7 @@ function AppContent() {
           }, 60);
         }} // wishlist is in Account screen tab
         onSearch={(query) => {
-          setSearchQuery(query);
+          handleSearchQueryChange(query);
           setTab('store');
         }}
       />
@@ -950,8 +975,8 @@ function AppContent() {
             onAddToCart={(prod, col, sz) => handleAddToCart(prod, col, sz, 1)}
             onSelectProduct={handleSelectProduct}
             searchQuery={searchQuery}
-            onClearSearch={() => setSearchQuery('')}
-            onSearchQueryChange={setSearchQuery}
+            onClearSearch={() => handleSearchQueryChange('')}
+            onSearchQueryChange={handleSearchQueryChange}
             recentlyViewed={recentlyViewed}
           />
         )}
@@ -1181,6 +1206,7 @@ function AppContent() {
           products={products}
           country={country}
           onClose={() => setSelectedProduct(null)}
+          onSelectProduct={setSelectedProduct}
           onAddToCart={(prod, col, sz, qty) => {
             handleAddToCart(prod, col, sz, qty);
             setSelectedProduct(null);
@@ -1491,7 +1517,7 @@ function AppContent() {
                   autoFocus
                   placeholder="ابحثي عن حرير، عرايس، شتوي..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearchQueryChange(e.target.value)}
                   className="w-full bg-[#FAF5F0] rounded-full border border-gray-200 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/15 focus:border-[#A44C5C] text-right shadow-2xs"
                 />
                 <button 

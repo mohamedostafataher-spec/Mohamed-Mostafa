@@ -94,34 +94,56 @@ export default function StoreView({
       result = result.filter(p => p.collection === selectedCollection);
     }
     
-    // Smart Arabic & English Search Engine (Satin, cotton, price ranges, colors, etc.)
+    // Smart AI Natural Language Search Engine (Satin, comfort, bridal, summer, colors, etc.)
     if (searchQuery) {
       const q = searchQuery.toLowerCase().trim();
+      const qWords = q.split(' ').filter(w => w.length > 2); // get meaningful words
+
       result = result.filter(p => {
-        const matchesText = 
-          (p.nameEn && p.nameEn.toLowerCase().includes(q)) || 
-          (p.nameAr && p.nameAr.toLowerCase().includes(q)) ||
-          (p.descriptionEn && p.descriptionEn.toLowerCase().includes(q)) ||
-          (p.descriptionAr && p.descriptionAr.toLowerCase().includes(q)) ||
-          (p.category && p.category.toLowerCase().includes(q)) ||
-          (p.categoryAr && p.categoryAr.includes(q)) ||
-          (p.collection && p.collection.toLowerCase().includes(q));
+        // Build a massive text corpus for this product
+        const searchableCorpus = `
+          ${p.nameEn || ''} ${p.nameAr || ''} 
+          ${p.descriptionEn || ''} ${p.descriptionAr || ''} 
+          ${p.category || ''} ${p.categoryAr || ''}
+          ${p.collection || ''}
+          ${p.fabricAr || ''} ${p.fabricEn || ''}
+          ${p.keywords?.join(' ') || ''}
+          ${p.colors?.map(c => c.name).join(' ') || ''}
+          ${p.tagAr || ''}
+        `.toLowerCase();
 
-        const matchesFabric = 
-          (q.includes('ساتان') || q.includes('satin') || q.includes('حرير') || q.includes('silk')) && 
-          (p.nameAr?.includes('ساتان') || p.nameAr?.includes('حرير') || p.nameEn?.toLowerCase().includes('satin') || p.nameEn?.toLowerCase().includes('silk') || p.fabricAr?.includes('ساتان')) ||
-          (q.includes('قطن') || q.includes('cotton')) && 
-          (p.nameAr?.includes('قطن') || p.nameEn?.toLowerCase().includes('cotton') || p.fabricAr?.includes('قطن')) ||
-          (q.includes('مخمل') || q.includes('velvet') || q.includes('شتاء') || q.includes('winter')) && 
-          (p.nameAr?.includes('مخمل') || p.nameEn?.toLowerCase().includes('velvet') || p.nameAr?.includes('روب') || p.nameEn?.toLowerCase().includes('robe'));
+        // 1. Direct match
+        const directMatch = searchableCorpus.includes(q);
 
-        const matchesColor = p.colors?.some(c => 
-          c.name?.toLowerCase().includes(q) || 
-          (q.includes('وردي') && c.name?.includes('وردي')) ||
-          ((q.includes('أبيض') || q.includes('عاجي') || q.includes('وايت')) && c.name?.includes('وايت')) ||
-          (q.includes('أسود') && c.name?.includes('أسود'))
-        );
+        // 2. Semantic Bridal synonyms
+        const isBridalQuery = q.includes('عروس') || q.includes('جهاز') || q.includes('زفاف') || q.includes('عريس') || q.includes('دانتيل') || q.includes('روب كيمونو');
+        const isBridalProduct = searchableCorpus.includes('عروس') || searchableCorpus.includes('دانتيل') || searchableCorpus.includes('كيمونو') || searchableCorpus.includes('روب');
+        
+        // 3. Semantic Comfort & Summer synonyms
+        const isComfortQuery = q.includes('مريح') || q.includes('صيف') || q.includes('حر') || q.includes('خفيف') || q.includes('بارد');
+        const isComfortProduct = searchableCorpus.includes('حرير') || searchableCorpus.includes('ساتان') || searchableCorpus.includes('قصير') || searchableCorpus.includes('بارد');
 
+        // 4. Color mappings explicitly for semantic requests
+        const isPinkQuery = q.includes('وردي') || q.includes('زهري') || q.includes('بمبى') || q.includes('روز');
+        const isPinkProduct = p.colors?.some(c => c.name?.includes('وردي') || c.name?.toLowerCase().includes('pink') || c.name?.includes('روز'));
+
+        const isWhiteQuery = q.includes('ابيض') || q.includes('أبيض') || q.includes('عاجي') || q.includes('عرائسي أبيض');
+        const isWhiteProduct = p.colors?.some(c => c.name?.includes('أبيض') || c.name?.toLowerCase().includes('white') || c.name?.includes('عاجي'));
+
+        // 5. Intelligent Multi-Word Concept Matching
+        let wordMatchScore = 0;
+        if (qWords.length > 0) {
+          qWords.forEach(word => {
+            if (searchableCorpus.includes(word)) wordMatchScore++;
+            else if (word.includes('عروس') && isBridalProduct) wordMatchScore++;
+            else if (word.includes('صيف') && isComfortProduct) wordMatchScore++;
+            else if (word.includes('مريح') && isComfortProduct) wordMatchScore++;
+            else if (word.includes('وردي') && isPinkProduct) wordMatchScore++;
+            else if (word.includes('ابيض') && isWhiteProduct) wordMatchScore++;
+          });
+        }
+
+        // 6. Price queries via regex (under value)
         const currentPrice = country === 'EG' ? p.priceEG : p.priceSA;
         let matchesPriceRange = false;
         if (q.includes('under') || q.includes('أقل من') || q.includes('اقل من') || q.includes('تحت')) {
@@ -131,7 +153,10 @@ export default function StoreView({
           }
         }
 
-        return matchesText || matchesFabric || matchesColor || matchesPriceRange;
+        // Logic check: if word match score covers requested key themes or explicit match
+        const isSemanticMatch = (qWords.length > 0 && wordMatchScore >= Math.min(2, qWords.length));
+
+        return directMatch || isSemanticMatch || (isBridalQuery && isBridalProduct) || (isPinkQuery && isPinkProduct) || (isComfortQuery && isComfortProduct) || matchesPriceRange;
       });
     }
 

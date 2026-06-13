@@ -12,6 +12,46 @@ interface HeroProps {
 
 export default function Hero({ onExplore, onDiscoverNew, settings, homepageSections = [] }: HeroProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [aiInjectedBanner, setAiInjectedBanner] = useState<any>(null);
+
+  // 🔮 Module 10: AI Dynamic Homepage Logic
+  useEffect(() => {
+    try {
+      const searchHistory = localStorage.getItem('sulta_search_history') || '';
+      const recentViews = localStorage.getItem('sulta_recently_viewed') || '[]';
+      
+      const combinedHistory = `${searchHistory} ${recentViews}`.toLowerCase();
+      
+      // Determine if preference is strongly Bridal
+      const isBridal = combinedHistory.includes('عروس') || combinedHistory.includes('جهاز') || combinedHistory.includes('زفاف') || combinedHistory.includes('دانتيل');
+      // Determine if preference is strongly Satin / Silk
+      const isSatin = combinedHistory.includes('ساتان') || combinedHistory.includes('حرير') || combinedHistory.includes('silk') || combinedHistory.includes('satin');
+
+      if (isBridal) {
+        setAiInjectedBanner({
+          url: '/img/hero_bridal_exclusive.png', // Fallback internal aesthetic
+          alt: 'Sulta Bridal Special',
+          title: 'تشكيلة عرائس SULTA 👑',
+          subtitle: 'ليلتكِ الاستثنائية\nتبدأ من هنا',
+          description: 'تخصيص دقيق ومقاسات ملكية ناعمة مصممة لكِ في يوم الزفاف..',
+          ctaText: 'تصفحي كوتور الخادمات والعروس',
+          mediaType: 'image'
+        });
+      } else if (isSatin) {
+        setAiInjectedBanner({
+          url: '/img/hero_satin_exclusive.png',
+          alt: 'Sulta Satin Special',
+          title: 'بريق الحرير البارد ✨',
+          subtitle: 'اكتشفي نعومة\nكوتور الساتان الايطالي',
+          description: 'وفقاً لمفضلاتكِ: مجموعة قطع الساتان الحريري للترطيب الصيفي متاحة الآن.',
+          ctaText: 'تصفحي مقاساتكِ من الحرير',
+          mediaType: 'image'
+        });
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // Parse dynamic hero banners from Supabase table 'homepage_sections'
   const heroSection = homepageSections.find(s => s.section_key === 'hero_banners');
@@ -47,7 +87,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
 
   const activeBanners = dbActiveBanners.length > 0 ? dbActiveBanners : fallbackBanners;
 
-  const slides = activeBanners.map((b: any) => ({
+  let slides = activeBanners.map((b: any) => ({
     url: cleanImgUrl(b.mediaUrl || b.url, 'sleepwear'),
     alt: b.title || 'Sulta Banner',
     title: b.title || 'CURATED LUXURY.',
@@ -56,6 +96,11 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
     ctaText: b.ctaText || 'SHOP NOW',
     mediaType: b.mediaType || 'image'
   }));
+
+  // ✨ Inject the AI-personalized banner at the very beginning if it exists
+  if (aiInjectedBanner) {
+    slides = [aiInjectedBanner, ...slides];
+  }
 
   useEffect(() => {
     if (slides.length <= 1) return;
