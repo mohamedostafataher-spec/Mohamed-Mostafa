@@ -399,8 +399,8 @@ export default function OrderDetailView({
       case 'processing': return 3;
       case 'packed': return 4;
       case 'shipped': return 5;
-      case 'out_for_delivery': return 6; // sharing the same physical delivery step
-      case 'delivered': return 6;
+      case 'out_for_delivery': return 6;
+      case 'delivered': return 7;
       default: return 1;
     }
   };
@@ -409,11 +409,11 @@ export default function OrderDetailView({
   const getProgressPercentage = (status: OrderStatus | string): number => {
     switch (status) {
       case 'new': case 'pending': return 15;
-      case 'confirmed': return 35;
-      case 'processing': return 55;
-      case 'packed': return 65;
+      case 'confirmed': return 30;
+      case 'processing': return 45;
+      case 'packed': return 60;
       case 'shipped': return 75;
-      case 'out_for_delivery': return 85;
+      case 'out_for_delivery': return 90;
       case 'delivered': return 100;
       case 'cancelled': case 'returned': case 'refunded': return 0;
       default: return 15;
@@ -593,26 +593,27 @@ export default function OrderDetailView({
           <div className="absolute top-8 left-4 right-4 sm:left-[10%] sm:right-[10%] h-[3px] bg-slate-100 -translate-y-1/2 z-0 rounded-full hidden sm:block">
             <div 
               className="h-full bg-[#DF8A9C] transition-all duration-1000 ease-out rounded-full" 
-              style={{ width: `${((currentStep - 1) / 5) * 100}%` }}
+              style={{ width: `${((currentStep - 1) / 6) * 100}%` }}
             />
           </div>
 
           {/* Steps container */}
-          <div className="grid grid-cols-1 sm:grid-cols-6 gap-6 relative z-10 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-7 gap-4 relative z-10 text-center">
             {[
-              { step: 1, label: 'تم استلام الطلب', icon: Clock, desc: 'سجلنا الطلب وبدء التحقق' },
-              { step: 2, label: 'تحت المراجعة', icon: ShieldCheck, desc: 'التدقيق ومطابقة فواتير المال' },
-              { step: 3, label: 'جاري التجهيز', icon: Package, desc: 'التغليف الفاخر بالباقة الوردية' },
-              { step: 4, label: 'جاهز للشحن', icon: CheckCircle, desc: 'تثبيت الأختام وبطاقة التهنئة' },
-              { step: 5, label: 'تم الشحن', icon: Truck, desc: 'غادرت الشحنة مع الناقل الرسمي' },
-              { step: 6, label: 'تم التسليم السالم', icon: GiftIconPlaceholder, desc: 'الوصول الموفق لباب داركم' }
+              { step: 1, label: 'تم الطلب', icon: Clock, desc: 'سجلنا طلبكِ في المنظومة' },
+              { step: 2, label: 'تم التأكيد', icon: ShieldCheck, desc: 'مراجعة وتأكيد البيانات' },
+              { step: 3, label: 'جاري التجهيز', icon: Package, desc: 'تحضير البجامة وكوتور الخياطة' },
+              { step: 4, label: 'تم التغليف', icon: CheckCircle, desc: 'وضع شريط الستان والختم الشمعي' },
+              { step: 5, label: 'تم الشحن', icon: Truck, desc: 'مغادرة الشحنة مع الناقل الملكي' },
+              { step: 6, label: 'في الطريق', icon: MapPin, desc: 'المندوب متوجه حالياً لعتبة الدار' },
+              { step: 7, label: 'تم التسليم', icon: GiftIconPlaceholder, desc: 'استلام مبارك وسعيد بتمام الأناقة' }
             ].map((node) => {
               const IconComp = node.icon;
               const isCompleted = node.step <= currentStep;
               const isActive = node.step === currentStep;
 
               return (
-                <div key={node.step} className="flex flex-row sm:flex-col items-center sm:items-center gap-4 sm:gap-2.5 text-right sm:text-center">
+                <div key={node.step} className="flex flex-row sm:flex-col items-center sm:items-center gap-4 sm:gap-2 text-right sm:text-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-700 shrink-0
                     ${isActive ? 'bg-[#DF8A9C] border-[#DF8A9C] text-white shadow-md scale-110 animate-pulse' : 
                       isCompleted ? 'bg-[#0B0B0B] border-[#0B0B0B] text-[#F6E7A6]' : 'bg-white border-slate-200 text-slate-300'}`}
@@ -623,7 +624,7 @@ export default function OrderDetailView({
                     <h4 className={`text-[11px] font-sans font-bold leading-none ${isActive ? 'text-[#DF8A9C]' : (isCompleted ? 'text-gray-900' : 'text-gray-400')}`}>
                       {node.label}
                     </h4>
-                    <p className="text-[9px] text-gray-400 font-sans mt-1 leading-snug max-w-[130px] mx-auto hidden sm:block">
+                    <p className="text-[9px] text-gray-400 font-sans mt-1 leading-snug max-w-[110px] mx-auto hidden sm:block">
                       {node.desc}
                     </p>
                   </div>

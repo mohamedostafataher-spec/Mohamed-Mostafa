@@ -5,6 +5,7 @@ import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
 import { PACKAGING_INFO } from '../data';
 import { dbService, cleanImgUrl } from '../services/db';
+import RealPackagingPreview from './RealPackagingPreview';
 
 interface ProductDetailModalProps {
   product: Product;
@@ -1203,16 +1204,23 @@ export default function ProductDetailModal({
                 </div>
               )}
               {activeTab === 'pack' && (
-                <div className="flex gap-2 items-start text-right">
-                  <Box size={16} className="text-[#F4B6C2] shrink-0" />
-                  <div>
-                    <p className="font-bold text-gray-900 mb-0.5">تقديم ملكي مميز:</p>
-                    <ul className="list-disc pr-3 space-y-0.5">
-                      <li>الصندوق: {PACKAGING_INFO.boxColorAr} مع شعار {PACKAGING_INFO.logoColorAr}</li>
-                      <li>الشريط: {PACKAGING_INFO.ribbonColorAr}</li>
-                      <li>التغليف الداخلي: {PACKAGING_INFO.paperTypeAr}</li>
-                      <li>{PACKAGING_INFO.cardAr}</li>
-                    </ul>
+                <div className="space-y-6 text-right">
+                  <div className="flex gap-2 items-start">
+                    <Box size={16} className="text-[#F4B6C2] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-gray-900 mb-0.5">تقديم ملكي مميز:</p>
+                      <ul className="list-disc pr-3 space-y-0.5 text-xs text-gray-600">
+                        <li>الصندوق: {PACKAGING_INFO.boxColorAr} مع شعار {PACKAGING_INFO.logoColorAr}</li>
+                        <li>الشريط: {PACKAGING_INFO.ribbonColorAr}</li>
+                        <li>التغليف الداخلي: {PACKAGING_INFO.paperTypeAr}</li>
+                        <li>{PACKAGING_INFO.cardAr}</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-100 pt-4">
+                    <span className="text-[10px] text-[#A44C5C] font-semibold tracking-wider block mb-2">المحاكاة البصرية الفاخرة للتغليف الملكي:</span>
+                    <RealPackagingPreview />
                   </div>
                 </div>
               )}

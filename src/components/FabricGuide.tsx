@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sparkles, Wind, Sun, Snowflake, Shield, RefreshCw } from 'lucide-react';
+import FabricRealityCenter from './FabricRealityCenter';
 
 interface FabricGuideProps {
   homepageSections?: any[];
@@ -51,6 +52,11 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
         <p className="text-gray-500 text-xs md:text-sm pt-2 leading-relaxed font-serif italic">
           ننتقي خيوط الدار من أرقى معالم الأنسجة الإيطالية والمصرية لنحيك لكِ تجربة نوم ملكية تلامس الروح قبل الجسد.
         </p>
+      </div>
+
+      {/* Embedded Real-time tactile simulation center */}
+      <div className="mb-12 max-w-4xl mx-auto">
+        <FabricRealityCenter />
       </div>
 
       {/* Main Grid Sections - dynamic and mobile responsive */}

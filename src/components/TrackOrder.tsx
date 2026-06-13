@@ -54,12 +54,29 @@ export default function TrackOrder() {
 
       let results: Order[] = [];
       const trimmedQuery = query.trim().toUpperCase();
+      const cleanedQueryNum = query.replace(/\D/g, ''); // leave only digits for phone matching
+
       if (method === 'id') {
-        results = orders.filter(o => o.id.toUpperCase() === trimmedQuery || (o.trackingNumber && o.trackingNumber.toUpperCase() === trimmedQuery));
+        results = orders.filter(o => 
+          o.id.toUpperCase() === trimmedQuery || 
+          (o.trackingNumber && o.trackingNumber.toUpperCase() === trimmedQuery) ||
+          (o.id.split('-')[0].toUpperCase() === trimmedQuery)
+        );
       } else if (method === 'email') {
         results = orders.filter(o => o.email && o.email.toLowerCase().trim() === query.toLowerCase().trim());
       } else if (method === 'phone') {
-        results = orders.filter(o => o.phone.replace(/\s+/g, '') === query.replace(/\s+/g, ''));
+        results = orders.filter(o => o.phone.replace(/\D/g, '').includes(cleanedQueryNum) || cleanedQueryNum.includes(o.phone.replace(/\D/g, '')));
+      }
+
+      // Magic Fallback search: if no results are found, scan all parameters for a smart match regardless of method selected
+      if (results.length === 0) {
+        results = orders.filter(o => {
+          const matchedId = o.id.toUpperCase() === trimmedQuery || (o.trackingNumber && o.trackingNumber.toUpperCase() === trimmedQuery) || (o.id.split('-')[0].toUpperCase() === trimmedQuery);
+          const matchedEmail = o.email && o.email.toLowerCase().trim() === query.toLowerCase().trim();
+          const oPhoneClean = o.phone.replace(/\D/g, '');
+          const matchedPhone = cleanedQueryNum.length >= 4 && (oPhoneClean.includes(cleanedQueryNum) || cleanedQueryNum.includes(oPhoneClean));
+          return matchedId || matchedEmail || matchedPhone;
+        });
       }
 
       if (results.length === 0) {
