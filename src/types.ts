@@ -82,6 +82,10 @@ export interface Product {
   tags?: string[];
   season?: string;
   collection?: string;
+  tagAr?: string;
+  tagEn?: string;
+  keywords?: string[];
+  views?: number;
   seo?: {
     metaTitleAr?: string;
     metaTitleEn?: string;
@@ -172,6 +176,7 @@ export interface CustomerProfile {
   phone?: string;
   firstName?: string;
   lastName?: string;
+  fullName?: string;
   loyaltyTier: LoyaltyTier;
   points: number;
   joinedAt: string;
@@ -185,6 +190,7 @@ export interface Order {
   email?: string;
   country: Country;
   city: string;
+  cityAr?: string;
   address: string;
   notes?: string;
   giftMessage?: string;
@@ -206,6 +212,7 @@ export interface Order {
   paymentMethod: string;
   status: OrderStatus;
   date: string;
+  createdAt?: string;
 }
 
 export type DiscountType = 'percentage' | 'fixed';

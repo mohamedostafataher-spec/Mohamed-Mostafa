@@ -22,7 +22,15 @@ export default function SultaAiIntelligence({
   reviews = [],
   onRefreshData
 }: SultaAiIntelligenceProps) {
-  const [activeSubTab, setActiveSubTab] = useState<'control_tower' | 'customer_analytics' | 'sales_forecasting' | 'health_scores' | 'reviews_analysis' | 'marketing_center' | 'customer_recovery'>('control_tower');
+  const [activeSubTab, setActiveSubTab] = useState<'control_tower' | 'customer_analytics' | 'sales_forecasting' | 'health_scores' | 'reviews_analysis' | 'marketing_center' | 'customer_recovery' | 'packaging_planner'>('control_tower');
+  
+  // 📦 Brand Packaging & Cost Planner local states
+  const [boxQty, setBoxQty] = useState<number>(100);
+  const [stampCost, setStampCost] = useState<number>(350);
+  const [plainBoxCost, setPlainBoxCost] = useState<number>(11);
+  const [stickerCost, setStickerCost] = useState<number>(3.5);
+  const [customWaxCost, setCustomWaxCost] = useState<number>(180);
+  const [mockupBoxStyle, setMockupBoxStyle] = useState<'stamp' | 'giant_sticker' | 'full_custom'>('stamp');
 
   // --- 01. COMPUTED MASTER METRICS & COCKPIT ---
   const aiStats = useMemo(() => {
@@ -96,11 +104,11 @@ export default function SultaAiIntelligence({
         customerMap[key] = {
           profile: {
             id: key,
-            fullName: o.fullName || 'عميلة زائرة',
+            fullName: o.customerName || 'عميلة زائرة',
             email: o.email || '—',
             phone: o.phone || '—',
-            joinedAt: o.createdAt || new Date().toISOString(),
-            tier: 'Bronze',
+            joinedAt: o.createdAt || o.date || new Date().toISOString(),
+            loyaltyTier: 'silver',
             points: 0,
             totalSpent: 0
           },
@@ -370,7 +378,7 @@ export default function SultaAiIntelligence({
       </div>
 
       {/* Bento Grid AI Menu */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2 bg-stone-50 border border-stone-200/60 p-1.5 rounded-2.5xl text-center text-[10.5px]">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 bg-stone-50 border border-stone-200/60 p-1.5 rounded-2.5xl text-center text-[10.5px]">
         <button
           onClick={() => setActiveSubTab('control_tower')}
           className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'control_tower' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
@@ -412,6 +420,13 @@ export default function SultaAiIntelligence({
           className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'customer_recovery' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           🛒 استرداد السِلات المتروكة
+        </button>
+        <button
+          id="subtab-packaging-planner"
+          onClick={() => setActiveSubTab('packaging_planner')}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'packaging_planner' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+        >
+          📦 مستشار التغليف الاقتصادي
         </button>
       </div>
 
@@ -930,6 +945,435 @@ export default function SultaAiIntelligence({
                 </table>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* VIEW 8: BRAND & PACKAGING COST PLANNER (AI DECISION SYSTEM) */}
+        {activeSubTab === 'packaging_planner' && (
+          <div className="space-y-6 animate-fadeIn font-sans text-right" dir="rtl">
+            
+            {/* 1. Header Hero Card with Pinterest Reference Insight */}
+            <div className="bg-gradient-to-br from-[#FAF5F0] to-[#FFF0F2] border border-[#DF8A9D]/20 p-6 rounded-3xl relative overflow-hidden">
+              <div className="absolute -top-12 -left-12 w-48 h-48 bg-[#A44C5C]/5 rounded-full blur-2xl" />
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#FAF5F0] rounded-full blur-xl" />
+              
+              <div className="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div className="space-y-2 max-w-2xl">
+                  <div className="inline-flex items-center gap-1.5 bg-[#A44C5C]/10 text-[#A44C5C] px-3 py-1 rounded-full text-[10.5px] font-bold">
+                    <span>👑 مستشار SULTA لمستوى الأناقة بأقل تكلفة</span>
+                    <span className="animate-pulse">•</span>
+                    <span>محدّث لعام 2026</span>
+                  </div>
+                  <h3 className="text-xl font-serif text-stone-900 font-extrabold tracking-tight">
+                    كيف تصنعين "أفخم تجربة فتح صندوق 🎁 (Unboxing)" بأقل ميزانية ممكنة؟
+                  </h3>
+                  <p className="text-xs text-stone-605 leading-relaxed">
+                    ملكتنا الجميلة، نعلم أنك ترغبين في تجربة تغليف مبهرة تنافس علامات <span className="font-semibold text-[#A44C5C]">توليا ستوديو (Tulia Studio)</span> و <span className="font-semibold text-[#A44C5C]">ميثا ستايل (Maitha Style)</span> - كرتون بيتزا رائع، شيت ملصقات بنترست اللطيفة، وكارت شكر مخملي. 
+                    <br />
+                    ولكن طلب مصنع خاص يفرض عليك <b>500 كرتونة كحد أدنى بمبلغ حوالي 8000 ج.م</b> هو قرار "يخطئ فيه 90% من رواد الأعمال المبتدئين"، لأنه يجمد السيولة النقدية التي يحتاجها القماش الفاخر والدانتيل الملكي لقطع الساتان الخاصة بك. إليك الحل البديل الروتاري بميزانية تبدأ من <b>300 إلى 500 ج.م فقط!</b>
+                  </p>
+                </div>
+                
+                <div className="bg-white/90 backdrop-blur-md border border-[#DF8A9D]/20 p-4 rounded-2xl shadow-xs text-center space-y-1.5 self-stretch lg:self-auto flex flex-col justify-center min-w-[200px]">
+                  <p className="text-[10px] text-stone-400">التوصية الذهبية الفورية من الذكاء الاصطناعي</p>
+                  <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full inline-block mx-auto">
+                    💡 ختم خشبي عملاق + علب سادة
+                  </span>
+                  <p className="text-[11px] text-stone-650 leading-normal">
+                    تحققين <b>100%</b> من جمال البنترست بملامس دافئة، وتوفرين <b>7,650 ج.م</b> من رأس مالك المبدئي لشراء الخامات!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Interactive Calculator and Box Preview Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              
+              {/* Left Column: Interactive Parameters (4 Cols) */}
+              <div className="lg:col-span-4 bg-white border border-stone-200/80 p-5 rounded-2.5xl space-y-5 flex flex-col justify-between">
+                <div>
+                  <h4 className="text-xs font-bold text-stone-800 pb-3 border-b border-stone-100 flex items-center gap-1.5">
+                    <span>🎚️ لوحة التحكم في ميزانية التغليف</span>
+                  </h4>
+                  
+                  <div className="space-y-4 pt-4">
+                    {/* Control 1: Box Quantity */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-stone-605 font-medium">الكمية المستهدفة كبداية (علبة):</span>
+                        <span className="font-bold text-[#A44C5C] font-mono">{boxQty} علبة</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="20" 
+                        max="300" 
+                        step="10"
+                        value={boxQty} 
+                        onChange={(e) => setBoxQty(parseInt(e.target.value))}
+                        className="w-full accent-[#A44C5C] h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <div className="flex justify-between text-[9px] text-stone-400 font-mono">
+                        <span>20</span>
+                        <span>100</span>
+                        <span>200</span>
+                        <span>300 (بداية نقدية ذكية)</span>
+                      </div>
+                    </div>
+
+                    {/* Control 2: Plain Box Cost */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-stone-650 font-medium font-sans">تكلفة علبة البيتزا السادة (أبيض/كرافت):</span>
+                        <span className="font-bold text-stone-800 font-mono">{plainBoxCost} ج.م</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="7" 
+                        max="22" 
+                        step="0.5"
+                        value={plainBoxCost} 
+                        onChange={(e) => setPlainBoxCost(parseFloat(e.target.value))}
+                        className="w-full accent-stone-700 h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <p className="text-[10px] text-stone-400">سعر الصندوق الكرتوني القوي مقاس 30x30 سم بالفجالة أو الرويعي بالجملة</p>
+                    </div>
+
+                    {/* Control 3: Custom Stamp price */}
+                    <div className="space-y-1 border-t border-stone-100 pt-3">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-stone-650 font-medium">تكلفة الختم الخشبي الجامبو المخصص:</span>
+                        <span className="font-bold text-stone-800 font-mono">{stampCost} ج.م</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="200" 
+                        max="500" 
+                        step="10"
+                        value={stampCost} 
+                        onChange={(e) => setStampCost(parseInt(e.target.value))}
+                        className="w-full accent-stone-700 h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <p className="text-[10px] text-stone-400">يدفع مرة واحدة فقط مدى الحياة (سعر تصنيع أكريليك أو ليزر خشب مخصص)</p>
+                    </div>
+
+                    {/* Control 4: Giant sticker price */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-stone-650 font-medium">تكلفة الاستيكر الملون الكبير المطبوع:</span>
+                        <span className="font-bold text-stone-800 font-mono">{stickerCost} ج.م</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="1" 
+                        max="8" 
+                        step="0.5"
+                        value={stickerCost} 
+                        onChange={(e) => setStickerCost(parseFloat(e.target.value))}
+                        className="w-full accent-stone-700 h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <p className="text-[10px] text-stone-400">سعر تفصيل ستيكر لاصق مطفي ديجيتال مقاس 15x15 سم من شيتات مجمعة</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Economic Summary Alert inside inputs */}
+                <div className="bg-stone-50 p-3 rounded-2xl border border-stone-200/50 mt-4 text-[11px] text-stone-605 leading-relaxed">
+                  💡 <b>مكاسب المخزون المرن:</b> 
+                  إذا غيرتِ اسم المجموعة، أو قمت بعمل مجموعة شتوية جديدة، يمكنك ببساطة تغيير تصميم الاستيكر أو ختم جديد بـ 300 جنيهاً فقط، بينما الصناديق التي طبعتِ منها 500 حبة ستجمد بداخلها ميزانيتك ولن تتمكني من تعديلها!
+                </div>
+              </div>
+
+              {/* Middle Column: Interactive Visual 3D Box Mockup (4 Cols) */}
+              <div className="lg:col-span-4 bg-[#FAF8F5] border border-stone-200 p-5 rounded-2.5xl flex flex-col justify-between items-center text-center space-y-4">
+                <div className="w-full">
+                  <h4 className="text-xs font-bold text-stone-800 flex justify-between items-center pb-2 border-b border-stone-200">
+                    <span>✨ محاكاة شكل صندوقكِ المخصص</span>
+                    <span className="text-[10px] text-stone-400">مرئي مباشر</span>
+                  </h4>
+                  <p className="text-[10px] text-stone-400 mt-1">اضغطي لمشاهدة كيف سيبدو الصندوق بالواقع مع اختلاف استراتيجية التوفير:</p>
+                  
+                  {/* Style Selectors */}
+                  <div className="grid grid-cols-3 gap-1 bg-stone-200/50 p-1 rounded-xl mt-3 text-[10.5px]">
+                    <button 
+                      onClick={() => setMockupBoxStyle('stamp')}
+                      className={`py-1.5 rounded-lg font-bold transition-all cursor-pointer ${mockupBoxStyle === 'stamp' ? 'bg-white text-[#A44C5C] shadow-xs' : 'text-stone-600'}`}
+                    >
+                      🪵 ختم خشبي
+                    </button>
+                    <button 
+                      onClick={() => setMockupBoxStyle('giant_sticker')}
+                      className={`py-1.5 rounded-lg font-bold transition-all cursor-pointer ${mockupBoxStyle === 'giant_sticker' ? 'bg-white text-[#A44C5C] shadow-xs' : 'text-stone-600'}`}
+                    >
+                      🏷️ استيكر تزيين
+                    </button>
+                    <button 
+                      onClick={() => setMockupBoxStyle('full_custom')}
+                      className={`py-1.5 rounded-lg font-bold transition-all cursor-pointer ${mockupBoxStyle === 'full_custom' ? 'bg-white text-[#A44C5C] shadow-xs' : 'text-stone-600'}`}
+                    >
+                      🌈 طباعة كاملة
+                    </button>
+                  </div>
+                </div>
+
+                {/* HTML/CSS BOX MOCKUP RENDERING */}
+                <div className="relative w-48 h-48 my-2 transition-all duration-500 perspective-1000 group">
+                  <div className={`w-full h-full rounded-2xl border-4 transition-all duration-500 shadow-md p-4 flex flex-col items-center justify-between relative ${
+                    mockupBoxStyle === 'stamp' 
+                      ? 'bg-[#E3D4C4] border-[#D1BFA patch] border-stone-300 texture-rustic' // Kraft Brown paper
+                      : mockupBoxStyle === 'giant_sticker'
+                      ? 'bg-white border-stone-200' 
+                      : 'bg-[#FFF0F2] border-[#DF8A9D]/40' // Full print rose
+                  }`}>
+                    
+                    {/* Top Flap details */}
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-stone-700/10 rounded-full" />
+                    
+                    {/* Inner Content Renders based on style selection */}
+                    {mockupBoxStyle === 'stamp' && (
+                      <div className="w-full h-full flex flex-col justify-between p-2 items-center text-center opacity-85 select-none">
+                        <div className="flex justify-between w-full text-[9px] text-[#A44C5C]/50 font-serif">
+                          <span>YOUR RESET.</span>
+                          <span>TIMELESS STYLE</span>
+                        </div>
+                        {/* Custom Stamped Ink effect */}
+                        <div className="my-auto space-y-1 flex flex-col items-center scale-95 border border-dashed border-[#A44C5C]/30 p-2.5 rounded-lg bg-[#E3D4C4]/20">
+                          <span className="text-xl font-serif font-black text-[#A44C5C] tracking-wide" style={{ textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
+                            SULTA 👑
+                          </span>
+                          <span className="text-[10px] font-sans text-stone-700 font-bold tracking-widest leading-none">
+                            - SLEEPWEAR COUTUR -
+                          </span>
+                          <span className="text-[7.5px] font-sans text-[#A44C5C] block pt-1 border-t border-[#A44C5C]/20">
+                            Zero Effort. Full Comfort.
+                          </span>
+                        </div>
+                        <div className="text-[8px] text-stone-500/80 font-serif block border-t border-stone-300 w-full pt-1">
+                          🖃 ختم يدوي عضوي Pinterest العتيق
+                        </div>
+                      </div>
+                    )}
+
+                    {mockupBoxStyle === 'giant_sticker' && (
+                      <div className="w-full h-full flex flex-col justify-between items-center text-center select-none">
+                        {/* Plain white box, but with a highly detailed, glossy pink sticker centered */}
+                        <div className="my-auto w-[85%] h-[80%] bg-[#FFF1F3] border-2 border-[#DF8A9D] rounded-xl flex flex-col justify-between p-2 shadow-xs transition-scale-up">
+                          <span className="text-[8px] text-[#DF8A9D] font-bold">LIMITED COLLECTION</span>
+                          <div className="space-y-0.5">
+                            <h5 className="text-md font-serif font-black text-[#A44C5C]">SULTA COUTUR</h5>
+                            <p className="text-[7px] text-stone-500 font-sans">لأن الأناقة تبدأ من راحتك 🌸</p>
+                          </div>
+                          <span className="text-[7.5px] text-[#DF8A9D] font-mono leading-none border-t border-[#DF8A9D]/30 pt-1">
+                            GIRLHOOD IN A BOX ✨
+                          </span>
+                        </div>
+                        <span className="text-[8.5px] text-stone-400 font-sans">علبة بيضاء مصقولة + ستيكر مركزي ملون</span>
+                      </div>
+                    )}
+
+                    {mockupBoxStyle === 'full_custom' && (
+                      <div className="w-full h-full flex flex-col justify-between p-2 items-center text-center select-none bg-radial from-[#FFF0F2] to-[#FFF6F7]">
+                        <div className="text-[#A44C5C] text-[8px] font-bold tracking-wider">★ THE PIZZA SELECTION ★</div>
+                        <div className="my-auto text-center space-y-1">
+                          <span className="text-2xl font-serif text-[#A44C5C] font-black block">SULTA</span>
+                          <p className="text-[8.5px] leading-relaxed text-[#A44C5C] font-sans px-1 bg-[#A44C5C]/5 py-0.5 rounded">
+                            "Zero Calories. Full Comfort."
+                          </p>
+                          <div className="flex gap-1 justify-center">
+                            <span className="text-[8px] text-[#DF8A9D]">🎀</span>
+                            <span className="text-[8px] text-[#DF8A9D]">✨</span>
+                            <span className="text-[8px] text-[#DF8A9D]">🎀</span>
+                          </div>
+                        </div>
+                        <span className="text-[8px] text-emerald-800 font-bold font-sans bg-emerald-50 px-1 py-0.5 rounded">
+                          طباعة فاخرة (عائق رأس المال 8000 ج.م)
+                        </span>
+                      </div>
+                    )}
+
+                  </div>
+                </div>
+
+                <div className="w-full bg-white p-2 rounded-xl text-stone-550 border border-stone-200/50 text-[10.5px]">
+                  <b>ملمس الورق الكرافت البني (المستخدم في الختم):</b> يعطيك نفس ستايل "علب البيتزا اللطيفة" العضوية، ويعشقه جيل الـ Gen Z ويظهر رائعاً جداً في تصوير الإضاءة الطبيعية لغرف النوم!
+                </div>
+              </div>
+
+              {/* Right Column: Dynamic Side-by-Side Cost Comparison Matrix (4 Cols) */}
+              <div className="lg:col-span-4 bg-white border border-stone-200/85 p-5 rounded-2.5xl space-y-4 flex flex-col justify-between">
+                <div>
+                  <h4 className="text-xs font-bold text-stone-800 pb-2.5 border-b border-stone-100">
+                    🏆 مقارنة الميزانية الحقيقية لتصنيع {boxQty} علبة:
+                  </h4>
+                  
+                  <div className="space-y-3 pt-3 text-[11.5px]">
+                    
+                    {/* Method A: Stamp */}
+                    <div className="p-3 rounded-2xl border-2 border-emerald-300 bg-emerald-50/55 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-extrabold text-[#A44C5C]">1. ستايل الختم الخشبي 🪵</span>
+                        <span className="font-black text-emerald-900 font-mono text-xs">{(stampCost + (plainBoxCost + 1.5) * boxQty).toLocaleString()} ج.م</span>
+                      </div>
+                      <div className="text-[10px] text-stone-600 space-y-1 leading-normal">
+                        <div>• الكرتون السادة: {boxQty} × {plainBoxCost} = {boxQty * plainBoxCost} ج.م</div>
+                        <div>• ثمن الختم (يدفع مرة): {stampCost} ج.م (حفظ للأبد)</div>
+                        <div>• مناديل وطبقة التشميع: {boxQty} × 1.5 = {boxQty * 1.5} ج.م</div>
+                        <div className="text-emerald-800 font-bold">← التكلفة الفعلية للعلبة الواحدة: {((stampCost + (plainBoxCost + 1.5) * boxQty) / boxQty).toFixed(1)} ج.م شامل الختم!</div>
+                      </div>
+                    </div>
+
+                    {/* Method B: Giant Sticker */}
+                    <div className="p-3 rounded-2xl border border-stone-200 bg-stone-50/60 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-extrabold text-[#A44C5C]">2. ستايل الاستيكر العملاق 🏷️</span>
+                        <span className="font-black text-stone-900 font-mono text-xs">{((plainBoxCost + stickerCost + 1) * boxQty).toLocaleString()} ج.م</span>
+                      </div>
+                      <div className="text-[10px] text-stone-600 space-y-1 leading-normal">
+                        <div>• الكرتون السادة: {boxQty} × {plainBoxCost} = {boxQty * plainBoxCost} ج.م</div>
+                        <div>• الاستيكر اللاصق الملون: {boxQty} × {stickerCost} = {boxQty * stickerCost} ج.م</div>
+                        <div>• مناديل تغليف: {boxQty} × 1 = {boxQty * 1} ج.م</div>
+                        <div className="text-stone-700 font-semibold">← التكلفة الفعلية للعلبة الواحدة: {(plainBoxCost + stickerCost + 1).toFixed(1)} ج.م (0 ج.م تكلفة بداية!)</div>
+                      </div>
+                    </div>
+
+                    {/* Method C: High MOQ Direct print */}
+                    <div className="p-3 rounded-2xl border border-red-100 bg-red-50/40 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-extrabold text-stone-400">3. الطباعة المصنعية المباشرة 🏭</span>
+                        <span className="font-black text-red-900 font-mono text-xs">8,000 ج.م</span>
+                      </div>
+                      <div className="text-[10.5px] text-red-800 font-medium leading-normal">
+                        🚨 لا يسمح المصنع بأقل من 500 كرتونة!
+                        <div className="text-[9.5px] text-stone-500 font-normal pt-1">
+                          تجميد رأس مال 8000 جنيهاً في رفوف التخزين يعرض مشروعك الصغير للركود في انطلاقته الأولى. التدرج هو سر البقاء والنجاح!
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Savings highlighted and bold */}
+                <div className="bg-emerald-900 text-[#F6E7A6] p-3 text-center rounded-2xl text-[11.5px] font-sans">
+                  💸 عند اختيارك ستايل <b>الختم الخشبي</b> لعدد <b>{boxQty} علبة</b>،
+                  <br /> 
+                  سوف توفرين <b>{(8000 - (stampCost + (plainBoxCost + 1.5) * boxQty)).toLocaleString()} ج.م</b> نقداً لتوسعة القطع في مجموعتك!
+                </div>
+              </div>
+
+            </div>
+
+            {/* 3. Pinterest Stickers Sheets & Cozy Cards Savings Advice (Bento Card) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              
+              {/* Sticker sheets section */}
+              <div className="bg-white border border-stone-200/80 p-5 rounded-2.5xl space-y-3.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🌸</span>
+                  <h4 className="text-xs font-bold text-stone-850">شيت ملصقات بنترست اللطيفة (Cute Sticker Sheets)</h4>
+                </div>
+                
+                <p className="text-[11px] text-stone-605 leading-relaxed">
+                  الملصقات التي طلبتِها في صورتك (شرائط الـ Bows، العطور الوردية، الدببة اللطيفة، وكوب بلمحة بنترست) هي وسيلة التسويق الأجمل، لأن الفتيات يضعنها على هواتفهن وحواسيبهن المحمولة مما ينشر صورة علامتكِ تلقائياً مجاناً!
+                </p>
+
+                <div className="bg-[#FFF8F9] p-4 rounded-2xl space-y-2 border border-[#DF8A9D]/10">
+                  <h5 className="text-[11px] font-bold text-[#A44C5C]">الحيلة الاقتصادية للتصميم والقص المريح:</h5>
+                  <ul className="text-[10.5px] text-stone-650 space-y-1.5 list-disc list-inside">
+                    <li>
+                      <b>تجنبي الاستيكرات المفردة (Die-Cut):</b> لأن المصنع يحتاج قالب قص خاص لكل دب وشريط مما يرفع السعر جداً.
+                    </li>
+                    <li>
+                      <b>البديل الذكي (A5 Kiss-Cut Sheet):</b> اطلبي من المطبعة شيت مقاس <span className="font-semibold text-stone-900">A5</span> أو <span className="font-semibold text-stone-900 text-right">A6 (نصف حجم الورقة العادية)</span> يحتوي على جميع الرسومات مجمعة مع القص السلس المسبق.
+                    </li>
+                    <li>
+                      <b>تكلفة المطابع الرقمية للتجربة الكوزي بالمنزل:</b> شيت الـ A5 اللاصق المقصوص ديجيتال يبدأ من <b>5 ج.م فقط</b> للشيت في مطابع وسط البلد، وهو تكلفة لا تذكر ومبهرة في تجربة فتح الصندوق!
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Luxury Business & Cozy cards inside pouch */}
+              <div className="bg-white border border-stone-200/80 p-5 rounded-2.5xl space-y-3.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🏷️</span>
+                  <h4 className="text-xs font-bold text-stone-850">كارت الشكر المخملي الفاخر (SULTA Luxury Gift Card)</h4>
+                </div>
+                
+                <p className="text-[11px] text-stone-605 leading-relaxed">
+                  كارت الشكر ذو الخلفية السوداء الأنيقة والفيونكة الوردية البارزة (الذي طابقتيه في صورتكِ الأخيرة) يعتمد فخامته التامة على <b>ملمس الورقة</b> وتفاعل يد العميلات معه وليس الطباعة الملونة الرخيصة.
+                </p>
+
+                <div className="bg-[#FAF5F0] p-4 rounded-2xl space-y-2 border border-stone-200/40">
+                  <h5 className="text-[11px] font-bold text-stone-800">الحيلة الاقتصادية لطباعة كارت مذهل بدون ماكينات عملاقة:</h5>
+                  <ul className="text-[10.5px] text-stone-650 space-y-1.5 list-disc list-inside">
+                    <li>
+                      اختر المقاس الفاخر المطاطي (سمك كارت الفيزا العريض) ليكون ثابتاً ولا ينثني.
+                    </li>
+                    <li>
+                      <b>سلوفان بلمس قطيفة مخملي (Velvet Lamination):</b> اطلبي من المطبعة الفورية عمل طبقة "سلوفان قطيفة" على وزن ورقة 350 جرام. يعطي الكارت ملمس شامواه كالحرير تماماً.
+                    </li>
+                    <li>
+                      <b>تطبيق حبر الـ Spot UV:</b> لجعل لوجو SULTA والفيونكة الوردية يلمعان ببريق بارز فوق الملمس الأسود المطفي، تكفي علبة من 100 كارت ديجيتال مطلي بسعر لا يتجاوز <b>180 إلى 250 ج.م</b> كبداية للمشروع بدلاً من حجز ألواح طباعة زنك غالية!
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+
+            {/* 4. Action Plan & Places list Map (Sulta Arabic Suppliers Registry) */}
+            <div className="bg-stone-900 text-stone-100 p-6 rounded-3xl space-y-4">
+              <h4 className="text-sm font-bold text-[#F6E7A6] flex items-center gap-2">
+                <span>📍 دليل وخطوات الشراء الفورية ببلدك (مصر والخليج العربي):</span>
+              </h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] leading-relaxed">
+                <div className="space-y-2 bg-stone-850 p-4 rounded-2xl border border-stone-800">
+                  <h5 className="font-black text-white text-xs flex items-center gap-1.5">
+                    <span className="bg-stone-700 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#F6E7A6]">1</span>
+                    شراء كرتون البيتزا السادة بالجملة
+                  </h5>
+                  <p className="text-stone-300">
+                    • <b>في مصر:</b> انزلي منطقة <b>العتبة - خلف جراج العتبة (شارع الرويعي ومحيطه)</b> أو <b>ممر الفجالة للورق والكرتون</b>. هتلاقي أكشاك ومحلات جملة بيبيعوا كراتين البيتزا بجميع المقاسات (مثلاً مقاس 32x32 سم السادة أبيض أو بني كرافت) ومربعات الساح كرتون قوي بسعر يبدأ من 9 لـ 12 جنيه شامل الخصومات والكمية ممكن تبدأ من 50 علبة فقط!
+                    <br />
+                    • <b>في السعودية:</b> اطلبي من موزعي <b>شارع المعبر أو سوق المعيقلية بالرياض</b>، أو منصات بيع الكرتون السادة عبر الإنترنت بعلب تغليف مرنة.
+                  </p>
+                </div>
+
+                <div className="space-y-2 bg-stone-850 p-4 rounded-2xl border border-stone-800">
+                  <h5 className="font-black text-white text-xs flex items-center gap-1.5">
+                    <span className="bg-stone-700 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#F6E7A6]">2</span>
+                    طلب الختم الخشبي المخصص
+                  </h5>
+                  <p className="text-stone-300">
+                    • خذي لوجو SULTA والرسومات اللطيفة التي قمنا بتصميمها لكِ مجاناً في Sulta Brand باللون الأسود بالكامل (قالب مفرغ Silhoutte).
+                    <br />
+                    • ابحثي في منطقتكِ عن ورش <b>الحفر بالليزر والزنكغراف</b> (مثلاً في <b>شارع محمد علي بوسط البلد بالقاهرة</b> أو عبر متجر طباعة أونلاين بالرياض). اطلبي ختم خشبي جامبو مقاس 15x15 سم أو 20x15 سم بمقبض عريض.
+                    <br />
+                    • اشتري وسادة حبر (Ink Pad) باللون الوردي الغامق أو الأسود الملكي بمبلغ 45 ج.م.
+                  </p>
+                </div>
+
+                <div className="space-y-2 bg-stone-850 p-4 rounded-2xl border border-stone-800">
+                  <h5 className="font-black text-white text-xs flex items-center gap-1.5">
+                    <span className="bg-stone-700 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#F6E7A6]">3</span>
+                    اللمسة الملكية بالمنزل (The Elegant Touch)
+                  </h5>
+                  <p className="text-stone-300">
+                    • قبل تغليف القطعة الكوتور، ضعي شيت مناديل ورق زبداني (ورق زبدة رقيق أبيض) داخل الصندوق، وضعي فيه بجامة الساتان الملكية بعد تعطيرها برذاذ الفانيليا المنعشة.
+                    <br />
+                    • اغلقي ورق الزبدة بملصق دائري وردي رقيق (استيكر الوش الصغير 3سم)، ثم ضعي شيت ملصقات بنترست والهدية اللطيفة كعلامة مظهر واهتمام لعمليتك.
+                    <br />
+                    • اربطي الصندوق من الخارج بشريط حريري عريض بلون البيبي روز (كرة الشريط بـ 15 جنيهاً تكفي 10 علب)، لتبدو فعلياً كأفخم علبة بيتزا دافئة ومميزة تسترخي الفتيات لأجلها!
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-stone-800 text-center text-xs text-stone-400">
+                🔒 يمنحكِ هذا التخطيط المرن القدرة على بدء تجارة بجامات الفخامة بأقل مخاطر مالية وتوفير سيولة نقدية فورية لشحن وشراء الخامات النادرة. 👑
+              </div>
+            </div>
+
           </div>
         )}
 
