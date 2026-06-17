@@ -107,15 +107,131 @@ function AppContent() {
 
   const [country, setCountry] = useState<Country>(() => {
     try {
+      const savedCountry = localStorage.getItem('sulta_user_country_preference');
+      if (savedCountry === 'EG' || savedCountry === 'SA') {
+        return savedCountry as Country;
+      }
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
       if (tz === 'Africa/Cairo' || tz.includes('Cairo') || tz.includes('Egypt')) {
         return 'EG';
       }
-      return 'SA';
+      if (tz.includes('Riyadh') || tz.includes('Saudi') || tz.includes('Asia/Qatar') || tz.includes('Asia/Kuwait') || tz.includes('Asia/Bahrain') || tz.includes('Asia/Muscat') || tz.includes('Asia/Aden')) {
+        return 'SA';
+      }
+      return 'EG'; // Default fallback
     } catch {
-      return 'SA';
+      return 'EG';
     }
   });
+
+  // Synchronise manually chosen country changes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('sulta_user_country_preference', country);
+    } catch (e) {
+      console.warn('LocalStorage country write failed', e);
+    }
+  }, [country]);
+
+  // High-precision geographic country detector (IP Geo-resolve -> Language resolution -> GMT/Timezone fallback)
+  useEffect(() => {
+    const detectGeographicCountry = async () => {
+      // If user has an explicit saved preference in localStorage, respect it and do not overwrite or alert
+      const savedPref = localStorage.getItem('sulta_user_country_preference');
+      if (savedPref === 'EG' || savedPref === 'SA') {
+        return;
+      }
+
+      let detected: 'EG' | 'SA' | null = null;
+
+      // Tier 1: Check browser language strings for hints
+      try {
+        const lang = (navigator.language || '').toLowerCase();
+        const langs = (navigator.languages || []).map(l => l.toLowerCase());
+        const hasEgyptHint = [lang, ...langs].some(l => l.includes('eg') || l.includes('cairo'));
+        const hasSaudiHint = [lang, ...langs].some(l => l.includes('sa') || l.includes('riyadh') || l.includes('gcc') || l.includes('arabia'));
+        
+        if (hasEgyptHint) {
+          detected = 'EG';
+        } else if (hasSaudiHint) {
+          detected = 'SA';
+        }
+      } catch (err) {
+        console.warn('Browser language analysis failed:', err);
+      }
+
+      // Tier 2: Real-time Geo-IP Resolution (Concurrent fast fallback)
+      if (!detected) {
+        try {
+          const res = await fetch('https://ipapi.co/json/');
+          if (res.ok) {
+            const data = await res.json();
+            const code = String(data.country_code || '').toUpperCase();
+            if (code === 'EG') {
+              detected = 'EG';
+            } else if (['SA', 'QA', 'KW', 'BH', 'OM', 'AE'].includes(code)) {
+              detected = 'SA';
+            }
+          }
+        } catch (err) {
+          console.warn('Primary ipapi.co lookup failed. Querying backup...', err);
+          
+          try {
+            const res = await fetch('https://ip-api.com/json/');
+            if (res.ok) {
+              const data = await res.json();
+              const code = String(data.countryCode || '').toUpperCase();
+              if (code === 'EG') {
+                detected = 'EG';
+              } else if (['SA', 'QA', 'KW', 'BH', 'OM', 'AE'].includes(code)) {
+                detected = 'SA';
+              }
+            }
+          } catch (backupErr) {
+            console.warn('Backup ip-api lookup failed.', backupErr);
+          }
+        }
+      }
+
+      // Tier 3: Timezone check (Default fallback strategy)
+      if (!detected) {
+        try {
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          if (tz === 'Africa/Cairo' || tz.includes('Cairo') || tz.includes('Egypt')) {
+            detected = 'EG';
+          } else if (tz.includes('Riyadh') || tz.includes('Saudi') || tz.includes('Asia/Qatar') || tz.includes('Asia/Kuwait') || tz.includes('Asia/Bahrain') || tz.includes('Asia/Muscat') || tz.includes('Asia/Aden')) {
+            detected = 'SA';
+          } else {
+            detected = 'EG'; // Default fallback
+          }
+        } catch {
+          detected = 'EG';
+        }
+      }
+
+      // Apply detected localization setting
+      if (detected && detected !== country) {
+        setCountry(detected);
+      }
+
+      // Beautiful Luxe notification to make sure the customer feels welcomed and in control
+      const sessionAlerted = sessionStorage.getItem('sulta_country_alerted');
+      if (!sessionAlerted && detected) {
+        sessionStorage.setItem('sulta_country_alerted', 'true');
+        const flag = detected === 'SA' ? '🇸🇦' : '🇪🇬';
+        const welcomeMessage = detected === 'SA' 
+          ? `أهلاً بكِ في سولا! تم تحديد موقعك الجغرافي وتجربة السفر وتخصيص المتجر تلقائياً للمملكة العربية السعودية ${flag} (ريال سعودي SAR).`
+          : `أهلاً بكِ في سولا! تم تحديد موقعك الجغرافي وتخصيص تجربة المتجر تلقائياً لجمهورية مصر العربية ${flag} (جنيه مصري EGP).`;
+        
+        setTimeout(() => {
+          toast(welcomeMessage, 'success');
+        }, 1500);
+      }
+    };
+
+    detectGeographicCountry();
+  }, [country, toast]);
+
   const [cart, setCart] = useState<CartItem[]>([]);
   
   // Load initial favorites from LocalStorage with fallback support
@@ -608,20 +724,33 @@ function AppContent() {
   };
 
   // Dynamic live homepage filtering systems
-  const bestSellers = products.filter(p => p.isBestSeller && p.status === 'active').slice(0, 6);
-  const newArrivals = [...products]
+  const filteredProducts = products.filter(p => {
+    if (country === 'EG') {
+      if (settings?.saExclusiveProductIds && Array.isArray(settings.saExclusiveProductIds) && settings.saExclusiveProductIds.includes(p.id)) {
+        return false;
+      }
+    } else if (country === 'SA') {
+      if (settings?.egExclusiveProductIds && Array.isArray(settings.egExclusiveProductIds) && settings.egExclusiveProductIds.includes(p.id)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const bestSellers = filteredProducts.filter(p => p.isBestSeller && p.status === 'active').slice(0, 6);
+  const newArrivals = [...filteredProducts]
     .filter(p => p.status === 'active')
     .sort((a, b) => b.id.localeCompare(a.id))
     .slice(0, 6);
-  const featuredProducts = products.filter(p => p.featured && p.status === 'active').slice(0, 6);
-  const trendingProducts = products
+  const featuredProducts = filteredProducts.filter(p => p.featured && p.status === 'active').slice(0, 6);
+  const trendingProducts = filteredProducts
     .filter(p => p.status === 'active')
     .sort((a, b) => (b.rating || 5) - (a.rating || 5))
     .slice(0, 6);
-  const latestProducts = [...products]
+  const latestProducts = [...filteredProducts]
     .filter(p => p.status === 'active')
     .slice(0, 6);
-  const seasonalCollections = products
+  const seasonalCollections = filteredProducts
     .filter(p => p.status === 'active' && (p.descriptionEn?.toLowerCase().includes('summer') || p.descriptionAr?.includes('صيف') || p.category === 'satin'))
     .slice(0, 6);
 
@@ -967,7 +1096,7 @@ function AppContent() {
         {/* VIEW 2: STORE PAGE (المتجر مع الفلترة الكاملة) */}
         {currentTab === 'store' && (
           <StoreView
-            products={products}
+            products={filteredProducts}
             categories={categories}
             country={country}
             favorites={favorites}
@@ -986,7 +1115,7 @@ function AppContent() {
           <SultaCollections
             collections={collections}
             categories={categories}
-            products={products}
+            products={filteredProducts}
             country={country}
             favorites={favorites}
             toggleFavorite={toggleFavorite}

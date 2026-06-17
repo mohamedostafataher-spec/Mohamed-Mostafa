@@ -3,7 +3,8 @@ import {
   Instagram, Facebook, Play, MessageCircle, Percent, Users, Award, Calendar, 
   Mail, BarChart3, Radio, HelpCircle, Shield, CheckCircle, Search, Plus, 
   Trash2, Edit, Save, Share2, Clipboard, TrendingUp, RefreshCw, Layers, 
-  Settings, Bell, AlertTriangle, Eye, ArrowUpRight, DollarSign, Chrome, Sparkles
+  Settings, Bell, AlertTriangle, Eye, ArrowUpRight, DollarSign, Chrome, Sparkles,
+  Smile
 } from 'lucide-react';
 import { supabase, dbService, cleanImgUrl } from '../services/db';
 
@@ -95,8 +96,114 @@ export interface AutomationRule {
 
 export default function AdminMarketingCenter() {
   const [activeTab, setActiveTab] = useState<
-    'socials' | 'feed' | 'whatsapp' | 'coupons' | 'influencers' | 'calendar' | 'email' | 'analytics' | 'automations' | 'seo' | 'ugc' | 'ai' | 'health'
+    'socials' | 'feed' | 'whatsapp' | 'coupons' | 'influencers' | 'calendar' | 'email' | 'analytics' | 'automations' | 'seo' | 'ugc' | 'ai' | 'health' | 'stickers_memes'
   >('analytics');
+
+  // Sulta Stickers and Memes Custom Dashboard States
+  const [managedStickers, setManagedStickers] = useState<any[]>([]);
+  const [newStickerTitle, setNewStickerTitle] = useState('');
+  const [newStickerDesc, setNewStickerDesc] = useState('');
+  const [newStickerImg, setNewStickerImg] = useState('');
+  const [newStickerCat, setNewStickerCat] = useState<'sticker' | 'meme'>('sticker');
+  const [savingStickers, setSavingStickers] = useState(false);
+
+  useEffect(() => {
+    const loadStickers = async () => {
+      try {
+        const { data } = await supabase.from('homepage_sections').select('content_json').eq('section_key', 'sulta_stickers_memes_v2').limit(1).single();
+        if (data && data.content_json) {
+          const parsed = typeof data.content_json === 'string' ? JSON.parse(data.content_json) : data.content_json;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setManagedStickers(parsed);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not load stickers", e);
+      }
+      
+      // Fallback defaults
+      setManagedStickers([
+        {
+          id: 'sulta-m1',
+          title: 'سلطانة في السرير، ملكة في الحياة 👑',
+          description: 'للسلطانات اللواتي يعشقن النوم العميق ببيجامات الحرير المطرزة يدوياً.',
+          imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
+          category: 'meme',
+          sharesCount: 142
+        },
+        {
+          id: 'sulta-s1',
+          title: 'ريلاكس يا عمري.. صولا تعتني بكِ 🌸',
+          description: 'شعار العناية الخاص بالملصقات الرسمية المرفقة بعلب المنتجات الفاخرة.',
+          imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop',
+          category: 'sticker',
+          sharesCount: 389
+        },
+        {
+          id: 'sulta-m2',
+          title: 'عندما تكون بيجامتكِ أغلى من مستقبلي 💅',
+          description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الإيطالي صالون صولا.',
+          imageUrl: 'https://images.unsplash.com/photo-1549046486-3a62df998e36?q=80&w=600&auto=format&fit=crop',
+          category: 'meme',
+          sharesCount: 228
+        },
+        {
+          id: 'sulta-s2',
+          title: 'سحر الملمس الإيطالي الفاتن ✨',
+          description: 'تحذير ملكي: القطعة ناعمة جداً لدرجة تخدر الحواس فور ملامستها للبشرة.',
+          imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600&auto=format&fit=crop',
+          category: 'sticker',
+          sharesCount: 512
+        }
+      ]);
+    };
+    loadStickers();
+  }, []);
+
+  const handleAddSticker = () => {
+    if (!newStickerTitle || !newStickerImg) {
+      alert("يرجى ملئ العنوان والروابط لصور الملصقات!");
+      return;
+    }
+    const newItem = {
+      id: 'sticker-' + Date.now(),
+      title: newStickerTitle,
+      description: newStickerDesc || 'ملصق لطيف من صالون صولا',
+      imageUrl: newStickerImg,
+      category: newStickerCat,
+      sharesCount: Math.floor(Math.random() * 50) + 12
+    };
+    setManagedStickers([...managedStickers, newItem]);
+    setNewStickerTitle('');
+    setNewStickerDesc('');
+    setNewStickerImg('');
+  };
+
+  const handleRemoveSticker = (id: string) => {
+    setManagedStickers(managedStickers.filter(s => s.id !== id));
+  };
+
+  const handleSaveStickersToDB = async () => {
+    try {
+      setSavingStickers(true);
+      const { error } = await supabase.from('homepage_sections').upsert([{
+        section_key: 'sulta_stickers_memes_v2',
+        content_json: managedStickers,
+        active: true
+      }], { onConflict: 'section_key' });
+      if (error) {
+        alert("حدثت مشكلة أثناء الحفظ: " + error.message);
+      } else {
+        alert("تم حفظ ومزامنة جميع ملصقات وميمز صولا بنجاح مع السحاب! 🎉");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("فشل التخزين التقني للملصقات سحابياً.");
+    } finally {
+      setSavingStickers(false);
+    }
+  };
 
   // --- LIVE STATISTICS FOR REVOLUTIONARY REAL BRAND OVERVIEW ---
   const [realProducts, setRealProducts] = useState<any[]>([]);
@@ -662,7 +769,8 @@ export default function AdminMarketingCenter() {
           { id: 'seo', icon: Chrome, label: 'سيو SULTA والميتا 🔍' },
           { id: 'ugc', icon: Eye, label: 'إدارة أصول المستخدمين (UGC) 📷' },
           { id: 'ai', icon: Sparkles, label: 'مساعد المحتوى الذكي 🤖' },
-          { id: 'health', icon: AlertTriangle, label: 'مراقب صحة التسويق 🩺' }
+          { id: 'health', icon: AlertTriangle, label: 'مراقب صحة التسويق 🩺' },
+          { id: 'stickers_memes', icon: Smile, label: 'ملصقات وميمز SULTA 🎭' }
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -1784,6 +1892,138 @@ export default function AdminMarketingCenter() {
                 <span className="text-blue-600 font-bold">نشط 100%</span>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 13: STICKERS AND MEMES CONTROL ROOM */}
+      {activeTab === 'stickers_memes' && (
+        <div className="space-y-6 animate-fade-in-rapid text-right font-sans">
+          <div className="bg-white border border-gray-150 rounded-3xl p-6 shadow-xs">
+            <h3 className="font-serif text-xl font-bold text-gray-950 mb-2 flex items-center gap-2 justify-start">
+              <Smile className="text-[#A44C5C]" size={20} />
+              إدارة وملصقات وميمز SULTA الملكية 🎭
+            </h3>
+            <p className="text-gray-400 text-xs mt-1 leading-relaxed">
+              هنا يمكنك إضافة ميمز طريفة أو ملصقات رسمية لعرضها في معرض الواجهة الأمامية للعملاء لتسهيل الضحك الفاخر وتثبيت ملصقات تعبئة على هواتفهم أو سحبها لمجموعات التواصل.
+            </p>
+
+            {/* Upload/Add Form */}
+            <div className="mt-6 p-5 bg-stone-50 rounded-2xl border border-stone-150 space-y-4">
+              <h4 className="text-xs font-black text-[#A44C5C] text-right">➕ إضافة ملصق أو ميمز جديد للصالون:</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div>
+                  <label className="block text-stone-500 mb-1 font-bold text-right">العنوان الملكي للملصق</label>
+                  <input
+                    type="text"
+                    value={newStickerTitle}
+                    onChange={(e) => setNewStickerTitle(e.target.value)}
+                    placeholder="مثال: ريلاكس يا عمري.. صولا تعتني بكِ 🌸"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-500 mb-1 font-bold text-right">الوصف التسويقي أو الفكاهي</label>
+                  <input
+                    type="text"
+                    value={newStickerDesc}
+                    onChange={(e) => setNewStickerDesc(e.target.value)}
+                    placeholder="مثال: ملصقات علب التعبئة الفاخرة..."
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-500 mb-1 font-bold text-right">رابط صورة الملصق (JPG/PNG/WebP)</label>
+                  <input
+                    type="text"
+                    value={newStickerImg}
+                    onChange={(e) => setNewStickerImg(e.target.value)}
+                    placeholder="أدخل رابط صورة مباشر من Unsplash أو غيرها..."
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs items-center">
+                <div>
+                  <label className="block text-stone-500 mb-1 font-bold text-right">التصنيف الإبداعي</label>
+                  <select
+                    value={newStickerCat}
+                    onChange={(e) => setNewStickerCat(e.target.value as any)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                  >
+                    <option value="sticker">ملصق علبة ورقية 🏷️</option>
+                    <option value="meme">ميمز فكاهة الصالون 🎭</option>
+                  </select>
+                </div>
+                <div className="flex gap-2 justify-end pt-5">
+                  <button
+                    onClick={handleAddSticker}
+                    disabled={savingStickers}
+                    className="bg-[#A44C5C] hover:bg-[#DF8A9D] text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Plus size={14} />
+                    <span>{savingStickers ? 'جاري الإضافة...' : 'إضافة للصالون الملكي'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* List and manage grid of current stickers */}
+            <div className="mt-8 space-y-4">
+              <h4 className="text-xs font-black text-stone-700 text-right">📋 الملصقات والميمز المنشورة حالياً ({managedStickers.length}):</h4>
+              
+              {managedStickers.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {managedStickers.map((item, index) => (
+                    <div key={item.id || index} className="bg-stone-50 p-3 rounded-2xl border border-stone-150 space-y-3 relative text-right flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-32 object-cover rounded-xl bg-white border border-stone-200 animate-fade-in-rapid"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div>
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.category === 'sticker' ? 'bg-amber-100 text-amber-800' : 'bg-pink-100 text-pink-800'}`}>
+                            {item.category === 'sticker' ? 'ملصق' : 'ميمز'}
+                          </span>
+                          <h5 className="font-bold text-xs mt-1 text-gray-800 line-clamp-1">{item.title}</h5>
+                          <p className="text-[10px] text-gray-500 line-clamp-2 leading-relaxed">{item.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-2 border-t border-stone-200 text-stone-400 text-[10px]">
+                        <span>❤ {item.sharesCount || 0} مشارك</span>
+                        <button
+                          onClick={() => handleRemoveSticker(item.id)}
+                          className="p-1 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="حذف هذا الملصق"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-stone-50 border border-stone-150 rounded-2xl text-xs text-stone-400">
+                  لا توجد ملصقات مخصصة مضافة حالياً. يرجى تزويد الصالون بعناصر لطيفة!
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2 pt-4 border-t border-gray-100">
+              <button
+                onClick={handleSaveStickersToDB}
+                disabled={savingStickers}
+                className="bg-black hover:bg-zinc-800 text-[#F6E7A6] text-xs font-bold px-6 py-3 rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-2"
+              >
+                <Save size={14} />
+                <span>💾 حفظ ومزامنة جميع التعديلات سحابياً</span>
+              </button>
+            </div>
+
           </div>
         </div>
       )}

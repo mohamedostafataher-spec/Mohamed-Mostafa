@@ -14,6 +14,7 @@ import SupportCenterAdmin from './SupportCenterAdmin';
 import CustomerExperienceDashboard from './CustomerExperienceDashboard';
 import AdminMarketingCenter from './AdminMarketingCenter';
 import AdminExperienceCenter from './AdminExperienceCenter';
+import AdminPackagingCenter from './AdminPackagingCenter';
 import SalesByRegionChart from './SalesByRegionChart';
 import ExecutiveCommandCenter from './ExecutiveCommandCenter';
 
@@ -1378,7 +1379,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center' | 'packaging_center'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
   const [copiedOrderIds, setCopiedOrderIds] = useState<Record<string, boolean>>({});
@@ -2844,6 +2845,16 @@ export default function Dashboard({
             >
               <Sparkles size={16} />
               <span>صالون وإدارة التجربة الملكية ✦</span>
+            </button>
+
+            <button
+              onClick={() => setActiveMenu('packaging_center')}
+              className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
+                activeMenu === 'packaging_center' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <Palette size={16} className="text-[#A44C5C]" />
+              <span>🎀 مركز تصميم التغليف الفاخر (Packaging)</span>
             </button>
 
             <button
@@ -4504,6 +4515,10 @@ export default function Dashboard({
                 alert(msg);
               }}
             />
+          )}
+
+          {activeMenu === 'packaging_center' && (
+            <AdminPackagingCenter products={products} setProducts={setProducts} />
           )}
 
           {activeMenu === 'homepage' && (

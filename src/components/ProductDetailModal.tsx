@@ -5,6 +5,7 @@ import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
 import { PACKAGING_INFO } from '../data';
 import { dbService, cleanImgUrl } from '../services/db';
+import { ProductPrice } from './ProductPrice';
 import RealPackagingPreview from './RealPackagingPreview';
 import SmartRecommendations from './SmartRecommendations';
 
@@ -990,9 +991,9 @@ export default function ProductDetailModal({
             <span className="font-serif italic text-xs text-gray-400 block mb-3 text-right">{product.nameEn}</span>
 
             <div className="flex items-baseline gap-2 mb-4 justify-between flex-row-reverse">
-              <span className="text-lg md:text-2xl font-semibold text-[#0B0B0B] font-sans tracking-tight">
-                {price.toLocaleString()} {currencyLabel}
-              </span>
+              <div className="text-right">
+                <ProductPrice product={product} country={country} size="lg" showBadge={true} />
+              </div>
               {product.stock <= 5 && (
                 <span className="text-red-500 text-[10px] font-semibold font-sans bg-red-50 border border-red-200 px-2 py-0.5 rounded-md animate-pulse">
                   متبقي {product.stock} قطع فقط في مخازننا!

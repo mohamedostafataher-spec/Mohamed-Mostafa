@@ -247,7 +247,7 @@ export default function ExecutiveCommandCenter({
       case 'global_ready':
         return (
           <div className="animate-fade-in-rapid">
-            <GlobalSystemConfig settings={settings} onSaveComplete={onRefreshData} />
+            <GlobalSystemConfig settings={settings} onSaveComplete={onRefreshData} products={products} />
           </div>
         );
       default:

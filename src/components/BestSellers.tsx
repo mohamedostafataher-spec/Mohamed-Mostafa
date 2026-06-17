@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, Heart, TrendingUp, Sparkles, Award } from 'lucide-react';
 import { Product } from '../types';
 import { cleanImgUrl } from '../services/db';
+import { ProductPrice } from './ProductPrice';
 
 interface BestSellersProps {
   products: Product[];
@@ -92,10 +93,9 @@ export default function BestSellers({
                 <p className="text-[10px] text-gray-400 max-w-xs font-sans line-clamp-1">
                   {prod.descriptionAr || 'نسيج فاخر يجمع بين دفء الأجواء وأناقة المظهر لراحة لا تضاهى'}
                 </p>
-                <div className="pt-2 text-[#A44C5C] font-semibold text-xs md:text-sm font-sans flex items-center gap-1.5">
-                  <span>{priceVal.toLocaleString()} {currencyLabel}</span>
-                  <span className="text-gray-300 text-3xs font-normal">|</span>
-                  <span className="text-[10px] font-medium text-gray-500 font-sans">تسوقي القطعة ←</span>
+                <div className="pt-1.5 flex flex-col items-center">
+                  <ProductPrice product={prod} country={country} size="sm" showBadge={true} />
+                  <span className="text-[9px] font-medium text-[#A44C5C] font-sans mt-2 hover:underline">تسوقي القطعة الفاخرة ←</span>
                 </div>
               </div>
             </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, Heart, Flame, Sparkles } from 'lucide-react';
 import { Product } from '../types';
 import { cleanImgUrl } from '../services/db';
+import { ProductPrice } from './ProductPrice';
 
 interface TrendingNowProps {
   products: Product[];
@@ -97,9 +98,9 @@ export default function TrendingNow({
                   <h4 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
                     {country === 'EG' ? prod.nameAr : prod.nameEn}
                   </h4>
-                  <span className="font-sans font-bold text-3xs sm:text-2xs md:text-xs text-[#A44C5C]">
-                    {priceVal.toLocaleString()} {currencyLabel}
-                  </span>
+                  <div className="mt-1.5 flex flex-col items-center">
+                    <ProductPrice product={prod} country={country} size="sm" showBadge={true} />
+                  </div>
                 </div>
               </div>
             );

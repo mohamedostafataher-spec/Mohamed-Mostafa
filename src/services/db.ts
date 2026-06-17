@@ -337,7 +337,11 @@ function mapSettings(data: any): Settings {
     snapchatPixelId: data.snapchat_pixel_id,
     tiktokPixelId: data.tiktok_pixel_id,
     shippingRates: Array.isArray(data.shipping_rates) ? data.shipping_rates : (data.shipping_rates ? JSON.parse(data.shipping_rates) : []),
-    defaultShippingFee: Number(data.default_shipping_fee ?? 0)
+    defaultShippingFee: Number(data.default_shipping_fee ?? 0),
+    egDefaultCoupon: data.egDefaultCoupon || data.eg_default_coupon,
+    saDefaultCoupon: data.saDefaultCoupon || data.sa_default_coupon,
+    egExclusiveProductIds: data.egExclusiveProductIds || data.eg_exclusive_product_ids ? (Array.isArray(data.egExclusiveProductIds || data.eg_exclusive_product_ids) ? (data.egExclusiveProductIds || data.eg_exclusive_product_ids) : JSON.parse(data.egExclusiveProductIds || data.eg_exclusive_product_ids)) : [],
+    saExclusiveProductIds: data.saExclusiveProductIds || data.sa_exclusive_product_ids ? (Array.isArray(data.saExclusiveProductIds || data.sa_exclusive_product_ids) ? (data.sa_exclusive_product_ids || data.sa_exclusive_product_ids) : JSON.parse(data.sa_exclusive_product_ids || data.sa_exclusive_product_ids)) : []
   };
 }
 
@@ -646,37 +650,107 @@ export const dbService = {
   },
 
   getSettings: async (): Promise<Settings | null> => {
-    const { data, error } = await supabase.from('settings').select('*').limit(1).single();
-    if (error) return null;
-    if (data) {
-      let needsUpdate = false;
-      const updatePayload: any = {};
+    let settingsObj: Settings | null = null;
+    try {
+      const { data, error } = await supabase.from('settings').select('*').limit(1).single();
+      if (data) {
+        let needsUpdate = false;
+        const updatePayload: any = {};
 
-      if (data.site_name && data.site_name.toLowerCase().includes('zoria')) {
-        const cleanedSiteName = data.site_name.replace(/zoria/ig, 'SULTA');
-        updatePayload.site_name = cleanedSiteName;
-        data.site_name = cleanedSiteName;
-        needsUpdate = true;
-      }
+        if (data.site_name && data.site_name.toLowerCase().includes('zoria')) {
+          const cleanedSiteName = data.site_name.replace(/zoria/ig, 'SULTA');
+          updatePayload.site_name = cleanedSiteName;
+          data.site_name = cleanedSiteName;
+          needsUpdate = true;
+        }
 
-      if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500')) {
-        const fixedWhatsapp = '201110095403';
-        const fixedPhone = '+201110095403';
-        updatePayload.whatsapp = fixedWhatsapp;
-        updatePayload.contact_phone = fixedPhone;
-        data.whatsapp = fixedWhatsapp;
-        data.contact_phone = fixedPhone;
-        needsUpdate = true;
-      }
+        if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500')) {
+          const fixedWhatsapp = '201110095403';
+          const fixedPhone = '+201110095403';
+          updatePayload.whatsapp = fixedWhatsapp;
+          updatePayload.contact_phone = fixedPhone;
+          data.whatsapp = fixedWhatsapp;
+          data.contact_phone = fixedPhone;
+          needsUpdate = true;
+        }
 
-      if (needsUpdate) {
-        await supabase.from('settings').update(updatePayload).eq('id', data.id);
+        if (needsUpdate) {
+          await supabase.from('settings').update(updatePayload).eq('id', data.id);
+        }
+        settingsObj = mapSettings(data);
       }
+    } catch (e) {
+      console.warn("Could not load database settings:", e);
     }
-    return data ? mapSettings(data) : null;
+
+    if (!settingsObj) {
+      settingsObj = {
+        siteName: 'SULTA',
+        contactPhone: '+20 111 009 5403',
+        whatsapp: '201110095403',
+        contactEmail: 'support@sulta-atelier.com',
+        shippingRates: [
+          { regionAr: 'شحن موحد لجميع محافظات مصر 🇪🇬', regionEn: 'Egypt Flat Shipping Rate', fee: 100 },
+          { regionAr: 'شحن موحد لجميع مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Flat Shipping Rate', fee: 50 }
+        ],
+        defaultShippingFee: 45,
+        instagram: '',
+        facebook: '',
+        tiktok: ''
+      };
+    }
+
+    // Now, load dynamic localization fields from general_settings_global_v2
+    try {
+      const { data: sectionData } = await supabase.from('homepage_sections').select('content_json').eq('section_key', 'general_settings_global_v2').limit(1).single();
+      if (sectionData && sectionData.content_json) {
+        const extra = typeof sectionData.content_json === 'string' ? JSON.parse(sectionData.content_json) : sectionData.content_json;
+        if (extra) {
+          settingsObj = {
+            ...settingsObj,
+            ...extra
+          };
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load extended localization settings from Supabase, relying on localStorage:", e);
+    }
+
+    try {
+      const fallback = localStorage.getItem('sulta_extended_settings');
+      if (fallback) {
+        settingsObj = {
+          ...settingsObj,
+          ...JSON.parse(fallback)
+        };
+      }
+    } catch(e) {}
+
+    return settingsObj;
   },
 
   updateSettings: async (settings: Partial<Settings>): Promise<boolean> => {
+    try {
+      // Save extended settings to localStorage for performance & client-side access
+      localStorage.setItem('sulta_extended_settings', JSON.stringify({
+        egDefaultCoupon: settings.egDefaultCoupon,
+        saDefaultCoupon: settings.saDefaultCoupon,
+        egExclusiveProductIds: settings.egExclusiveProductIds,
+        saExclusiveProductIds: settings.saExclusiveProductIds,
+      }));
+    } catch(e) {}
+
+    try {
+      // Save to homepage_sections so that it remains fully persisted and synchronized
+      await supabase.from('homepage_sections').upsert([{
+        section_key: 'general_settings_global_v2',
+        content_json: settings,
+        active: true
+      }], { onConflict: 'section_key' });
+    } catch(e) {
+      console.warn("Error upserting settings section key:", e);
+    }
+
     try {
       const { data: existing } = await supabase.from('settings').select('id').limit(1).single();
       

@@ -50,6 +50,10 @@ export interface Settings {
   shippingRates?: ShippingRate[];
   currency?: string;
   defaultShippingFee?: number;
+  egDefaultCoupon?: string;
+  saDefaultCoupon?: string;
+  egExclusiveProductIds?: string[];
+  saExclusiveProductIds?: string[];
 }
 
 export interface Product {

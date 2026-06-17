@@ -1,12 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Gift, ShieldCheck, Heart, Sparkles, Check, Paperclip, ChevronLeft, MailOpen } from 'lucide-react';
+import { supabase } from '../services/db';
 
 export default function RealPackagingPreview() {
   const [boxTheme, setBoxTheme] = useState<'rose' | 'black'>('rose');
   const [cardInitial, setCardInitial] = useState('S');
   const [activeTab, setActiveTab] = useState<'box' | 'card' | 'gift' | 'bag'>('box');
   const [spritzScent, setSpritzScent] = useState(false);
+  const [catalogItems, setCatalogItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadCatalog = async () => {
+      try {
+        const { data } = await supabase.from('homepage_sections').select('content_json').eq('section_key', 'sulta_luxury_packaging_v2').limit(1).single();
+        if (data && data.content_json) {
+          const parsed = typeof data.content_json === 'string' ? JSON.parse(data.content_json) : data.content_json;
+          if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+            setCatalogItems(parsed);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not query supabase for packaging experience showcase", e);
+      }
+      
+      // Fallback defaults
+      setCatalogItems([
+        {
+          id: 'rose-box',
+          titleAr: 'طرد وردي الحواس الملكي الأول',
+          descAr: 'العلبة الوردية الناعمة برباط روز ريبون المعالج يدوياً وكرت الشمع الملكي مصبوب النحاس.',
+          url: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1200&auto=format&fit=crop',
+          tag: 'الأكثر طلباً 🌸'
+        },
+        {
+          id: 'black-matte',
+          titleAr: 'علبة الأرستقراطية الليلية السوداء',
+          descAr: 'العلبة السوداء المطلية بلمسة مخملية مطفية عازلة مع شعار مبصوم من الذهب عيار ٢٤ قيراط.',
+          url: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop',
+          tag: 'طبعة كبّار والشخصيات الفاخرة ✨'
+        },
+        {
+          id: 'white-gold',
+          titleAr: 'الباقة الكريستالية المضيئة',
+          descAr: 'علبة العيد والمناسبات البيضاء الموشحة بخيوط الروز والذهبي، مصممة لحفلات الزواج وصالون العرائس.',
+          url: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1200&auto=format&fit=crop',
+          tag: 'عروس صولا الفخمة ⚜️'
+        },
+        {
+          id: 'silk-wrap',
+          titleAr: 'لفات مناديل الحرير الفلورال',
+          descAr: 'لفائف مناديل حمائية حريرية ناعمة تحيط ببيجامتكِ الفاخرة بعبق عطر رويال مسك البولندي.',
+          url: 'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=1200&auto=format&fit=crop',
+          tag: 'تكييف داخلي معبق 🏵️'
+        }
+      ]);
+    };
+    loadCatalog();
+  }, []);
 
   const boxDetails = {
     rose: {
@@ -361,6 +413,66 @@ export default function RealPackagingPreview() {
 
         </div>
 
+      </div>
+
+      {/* Premium Downloadable Packaging Photo Catalog Section added per user request */}
+      <div className="border-t border-gray-100 pt-8 mt-12 bg-stone-50/30 p-6 rounded-3.5xl">
+        <h4 className="font-serif text-lg font-bold text-gray-950 mb-2 flex items-center justify-start gap-2 flex-row-reverse text-right">
+          <span>ألبوم صور التغليف كوتور الجاهزة للتحميل (High-Res Downloads)</span>
+          <span className="text-sm">📸</span>
+        </h4>
+        <p className="text-xs text-gray-500 mb-6 max-w-2xl leading-relaxed text-right">
+          نقدم لكِ هنا لقطات ومراجع حية لعلب الهدايا والصناديق لتتمكني من تحميلها ومشاركتها مع أحبابكِ قبل اختيار البيجامة الملكية. انقري على التحميل لحفظ الصورة بدقة عالية.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {catalogItems.map((item, idx) => (
+            <div 
+              key={item.id || idx} 
+              className="group bg-white rounded-3xl border border-stone-150 p-3 flex flex-col justify-between hover:shadow-lg transition-all duration-300 hover:border-[#A44C5C]/20 text-right"
+            >
+              <div>
+                {/* Image Frame */}
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-50 mb-3.5">
+                  <img 
+                    src={item.url} 
+                    alt={item.titleAr} 
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-xs text-white text-[9px] font-sans font-semibold px-2 py-0.5 rounded-full select-none">
+                    {item.tag}
+                  </div>
+                </div>
+
+                {/* Info Text */}
+                <h5 className="font-sans font-bold text-xs text-gray-950 mb-1">{item.titleAr}</h5>
+                <p className="text-[10px] text-gray-400 leading-relaxed mb-4">{item.descAr}</p>
+              </div>
+
+              {/* Download CTA triggers download dynamically */}
+              <div className="flex gap-2">
+                <button 
+                  className="flex-1 bg-[#FAF3F4] text-[#A44C5C] hover:bg-[#A44C5C] hover:text-white border border-[#A44C5C]/10 py-1.5 rounded-xl font-bold font-sans transition-all text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer uppercase select-none"
+                  onClick={() => {
+                    window.open(item.url, '_blank');
+                  }}
+                >
+                  📥 تحميل الصورة
+                </button>
+                <button
+                  onClick={() => {
+                    window.open(item.url, '_blank');
+                  }}
+                  className="bg-stone-50 border border-stone-200 hover:bg-stone-100 p-1.5 rounded-xl text-stone-500 hover:text-gray-800 transition-colors cursor-pointer"
+                  title="عرض مكبر"
+                >
+                  🔍
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Country, Category } from '../types';
 import StyleAssistant from './StyleAssistant';
+import { ProductPrice } from './ProductPrice';
 import { cleanImgUrl } from '../services/db';
 
 interface StoreViewProps {
@@ -726,10 +727,8 @@ export default function StoreView({
                           
                           {/* Price Tag with local Currency */}
                           <div className="flex flex-col text-right">
-                            <span className="font-sans font-bold text-xs sm:text-sm text-[#A44C5C]">
-                              {currentPrice.toLocaleString()} {currencyLabel}
-                            </span>
-                            <span className="text-[8px] text-gray-400 font-sans">معفى من الرسوم الإضافية</span>
+                            <ProductPrice product={product} country={country} size="sm" showBadge={true} />
+                            <span className="text-[8px] text-gray-400 font-sans mt-0.5">معفى من الرسوم الإضافية</span>
                           </div>
 
                           {/* Quick Add To Cart Instant Circle Button */}
@@ -859,11 +858,9 @@ export default function StoreView({
                     </h2>
 
                     {/* Price tag */}
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-sans font-bold text-[#A44C5C]">
-                        {(country === 'EG' ? quickViewProduct.priceEG : quickViewProduct.priceSA).toLocaleString()} {country === 'EG' ? 'EGP' : 'SAR'}
-                      </span>
-                      <span className="text-[9px] text-[#c5a059] border border-[#c5a059]/35 px-1.5 py-0.5 font-bold">
+                    <div className="flex items-baseline gap-4 flex-row-reverse justify-end">
+                      <ProductPrice product={quickViewProduct} country={country} size="md" showBadge={true} />
+                      <span className="text-[9px] text-[#c5a059] border border-[#c5a059]/35 px-1.5 py-0.5 font-bold rounded">
                         صندوق فاخر مجاني 🎁
                       </span>
                     </div>
@@ -991,9 +988,9 @@ export default function StoreView({
                     />
                   </div>
                   <h4 className="font-sans text-[10px] font-bold text-gray-800 truncate text-right line-clamp-1">{item.nameAr}</h4>
-                  <span className="font-sans text-3xs text-gray-500 text-right">
-                    {(country === 'EG' ? item.priceEG : item.priceSA).toLocaleString()} {country === 'EG' ? 'EGP' : 'SAR'}
-                  </span>
+                  <div className="text-right mt-0.5">
+                    <ProductPrice product={item} country={country} size="sm" showBadge={false} />
+                  </div>
                 </div>
               ))}
             </div>

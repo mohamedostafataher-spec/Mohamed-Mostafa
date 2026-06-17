@@ -2,6 +2,7 @@ import React from 'react';
 import { ShieldCheck, Heart, Sparkles, Star, Zap } from 'lucide-react';
 import { Product } from '../types';
 import { cleanImgUrl } from '../services/db';
+import { ProductPrice } from './ProductPrice';
 
 interface LimitedPiecesProps {
   products: Product[];
@@ -105,8 +106,8 @@ export default function LimitedPieces({
                     <p className="text-[10px] text-gray-400 font-sans mt-0.5 line-clamp-1">
                       {prod.descriptionAr || 'تصميم محكم التفاصيل بحرير دوج ناعم وأكمام مطوقة بالدانتيل'}
                     </p>
-                    <div className="text-[#A44C5C] font-semibold text-xs md:text-sm font-sans mt-2">
-                      {priceVal.toLocaleString()} {currencyLabel}
+                    <div className="mt-2.5 flex flex-col items-center">
+                      <ProductPrice product={prod} country={country} size="sm" showBadge={true} />
                     </div>
                   </div>
                 </div>

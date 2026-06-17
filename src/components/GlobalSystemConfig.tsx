@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Truck, Coins, ShieldCheck, Save, RefreshCw, Smartphone, Globe, Landmark } from 'lucide-react';
-import { Settings, ShippingRate } from '../types';
+import { Truck, Coins, ShieldCheck, Save, RefreshCw, Smartphone, Globe, Landmark, Sparkles } from 'lucide-react';
+import { Settings, ShippingRate, Product } from '../types';
 import { dbService } from '../services/db';
 
 interface GlobalSystemConfigProps {
   settings?: Settings;
   onSaveComplete?: () => void;
+  products?: Product[];
 }
 
 export default function GlobalSystemConfig({
   settings,
   onSaveComplete,
+  products = [],
 }: GlobalSystemConfigProps) {
   const [saving, setSaving] = useState(false);
   
@@ -21,6 +23,12 @@ export default function GlobalSystemConfig({
   const [whatsapp, setWhatsapp] = useState('');
   const [instagram, setInstagram] = useState('');
   const [siteName, setSiteName] = useState('SULTA');
+
+  // Country specific states
+  const [egDefaultCoupon, setEgDefaultCoupon] = useState('');
+  const [saDefaultCoupon, setSaDefaultCoupon] = useState('');
+  const [egExclusiveProductIds, setEgExclusiveProductIds] = useState<string[]>([]);
+  const [saExclusiveProductIds, setSaExclusiveProductIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (settings) {
@@ -33,6 +41,11 @@ export default function GlobalSystemConfig({
       setWhatsapp(settings.whatsapp || '');
       setInstagram(settings.instagram || '');
       setSiteName(settings.siteName || 'SULTA');
+
+      setEgDefaultCoupon(settings.egDefaultCoupon || '');
+      setSaDefaultCoupon(settings.saDefaultCoupon || '');
+      setEgExclusiveProductIds(settings.egExclusiveProductIds || []);
+      setSaExclusiveProductIds(settings.saExclusiveProductIds || []);
     }
   }, [settings]);
 
@@ -49,10 +62,13 @@ export default function GlobalSystemConfig({
         contactPhone,
         whatsapp,
         instagram,
+        egDefaultCoupon,
+        saDefaultCoupon,
+        egExclusiveProductIds,
+        saExclusiveProductIds,
       };
 
       const success = await dbService.saveHomepageSection('general_settings_global_v2', payload);
-      // Fallback update to settings object in supabase using the default save system
       const dbSuccess = await dbService.saveHomepageSection('settings', payload);
 
       if (success || dbSuccess) {
@@ -176,6 +192,117 @@ export default function GlobalSystemConfig({
                   className="w-full bg-gray-50 border border-gray-150 rounded-xl px-4 py-2.5 text-xs text-left"
                   dir="ltr"
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Country-specific Virtual Coupon Codes & Exclusive Product Groups */}
+        <div className="border-t border-gray-150 pt-6 mt-6 space-y-6">
+          <h4 className="text-sm font-bold text-gray-800 flex items-center gap-2 justify-start font-serif">
+            <Sparkles size={16} className="text-[#A44C5C]" />
+            <span>العروض والمنتجات الحصرية المخصصة حسب الدول 🇸🇦 🇪🇬</span>
+          </h4>
+          <p className="text-xs text-gray-400">
+            أدخل هنا الكود المخصص الذي يتم تطبيقه تلقائياً للزوار بمجرد التعرف على دولتهم، وحدد المنتجات الحصرية التي تظهر وتتوفر فقط لعملاء هذه الدولة.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Egypt Specific Section */}
+            <div className="p-5 bg-stone-50 rounded-2xl border border-stone-150 space-y-4 text-right">
+              <div className="flex items-center gap-1.5 font-bold text-[#A44C5C] justify-start">
+                <span className="text-base">🇪🇬</span>
+                <span>تخصيص زوار جمهورية مصر العربية</span>
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-stone-500 mb-1 font-bold text-right">كود الخصم الافتراضي التلقائي لمصر</label>
+                <input
+                  type="text"
+                  value={egDefaultCoupon}
+                  onChange={(e) => setEgDefaultCoupon(e.target.value.toUpperCase())}
+                  placeholder="مثال: EGYPT20"
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-sans text-center"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-stone-500 mb-1 font-bold text-right">المنتجات الحصرية لمصر (تظهر فقط لزوار مصر)</label>
+                <div className="bg-white border border-gray-150 rounded-xl p-3 max-h-48 overflow-y-auto space-y-2 text-xs">
+                  {products && products.length > 0 ? (
+                    products.map((p) => {
+                      const checked = egExclusiveProductIds.includes(p.id);
+                      return (
+                        <label key={p.id} className="flex items-center gap-2 cursor-pointer hover:bg-stone-50 p-1.5 rounded justify-start">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              if (checked) {
+                                setEgExclusiveProductIds(egExclusiveProductIds.filter(id => id !== p.id));
+                              } else {
+                                setEgExclusiveProductIds([...egExclusiveProductIds, p.id]);
+                              }
+                            }}
+                            className="rounded border-gray-300 text-[#A44C5C] focus:ring-[#A44C5C]"
+                          />
+                          <span className="truncate">{p.nameAr || p.nameEn}</span>
+                        </label>
+                      );
+                    })
+                  ) : (
+                    <span className="text-[10px] text-gray-400 block text-center py-2">لا توجد منتجات متطابقة</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Saudi Arabia Specific Section */}
+            <div className="p-5 bg-stone-50 rounded-2xl border border-stone-150 space-y-4 text-right">
+              <div className="flex items-center gap-1.5 font-bold text-[#A44C5C] justify-start">
+                <span className="text-base">🇸🇦</span>
+                <span>تخصيص زوار المملكة العربية السعودية</span>
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-stone-500 mb-1 font-bold text-right">كود الخصم الافتراضي التلقائي للسعودية</label>
+                <input
+                  type="text"
+                  value={saDefaultCoupon}
+                  onChange={(e) => setSaDefaultCoupon(e.target.value.toUpperCase())}
+                  placeholder="مثال: KSA15"
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-sans text-center"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-stone-500 mb-1 font-bold text-right">المنتجات الحصرية للسعودية (تظهر فقط لزوار السعودية)</label>
+                <div className="bg-white border border-gray-150 rounded-xl p-3 max-h-48 overflow-y-auto space-y-2 text-xs">
+                  {products && products.length > 0 ? (
+                    products.map((p) => {
+                      const checked = saExclusiveProductIds.includes(p.id);
+                      return (
+                        <label key={p.id} className="flex items-center gap-2 cursor-pointer hover:bg-stone-50 p-1.5 rounded justify-start">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              if (checked) {
+                                setSaExclusiveProductIds(saExclusiveProductIds.filter(id => id !== p.id));
+                              } else {
+                                setSaExclusiveProductIds([...saExclusiveProductIds, p.id]);
+                              }
+                            }}
+                            className="rounded border-gray-300 text-[#A44C5C] focus:ring-[#A44C5C]"
+                          />
+                          <span className="truncate">{p.nameAr || p.nameEn}</span>
+                        </label>
+                      );
+                    })
+                  ) : (
+                    <span className="text-[10px] text-gray-400 block text-center py-2">لا توجد منتجات متطابقة</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
