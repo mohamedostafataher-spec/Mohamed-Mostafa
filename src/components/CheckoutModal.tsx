@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, CreditCard, ShieldCheck, CheckCircle, Smartphone, Truck, ArrowRight, ArrowLeft, Gift, Sparkles, Send, Box, Award, Check } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { dbService } from '../services/db';
+import { agentSystem } from '../services/agentSystem';
 
 interface CheckoutModalProps {
   country: Country;
@@ -179,6 +180,13 @@ export default function CheckoutModal({
       };
 
       await dbService.saveOrder(newOrder);
+      
+      // Trigger SULTA Agent System automation
+      try {
+        await agentSystem.onOrderCreated(newOrder);
+      } catch (err) {
+        console.warn("Agent automation background error:", err);
+      }
       
       // Update stocks
       for (const item of cart) {

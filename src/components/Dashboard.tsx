@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2, X, Server, Radio, AlertTriangle, Shield, CheckCircle2, RefreshCw, Terminal, Monitor, Smartphone, Tablet as TabletIcon, Layout, FileText, Zap, ShieldAlert, ArrowLeft, ArrowRight, Heart } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Truck, Users, Percent, Sparkles, BarChart3, Plus, Trash2, ArrowUpRight, TrendingUp, DollarSign, Store, Activity, Check, Upload, Lock, LogOut, Settings as SettingsIcon, Palette, PenTool, LayoutTemplate, Link, Eye, ShoppingCart, Target, History, Edit2, X, Server, Radio, AlertTriangle, Shield, CheckCircle2, RefreshCw, Terminal, Monitor, Smartphone, Tablet as TabletIcon, Layout, FileText, Zap, ShieldAlert, ArrowLeft, ArrowRight, Heart, Cpu } from 'lucide-react';
 import { Product, Order, DiscountCoupon, Settings, Category, ShippingRate, Collection, CustomerProfile, Review } from '../types';
 import { dbService, supabase, cleanImgUrl } from '../services/db';
 import { getProductAnalytics } from '../utils/analytics';
@@ -15,6 +15,7 @@ import CustomerExperienceDashboard from './CustomerExperienceDashboard';
 import AdminMarketingCenter from './AdminMarketingCenter';
 import AdminExperienceCenter from './AdminExperienceCenter';
 import AdminPackagingCenter from './AdminPackagingCenter';
+import AdminAICenter from './AdminAICenter';
 import SalesByRegionChart from './SalesByRegionChart';
 import ExecutiveCommandCenter from './ExecutiveCommandCenter';
 
@@ -1379,7 +1380,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center' | 'packaging_center'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center' | 'packaging_center' | 'ai_center'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
   const [copiedOrderIds, setCopiedOrderIds] = useState<Record<string, boolean>>({});
@@ -2855,6 +2856,16 @@ export default function Dashboard({
             >
               <Palette size={16} className="text-[#A44C5C]" />
               <span>🎀 مركز تصميم التغليف الفاخر (Packaging)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveMenu('ai_center')}
+              className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
+                activeMenu === 'ai_center' ? 'bg-[#A44C5C] text-white shadow-xs' : 'hover:bg-pink-50 text-[#A44C5C]'
+              }`}
+            >
+              <Cpu size={16} className={activeMenu === 'ai_center' ? '' : 'animate-pulse text-[#A44C5C]'} />
+              <span>🤖 مركز الذكاء الاصطناعي (AI CENTER) ✦</span>
             </button>
 
             <button
@@ -4519,6 +4530,10 @@ export default function Dashboard({
 
           {activeMenu === 'packaging_center' && (
             <AdminPackagingCenter products={products} setProducts={setProducts} />
+          )}
+
+          {activeMenu === 'ai_center' && (
+            <AdminAICenter products={products} orders={orders} reviews={reviewsList} />
           )}
 
           {activeMenu === 'homepage' && (

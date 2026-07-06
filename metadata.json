@@ -1,6 +1,6 @@
 {
   "name": "Sulta Premium Sleepwear",
-  "description": "Sulta - Where Comfort Meets Elegance. A premium, minimalist international e-commerce experience for high-end pajamas, loungewear, and home wear in Egypt and Saudi Arabia.",
+  "description": "Sulta - Premium Sleepwear & Lounge Boutique. Featuring the SULTA ORDER AI AGENT SYSTEM for fully automated order tracking, delivery predictions, delayed alerts, customer satisfaction surveys, and AI-powered boutique customer assistance.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ArrowRight, Clock, Package, Truck, CheckCircle, 
   MapPin, CreditCard, Download, RefreshCw, MessageSquare, 
-  ShieldCheck, AlertTriangle, Printer, PhoneCall, Copy, Check, FileText, Star
+  ShieldCheck, AlertTriangle, Printer, PhoneCall, Copy, Check, FileText, Star,
+  Send, Upload, Sparkles, Award, Image as ImageIcon, CheckCircle2
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase, cleanImgUrl, dbService } from '../services/db';
-import { Order, Product, OrderStatus, Settings } from '../types';
+import { Order, Product, OrderStatus, Settings, Review } from '../types';
 import { jsPDF } from 'jspdf';
+import { agentSystem, VipCustomer } from '../services/agentSystem';
 
 interface OrderDetailViewProps {
   orderId: string;
@@ -38,6 +40,25 @@ export default function OrderDetailView({
     'الشحن': 5,
     'التجربة': 5
   });
+
+  // --- SULTA AI AGENT SYSTEMS STATES ---
+  const [vipCustomer, setVipCustomer] = useState<VipCustomer | null>(null);
+  const [prediction, setPrediction] = useState<any>(null);
+  const [isDelayed, setIsDelayed] = useState(false);
+  const [delayDays, setDelayDays] = useState(0);
+  
+  // AI Chatbot State
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Satisfaction Review Form State
+  const [satisfactionComment, setSatisfactionComment] = useState('');
+  const [satisfactionRating, setSatisfactionRating] = useState(5);
+  const [satisfactionPhoto, setSatisfactionPhoto] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [satisfactionUploading, setSatisfactionUploading] = useState(false);
 
   // Fetch shop settings to utilize the live dynamic WhatsApp number
   useEffect(() => {
@@ -198,6 +219,212 @@ export default function OrderDetailView({
       supabase.removeChannel(channel);
     };
   }, [orderId]);
+
+  // --- SULTA AI AGENT SYSTEMS INITIALIZATIONS ---
+  useEffect(() => {
+    if (!order) return;
+
+    // 1. Delivery Prediction AI
+    const pred = agentSystem.getDeliveryPrediction(order);
+    setPrediction(pred);
+
+    // 2. VIP Status Detection
+    const vips = agentSystem.getVipCustomers();
+    const matchedVip = vips.find(v => 
+      (order.phone && v.emailOrPhone.includes(order.phone)) || 
+      (order.customerName && v.customerName === order.customerName)
+    );
+    if (matchedVip) {
+      setVipCustomer(matchedVip);
+    } else {
+      // Try to check if eligible right now in background
+      agentSystem.checkVipPromotion(order.customerName, order.phone, '').then(isPromoted => {
+        if (isPromoted) {
+          const freshVips = agentSystem.getVipCustomers();
+          const freshVip = freshVips.find(v => v.customerName === order.customerName);
+          if (freshVip) setVipCustomer(freshVip);
+        }
+      });
+    }
+
+    // 3. Delayed Status Detection
+    if (order.status === 'pending' || order.status === 'processing') {
+      const orderDate = new Date(order.date || new Date());
+      const differenceInTime = new Date().getTime() - orderDate.getTime();
+      const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+      if (differenceInDays >= 2) {
+        setIsDelayed(true);
+        setDelayDays(Math.floor(differenceInDays));
+        // Verify delay log triggers
+        agentSystem.checkDelayedOrders([order]);
+      }
+    }
+
+    // 4. Chatbot Initial Welcome Greeting
+    setChatMessages([
+      {
+        id: 'welcome',
+        sender: 'ai',
+        text: `أهلاً بكِ يا أميرة SULTA الموقرة، ${order.customerName}! 🌸 أنا رفيقكِ الذكي لمساعد كوتور. ومستعد لمساعدتكِ فوراً في الإجابة عن أي استفسار يخص طلبيتكِ الفاخرة رقم #${order.id}. كيف يسعدني تدليل رغبات تساؤلاتكِ الكريمة اليوم؟ ✨`,
+        timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      }
+    ]);
+
+  }, [order]);
+
+  // Scroll chat messages to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const handleSendChatMessage = async (customMessage?: string) => {
+    const textToSend = customMessage || chatInput;
+    if (!textToSend.trim()) return;
+
+    const userMsg = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: textToSend,
+      timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setChatMessages(prev => [...prev, userMsg]);
+    if (!customMessage) setChatInput('');
+    setIsChatLoading(true);
+
+    try {
+      // Call server-side API proxy to hide Gemini API key safely
+      const response = await fetch('/api/ai/run-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentId: 'customer_support',
+          payload: {
+            message: textToSend,
+            customerContext: {
+              id: order?.id,
+              name: order?.customerName,
+              phone: order?.phone,
+              city: order?.city,
+              address: order?.address,
+              status: order?.status,
+              totalPrice: order?.totalPrice,
+              currency: order?.currency,
+              date: order?.date
+            },
+            productContext: order?.items?.map(it => ({
+              name: it.productName,
+              color: it.color,
+              size: it.size,
+              price: it.price
+            })) || []
+          }
+        })
+      });
+
+      const data = await response.json();
+      const aiReply = data.text || "نعتذر يا أميرتنا الموقرة، حدث أمر فني طارئ في مخدم الكوتور السحابي. يسعدنا دائماً خدمتكِ هاتفياً أو عبر الواتساب في حال تطلب الأمر.";
+
+      const aiMsg = {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: aiReply,
+        timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      setChatMessages(prev => [...prev, aiMsg]);
+
+      // Log activity to the owner's dashboard
+      agentSystem.addLog(
+        'analytics_agent',
+        'AI Customer Assistant',
+        `💬 تواصل نشط! تفاعلت العميلة ${order?.customerName} مع المساعد الذكي حول طلبيتها الاستفسار: "${textToSend.slice(0, 30)}..."`,
+        'info',
+        { question: textToSend, response: aiReply }
+      );
+
+    } catch (err) {
+      console.error("Chat message send failure:", err);
+      const errMsg = {
+        id: `ai-err-${Date.now()}`,
+        sender: 'ai',
+        text: "نعتذر للغاية عن هذا الانقطاع الفني الخارجي. يرجى إعادة إرسال رسالتك أو استخدام زر الدعم المباشر.",
+        timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      };
+      setChatMessages(prev => [...prev, errMsg]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  // --- REVIEW DRAG & DROP + SUBMIT HANDLERS ---
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelected(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileSelected(e.target.files[0]);
+    }
+  };
+
+  const handleFileSelected = (file: File) => {
+    setSatisfactionUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSatisfactionPhoto(reader.result as string);
+      setSatisfactionUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmitSatisfactionForm = async () => {
+    if (!order) return;
+    setSatisfactionUploading(true);
+    try {
+      const newReview: Review = {
+        id: `REV-${Date.now()}`,
+        username: order.customerName,
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop',
+        rating: satisfactionRating,
+        comment: satisfactionComment + (satisfactionPhoto ? ` [صورة مرفقة مضافة من العميل]` : ''),
+        date: new Date().toISOString().split('T')[0],
+        country: order.country === 'EG' ? 'مصر' : 'السعودية',
+        productName: order.items[0]?.productName || 'تصميم كوتور فاخر'
+      };
+
+      await dbService.saveReview(newReview);
+      setRatingSubmitted(true);
+
+      // Log in agent system
+      agentSystem.addLog(
+        'satisfaction_agent',
+        'Customer Satisfaction Agent',
+        `⭐ تم تقديم مراجعة تجربة عملاء لطلب ${order.id} من العميلة ${order.customerName} بتقييم ${satisfactionRating}/5 وصور مرفقة. تم الحفظ سحابياً في جدول Reviews.`,
+        'success',
+        newReview
+      );
+    } catch (err) {
+      console.error("Failed to save satisfaction review:", err);
+    } finally {
+      setSatisfactionUploading(false);
+    }
+  };
 
   // Copy order id handler
   const handleCopyId = () => {
@@ -652,6 +879,237 @@ export default function OrderDetailView({
         )}
       </div>
 
+      {/* --- SULTA AI AGENT SYSTEMS CENTER PANEL --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 text-right" dir="rtl">
+        
+        {/* Left/Middle Column (span 2 on desktop): SULTA AI Chat Support */}
+        <div className="lg:col-span-2 bg-[#0B0B0B] text-white p-6 rounded-3xl border border-[#3A3326] shadow-xl flex flex-col min-h-[460px] relative overflow-hidden">
+          {/* Subtle gold background glare effect */}
+          <div className="absolute top-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none" />
+          
+          <div className="flex justify-between items-center border-b border-white/10 pb-4 mb-4 flex-wrap gap-2 relative z-10">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#A44C5C] to-[#F6E7A6] flex items-center justify-center border border-white/25">
+                <Sparkles size={14} className="text-white animate-pulse" />
+              </div>
+              <div>
+                <h3 className="font-serif text-sm font-bold text-[#F6E7A6]">المساعد الذكي لبوتيك SULTA 👑</h3>
+                <p className="text-[10px] text-gray-400 font-sans">مستشار الكوتور الشخصي يعمل بالذكاء الاصطناعي التوليدي 24/7</p>
+              </div>
+            </div>
+            <span className="text-[9px] bg-[#A44C5C]/20 text-[#DF8A9C] px-2.5 py-1 rounded-full border border-[#A44C5C]/30 font-sans font-bold">
+              متصل بقاعدة البيانات مباشرة ●
+            </span>
+          </div>
+
+          {/* Message Thread container */}
+          <div className="flex-1 overflow-y-auto max-h-[260px] space-y-3.5 pr-1 mb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            {chatMessages.map((msg) => {
+              const isAi = msg.sender === 'ai';
+              return (
+                <div 
+                  key={msg.id} 
+                  className={`flex gap-3 items-start ${isAi ? 'flex-row' : 'flex-row-reverse'}`}
+                >
+                  <div className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center font-bold text-[10px] border
+                    ${isAi 
+                      ? 'bg-amber-50 border-[#F6E7A6]/30 text-[#F6E7A6] bg-gradient-to-tr from-[#1E1C1A] to-[#2B2620]' 
+                      : 'bg-[#A44C5C] border-white/10 text-white'}`}
+                  >
+                    {isAi ? '👑' : order.customerName.charAt(0) || 'أ'}
+                  </div>
+                  <div className={`p-3.5 rounded-2xl text-xs leading-relaxed max-w-[85%]
+                    ${isAi 
+                      ? 'bg-white/5 border border-white/5 text-gray-250 font-sans' 
+                      : 'bg-[#A44C5C]/90 text-white font-sans'}`}
+                  >
+                    <p>{msg.text}</p>
+                    <span className="block text-[8px] text-gray-500 mt-1.5 text-left font-sans">{msg.timestamp}</span>
+                  </div>
+                </div>
+              );
+            })}
+            
+            {isChatLoading && (
+              <div className="flex gap-3 items-start flex-row">
+                <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-[10px] bg-gradient-to-tr from-[#1E1C1A] to-[#2B2620] border border-[#F6E7A6]/30 animate-spin">
+                  🔄
+                </div>
+                <div className="bg-white/5 border border-white/5 p-3.5 rounded-2xl text-xs max-w-[80%] text-gray-400 font-sans flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-[#F6E7A6] rounded-full animate-bounce" />
+                  <span className="w-1.5 h-1.5 bg-[#F6E7A6] rounded-full animate-bounce delay-150" />
+                  <span className="w-1.5 h-1.5 bg-[#F6E7A6] rounded-full animate-bounce delay-300" />
+                  <span className="font-serif italic text-[#F6E7A6]">يقوم مستشار SULTA بمراجعة قياساتك وبيانات طلبك...</span>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Quick Questions suggestion pills */}
+          <div className="flex flex-wrap gap-2 mb-3 z-10 relative">
+            <button 
+              onClick={() => handleSendChatMessage("متى يتوقع وصول طلبي كوتور؟")}
+              className="text-[10px] bg-white/5 hover:bg-white/10 text-[#F6E7A6] border border-white/10 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
+            >
+              🕒 متى يصل طلبي؟
+            </button>
+            <button 
+              onClick={() => handleSendChatMessage("هل تم شحن باقة الحرير؟ وما هي التفاصيل؟")}
+              className="text-[10px] bg-white/5 hover:bg-white/10 text-[#F6E7A6] border border-white/10 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
+            >
+              🚚 هل تم الشحن؟
+            </button>
+            <button 
+              onClick={() => handleSendChatMessage("ما هي سياسة استبدال أو استرجاع المقاسات لدراكم؟")}
+              className="text-[10px] bg-white/5 hover:bg-white/10 text-[#F6E7A6] border border-white/10 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
+            >
+              🔄 كيف يمكنني الاستبدال؟
+            </button>
+          </div>
+
+          {/* Chat entry bar */}
+          <div className="relative z-10 flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendChatMessage()}
+              placeholder="اكتبي استفساركِ الملكي هنا حول المقاسات، الشحن، أو المواد..."
+              className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#F6E7A6] transition-colors"
+            />
+            <button
+              onClick={() => handleSendChatMessage()}
+              disabled={isChatLoading || !chatInput.trim()}
+              className="bg-[#A44C5C] hover:bg-[#A44C5C]/80 disabled:opacity-40 text-white px-4 py-3 rounded-2xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Send size={12} />
+              <span>أرسلي ✨</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: VIP Badge + Delivery Prediction AI + Delayed warning */}
+        <div className="space-y-6 flex flex-col justify-between">
+          
+          {/* VIP Card Indicator */}
+          {vipCustomer ? (
+            <div className="relative overflow-hidden bg-gradient-to-tr from-[#1E1B15] via-[#2A2318] to-[#12110E] p-5 rounded-3xl border border-[#D5A848] shadow-xl text-right">
+              {/* Golden glitter lines */}
+              <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-[#D5A848]/10 rounded-full filter blur-xl animate-pulse" />
+              <div className="relative z-10">
+                <div className="flex justify-between items-start flex-row-reverse mb-3">
+                  <div className="bg-[#D5A848]/25 text-[#F5C767] border border-[#D5A848]/45 p-1 rounded-lg">
+                    <Award size={18} className="animate-spin-slow" />
+                  </div>
+                  <span className="text-[9px] uppercase tracking-widest font-sans font-bold bg-[#D5A848] text-[#1E1B15] px-2.5 py-0.5 rounded-full">
+                    SULTA VIP CUSTOMER
+                  </span>
+                </div>
+                <h4 className="font-serif text-sm font-bold text-[#F5C767] mb-1">
+                  أميرتنا المرموقة والوفية 👑
+                </h4>
+                <p className="text-[10px] text-gray-300 leading-relaxed font-sans mb-3.5">
+                  تم رصد نشاط شرائك التراكمي المترف وتثبيت تصنيفكِ كعضوة ممتازة بـ SULTA. لكِ أولوية معالجة الشحنات الفورية وهدية خاصة.
+                </p>
+                <div className="bg-white/5 border border-white/5 p-3 rounded-2xl flex justify-between items-center">
+                  <div>
+                    <span className="text-[9px] text-gray-400 block font-sans">كوبون نخبة الأميرات الدائم:</span>
+                    <strong className="text-xs text-white font-mono tracking-wider">VIPWELCOME15</strong>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText('VIPWELCOME15');
+                      alert('تم نسخ كود خصم الأميرات الخاص بكِ (15%) للاستخدام الفوري 👑');
+                    }}
+                    className="bg-[#D5A848] hover:bg-[#F5C767] text-[#1E1B15] px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all active:scale-95 cursor-pointer"
+                  >
+                    نسخ الكود 📋
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm text-right">
+              <div className="flex gap-2 items-center flex-row-reverse mb-2">
+                <Award size={16} className="text-gray-400" />
+                <h4 className="font-serif text-xs font-bold text-gray-800">نظام ترقيات الأميرات المرموق 👑</h4>
+              </div>
+              <p className="text-[10px] text-gray-500 leading-relaxed font-sans">
+                عند تخطي قيمة مشترياتك الإجمالية حاجز 1,500 ريال أو 10,000 جنيه، يتم ترقيتك تلقائياً لدرجة الـ VIP وتفعيل حزمة الخصومات الدائمة والهدايا الخاصة في عتبة الدار.
+              </p>
+            </div>
+          )}
+
+          {/* Delivery Prediction AI Card */}
+          {prediction && (
+            <div className="bg-gradient-to-tr from-[#FAF8F5] to-white p-5 rounded-3xl border border-[#EBE4D8] shadow-sm text-right flex-1 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <div className="flex items-center gap-1.5 flex-row-reverse">
+                    <Sparkles size={14} className="text-amber-600 shrink-0" />
+                    <h4 className="font-serif text-xs font-bold text-gray-900">توقع ذكي للوصول الملكي 🕒</h4>
+                  </div>
+                  <span className="text-[8px] bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full font-sans font-bold">
+                    {prediction.confidence}
+                  </span>
+                </div>
+
+                <div className="bg-[#FAF5EE] border border-[#F3EFE9] p-3.5 rounded-2xl text-center mb-3">
+                  <span className="text-[10px] text-gray-500 block mb-1">نافذة الوصول المجدولة المقدرة:</span>
+                  <strong className="text-sm font-serif text-[#A44C5C] tracking-tight block">
+                    {prediction.predictedRange}
+                  </strong>
+                </div>
+
+                <p className="text-[10px] text-gray-600 leading-relaxed font-sans mb-3">
+                  {prediction.explanation}
+                </p>
+              </div>
+
+              <div className="border-t border-gray-100 pt-3 flex justify-between items-center flex-row-reverse text-right">
+                <span className="text-[9px] text-gray-400">الناقل المعيّن:</span>
+                <span className="text-[9px] text-gray-800 font-bold font-sans">{prediction.carrier}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Delay Apology Compensation Banner */}
+          {isDelayed && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-rose-50 border border-rose-200 p-4 rounded-3xl text-right relative overflow-hidden"
+            >
+              <div className="flex gap-2.5 items-start flex-row-reverse relative z-10">
+                <AlertTriangle className="text-rose-700 shrink-0 mt-0.5" size={16} />
+                <div>
+                  <h4 className="font-serif text-xs font-bold text-rose-900 mb-1">
+                    نعتذر لعميلتنا الكريمة عن التأخير 🌸
+                  </h4>
+                  <p className="text-[10px] text-rose-700 leading-relaxed font-sans mb-3">
+                    لحق بنا تأخر طفيف في تجهيز قطعة الكوتور الفاخرة الخاصة بكِ لضمان أدق تفاصيل فحص الخياطة. تم تخصيص هدية تعويض ملكية وكوبون خصم صالح لطلبكِ القادم:
+                  </p>
+                  <div className="bg-white/60 border border-rose-150 p-2.5 rounded-xl flex justify-between items-center flex-row-reverse">
+                    <span className="text-xs font-mono font-bold text-rose-950">APOLOGY20</span>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText('APOLOGY20');
+                        alert('تم نسخ كود خصم الاعتذار والتعويض الملكي (20%) بنجاح 🌸');
+                      }}
+                      className="bg-rose-900 text-white px-2.5 py-1 rounded-lg text-[8px] font-sans font-bold hover:bg-rose-950 transition-all cursor-pointer"
+                    >
+                      انسخي التعويض 📋
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+        </div>
+      </div>
+
       {/* 4. Main Two Column Details: Products & Shipments details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -882,60 +1340,136 @@ export default function OrderDetailView({
       {/* 5. Luxury Order Actions Footer Panel (Download, Re-order, Concierge support, Live help) */}
       {/* Smart Ratings (If Delivered) */}
       {order.status === 'delivered' && (
-        <div className="bg-gradient-to-tr from-[#FAF5F0] to-white p-6 md:p-8 rounded-3xl border border-amber-100 shadow-sm mt-8 text-right" dir="rtl">
+        <div className="bg-gradient-to-tr from-[#FAF5F0] to-white p-6 md:p-8 rounded-3xl border border-amber-100 shadow-sm mt-8 text-right font-sans" dir="rtl">
           {ratingSubmitted ? (
             <motion.div 
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-6 text-emerald-800"
+              className="text-center py-8 text-emerald-800"
             >
-              <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-emerald-200">
-                <Check size={20} className="text-emerald-600 font-bold" />
+              <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-200">
+                <CheckCircle2 size={32} className="text-emerald-600" />
               </div>
-              <h3 className="font-serif text-lg font-bold">نشكر ثقتك ورأيكِ المرموق 🌸</h3>
-              <p className="text-xs text-gray-500 mt-1.5 max-w-md mx-auto leading-relaxed">
-                تم تسجيل معايير الجودة بنجاح ونقل تقديراتكِ لمدراء بوتيك SULTA لضمان الأفضل دائماً لتاج طلّتكِ البهيّة.
+              <h3 className="font-serif text-xl font-bold">نشكر ثقتك ورأيكِ المرموق 🌸</h3>
+              <p className="text-xs text-gray-500 mt-2 max-w-md mx-auto leading-relaxed">
+                تم تسجيل معايير الجودة بنجاح ونقل تقديراتكِ وملاحظاتكِ لمدراء بوتيك SULTA لضمان الأفضل دائماً لتاج طلّتكِ البهيّة.
               </p>
             </motion.div>
           ) : (
-            <>
-              <div className="text-center mb-6">
+            <div className="space-y-6">
+              <div className="text-center max-w-xl mx-auto">
                 <span className="font-serif italic text-[#A44C5C] text-xs tracking-[0.2em] block mb-2 uppercase">تقييم تجربة سولتة كوتور</span>
                 <h3 className="font-serif text-lg font-bold text-[#0B0B0B]">يسعدنا سماع رأيك الملكي 👑</h3>
-                <p className="text-xs text-gray-500 mt-2">كيف كانت تجربتكِ معنا؟ لمساتكِ ورأيك يدعمان مسيرتنا لتقديم أعلى معايير الرفاهية.</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  بعد تسليم طلبيتكِ الفاخرة، يسرنا جداً معرفة لمساتكِ وتجربتكِ لقطع الحرير. تفضلي بتقييم الخدمة ورفع صورة لتجربة التغليف لربح مميزات الـ VIP.
+                </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.keys(ratings).map((aspect) => (
-                  <div key={aspect} className="bg-white border border-gray-150 p-4 rounded-2xl flex flex-col items-center">
-                    <span className="text-xs font-bold font-sans text-gray-750 mb-2">{aspect}</span>
-                    <div className="flex gap-1 flex-row-reverse">
-                      {[5, 4, 3, 2, 1].map((star) => {
-                        const currentVal = ratings[aspect] || 5;
-                        return (
-                          <button 
-                            key={star} 
-                            type="button"
-                            onClick={() => setRatings(prev => ({ ...prev, [aspect]: star }))}
-                            className={`transition-colors cursor-pointer ${star <= currentVal ? 'text-amber-400 font-semibold' : 'text-gray-200'}`}
-                          >
-                            <Star size={18} fill={star <= currentVal ? "currentColor" : "none"} />
-                          </button>
-                        );
-                      })}
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                
+                {/* Left col in feedback: Star selection and comment text area */}
+                <div className="md:col-span-7 space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-750 mb-2">كيف تقيّمين جودة التصميم والحرير؟</label>
+                    <div className="flex gap-2 flex-row-reverse justify-end">
+                      {[5, 4, 3, 2, 1].map((star) => (
+                        <button 
+                          key={star} 
+                          type="button"
+                          onClick={() => setSatisfactionRating(star)}
+                          className={`transition-colors cursor-pointer p-1 ${star <= satisfactionRating ? 'text-amber-400' : 'text-gray-200'}`}
+                        >
+                          <Star size={24} fill={star <= satisfactionRating ? "currentColor" : "none"} />
+                        </button>
+                      ))}
                     </div>
                   </div>
-                ))}
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-750 mb-2">أضيفي ملاحظاتكِ أو رأيكِ المرموق:</label>
+                    <textarea
+                      rows={3}
+                      value={satisfactionComment}
+                      onChange={(e) => setSatisfactionComment(e.target.value)}
+                      placeholder="اكتبي تجربتكِ مع مقاسات البجامة، ونعومة الحرير، وروائح البوتيك المعطرة للمنتجات..."
+                      className="w-full text-xs p-3.5 rounded-2xl border border-gray-250 bg-white placeholder-gray-400 focus:outline-none focus:border-[#A44C5C] focus:ring-1 focus:ring-[#A44C5C] font-sans"
+                    />
+                  </div>
+                </div>
+
+                {/* Right col in feedback: Drag and drop file upload */}
+                <div className="md:col-span-5">
+                  <label className="block text-xs font-bold text-gray-750 mb-2">ارفعي صورة من تجربتكِ الفاخرة (اختياري):</label>
+                  
+                  {satisfactionPhoto ? (
+                    <div className="relative border border-amber-200 p-2 bg-amber-50/25 rounded-2xl flex flex-col items-center">
+                      <img 
+                        src={satisfactionPhoto} 
+                        alt="Customer upload" 
+                        className="w-full max-h-[140px] object-cover rounded-xl"
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setSatisfactionPhoto(null)}
+                        className="absolute top-4 right-4 bg-[#0B0B0B]/80 text-white rounded-full p-1.5 hover:bg-rose-700 transition-colors cursor-pointer"
+                      >
+                        <X size={12} />
+                      </button>
+                      <span className="text-[10px] text-gray-500 font-sans mt-2">تم تجهيز الصورة للرفع بنجاح 📸</span>
+                    </div>
+                  ) : (
+                    <div
+                      onDragEnter={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDragOver={handleDrag}
+                      onDrop={handleDrop}
+                      className={`border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center transition-all cursor-pointer min-h-[155px]
+                        ${dragActive 
+                          ? 'border-[#A44C5C] bg-[#A44C5C]/5' 
+                          : 'border-gray-250 bg-white hover:border-[#A44C5C] hover:bg-pink-50/10'}`}
+                    >
+                      <input
+                        type="file"
+                        id="satisfaction-file-upload"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                      <label 
+                        htmlFor="satisfaction-file-upload" 
+                        className="cursor-pointer flex flex-col items-center text-center w-full"
+                      >
+                        <Upload size={24} className="text-gray-400 mb-2 animate-bounce" />
+                        <span className="text-xs font-bold text-gray-800">اسحبي الصورة وأفلتيها هنا</span>
+                        <span className="text-[10px] text-gray-400 mt-1">أو انقري لتصفح ملفات جهازكِ</span>
+                        <span className="text-[8px] text-gray-400 mt-1 font-mono">PNG, JPG, WebP</span>
+                      </label>
+                    </div>
+                  )}
+                </div>
+
               </div>
-              <div className="mt-6 flex justify-center">
-                <button 
-                  type="button"
-                  onClick={() => setRatingSubmitted(true)}
-                  className="bg-[#0B0B0B] text-white px-8 py-3 rounded-xl text-xs font-bold hover:bg-[#A44C5C] hover:shadow-md transition-all active:scale-[0.98] cursor-pointer"
+
+              <div className="pt-3 border-t border-gray-100 flex justify-end">
+                <button
+                  onClick={handleSubmitSatisfactionForm}
+                  disabled={satisfactionUploading}
+                  className="bg-[#0B0B0B] text-white hover:bg-[#A44C5C] px-8 py-3.5 rounded-2xl text-xs font-bold transition-all active:scale-[0.98] cursor-pointer flex items-center gap-2"
                 >
-                  إرسال التقييم ✨
+                  {satisfactionUploading ? (
+                    <>
+                      <RefreshCw size={14} className="animate-spin" />
+                      <span>جاري الرفع والحفظ سحابياً...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={14} className="text-[#F6E7A6]" />
+                      <span>تقديم التقييم الملوكي والاحتفاظ بالهدايا 👑</span>
+                    </>
+                  )}
                 </button>
               </div>
-            </>
+            </div>
           )}
         </div>
       )}

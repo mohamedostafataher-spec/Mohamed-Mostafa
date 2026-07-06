@@ -669,8 +669,8 @@ export default function StoreView({
                           
                           {/* Editorial Number & Segment */}
                           <div className="flex items-center justify-between text-3xs tracking-widest text-[#c5a059] uppercase font-mono font-bold">
-                            <span>{product.collection || 'SULTA ESSENTIALS ⚜️'}</span>
-                            <span>[ N° 0{index + 1} ]</span>
+                            <span>{product.collection || 'Sulta Star⭐️'}</span>
+                            <span>N° 0{index + 1}</span>
                           </div>
 
                           {/* Product Title in Bold Royal Serif */}
