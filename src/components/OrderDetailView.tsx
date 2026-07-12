@@ -3,7 +3,7 @@ import {
   ArrowRight, Clock, Package, Truck, CheckCircle, 
   MapPin, CreditCard, Download, RefreshCw, MessageSquare, 
   ShieldCheck, AlertTriangle, Printer, PhoneCall, Copy, Check, FileText, Star,
-  Send, Upload, Sparkles, Award, Image as ImageIcon, CheckCircle2
+  Send, Upload, Sparkles, Award, Image as ImageIcon, CheckCircle2, X
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase, cleanImgUrl, dbService } from '../services/db';
@@ -404,7 +404,7 @@ export default function OrderDetailView({
         rating: satisfactionRating,
         comment: satisfactionComment + (satisfactionPhoto ? ` [صورة مرفقة مضافة من العميل]` : ''),
         date: new Date().toISOString().split('T')[0],
-        country: order.country === 'EG' ? 'مصر' : 'السعودية',
+        country: order.country === 'EG' ? 'EG' : 'SA',
         productName: order.items[0]?.productName || 'تصميم كوتور فاخر'
       };
 

@@ -163,6 +163,11 @@ export default function CartDrawer({
                                 🌸 {(item as any).scent.split('(')[0]}
                               </span>
                             )}
+                            {(item as any).luxuryWrap && (
+                              <span className="bg-amber-50 text-amber-800 border border-amber-150 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                🎁 {(item as any).luxuryWrap.split('(')[0]}
+                              </span>
+                            )}
                             {(item as any).waxInitial && (
                               <span className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-md flex items-center gap-1">
                                 ✉️ شمع: {(item as any).waxInitial} {(item as any).waxColor && `(${(item as any).waxColor.split(' ')[0]})`}
@@ -171,6 +176,11 @@ export default function CartDrawer({
                             {(item as any).ribbonColor && (
                               <span className="bg-stone-100 text-stone-700 px-2 py-0.5 rounded-md flex items-center gap-1">
                                 🎗️ {(item as any).ribbonColor.split(' ')[0] || (item as any).ribbonColor}
+                              </span>
+                            )}
+                            {(item as any).giftMessage && (
+                              <span className="bg-amber-50/40 text-amber-900 border border-amber-100 px-2.5 py-1.5 rounded-xl flex items-start gap-1 w-full mt-1.5 font-serif italic text-right text-[10px]" dir="rtl">
+                                <span>✍️ رسالة خط اليد: "{(item as any).giftMessage}"</span>
                               </span>
                             )}
                             {(item as any).partnerProduct && (

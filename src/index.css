@@ -196,4 +196,31 @@ body {
   animation: fade-in 0.3s ease-out forwards;
 }
 
+/* ==========================================
+   iOS / SAFARI / WEBKIT PERFORMANCE OPTIMIZATION
+   ========================================== */
+
+/* Disable memory-heavy CSS backdrop-filters on mobile and tablet screens to prevent lags, freezes, and crashes in Safari and Instagram WebViews */
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+  @media (max-width: 1024px) {
+    *, ::before, ::after {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+  }
+}
+
+/* Enable momentum touch scrolling on iOS */
+.overflow-y-auto, .overflow-y-scroll, .overflow-x-auto {
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Add hardware acceleration to critical layers to smooth out rendering */
+header, .fixed, .absolute {
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+
 

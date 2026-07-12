@@ -147,7 +147,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
         }
 
         // Merge with local live logs from SULTA Order/WhatsApp/VIP agents
-        const localLogs = agentSystem.getLogs().map(l => ({
+        const localLogs = agentSystem.getLogs().map((l: any) => ({
           id: l.id || `local-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
           timestamp: l.timestamp,
           message: l.message,

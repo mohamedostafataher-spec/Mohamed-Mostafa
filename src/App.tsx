@@ -854,6 +854,92 @@ function AppContent() {
         {/* VIEW 1: HOME PAGE (الرئيسية) */}
         {currentTab === 'home' && (
           <div className="space-y-0">
+            {/* DYNAMIC METRIC-DRIVEN HOMEPAGE SECTIONS */}
+            {[
+              { title: 'BEST SELLERS', label: 'Our Most Loved Gilded Sleepwear | الأكثر مبيعاً ونبلاء الطلب', data: bestSellers },
+              { title: 'NEW ARRIVALS', label: 'Freshly Woven Luxury | وصلنا حديثاً من النسيج الفاخر', data: newArrivals },
+              { title: 'FEATURED PRODUCTS', label: 'Selected Couture Masterpieces | روائع مختارة من الكوتور الفاخر', data: featuredProducts },
+              { title: 'TRENDING OUTSETS', label: 'The Season\'s Most Elegant Choices | صيحات الأناقة والرقي الأكثر رواجاً', data: trendingProducts },
+              { title: 'LATEST LUXURIES', label: 'The Latest SULTA Creative Outfits | آخر الإبداعات الملكية', data: latestProducts },
+              { title: 'SEASONAL CROWNS', label: 'Curated Warm & Summer Sets | المجموعات الموسمية والساتان الإيطالي', data: seasonalCollections },
+            ].map((section, sectionIdx) => (
+              <section key={section.title} className={`py-16 ${sectionIdx % 2 === 0 ? 'bg-[#FAF5F0]' : 'bg-white'}`}>
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                  <RibbonBowDivider />
+                  
+                  <div className="text-center max-w-xl mx-auto mb-12 flex flex-col items-center justify-center">
+                    <h3 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-medium tracking-widest uppercase">
+                      {section.title}
+                    </h3>
+                    <p className="text-gray-400 text-[10px] sm:text-xs mt-2 font-serif italic tracking-widest text-[#A44C5C]">
+                      {section.label}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+                    {section.data.length > 0 ? section.data.map((prod) => {
+                      const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
+                      const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
+
+                      return (
+                        <div
+                          key={prod.id}
+                          className="group flex flex-col h-full bg-white rounded-2xl p-3 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
+                          onClick={() => handleSelectProduct(prod)}
+                        >
+                          {/* Rating indicator */}
+                          <div className="absolute top-4 left-4 z-10 flex items-center gap-0.5 bg-white/80 backdrop-blur-xs px-2 py-0.5 rounded-full text-[9px] text-[#A44C5C] font-serif tracking-widest font-semibold border border-[#DF8A9D]/15">
+                            <Star size={8} className="fill-[#A44C5C] text-[#A44C5C]" />
+                            <span>{prod.rating || 5}</span>
+                          </div>
+                          
+                          {/* Favorite Button */}
+                          <div className="absolute top-4 right-4 z-10">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
+                              className="p-1 bg-white/90 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-[#DF8A9D] border border-gray-100 cursor-pointer"
+                            >
+                              <Heart size={12} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
+                            </button>
+                          </div>
+
+                          {/* Top Photo */}
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">
+                            <img
+                              src={prod.images[0]}
+                              alt={prod.nameEn || prod.nameAr}
+                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+
+                          {/* Text details bottom */}
+                          <div className="space-y-1 text-center mt-auto flex flex-col items-center">
+                            <span className="text-[8px] uppercase tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-[#FAF4F5] text-[#A44C5C] inline-block font-semibold">
+                              {prod.isBestSeller ? 'Best Seller' : 'New'}
+                            </span>
+                            <h4 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
+                              {country === 'EG' && prod.nameAr ? prod.nameAr : prod.nameEn}
+                            </h4>
+                            <span className="font-sans font-semibold text-3xs sm:text-2xs md:text-xs text-[#A44C5C]">
+                              {priceVal.toLocaleString()} {currencyLabel}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }) : (
+                      <div className="col-span-full text-center text-gray-400 py-6 text-3xs font-serif italic">
+                        يرجى إضافة قطع وتنشيطها في لوحة الإدارة للإثراء الفوري.
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-12">
+                    <RibbonBowDivider />
+                  </div>
+                </div>
+              </section>
+            ))}
+
             {/* HERO PROMOTIONS BOX */}
             <Hero
               settings={settings}
@@ -963,92 +1049,6 @@ function AppContent() {
                 </section>
               );
             })()}
-
-            {/* DYNAMIC METRIC-DRIVEN HOMEPAGE SECTIONS */}
-            {[
-              { title: 'BEST SELLERS', label: 'Our Most Loved Gilded Sleepwear | الأكثر مبيعاً ونبلاء الطلب', data: bestSellers },
-              { title: 'NEW ARRIVALS', label: 'Freshly Woven Luxury | وصلنا حديثاً من النسيج الفاخر', data: newArrivals },
-              { title: 'FEATURED PRODUCTS', label: 'Selected Couture Masterpieces | روائع مختارة من الكوتور الفاخر', data: featuredProducts },
-              { title: 'TRENDING OUTSETS', label: 'The Season\'s Most Elegant Choices | صيحات الأناقة والرقي الأكثر رواجاً', data: trendingProducts },
-              { title: 'LATEST LUXURIES', label: 'The Latest SULTA Creative Outfits | آخر الإبداعات الملكية', data: latestProducts },
-              { title: 'SEASONAL CROWNS', label: 'Curated Warm & Summer Sets | المجموعات الموسمية والساتان الإيطالي', data: seasonalCollections },
-            ].map((section, sectionIdx) => (
-              <section key={section.title} className={`py-16 ${sectionIdx % 2 === 0 ? 'bg-[#FAF5F0]' : 'bg-white'}`}>
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                  <RibbonBowDivider />
-                  
-                  <div className="text-center max-w-xl mx-auto mb-12 flex flex-col items-center justify-center">
-                    <h3 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-medium tracking-widest uppercase">
-                      {section.title}
-                    </h3>
-                    <p className="text-gray-400 text-[10px] sm:text-xs mt-2 font-serif italic tracking-widest text-[#A44C5C]">
-                      {section.label}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-                    {section.data.length > 0 ? section.data.map((prod) => {
-                      const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
-                      const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
-
-                      return (
-                        <div
-                          key={prod.id}
-                          className="group flex flex-col h-full bg-white rounded-2xl p-3 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
-                          onClick={() => handleSelectProduct(prod)}
-                        >
-                          {/* Rating indicator */}
-                          <div className="absolute top-4 left-4 z-10 flex items-center gap-0.5 bg-white/80 backdrop-blur-xs px-2 py-0.5 rounded-full text-[9px] text-[#A44C5C] font-serif tracking-widest font-semibold border border-[#DF8A9D]/15">
-                            <Star size={8} className="fill-[#A44C5C] text-[#A44C5C]" />
-                            <span>{prod.rating || 5}</span>
-                          </div>
-                          
-                          {/* Favorite Button */}
-                          <div className="absolute top-4 right-4 z-10">
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                              className="p-1 bg-white/90 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-[#DF8A9D] border border-gray-100 cursor-pointer"
-                            >
-                              <Heart size={12} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
-                            </button>
-                          </div>
-
-                          {/* Top Photo */}
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">
-                            <img
-                              src={prod.images[0]}
-                              alt={prod.nameEn || prod.nameAr}
-                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-
-                          {/* Text details bottom */}
-                          <div className="space-y-1 text-center mt-auto flex flex-col items-center">
-                            <span className="text-[8px] uppercase tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-[#FAF4F5] text-[#A44C5C] inline-block font-semibold">
-                              {prod.isBestSeller ? 'Best Seller' : 'New'}
-                            </span>
-                            <h4 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
-                              {country === 'EG' && prod.nameAr ? prod.nameAr : prod.nameEn}
-                            </h4>
-                            <span className="font-sans font-semibold text-3xs sm:text-2xs md:text-xs text-[#A44C5C]">
-                              {priceVal.toLocaleString()} {currencyLabel}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    }) : (
-                      <div className="col-span-full text-center text-gray-400 py-6 text-3xs font-serif italic">
-                        يرجى إضافة قطع وتنشيطها في لوحة الإدارة للإثراء الفوري.
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-12">
-                    <RibbonBowDivider />
-                  </div>
-                </div>
-              </section>
-            ))}
 
             {/* FEATURES & UNBOXING (DYNAMIC FROM SUPABASE) */}
             <Features homepageSections={homepageSections} />
@@ -1336,8 +1336,8 @@ function AppContent() {
           country={country}
           onClose={() => setSelectedProduct(null)}
           onSelectProduct={setSelectedProduct}
-          onAddToCart={(prod, col, sz, qty) => {
-            handleAddToCart(prod, col, sz, qty);
+          onAddToCart={(prod, col, sz, qty, customOpts) => {
+            handleAddToCart(prod, col, sz, qty, customOpts);
             setSelectedProduct(null);
           }}
           onBuyNow={(prod, col, sz, qty) => {
