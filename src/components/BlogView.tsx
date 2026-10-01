@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Calendar, User, Search, BookOpen } from 'lucide-react';
 import { BlogPost } from '../types';
@@ -107,11 +108,7 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
               >
                 <div className="aspect-[4/3] md:aspect-[3/4] overflow-hidden bg-gray-100 rounded-sm">
                   {featuredPost.imageUrl && (
-                    <img 
-                      src={featuredPost.imageUrl} 
-                      alt={featuredPost.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 origin-center mix-blend-multiply" 
-                    />
+                    <SultaImage src={featuredPost.imageUrl} alt={featuredPost.title} className="w-full h-full" imgClassName="group-hover:scale-105 duration-1000 origin-center mix-blend-multiply" />
                   )}
                 </div>
                 <div className="space-y-6 text-center md:text-left">
@@ -148,11 +145,7 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
                   >
                     <div className="aspect-[4/5] overflow-hidden bg-gray-100 rounded-sm mb-6">
                       {post.imageUrl && (
-                        <img 
-                          src={post.imageUrl} 
-                          alt={post.title} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 mix-blend-multiply" 
-                        />
+                        <SultaImage src={post.imageUrl} alt={post.title} className="w-full h-full" imgClassName="group-hover:scale-105 duration-1000 mix-blend-multiply" />
                       )}
                     </div>
                     

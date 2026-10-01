@@ -279,18 +279,27 @@ export default function ReturnsExchanges() {
               </div>
               <h2 className="font-serif text-2xl font-bold">خدمة العملاء 📞</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors">
-                <span className="text-gray-400 block mb-2 text-sm uppercase tracking-wider font-bold">واتساب:</span>
-                <a href="https://wa.me/201110095403" dir="ltr" className="text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-serif">
-                  +201110095403
+                <span className="text-[#F6E7A6] block mb-2 text-sm uppercase tracking-wider font-bold">واتساب السعودية 🇸🇦:</span>
+                <a href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84%20%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" target="_blank" rel="noopener noreferrer" dir="ltr" className="text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-mono">
+                  0596894393
                 </a>
+                <span className="text-[10px] text-gray-400 block mt-1">+966 59 689 4393</span>
+              </div>
+              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors">
+                <span className="text-gray-300 block mb-2 text-sm uppercase tracking-wider font-bold">واتساب مصر 🇪🇬:</span>
+                <a href="https://wa.me/201110095403?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84%20%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9%20%D9%81%D9%8A%20%D9%85%D8%B5%D8%B1" target="_blank" rel="noopener noreferrer" dir="ltr" className="text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-mono">
+                  +20 111 009 5403
+                </a>
+                <span className="text-[10px] text-gray-400 block mt-1">الرقم الموحد لمصر</span>
               </div>
               <div className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors">
                 <span className="text-gray-400 block mb-2 text-sm uppercase tracking-wider font-bold">البريد الإلكتروني:</span>
                 <a href="mailto:support@sulta-atelier.com" dir="ltr" className="text-lg md:text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-serif">
                   support@sulta-atelier.com
                 </a>
+                <span className="text-[10px] text-gray-400 block mt-1">الرد خلال ٢٤ ساعة</span>
               </div>
             </div>
           </div>

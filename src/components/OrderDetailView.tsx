@@ -444,7 +444,9 @@ export default function OrderDetailView({
       `الحالة الحالية: ${getStatusTitle(order.status)}\n` +
       `يرجى موافاتي بالتفاصيل الملكية الإضافية. شكراً لكم 🌸`
     );
-    const targetWhatsapp = settings?.whatsapp || '201110095403';
+    const targetWhatsapp = order.country === 'SA'
+      ? (settings?.whatsappSaudi || '966596894393')
+      : (settings?.whatsapp || '201110095403');
     const cleanWhatsapp = targetWhatsapp.replace(/\D/g, '');
     window.open(`https://wa.me/${cleanWhatsapp}?text=${msg}`, '_blank');
   };

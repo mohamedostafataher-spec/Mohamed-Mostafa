@@ -21,6 +21,8 @@ export default function GlobalSystemConfig({
   const [defaultShippingFee, setDefaultShippingFee] = useState(0);
   const [contactPhone, setContactPhone] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
+  const [contactPhoneSaudi, setContactPhoneSaudi] = useState('');
+  const [whatsappSaudi, setWhatsappSaudi] = useState('');
   const [instagram, setInstagram] = useState('');
   const [siteName, setSiteName] = useState('SULTA');
 
@@ -37,8 +39,10 @@ export default function GlobalSystemConfig({
         { regionAr: 'شحن موحد لجميع مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Flat Shipping Rate', fee: 50 }
       ]);
       setDefaultShippingFee(settings.defaultShippingFee || 45);
-      setContactPhone(settings.contactPhone || '');
-      setWhatsapp(settings.whatsapp || '');
+      setContactPhone(settings.contactPhone || '+20 111 009 5403');
+      setWhatsapp(settings.whatsapp || '201110095403');
+      setContactPhoneSaudi(settings.contactPhoneSaudi || '+966 59 689 4393');
+      setWhatsappSaudi(settings.whatsappSaudi || '966596894393');
       setInstagram(settings.instagram || '');
       setSiteName(settings.siteName || 'SULTA');
 
@@ -61,6 +65,8 @@ export default function GlobalSystemConfig({
         defaultShippingFee,
         contactPhone,
         whatsapp,
+        contactPhoneSaudi,
+        whatsappSaudi,
         instagram,
         egDefaultCoupon,
         saDefaultCoupon,
@@ -170,28 +176,70 @@ export default function GlobalSystemConfig({
                 />
               </div>
 
-              <div>
-                <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">هاتف الاتصال للدعم</label>
-                <input
-                  type="text"
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                  placeholder="201000000000+ أو +966..."
-                  className="w-full bg-gray-50 border border-gray-150 rounded-xl px-4 py-2.5 text-xs text-left"
-                  dir="ltr"
-                />
+              {/* Saudi Arabia Contacts */}
+              <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-250/50 space-y-3">
+                <span className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5">
+                  <span>🇸🇦 قنوات التواصل والواتساب - المملكة العربية السعودية</span>
+                </span>
+                <div>
+                  <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-bold">
+                    رقم واتساب السعودية (الأساسي)
+                  </label>
+                  <input
+                    type="text"
+                    value={whatsappSaudi}
+                    onChange={(e) => setWhatsappSaudi(e.target.value)}
+                    placeholder="0596894393 أو 966596894393"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
+                    dir="ltr"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-bold">
+                    هاتف الدعم للعملاء في السعودية
+                  </label>
+                  <input
+                    type="text"
+                    value={contactPhoneSaudi}
+                    onChange={(e) => setContactPhoneSaudi(e.target.value)}
+                    placeholder="+966 59 689 4393"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
+                    dir="ltr"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">رابط / رقم الواتساب المباشر للكونسيرج</label>
-                <input
-                  type="text"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="https://wa.me/201..."
-                  className="w-full bg-gray-50 border border-gray-150 rounded-xl px-4 py-2.5 text-xs text-left"
-                  dir="ltr"
-                />
+              {/* Egypt Contacts */}
+              <div className="bg-emerald-50/40 p-4 rounded-xl border border-emerald-250/50 space-y-3">
+                <span className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5">
+                  <span>🇪🇬 قنوات التواصل والواتساب - جمهورية مصر العربية</span>
+                </span>
+                <div>
+                  <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-bold">
+                    رقم واتساب مصر
+                  </label>
+                  <input
+                    type="text"
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    placeholder="201110095403"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
+                    dir="ltr"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-bold">
+                    هاتف الدعم للعملاء في مصر
+                  </label>
+                  <input
+                    type="text"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="+20 111 009 5403"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
+                    dir="ltr"
+                  />
+                </div>
               </div>
             </div>
           </div>

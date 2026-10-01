@@ -1,5 +1,7 @@
+import { motion, AnimatePresence } from 'motion/react';
+import SultaImage from "./components/SultaImage";
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe, Search } from 'lucide-react';
+import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe, Search, Truck, RefreshCw, Tag } from 'lucide-react';
 import { ToastProvider, useToast } from './components/Toast';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -37,6 +39,7 @@ import SultaMagazine from './components/SultaMagazine';
 import SultaConcierge from './components/SultaConcierge';
 import AiMirror from './components/AiMirror';
 import RoyalSensesSalon from './components/RoyalSensesSalon';
+import WhatsAppFloat from './components/WhatsAppFloat';
 
 import { dbService, supabase, cleanImgUrl } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -232,7 +235,22 @@ function AppContent() {
     detectGeographicCountry();
   }, [country, toast]);
 
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const savedCart = localStorage.getItem('sulta_cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('sulta_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.error("[SULTA CART] Saving failure:", e);
+    }
+  }, [cart]);
   
   // Load initial favorites from LocalStorage with fallback support
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -549,6 +567,7 @@ function AppContent() {
       return [...prev, { product, selectedColor: color, selectedSize: size, quantity: qty, ...customOpts }];
     });
 
+    toast(`تمت إضافة "${product.nameAr}" إلى الحقيبة الملكية بنجاح 🛍️`, 'success');
     setIsCartOpen(true);
   };
 
@@ -763,7 +782,7 @@ function AppContent() {
           {/* AI Generated Background Layer */}
           {aiSplashImage && (
             <div className="absolute inset-0 z-0 animate-fade-in duration-1000">
-              <img 
+              <SultaImage 
                 src={aiSplashImage} 
                 className="w-full h-full object-cover opacity-20 scale-110 blur-sm" 
                 alt="AI Generated Background"
@@ -846,7 +865,15 @@ function AppContent() {
       />
 
       {/* CORE DYNAMIC LAYOUT BASED ON ACTIVE TAB */}
-      <main className="animate-fade-in-rapid">
+      <main className="animate-fade-in-rapid overflow-x-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={currentTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
         
         {/* VIEW: DATABASE TEST (تشخيص القاعدة) */}
         {currentTab === 'dbtest' && <DatabaseTest />}
@@ -854,151 +881,116 @@ function AppContent() {
         {/* VIEW 1: HOME PAGE (الرئيسية) */}
         {currentTab === 'home' && (
           <div className="space-y-0">
-            {/* DYNAMIC METRIC-DRIVEN HOMEPAGE SECTIONS */}
-            {[
-              { title: 'BEST SELLERS', label: 'Our Most Loved Gilded Sleepwear | الأكثر مبيعاً ونبلاء الطلب', data: bestSellers },
-              { title: 'NEW ARRIVALS', label: 'Freshly Woven Luxury | وصلنا حديثاً من النسيج الفاخر', data: newArrivals },
-              { title: 'FEATURED PRODUCTS', label: 'Selected Couture Masterpieces | روائع مختارة من الكوتور الفاخر', data: featuredProducts },
-              { title: 'TRENDING OUTSETS', label: 'The Season\'s Most Elegant Choices | صيحات الأناقة والرقي الأكثر رواجاً', data: trendingProducts },
-              { title: 'LATEST LUXURIES', label: 'The Latest SULTA Creative Outfits | آخر الإبداعات الملكية', data: latestProducts },
-              { title: 'SEASONAL CROWNS', label: 'Curated Warm & Summer Sets | المجموعات الموسمية والساتان الإيطالي', data: seasonalCollections },
-            ].map((section, sectionIdx) => (
-              <section key={section.title} className={`py-16 ${sectionIdx % 2 === 0 ? 'bg-[#FAF5F0]' : 'bg-white'}`}>
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                  <RibbonBowDivider />
-                  
-                  <div className="text-center max-w-xl mx-auto mb-12 flex flex-col items-center justify-center">
-                    <h3 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-medium tracking-widest uppercase">
-                      {section.title}
-                    </h3>
-                    <p className="text-gray-400 text-[10px] sm:text-xs mt-2 font-serif italic tracking-widest text-[#A44C5C]">
-                      {section.label}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-                    {section.data.length > 0 ? section.data.map((prod) => {
-                      const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
-                      const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
-
-                      return (
-                        <div
-                          key={prod.id}
-                          className="group flex flex-col h-full bg-white rounded-2xl p-3 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
-                          onClick={() => handleSelectProduct(prod)}
-                        >
-                          {/* Rating indicator */}
-                          <div className="absolute top-4 left-4 z-10 flex items-center gap-0.5 bg-white/80 backdrop-blur-xs px-2 py-0.5 rounded-full text-[9px] text-[#A44C5C] font-serif tracking-widest font-semibold border border-[#DF8A9D]/15">
-                            <Star size={8} className="fill-[#A44C5C] text-[#A44C5C]" />
-                            <span>{prod.rating || 5}</span>
-                          </div>
-                          
-                          {/* Favorite Button */}
-                          <div className="absolute top-4 right-4 z-10">
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                              className="p-1 bg-white/90 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-[#DF8A9D] border border-gray-100 cursor-pointer"
-                            >
-                              <Heart size={12} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
-                            </button>
-                          </div>
-
-                          {/* Top Photo */}
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">
-                            <img
-                              src={prod.images[0]}
-                              alt={prod.nameEn || prod.nameAr}
-                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-
-                          {/* Text details bottom */}
-                          <div className="space-y-1 text-center mt-auto flex flex-col items-center">
-                            <span className="text-[8px] uppercase tracking-widest font-sans px-2.5 py-0.5 rounded-full bg-[#FAF4F5] text-[#A44C5C] inline-block font-semibold">
-                              {prod.isBestSeller ? 'Best Seller' : 'New'}
-                            </span>
-                            <h4 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
-                              {country === 'EG' && prod.nameAr ? prod.nameAr : prod.nameEn}
-                            </h4>
-                            <span className="font-sans font-semibold text-3xs sm:text-2xs md:text-xs text-[#A44C5C]">
-                              {priceVal.toLocaleString()} {currencyLabel}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    }) : (
-                      <div className="col-span-full text-center text-gray-400 py-6 text-3xs font-serif italic">
-                        يرجى إضافة قطع وتنشيطها في لوحة الإدارة للإثراء الفوري.
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-12">
-                    <RibbonBowDivider />
-                  </div>
-                </div>
-              </section>
-            ))}
-
-            {/* HERO PROMOTIONS BOX */}
+            
+            {/* 1. SALLA HERO PROMOTIONS CAROUSEL */}
             <Hero
               settings={settings}
               homepageSections={homepageSections}
               onExplore={() => setTab('store')}
               onDiscoverNew={() => {
-                setTab('store');
+                setTab('offers');
               }}
             />
 
-            {/* BRAND LUXURY CATEGORIES GRID */}
-            <section className="py-16 bg-[#FAF5F0]">
-              <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                <RibbonBowDivider />
-                <div className="text-center max-w-xl mx-auto mb-10 pb-2">
-                  <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-[#0B0B0B] font-light tracking-wide uppercase">
-                    SHOP BY CATEGORY | الأقسام الملكية
-                  </h3>
-                  <p className="text-[#A44C5C]/70 text-[10px] md:text-xs mt-1.5 font-serif italic tracking-widest">
-                    SELECT YOUR RETREAT
-                  </p>
+            {/* 2. SALLA TRUST PILLARS BAR */}
+            <div className="bg-white border-y border-gray-150 py-4 px-4 sm:px-6 lg:px-8 shadow-2xs">
+              <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-semibold text-gray-700">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-rose-50 text-[#A44C5C] flex items-center justify-center shrink-0">
+                    <Truck size={17} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs">شحن سريع ومجاني</span>
+                    <span className="text-[10px] text-gray-400">فوق {country === 'SA' ? '299 ر.س 🇸🇦' : '1500 ج.م 🇪🇬'}</span>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-6xl mx-auto">
+
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                    <ShieldCheck size={17} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs">سداد آمن 100%</span>
+                    <span className="text-[10px] text-gray-400">مدى، Apple Pay والدفع عند الاستلام</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                    <RefreshCw size={17} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs">استبدال واسترجاع سهل</span>
+                    <span className="text-[10px] text-gray-400">خلال 14 يوماً بكل مرونة</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                    <Phone size={17} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs">واتساب {country === 'SA' ? 'السعودية' : 'مصر'}</span>
+                    <a 
+                      href={country === 'SA' ? "https://wa.me/966596894393" : "https://wa.me/201110095403"} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-[10px] text-emerald-700 font-mono font-bold hover:underline"
+                    >
+                      {country === 'SA' ? '0596894393' : '+20 111 009 5403'}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. SALLA BRAND CATEGORIES GRID (تسوقي حسب القسم) */}
+            <section className="py-12 bg-[#F8F9FA] border-b border-gray-150">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between mb-8 pb-2">
+                  <div className="text-right">
+                    <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                      تسوقي حسب القسم 🛍️
+                    </h3>
+                    <p className="text-gray-500 text-xs mt-1 font-medium">
+                      اختاري تشكيلتكِ المفضلة بنقرة واحدة
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setTab('store')}
+                    className="text-xs font-bold text-[#A44C5C] hover:underline flex items-center gap-1"
+                  >
+                    <span>كافة الأقسام</span>
+                    <span>←</span>
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
                   {categories.slice(0, 4).map((category) => (
                     <div
                       key={category.id}
                       onClick={() => handleSelectCategoryHome(category.id)}
-                      className="group relative flex flex-col items-center cursor-pointer text-center aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-700"
+                      className="group relative flex flex-col items-center cursor-pointer text-center aspect-[4/5] rounded-2xl overflow-hidden shadow-xs hover:shadow-lg border border-gray-200 bg-white transition-all duration-300"
                     >
                       {/* Category Background Image */}
-                      <div className="absolute inset-0 bg-white">
+                      <div className="absolute inset-0 bg-gray-100">
                         {category.imageUrl && (
                           <img
                             src={category.imageUrl}
                             alt={category.name}
-                            className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-[1200ms] opacity-90"
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                             referrerPolicy="no-referrer"
                           />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-[#A44C5C]/20 transition-colors" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/75 transition-colors" />
                       </div>
 
-                      {/* Glassmorphism Title Box */}
-                      <div className="absolute bottom-4 left-4 right-4 p-4 rounded-3xl bg-white/40 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_0_rgba(255,255,255,0.18)] ring-1 ring-white/20 transform group-hover:-translate-y-2 transition-transform duration-500">
-                        <h4 className="text-[#0B0B0B] font-serif tracking-[0.1em] text-xs md:text-sm uppercase font-bold leading-tight">
-                          {category.name === 'sleepwear' ? 'Sleepwear' :
-                           category.name === 'loungewear' ? 'Loungewear' :
-                           category.name === 'homewear' ? 'Homewear' :
-                           category.name === 'collections' ? 'Collections' : category.name}
+                      {/* Title Box */}
+                      <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-white/90 backdrop-blur-md shadow-xs text-center">
+                        <h4 className="text-gray-950 font-bold text-xs sm:text-sm">
+                          {category.nameAr || category.name}
                         </h4>
-                        <div className="h-[1px] w-6 bg-[#A44C5C]/40 mx-auto my-1.5 group-hover:w-full transition-all duration-700" />
-                        <h5 className="text-[10px] md:text-xs text-[#A44C5C] font-serif italic mb-1">
-                          {category.name === 'sleepwear' ? 'ملابس نوم' :
-                           category.name === 'loungewear' ? 'ملابس استرخاء' :
-                           category.name === 'homewear' ? 'ملابس منزلية' :
-                           category.name === 'collections' ? 'التشكيلات' : ''}
-                        </h5>
-                        <span className="text-[9px] text-[#A44C5C]/80 font-sans tracking-widest uppercase font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                          Discover ✦
+                        <span className="text-[10px] text-[#A44C5C] font-bold block mt-0.5">
+                          تصفحي التشكيلة ←
                         </span>
                       </div>
                     </div>
@@ -1007,7 +999,168 @@ function AppContent() {
               </div>
             </section>
 
-            {/* FULL WIDTH LUXURIOUS BANNER WITH FALLBACK */}
+            {/* 4. SALLA FLASH OFFERS PROMO BANNER (عروض الموسم الحصرية) */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <div className="rounded-3xl bg-gradient-to-l from-rose-50 via-white to-pink-50 border border-pink-200 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+                <div className="text-right space-y-2 max-w-xl">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#A44C5C]/10 text-[#A44C5C] font-bold text-xs">
+                    <Sparkles size={12} />
+                    <span>عروض وتخفيضات كبرى 🏷️</span>
+                  </div>
+                  <h3 className="text-xl sm:text-3xl font-extrabold text-gray-950">
+                    وفري حتى 30% على تشكيلة النوم والحرير الملكي
+                  </h3>
+                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                    استخدمي كود الخصم الترحيبي <strong className="font-mono text-[#A44C5C] bg-white px-2 py-0.5 rounded border border-pink-200">SULTA20</strong> عند إتمام الطلب للحصول على خصم فوري وشحن مجاني!
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={() => setTab('offers')}
+                    className="bg-[#111827] hover:bg-[#A44C5C] text-white px-7 py-3 rounded-xl text-xs font-bold transition-all shadow-md hover:scale-102 cursor-pointer flex items-center gap-2"
+                  >
+                    <span>تسوقي العروض الآن</span>
+                    <ArrowLeft size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. DYNAMIC METRIC-DRIVEN HOMEPAGE PRODUCT SECTIONS */}
+            {[
+              { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
+              { title: 'وصلنا حديثاً ✨', label: 'أحدث تصاميم موسم SULTA الفاخر', data: newArrivals },
+              { title: 'روائع الكوتور واللانجيري 👑', label: 'مختارات مصممة لأمسيات مفعمة بالأناقة', data: featuredProducts },
+              { title: 'المجموعات الموسمية 🌸', label: 'ساتان إيطالي بارد وأرواب دانتيل ساحرة', data: seasonalCollections },
+            ].map((section, sectionIdx) => (
+              <section key={section.title} className={`py-12 ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  
+                  <div className="flex items-center justify-between mb-8 pb-3 border-b border-gray-200/80">
+                    <div className="text-right">
+                      <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                        {section.title}
+                      </h3>
+                      <p className="text-gray-500 text-xs mt-1">
+                        {section.label}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setTab('store')}
+                      className="text-xs font-bold text-[#A44C5C] hover:underline flex items-center gap-1"
+                    >
+                      <span>عرض الكل</span>
+                      <span>←</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5">
+                    {section.data.length > 0 ? section.data.slice(0, 8).map((prod) => {
+                      const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
+                      const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
+                      const isFav = favorites.includes(prod.id);
+
+                      return (
+                        <div
+                          key={prod.id}
+                          className="group flex flex-col h-full bg-white rounded-2xl p-2.5 sm:p-3 overflow-hidden border border-gray-150 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer justify-between"
+                          onClick={() => handleSelectProduct(prod)}
+                        >
+                          <div>
+                            {/* Top Photo Frame */}
+                            <div className="relative aspect-[3/4] overflow-hidden bg-[#F8F9FA] rounded-xl mb-2.5 flex items-center justify-center">
+                              {/* Badges */}
+                              <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+                                {prod.isBestSeller && (
+                                  <span className="bg-[#F59E0B] text-black text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                                    الأكثر طلباً 👑
+                                  </span>
+                                )}
+                                {prod.featured && (
+                                  <span className="bg-[#111827] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs">
+                                    جديد ✨
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Favorite Heart Button */}
+                              <div className="absolute top-2 right-2 z-10">
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
+                                  className="w-7 h-7 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-500 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
+                                  title="إضافة للمفضلة"
+                                >
+                                  <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
+                                </button>
+                              </div>
+
+                              <img
+                                src={cleanImgUrl(prod.images[0], prod.category)}
+                                alt={prod.nameAr || prod.nameEn}
+                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                referrerPolicy="no-referrer"
+                              />
+                            </div>
+
+                            {/* Text details bottom */}
+                            <div className="space-y-1 text-right">
+                              <span className="text-[10px] text-gray-400 font-medium block">
+                                {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
+                              </span>
+                              <h4 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-[#A44C5C] transition-colors">
+                                {prod.nameAr || prod.nameEn}
+                              </h4>
+                              
+                              {/* Rating */}
+                              <div className="flex items-center gap-1 justify-start pt-0.5">
+                                <div className="flex items-center text-amber-400">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                  ))}
+                                </div>
+                                <span className="text-[10px] text-gray-400 font-mono">({prod.reviewsCount || 28})</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Price & Add to Cart button */}
+                          <div className="pt-2 mt-2 border-t border-gray-100 space-y-2">
+                            <div className="flex items-baseline justify-between">
+                              <span className="font-extrabold text-sm sm:text-base text-gray-950 font-mono" dir="ltr">
+                                {priceVal.toLocaleString()} {currencyLabel}
+                              </span>
+                              <span className="text-[9.5px] text-gray-400">شامل الضريبة</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const chosenCol = prod.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
+                                const chosenSz = prod.sizes?.[0] || 'S';
+                                handleAddToCart(prod, chosenCol, chosenSz, 1);
+                              }}
+                              className="w-full py-2 px-3 rounded-xl bg-[#111827] hover:bg-[#A44C5C] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-98 cursor-pointer"
+                            >
+                              <ShoppingBag size={13} />
+                              <span>أضف للسلة</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }) : (
+                      <div className="col-span-full text-center text-gray-400 py-6 text-xs">
+                        جاري تحديث تشكيلة القطع الحالية.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+            ))}
+
+            {/* 6. FULL WIDTH LUXURIOUS BANNER WITH FALLBACK */}
             {(() => {
               const bannerSection = homepageSections.find(s => s.section_key === 'middle_banner');
               const bannerData = bannerSection?.content_json || {
@@ -1019,28 +1172,19 @@ function AppContent() {
               };
               if (!bannerData.active) return null;
               return (
-                <section className="relative py-24 md:py-32 overflow-hidden bg-[#DF8A9D]/20">
-                  <div className="absolute inset-0 z-0 opacity-50">
-                    <img 
-                      src={cleanImgUrl(bannerData.imageUrl)} 
-                      className="w-full h-full object-cover grayscale mix-blend-overlay opacity-30" 
-                      alt="luxury background"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-
-                  <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-6">
-                    <span className="font-sans text-sm tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-2 font-semibold">
+                <section className="relative py-20 md:py-24 overflow-hidden bg-gradient-to-r from-rose-50 via-white to-pink-50 border-y border-pink-100">
+                  <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-4">
+                    <span className="text-xs tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-1.5 font-bold">
                       <Sparkles size={14} />
-                      {bannerData.subtitle}
+                      <span>{bannerData.subtitle}</span>
                     </span>
-                    <h3 className="font-serif text-4xl md:text-5xl lg:text-3xl xl:text-6xl font-normal text-[#A44C5C] tracking-wide leading-tight uppercase">
+                    <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-gray-950 tracking-tight">
                       {bannerData.title}
                     </h3>
-                    <div className="pt-8">
+                    <div className="pt-4">
                       <button
                         onClick={() => setTab('store')}
-                        className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-10 py-4 rounded-full text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105"
+                        className="bg-[#111827] text-white hover:bg-[#A44C5C] px-8 py-3.5 rounded-xl text-xs font-bold transition-all duration-300 shadow-md hover:scale-102 cursor-pointer"
                       >
                         {bannerData.buttonText}
                       </button>
@@ -1050,43 +1194,42 @@ function AppContent() {
               );
             })()}
 
-            {/* FEATURES & UNBOXING (DYNAMIC FROM SUPABASE) */}
+            {/* 7. FEATURES & UNBOXING (DYNAMIC FROM SUPABASE) */}
             <Features homepageSections={homepageSections} />
 
-            {/* NEWSLETTER JOIN SECTION */}
-            <section className="py-24 bg-[#0B0B0B] text-[#FAF5F0]">
-              <div className="max-w-xl mx-auto px-6 text-center space-y-6">
-                
-                <h3 className="font-serif text-3xl md:text-5xl font-light tracking-wide text-[#FAF5F0]">
-                  JOIN SULTA
+            {/* 8. NEWSLETTER JOIN SECTION */}
+            <section className="py-16 bg-[#F8F9FA] text-gray-900 border-t border-gray-200">
+              <div className="max-w-xl mx-auto px-6 text-center space-y-4">
+                <span className="text-2xl">💌</span>
+                <h3 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight">
+                  انضمي إلى نادي SULTA الحصري
                 </h3>
-                <p className="font-sans text-sm tracking-wide text-[#FAF5F0]/70 uppercase">
-                  Subscribe to receive updates, access to exclusive deals, and more.
+                <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
+                  اشتركي لتصلكِ أحدث العروض الحصرية، إشعارات توفر الموديلات الجديدة وكوبونات الخصم قبل الجميع.
                 </p>
 
                 {subscribeSuccess ? (
-                  <div className="bg-[#DF8A9D]/20 p-4 rounded-none border border-[#DF8A9D]/30 text-[#DF8A9D] text-sm font-sans tracking-widest uppercase">
-                    Thank you for subscribing.
+                  <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-emerald-800 text-xs font-bold">
+                    شكراً لاشتراككِ! تم تسجيل بريدكِ بنجاح. 🌸
                   </div>
                 ) : (
-                  <form onSubmit={handleSubscribe} className="pt-6 font-sans flex flex-col sm:flex-row gap-0 max-w-md mx-auto">
+                  <form onSubmit={handleSubscribe} className="pt-2 font-sans flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
                     <input
                       type="email"
-                      placeholder="ENTER YOUR EMAIL ADDRESS"
+                      placeholder="أدخلي بريدكِ الإلكتروني..."
                       value={subscribeEmail}
                       onChange={(e) => setSubscribeEmail(e.target.value)}
-                      className="flex-1 text-xs border-b border-[#FAF5F0]/30 px-2 py-4 bg-transparent text-[#FAF5F0] placeholder-[#FAF5F0]/50 focus:outline-none focus:border-[#DF8A9D] transition-colors uppercase tracking-widest text-center sm:text-left"
+                      className="flex-1 text-xs border border-gray-300 rounded-xl px-4 py-3 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#A44C5C] text-right"
                       required
                     />
                     <button
                       type="submit"
-                      className="bg-transparent text-[#FAF5F0] hover:text-[#DF8A9D] font-bold text-xs px-6 py-4 transition-colors uppercase tracking-widest border-b border-[#FAF5F0]/30 hover:border-[#DF8A9D]"
+                      className="bg-[#111827] text-white hover:bg-[#A44C5C] font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-xs cursor-pointer shrink-0"
                     >
-                      SUBSCRIBE
+                      اشتراك
                     </button>
                   </form>
                 )}
-
               </div>
             </section>
 
@@ -1107,6 +1250,24 @@ function AppContent() {
             onClearSearch={() => handleSearchQueryChange('')}
             onSearchQueryChange={handleSearchQueryChange}
             recentlyViewed={recentlyViewed}
+          />
+        )}
+
+        {/* VIEW: OFFERS PAGE (صفحة العروض والتخفيضات - مثل سلة ونله كير) */}
+        {currentTab === 'offers' && (
+          <StoreView
+            products={filteredProducts}
+            categories={categories}
+            country={country}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onAddToCart={(prod, col, sz) => handleAddToCart(prod, col, sz, 1)}
+            onSelectProduct={handleSelectProduct}
+            searchQuery={searchQuery}
+            onClearSearch={() => handleSearchQueryChange('')}
+            onSearchQueryChange={handleSearchQueryChange}
+            recentlyViewed={recentlyViewed}
+            initialCategory="offers"
           />
         )}
 
@@ -1326,6 +1487,25 @@ function AppContent() {
           />
         )}
 
+          {/* Professional 404 Fallback View */}
+          {!['home', 'offers', 'store', 'collections', 'best-sellers', 'new-arrivals', 'trending', 'luxury-gifts', 'limited-pieces', 'sleep-experience', 'concierge', 'fabrics', 'about', 'contact', 'track-order', 'system-status', 'account', 'faq', 'returns', 'blog', 'magazine', 'luxury-salon', 'ai_mirror', 'royal-senses', 'dashboard', 'dbtest'].includes(currentTab) && (
+            <div className="py-32 flex flex-col items-center justify-center text-center bg-[#FAF9F6] min-h-[60vh] px-4" dir="rtl">
+              <span className="text-8xl mb-4 font-serif text-[#DF8A9C]/20 opacity-50">404</span>
+              <h2 className="text-2xl md:text-3xl font-serif text-[#0B0B0B] mb-4">الغرفة الملكية غير موجودة</h2>
+              <p className="text-gray-500 font-sans max-w-md text-xs md:text-sm leading-relaxed mb-8">
+                يبدو أنكِ بحثتِ عن تصنيف أو صفحة لم تعد متوفرة في صالاتنا. القطع الأنيقة دائماً في تجدد مستمر.
+              </p>
+              <button
+                onClick={() => setTab('home')}
+                className="bg-[#0B0B0B] text-[#F6E7A6] px-8 py-3 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#DF8A9C] hover:text-white transition-all shadow-sm"
+              >
+                العودة للرئيسية
+              </button>
+            </div>
+          )}
+
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* OVERLAY MODAL 1: DYNAMICAL PRODUCT DETAILED VIEW */}
@@ -1376,77 +1556,132 @@ function AppContent() {
         />
       )}
 
-      {/* GLOBAL LUXURY BILINGUAL FOOTER */}
-      <footer className="bg-[#0B0B0B] text-[#FAFAF7]/90 pt-16 pb-8 border-t border-gray-900 select-none font-sans text-xs">
+      {/* GLOBAL SALLA / NALAH STYLE CLEAN WHITE FOOTER */}
+      <footer className="bg-white text-gray-700 pt-16 pb-8 border-t border-gray-200 select-none font-sans text-xs" dir="rtl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           
-          {/* Logo & Motto Column */}
+          {/* Logo & Brand Story Column */}
           <div className="space-y-4">
-            <h2 className="font-serif text-xl sm:text-2xl tracking-widest text-[#F6E7A6] uppercase">{settings?.siteName || 'SULTA'}</h2>
-            <span className="text-[9px] uppercase tracking-[0.2em] font-serif block text-gray-400 italic">
-              {settings?.logo ? 'بوتيك ملابس النوم الفاخرة' : 'حيث تلتقي الراحة بالأناقة الملكية'}
+            <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => setTab('home')}>
+              <span className="font-serif text-2xl font-black tracking-widest text-[#111827] uppercase">
+                {settings?.siteName || 'SULTA'}
+              </span>
+              <span className="text-[#A44C5C] text-sm">👑</span>
+            </div>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-bold block text-gray-400 font-sans -mt-2">
+              سُـلـطَـة · أزياء النوم الفاخرة
             </span>
-            <p className="text-gray-400 text-xs leading-relaxed font-sans max-w-xs pt-2">
-              متجر فريد مصمم لتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ومصر.
+            <p className="text-gray-500 text-xs leading-relaxed max-w-xs pt-1">
+              متجر سعودي متكامل مصمم لتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ومصر بأعلى معايير الجودة والفخامة.
             </p>
-            <div className="pt-4">
-               <img 
-                 src={cleanImgUrl("/img/sulta_luxury_pajama_hero_2_1780682794821.png")} 
-                 alt="Sulta Brand Card" 
-                 className="w-full h-auto rounded-lg shadow-2xl border border-gray-800 opacity-80 hover:opacity-100 transition-opacity"
-               />
-               <SocialLinksView settings={settings} className="flex gap-2 pt-4 justify-start" />
+            <div className="pt-2">
+              <SocialLinksView settings={settings} className="flex gap-2 pt-2 justify-start" />
             </div>
           </div>
 
           {/* Quick Deep links */}
-          <div className="space-y-4">
-            <h4 className="font-serif font-semibold text-sm uppercase text-[#F6E7A6] tracking-wider">روابط سريعة</h4>
-            <div className="flex flex-col gap-2.5 font-sans items-start text-right">
-              <button type="button" onClick={() => setTab('home')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">🏠 الرئيسية</button>
-              <button type="button" onClick={() => setTab('store')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">🛍️ المتجر</button>
-              <button type="button" onClick={() => setIsBottomSearchOpen(true)} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">🔍 البحث الذكي</button>
-              <button type="button" onClick={() => setTab('account')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">❤️ المفضلة</button>
-              <button type="button" onClick={() => setTab('account')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">👤 حسابي الشخصي</button>
-              <button type="button" onClick={() => setTab('dashboard')} className="text-right text-[#F6E7A6] hover:underline font-bold transition-colors cursor-pointer">لوحة الإدارة والتقارير</button>
-              <button type="button" onClick={() => setTab('dbtest')} className="text-right text-gray-600 hover:text-[#c5a059] text-[9px] mt-2 transition-colors cursor-pointer">فحص قاعدة البيانات (Diagnostic)</button>
+          <div className="space-y-3.5">
+            <h4 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
+              روابط المتجر السريعة
+            </h4>
+            <div className="flex flex-col gap-2 font-sans items-start text-right text-gray-600">
+              <button type="button" onClick={() => setTab('home')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الرئيسية</button>
+              <button type="button" onClick={() => setTab('offers')} className="hover:text-[#A44C5C] font-bold text-[#A44C5C] transition-colors cursor-pointer flex items-center gap-1">
+                <span>العروض والتخفيضات الحصرية</span>
+                <span className="bg-red-50 text-red-600 text-[9px] px-1.5 py-0.2 rounded-full font-bold">خصومات</span>
+              </button>
+              <button type="button" onClick={() => setTab('store')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">المتجر الشامل</button>
+              <button type="button" onClick={() => setTab('best-sellers')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأكثر طلباً ومبيعاً</button>
+              <button type="button" onClick={() => setTab('new-arrivals')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">وصل حديثاً</button>
+              <button type="button" onClick={() => setTab('account')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">حسابي والطلبات</button>
+              <button type="button" onClick={() => setTab('dashboard')} className="hover:text-black text-gray-400 text-[10px] transition-colors cursor-pointer mt-1">لوحة الإدارة للبراند</button>
             </div>
           </div>
 
-          {/* Legal and Support */}
-          <div className="space-y-4 font-sans">
-            <h4 className="font-serif font-semibold text-sm uppercase text-[#F6E7A6] tracking-wider">حقوق وبطاقات الدعم</h4>
-            <div className="flex flex-col gap-2.5 items-start text-right">
-              <button type="button" onClick={() => setTab('faq')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
-              <button type="button" onClick={() => setTab('track-order')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">تتبع طلبيتي ومسار المعالجة</button>
-              <button type="button" onClick={() => setTab('returns')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">سياسة الاسترجاع في مصر والسعودية</button>
-              <button type="button" onClick={() => setTab('fabrics')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer">دليل الخامات الرسمي</button>
-              <button type="button" onClick={() => setTab('system-status')} className="text-gray-400 hover:text-[#F4B6C2] transition-colors cursor-pointer text-[10px] uppercase font-bold">حالة المنصة والأنظمة</button>
-              <span className="text-[#F4B6C2] font-semibold text-[10px]">تأمين كلي على الطلبيات المعبأة ورقياً</span>
+          {/* Customer Service & Policies */}
+          <div className="space-y-3.5 font-sans">
+            <h4 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
+              خدمة العملاء والسياسات
+            </h4>
+            <div className="flex flex-col gap-2 items-start text-right text-gray-600">
+              <button type="button" onClick={() => setTab('faq')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
+              <button type="button" onClick={() => setTab('track-order')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">تتبع طلبيتكِ</button>
+              <button type="button" onClick={() => setTab('returns')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
+              <button type="button" onClick={() => setTab('fabrics')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات الحريرية والساتان</button>
+              <button type="button" onClick={() => setTab('contact')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">اتصلي بنا</button>
+              <div className="pt-2 text-[10.5px] text-gray-400 leading-normal">
+                ✓ شحن سريع ومغلف بعناية فائقة<br />
+                ✓ منتجات أصلية 100% مضمونة
+              </div>
             </div>
           </div>
 
-          {/* Target Region and payment systems */}
-          <div className="space-y-4 font-sans">
-            <h4 className="font-serif font-semibold text-sm uppercase text-[#F6E7A6] tracking-wider">وسائل السداد وعملة الشراء</h4>
-            <p className="text-xs text-gray-400">
-              يقبل الموقع الدفع الآمن بنظام التشفير SSL وحرية الاختيار للعملات الأجنبية والمحلية لراحة العميل.
-            </p>
-            <div className="flex flex-wrap gap-2 pt-2">
-              <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">Mada</span>
-              <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">Apple Pay</span>
-              <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">STC Pay</span>
-              <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold">Visa</span>
-              <span className="bg-white/5 border border-white/15 px-2.5 py-1 rounded text-[9px] font-bold font-sans">الدفع عند الاستلام</span>
+          {/* Direct WhatsApp & Payment Badges */}
+          <div className="space-y-3.5 font-sans">
+            <h4 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
+              تواصل واتساب والدعم السريع
+            </h4>
+            <div className="space-y-2 text-xs">
+              <a 
+                href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 hover:bg-emerald-100 hover:border-emerald-300 transition-colors group shadow-2xs"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🇸🇦</span>
+                  <div className="text-right">
+                    <span className="block font-bold text-emerald-950 text-[11px]">واتساب خدمة عملاء السعودية</span>
+                    <span className="text-[10px] text-emerald-700">متاح للمساعدة الفورية والطلبات</span>
+                  </div>
+                </div>
+                <span className="font-mono text-emerald-900 font-black text-xs" dir="ltr">0596894393</span>
+              </a>
+
+              <a 
+                href="https://wa.me/201110095403?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D9%85%D8%B5%D8%B1" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors group shadow-2xs"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🇪🇬</span>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-900 text-[11px]">واتساب خدمة عملاء مصر</span>
+                    <span className="text-[10px] text-gray-500">للاستفسارات ومتابعة الشحنات</span>
+                  </div>
+                </div>
+                <span className="font-mono text-gray-800 font-bold text-xs" dir="ltr">+20 111 009 5403</span>
+              </a>
+            </div>
+
+            <div className="pt-2">
+              <h5 className="font-bold text-[11px] text-gray-900 mb-2">وسائل الدفع المعتمدة</h5>
+              <div className="flex flex-wrap gap-1.5 items-center">
+                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">مدى Mada</span>
+                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">Apple Pay</span>
+                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">تابي Tabby</span>
+                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">تمارا Tamara</span>
+                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">Visa / Master</span>
+                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs font-sans">الدفع عند الاستلام</span>
+              </div>
             </div>
           </div>
 
         </div>
 
-        {/* Bottom credits */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-500 font-sans">
-          <span>حقوق النشر وطبع المحتوى محفوظة © ٢٠٢٦ بيت الأزياء SULTA. جميع العلامات التجارية مسجلة.</span>
-          <span className="font-serif italic text-gray-400 font-bold uppercase tracking-widest">SULTA - حيث تلتقي الراحة بالأناقة الملكية</span>
+        {/* Bottom credits & Salla Trust Stamp */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-sans">
+          <div className="flex items-center gap-2">
+            <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر SULTA للأزياء الفاخرة</span>
+            <span className="text-gray-300">·</span>
+            <span>الرقم الضريبي الموحد مسجل ومعتمد</span>
+          </div>
+          <div className="flex items-center gap-3 text-[11px]">
+            <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
+              ✓ موثق في المركز السعودي للأعمال
+            </span>
+          </div>
         </div>
       </footer>
 
@@ -1481,11 +1716,12 @@ function AppContent() {
                 
                 {[
                   { id: 'home', label: 'الرئيسية 🏠' },
+                  { id: 'offers', label: 'العروض والتخفيضات 🏷️' },
                   { id: 'store', label: 'المتجر والكتالوج 🛍️' },
-                  { id: 'ai_mirror', label: 'مرآة SULTA الذكية 🪞' },
-                  { id: 'collections', label: 'SULTA Collections ✨' },
                   { id: 'best-sellers', label: 'الأكثر مبيعاً 🏆' },
                   { id: 'new-arrivals', label: 'أحدث الإصدارات 🆕' },
+                  { id: 'collections', label: 'SULTA Collections ✨' },
+                  { id: 'ai_mirror', label: 'مرآة SULTA الذكية 🪞' },
                   { id: 'trending', label: 'الأكثر رواجاً 🔥' },
                   { id: 'luxury-gifts', label: 'هدايا SULTA 🎁' },
                   { id: 'limited-pieces', label: 'القطع المحدودة 💎' },
@@ -1506,12 +1742,12 @@ function AppContent() {
                       }}
                       className={`w-full text-right text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
                         isActive
-                          ? 'bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-md scale-[1.01]'
-                          : 'text-gray-700 bg-gray-50/50 hover:bg-pink-50/40 hover:text-black border border-transparent hover:border-[#DF8A9D]/10'
+                          ? 'bg-[#111827] text-white font-bold shadow-xs'
+                          : 'text-gray-700 bg-gray-50 hover:bg-gray-100 hover:text-black border border-transparent'
                       }`}
                     >
                       <span className="font-sans text-[11.5px]">{item.label}</span>
-                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#F6E7A6]" />}
+                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
                     </button>
                   );
                 })}
@@ -1529,7 +1765,7 @@ function AppContent() {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
-                    currentTab === 'account' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'text-gray-650 bg-gray-50/30 hover:bg-pink-50/30'
+                    currentTab === 'account' ? 'bg-[#111827] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
                   <span>الملف الشخصي وطلباتكِ 👤</span>
@@ -1551,8 +1787,23 @@ function AppContent() {
               </div>
             </div>
 
-            {/* Quick Country switcher in Mobile menu list */}
+            {/* Quick Country switcher & WhatsApp in Mobile menu list */}
             <div className="border-t border-gray-100 pt-4 mt-4 space-y-3">
+              <a
+                href={country === 'SA' ? "https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8" : "https://wa.me/201110095403?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-[#25D366] text-white py-2.5 px-3.5 rounded-xl font-sans font-bold text-xs flex items-center justify-between shadow-sm hover:bg-[#20ba59] transition-all"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm">💬</span>
+                  <span>واتساب خدمة العملاء ({country === 'SA' ? 'السعودية 🇸🇦' : 'مصر 🇪🇬'})</span>
+                </span>
+                <span className="font-mono text-[11px] bg-white/20 px-2 py-0.5 rounded-full" dir="ltr">
+                  {country === 'SA' ? '0596894393' : '+201110095403'}
+                </span>
+              </a>
+
               <div className="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border border-gray-100">
                 <span className="text-[11px] font-bold text-gray-500">الوجهة والعملة:</span>
                 <button
@@ -1647,19 +1898,71 @@ function AppContent() {
                   placeholder="ابحثي عن حرير، عرايس، شتوي..."
                   value={searchQuery}
                   onChange={(e) => handleSearchQueryChange(e.target.value)}
-                  className="w-full bg-[#FAF5F0] rounded-full border border-gray-200 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/15 focus:border-[#A44C5C] text-right shadow-2xs"
+                  className="w-full bg-[#FAF5F0] rounded-full border border-gray-200 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/15 focus:border-[#A44C5C] text-right shadow-2xs font-sans"
                 />
                 <button 
                   type="submit"
-                  className="absolute left-3 top-2.5 bg-[#A44C5C] hover:bg-[#A44C5C]/90 text-white text-3xs font-bold px-4 py-2.5 rounded-full cursor-pointer transition-all shadow-2xs"
+                  className="absolute left-3 top-2.5 bg-[#A44C5C] hover:bg-[#A44C5C]/90 text-white text-3xs font-bold px-4 py-2.5 rounded-full cursor-pointer transition-all shadow-2xs font-sans"
                 >
                   بحث
                 </button>
               </form>
+
+              {/* Live instant suggestions for SULTA Search Engine */}
+              {searchQuery.trim().length >= 1 && (
+                <div className="mt-4 border-t border-gray-150 pt-4 space-y-3" dir="rtl">
+                  <div className="text-[10px] text-gray-400 font-bold tracking-wider uppercase font-sans flex items-center justify-between">
+                    <span>اقتراحات فورية ملكية</span>
+                    <span className="bg-amber-50 text-[#c5a059] px-2 py-0.5 rounded-full text-[9px]">
+                      {products.filter(p => {
+                        const q = searchQuery.toLowerCase().trim();
+                        return p.nameAr.toLowerCase().includes(q) || p.categoryAr?.toLowerCase().includes(q) || p.colors?.some(c => c.name.toLowerCase().includes(q));
+                      }).length} قطعة مطابقة
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1">
+                    {products
+                      .filter(p => {
+                        const q = searchQuery.toLowerCase().trim();
+                        return p.nameAr.toLowerCase().includes(q) || p.categoryAr?.toLowerCase().includes(q) || p.colors?.some(c => c.name.toLowerCase().includes(q));
+                      })
+                      .slice(0, 4)
+                      .map((p) => (
+                        <div
+                          key={p.id}
+                          onClick={() => {
+                            setSearchQuery(p.nameAr);
+                            setIsBottomSearchOpen(false);
+                            setTab('store');
+                          }}
+                          className="flex items-center gap-3 p-2 bg-[#FAF5F0]/50 hover:bg-[#FAF5F0] rounded-xl border border-gray-150/40 cursor-pointer transition-all duration-300 group hover:border-[#A44C5C]/30"
+                        >
+                          <div className="w-10 h-12 rounded-lg overflow-hidden bg-white shrink-0 border border-gray-100">
+                            <SultaImage src={p.images?.[0]} alt={p.nameAr} className="w-full h-full" imgClassName="object-cover" />
+                          </div>
+                          <div className="text-right flex-1 min-w-0">
+                            <h4 className="text-xs font-serif font-medium text-gray-900 group-hover:text-[#A44C5C] transition-colors truncate">{p.nameAr}</h4>
+                            <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-gray-400 font-sans">
+                              <span>{p.categoryAr}</span>
+                              <span>•</span>
+                              <span className="text-[#A44C5C] font-semibold">{country === 'EG' ? p.priceEG : p.priceSA} {country === 'EG' ? 'EGP' : 'SAR'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       )}
+
+      <WhatsAppFloat 
+        number={settings?.whatsapp || '201110095403'} 
+        saudiNumber={settings?.whatsappSaudi || '966596894393'} 
+        country={country} 
+      />
 
       <AtelierAudioAtmosphere 
         products={products}

@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useMemo } from 'react';
 import { Sparkles, Heart, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Product, Country } from '../types';
@@ -54,12 +55,7 @@ export default function SmartRecommendations({
         className="group relative bg-[#FAFAF9]/80 border border-stone-200/55 rounded-3xl p-3.5 flex flex-col justify-between hover:bg-white hover:border-[#DF8A9C]/55 hover:shadow-md transition-all duration-300 cursor-pointer text-right"
       >
         <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-stone-100 border border-stone-100">
-          <img 
-            src={prod.images?.[0] || '/img/placeholder.png'} 
-            alt={prod.nameAr}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            referrerPolicy="no-referrer"
-          />
+          <SultaImage src={prod.images?.[0] || "/img/placeholder.png"} alt={prod.nameAr} className="w-full h-full" imgClassName="object-cover group-hover:scale-105 transition-transform duration-700" />
           {/* Tag */}
           {prod.tagAr && (
             <span className="absolute top-2 right-2 bg-[#0B0B0B] text-[#F6E7A6] text-[8px] font-sans font-bold px-2 py-0.5 rounded-full z-10">

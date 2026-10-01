@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -480,7 +481,7 @@ export default function PremiumLuxuryExperience({
                           onClick={() => setSelectedPajama(p)}
                           className={`p-3 border rounded-2xl cursor-pointer transition-all ${selectedPajama?.id === p.id ? 'border-[#DF8A9C] bg-[#DF8A9C]/5 shadow-sm' : 'border-gray-100 hover:border-gray-200'}`}
                         >
-                          <img src={p.images[0]} className="w-full h-24 object-cover rounded-xl mb-2" alt="" />
+                          <SultaImage src={p.images[0]} className="w-full h-24 object-cover rounded-xl mb-2" alt="" />
                           <div className="text-[10px] font-bold text-gray-800 line-clamp-1">{p.nameAr}</div>
                           <div className="text-[10px] text-gray-500 mt-1 font-sans">{formatPrice(p.priceSA, p.priceEG)}</div>
                         </div>
@@ -497,7 +498,7 @@ export default function PremiumLuxuryExperience({
                           onClick={() => setSelectedRobe(p)}
                           className={`p-3 border rounded-2xl cursor-pointer transition-all ${selectedRobe?.id === p.id ? 'border-[#DF8A9C] bg-[#DF8A9C]/5 shadow-sm' : 'border-gray-100 hover:border-gray-200'}`}
                         >
-                          <img src={p.images[0]} className="w-full h-24 object-cover rounded-xl mb-2" alt="" />
+                          <SultaImage src={p.images[0]} className="w-full h-24 object-cover rounded-xl mb-2" alt="" />
                           <div className="text-[10px] font-bold text-gray-800 line-clamp-1">{p.nameAr}</div>
                           <div className="text-[10px] text-gray-500 mt-1 font-sans">{formatPrice(p.priceSA, p.priceEG)}</div>
                         </div>
@@ -514,7 +515,7 @@ export default function PremiumLuxuryExperience({
                           onClick={() => setSelectedAccessory(p)}
                           className={`p-3 border rounded-2xl cursor-pointer transition-all ${selectedAccessory?.id === p.id ? 'border-[#DF8A9C] bg-[#DF8A9C]/5 shadow-sm' : 'border-gray-100 hover:border-gray-200'}`}
                         >
-                          <img src={p.images[0]} className="w-full h-24 object-cover rounded-xl mb-2" alt="" />
+                          <SultaImage src={p.images[0]} className="w-full h-24 object-cover rounded-xl mb-2" alt="" />
                           <div className="text-[10px] font-bold text-gray-800 line-clamp-1">{p.nameAr}</div>
                           <div className="text-[10px] text-gray-500 mt-1 font-sans">{formatPrice(p.priceSA, p.priceEG)}</div>
                         </div>
@@ -533,7 +534,7 @@ export default function PremiumLuxuryExperience({
                   <div className="space-y-3.5">
                     {selectedPajama && (
                       <div className="flex gap-3 bg-white p-2.5 rounded-xl border border-gray-100 items-center">
-                        <img src={selectedPajama.images[0]} className="w-12 h-12 object-cover rounded-lg" alt="" />
+                        <SultaImage src={selectedPajama.images[0]} className="w-12 h-12 object-cover rounded-lg" alt="" />
                         <div className="flex-1 text-[11px]">
                           <span className="text-gray-400 block font-light">بيجامة أساسية</span>
                           <span className="font-bold text-gray-800 line-clamp-1">{selectedPajama.nameAr}</span>
@@ -544,7 +545,7 @@ export default function PremiumLuxuryExperience({
 
                     {selectedRobe && (
                       <div className="flex gap-3 bg-white p-2.5 rounded-xl border border-gray-100 items-center">
-                        <img src={selectedRobe.images[0]} className="w-12 h-12 object-cover rounded-lg" alt="" />
+                        <SultaImage src={selectedRobe.images[0]} className="w-12 h-12 object-cover rounded-lg" alt="" />
                         <div className="flex-1 text-[11px]">
                           <span className="text-gray-400 block font-light">روب / معطف</span>
                           <span className="font-bold text-gray-800 line-clamp-1">{selectedRobe.nameAr}</span>
@@ -555,7 +556,7 @@ export default function PremiumLuxuryExperience({
 
                     {selectedAccessory && (
                       <div className="flex gap-3 bg-white p-2.5 rounded-xl border border-gray-100 items-center">
-                        <img src={selectedAccessory.images[0]} className="w-12 h-12 object-cover rounded-lg" alt="" />
+                        <SultaImage src={selectedAccessory.images[0]} className="w-12 h-12 object-cover rounded-lg" alt="" />
                         <div className="flex-1 text-[11px]">
                           <span className="text-gray-400 block font-light">طقم ملحق</span>
                           <span className="font-bold text-gray-800 line-clamp-1">{selectedAccessory.nameAr}</span>
@@ -675,7 +676,7 @@ export default function PremiumLuxuryExperience({
                             onClick={() => handleToggleGiftItem(p)}
                             className={`p-2.5 border rounded-xl cursor-pointer transition-all relative ${isSelected ? 'border-[#DF8A9C] bg-[#DF8A9C]/5' : 'border-gray-100 hover:border-gray-200'}`}
                           >
-                            <img src={p.images[0]} className="w-full h-16 object-cover rounded-lg mb-1" alt="" />
+                            <SultaImage src={p.images[0]} className="w-full h-16 object-cover rounded-lg mb-1" alt="" />
                             <div className="text-[9px] font-bold text-gray-850 line-clamp-1">{p.nameAr}</div>
                             <span className="text-[9px] text-gray-400 block mt-1 font-sans">{formatPrice(p.priceSA, p.priceEG)}</span>
                             {isSelected && (
@@ -876,7 +877,7 @@ export default function PremiumLuxuryExperience({
                     {quizResults.map((p, idx) => (
                       <div key={p.id} className="border border-gray-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
                         <div>
-                          <img src={p.images[0]} className="w-full h-32 object-cover rounded-xl mb-3" alt="" />
+                          <SultaImage src={p.images[0]} className="w-full h-32 object-cover rounded-xl mb-3" alt="" />
                           <h4 className="font-bold text-xs text-gray-900 line-clamp-1">{p.nameAr}</h4>
                           <p className="text-[10px] text-gray-400 mt-1 line-clamp-2">{p.shortDescription || p.descriptionAr}</p>
                           <span className="text-xs font-sans font-black text-[#DF8A9C] mt-2 block">{formatPrice(p.priceSA, p.priceEG)}</span>
@@ -945,7 +946,7 @@ export default function PremiumLuxuryExperience({
                   {getMoodProducts(activeMood).map(p => (
                     <div key={p.id} className="group relative border border-gray-100 rounded-3xl p-3 bg-white hover:shadow-lg transition-all dark:bg-neutral-900">
                       <div className="relative aspect-square overflow-hidden rounded-2xl mb-3">
-                        <img src={p.images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+                        <SultaImage src={p.images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
                         <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[9px] px-2 py-0.5 rounded-full font-mono">{p.sku}</span>
                       </div>
                       <h4 className="font-bold text-xs text-gray-800 line-clamp-1">{p.nameAr}</h4>
@@ -1011,7 +1012,7 @@ export default function PremiumLuxuryExperience({
                           onClick={() => handleToggleBundleSelection(p)}
                           className={`p-3 border rounded-2xl cursor-pointer transition-all ${isSelected ? 'border-[#DF8A9C] bg-[#DF8A9C]/5 shadow-sm' : 'border-gray-100'}`}
                         >
-                          <img src={p.images[0]} className="w-full h-20 object-cover rounded-xl mb-1.5" alt="" />
+                          <SultaImage src={p.images[0]} className="w-full h-20 object-cover rounded-xl mb-1.5" alt="" />
                           <h4 className="text-[10px] font-bold text-gray-800 line-clamp-1">{p.nameAr}</h4>
                           <span className="text-[10px] text-gray-500 block mt-1 font-sans">{formatPrice(p.priceSA, p.priceEG)}</span>
                         </div>
@@ -1027,7 +1028,7 @@ export default function PremiumLuxuryExperience({
                   <div className="space-y-2">
                     {bundleSlots.map((p, idx) => (
                       <div key={idx} className="flex gap-2.5 bg-white p-2 border border-gray-150 rounded-xl items-center text-[10px]">
-                        <img src={p.images[0]} className="w-9 h-9 object-cover rounded-lg" alt="" />
+                        <SultaImage src={p.images[0]} className="w-9 h-9 object-cover rounded-lg" alt="" />
                         <span className="font-bold text-gray-700 line-clamp-1">{p.nameAr}</span>
                       </div>
                     ))}
@@ -1065,7 +1066,7 @@ export default function PremiumLuxuryExperience({
               {/* Interactive Lookbook Canvas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="relative group overflow-hidden rounded-3xl border border-gray-250 bg-[#0B0B0B]">
-                  <img 
+                  <SultaImage 
                     src={cleanImgUrl("/img/sulta_loungewear.png", "loungewear")} 
                     className="w-full h-[400px] object-cover opacity-80" 
                     alt="Lookbook Winter Campaign" 
@@ -1101,7 +1102,7 @@ export default function PremiumLuxuryExperience({
                   {lookbookSelectedProd ? (
                     <div className="bg-white p-5 border border-gray-150 rounded-2xl space-y-4 shadow-sm">
                       <div className="flex gap-4">
-                        <img src={lookbookSelectedProd.images[0]} className="w-20 h-20 object-cover rounded-xl" alt="" />
+                        <SultaImage src={lookbookSelectedProd.images[0]} className="w-20 h-20 object-cover rounded-xl" alt="" />
                         <div>
                           <h5 className="font-bold text-xs text-gray-950">{lookbookSelectedProd.nameAr}</h5>
                           <p className="text-[10px] text-gray-400 mt-1 line-clamp-2">{lookbookSelectedProd.descriptionAr}</p>
@@ -1259,7 +1260,7 @@ export default function PremiumLuxuryExperience({
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {styleLooks.length > 0 ? styleLooks.map((look, idx) => (
                       <div key={idx} className="border border-gray-150 rounded-2xl overflow-hidden bg-white hover:shadow-md transition-shadow">
-                        <img src={look.photo} className="w-full h-44 object-cover" alt="" />
+                        <SultaImage src={look.photo} className="w-full h-44 object-cover" alt="" />
                         <div className="p-3 space-y-1">
                           <span className="text-[10px] font-bold text-gray-950 block">{look.name}</span>
                           <p className="text-[9px] text-gray-400 line-clamp-2 leading-relaxed">" {look.review} "</p>
@@ -1268,7 +1269,7 @@ export default function PremiumLuxuryExperience({
                     )) : (
                       <>
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src={cleanImgUrl("/img/sulta_product_1.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
+                          <SultaImage src={cleanImgUrl("/img/sulta_product_1.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">ميار أسامة - الرياض</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" خام الساتان ثقيل وبديع، التغليف الملكي عطر الدار يجنن! "</p>
@@ -1276,7 +1277,7 @@ export default function PremiumLuxuryExperience({
                         </div>
 
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src={cleanImgUrl("/img/sulta_product_2.png", "homewear")} className="w-full h-40 object-cover" alt="" />
+                          <SultaImage src={cleanImgUrl("/img/sulta_product_2.png", "homewear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">دينا جلال - القاهرة</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" منسق كوتور للأطقم فادني لتجهيز جهازي، شكراً دار سولتة. "</p>
@@ -1284,7 +1285,7 @@ export default function PremiumLuxuryExperience({
                         </div>
 
                         <div className="border border-gray-150 rounded-2xl overflow-hidden bg-white">
-                          <img src={cleanImgUrl("/img/sulta_sleepwear.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
+                          <SultaImage src={cleanImgUrl("/img/sulta_sleepwear.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">حصة فهد - جدة</span>
                             <p className="text-[9px] text-gray-400 line-clamp-2">" قطن السولتة مريح وصحي جداً أثناء النوم والترطيب مثالي. "</p>

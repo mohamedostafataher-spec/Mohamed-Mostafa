@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar, User, Search, BookOpen, Sparkles, AlertCircle, Quote } from 'lucide-react';
 import { BlogPost } from '../types';
@@ -118,7 +119,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
               >
                 {/* Huge Cover photo */}
                 <div className="lg:col-span-7 aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-neutral-50 rounded-[1.8rem]">
-                  <img 
+                  <SultaImage 
                     src={cleanImgUrl(featuredPost.imageUrl, 'editorial')} 
                     alt={featuredPost.title} 
                     className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-1000" 
@@ -167,7 +168,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
                     className="group cursor-pointer bg-white rounded-[2rem] p-5 border border-[#DF8A9D]/12 hover:border-[#DF8A9D]/30 shadow-2xs hover:shadow-md transition-all duration-500 flex flex-col md:flex-row gap-6 items-center"
                   >
                     <div className="w-full md:w-40 aspect-square overflow-hidden bg-neutral-50 rounded-2xl shrink-0">
-                      <img 
+                      <SultaImage 
                         src={cleanImgUrl(post.imageUrl, post.category)} 
                         alt={post.title} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -197,7 +198,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
                       className="group cursor-pointer bg-white rounded-[2rem] p-5 border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/35 shadow-2xs transition-all duration-500 flex flex-col h-full"
                     >
                       <div className="aspect-[4/3] overflow-hidden bg-neutral-50 rounded-[1.5rem] mb-5">
-                        <img 
+                        <SultaImage 
                           src={imgToUse} 
                           alt={post.title} 
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 

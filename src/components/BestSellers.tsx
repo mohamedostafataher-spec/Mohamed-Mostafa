@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React from 'react';
 import { Star, Heart, TrendingUp, Sparkles, Award } from 'lucide-react';
 import { Product } from '../types';
@@ -64,12 +65,7 @@ export default function BestSellers({
 
               {/* Image Frame */}
               <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-neutral-50 mb-4">
-                <img 
-                  src={imgToUse} 
-                  alt={prod.nameAr}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                  referrerPolicy="no-referrer"
-                />
+                <SultaImage src={imgToUse} alt={prod.nameAr} className="w-full h-full" imgClassName="object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                 
                 {/* Save to Favorites toggle */}
                 <button

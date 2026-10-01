@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useState } from 'react';
 import { Send, Phone, Mail, Clock, Check, Heart } from 'lucide-react';
 import { useToast } from './Toast';
@@ -69,15 +70,7 @@ export default function ContactUs({ settings }: ContactUsProps) {
           {/* Column 1: Info & Work hours block */}
           <div className="space-y-8">
             <div className="rounded-3xl overflow-hidden shadow-xl border border-pink-100 aspect-video mb-8">
-               <img 
-                 src={cleanImgUrl('fallback', 'collections')}
-                 alt="Contact Sulta" 
-                 className="w-full h-full object-cover"
-                 referrerPolicy="no-referrer"
-                 onError={(e) => {
-                   e.currentTarget.src = cleanImgUrl('fallback', 'sleepwear');
-                 }}
-               />
+               <SultaImage src={cleanImgUrl("fallback", "collections")} alt="Contact Sulta" className="w-full h-full" imgClassName="object-cover" />
             </div>
             <div className="bg-[#FAF5F0] border border-[#DF8A9D]/10 rounded-sm p-10 px-8 shadow-sm space-y-8">
               <h3 className="font-serif text-2xl font-light text-[#0B0B0B] pb-4 border-b border-[#DF8A9D]/20 tracking-wider">
@@ -85,14 +78,78 @@ export default function ContactUs({ settings }: ContactUsProps) {
               </h3>
 
               <div className="space-y-6 font-sans text-sm text-gray-700">
-                <div className="flex flex-col gap-1 text-right">
-                  <div className="flex items-center gap-2 mb-1 justify-start">
-                    <Phone size={14} className="text-[#A44C5C] shrink-0" />
-                    <p className="font-serif text-[10px] tracking-widest uppercase text-gray-400">خدمة العملاء وطلبات الواتساب</p>
+                {/* Saudi Arabia Channel */}
+                <div className="flex flex-col gap-1.5 text-right p-3.5 bg-white/70 rounded-xl border border-[#DF8A9D]/15 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Phone size={14} className="text-[#A44C5C] shrink-0" />
+                      <p className="font-serif text-[11px] font-bold tracking-wider uppercase text-gray-700">
+                        خدمة العملاء والواتساب - السعودية 🇸🇦
+                      </p>
+                    </div>
+                    <span className="bg-[#25D366] text-white text-[9px] font-black px-2 py-0.5 rounded-full">
+                      رد فوري
+                    </span>
                   </div>
-                  <a href={`https://wa.me/${settings?.whatsapp || '201110095403'}`} target="_blank" rel="noopener noreferrer" className="font-sans font-medium text-[#0B0B0B] hover:text-[#A44C5C]">
-                    {settings?.contactPhone || '+20 111 009 5403'}
-                  </a>
+                  <div className="flex items-center justify-between pt-1">
+                    <a
+                      href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono font-bold text-base text-[#0B0B0B] hover:text-[#A44C5C] transition-colors"
+                      dir="ltr"
+                    >
+                      {settings?.whatsappSaudi || '0596894393'}
+                    </a>
+                    <a
+                      href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 bg-[#25D366] hover:bg-[#20ba59] text-white text-[11px] font-bold px-3 py-1 rounded-lg transition-colors shadow-xs"
+                    >
+                      <span>محادثة واتساب</span>
+                    </a>
+                  </div>
+                  <span className="text-[10px] text-gray-500 font-sans">
+                    الرقم الدولي: +966 59 689 4393 (متاح طوال اليوم)
+                  </span>
+                </div>
+
+                {/* Egypt Channel */}
+                <div className="flex flex-col gap-1.5 text-right p-3.5 bg-white/70 rounded-xl border border-[#DF8A9D]/15 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Phone size={14} className="text-[#A44C5C] shrink-0" />
+                      <p className="font-serif text-[11px] font-bold tracking-wider uppercase text-gray-700">
+                        خدمة العملاء والواتساب - مصر 🇪🇬
+                      </p>
+                    </div>
+                    <span className="bg-[#25D366] text-white text-[9px] font-black px-2 py-0.5 rounded-full">
+                      رد فوري
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <a
+                      href={`https://wa.me/${(settings?.whatsapp || '201110095403').replace(/\D/g, '')}?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D9%85%D8%B5%D8%B1`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono font-bold text-base text-[#0B0B0B] hover:text-[#A44C5C] transition-colors"
+                      dir="ltr"
+                    >
+                      {settings?.contactPhone || '+20 111 009 5403'}
+                    </a>
+                    <a
+                      href={`https://wa.me/${(settings?.whatsapp || '201110095403').replace(/\D/g, '')}?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D9%85%D8%B5%D8%B1`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 bg-[#25D366] hover:bg-[#20ba59] text-white text-[11px] font-bold px-3 py-1 rounded-lg transition-colors shadow-xs"
+                    >
+                      <span>محادثة واتساب</span>
+                    </a>
+                  </div>
+                  <span className="text-[10px] text-gray-500 font-sans">
+                    الرقم الموحد لكافة محافظات الجمهورية
+                  </span>
                 </div>
 
                 <div className="flex flex-col gap-1 text-right">
@@ -111,7 +168,7 @@ export default function ContactUs({ settings }: ContactUsProps) {
                     <p className="font-serif text-[10px] tracking-widest uppercase text-gray-400">أوقات العمل والمنطقة الزمنية</p>
                   </div>
                   <p className="font-sans font-medium text-[#0B0B0B]">
-                    يومياً من 9:00 صباحاً حتى 11:00 مساءً (بتوقيت مكة والقاهرة)
+                    يومياً من 9:00 صباحاً حتى 11:00 مساءً (بتوقيت مكة المكرمة والقاهرة)
                   </p>
                 </div>
               </div>

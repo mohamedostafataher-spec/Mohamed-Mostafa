@@ -8,6 +8,7 @@ import { dbService, cleanImgUrl } from '../services/db';
 import { ProductPrice } from './ProductPrice';
 import RealPackagingPreview from './RealPackagingPreview';
 import SmartRecommendations from './SmartRecommendations';
+import SultaImage from './SultaImage';
 
 interface ProductDetailModalProps {
   product: Product;
@@ -52,10 +53,9 @@ export default function ProductDetailModal({
 
   // Sync active image if it goes out of bounds for the current display images
   React.useEffect(() => {
-    if (activeImageIdx >= displayImages.length) {
-      setActiveImageIdx(0);
-    }
-  }, [displayImages]);
+    setActiveImageIdx(0);
+    setDirection(0);
+  }, [selectedCol.name]);
 
   const nextImage = () => {
     setDirection(1);
@@ -295,7 +295,7 @@ export default function ProductDetailModal({
 
   // Prefilled WhatsApp order text builder
   const handleOrderWhatsApp = () => {
-    const phoneNumber = '201110095403';
+    const phoneNumber = country === 'SA' ? '966596894393' : (settings?.whatsapp || '201110095403');
     const text = `مرحباً براند Sulta الفاخر 🌸، أريد طلب القطعة التالية:
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}
@@ -534,7 +534,7 @@ export default function ProductDetailModal({
                           }}
                         >
                           {/* The active camera-oriented image matching the angle */}
-                          <img 
+                          <SultaImage 
                             src={activeImage360} 
                             alt="360 rotation angle"
                             className="w-full h-full object-cover object-center pointer-events-none select-none transition-all duration-300"
@@ -814,7 +814,14 @@ export default function ProductDetailModal({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: direction > 0 ? -300 : 300 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="absolute inset-0 flex items-center justify-center bg-[#FAF9F6]"
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={1}
+                    onDragEnd={(e, { offset }) => {
+                      if (offset.x < -50) nextImage();
+                      else if (offset.x > 50) prevImage();
+                    }}
+                    className="absolute inset-0 flex items-center justify-center bg-[#FAF9F6] touch-pan-y"
                   >
                     {displayImages[activeImageIdx]?.match(/\.(mp4|webm|ogg|mov)$/i) || displayImages[activeImageIdx]?.includes('video') ? (
                        <video
@@ -823,12 +830,12 @@ export default function ProductDetailModal({
                           autoPlay muted loop playsInline
                        />
                     ) : (
-                       <img
+                       <SultaImage
                          src={displayImages[activeImageIdx]}
                          alt={product.nameAr}
                          style={zoomStyle}
-                         className={`w-full h-full transition-transform duration-150 ease-out origin-center select-none ${imageScaleMode === 'contain' ? 'object-contain px-2' : 'object-cover'} object-center`}
-                         referrerPolicy="no-referrer"
+                         imgClassName={`transition-transform duration-150 ease-out origin-center select-none ${imageScaleMode === 'contain' ? 'object-contain px-2' : 'object-cover'} object-center`}
+                         className="w-full h-full"
                        />
                     )}
                   </motion.div>
@@ -897,7 +904,7 @@ export default function ProductDetailModal({
                   {img?.match(/\.(mp4|webm|ogg|mov)$/i) || img?.includes('video') ? (
                      <video src={img} className="w-full h-full object-cover object-center" muted playsInline />
                   ) : (
-                     <img src={img} alt="Thumb" className="w-full h-full object-cover object-center" referrerPolicy="no-referrer" />
+                     <SultaImage src={img} alt="Thumb" className="w-full h-full object-cover object-center" referrerPolicy="no-referrer" />
                   )}
                 </button>
               ))}
@@ -1179,6 +1186,21 @@ export default function ProductDetailModal({
                   <span className="text-[8px] text-gray-400 block leading-tight">سيقوم خطاط صالون SULTA بكتابتها يدوياً بماء الذهب لتقديمها كتحفة فنية فريدة! ✨</span>
                 </div>
               )}
+            </div>
+
+            {/* Stock Status Bar */}
+            <div className="mb-4 space-y-1.5" dir="rtl">
+              <div className="flex justify-between items-end">
+                <span className="text-[10px] font-semibold text-gray-500">حالة المخزون:</span>
+                <span className={`text-[10px] font-bold ${isCurrentConfigOutOfStock ? 'text-red-500' : product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                  {isCurrentConfigOutOfStock ? 'نفدت الكمية - بانتظار دفعة جديدة' : product.stock <= 5 ? `متبقي ${product.stock} قطع فقط - سارعي بالطلب!` : 'متوفر وجاهز للشحن الفوري 👑'}
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-1000 ease-out ${isCurrentConfigOutOfStock ? 'bg-red-400 w-[5%]' : product.stock <= 5 ? 'bg-amber-400 w-[15%]' : 'bg-emerald-400 w-[70%]'}`}
+                />
+              </div>
             </div>
 
             {/* Quantity select incrementor */}
@@ -1714,7 +1736,7 @@ export default function ProductDetailModal({
                                {photoReviews.map(r => 
                                   (r.images || []).map((imgUrl, iIdx) => (
                                       <div key={`cust-img-${r.id}-${iIdx}`} className="shrink-0 w-16 h-20 rounded-lg overflow-hidden border border-gray-200 snap-start bg-gray-50 relative group">
-                                         <img src={cleanImgUrl(imgUrl, product.category)} className="w-full h-full object-cover" alt="Customer Photo" />
+                                         <SultaImage src={cleanImgUrl(imgUrl, product.category)} className="w-full h-full object-cover" alt="Customer Photo" />
                                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                             <span className="text-white text-[8px] font-bold">{r.username}</span>
                                          </div>
@@ -1767,7 +1789,7 @@ export default function ProductDetailModal({
                           {r.images && r.images.length > 0 && (
                             <div className="flex gap-2 mt-2">
                                {r.images.map((imgUrl, iIdx) => (
-                                 <img key={`rev-img-${iIdx}`} src={cleanImgUrl(imgUrl, product.category)} className="w-12 h-12 object-cover rounded-md border border-gray-200" alt="Review Evidence" />
+                                 <SultaImage key={`rev-img-${iIdx}`} src={cleanImgUrl(imgUrl, product.category)} className="w-12 h-12 object-cover rounded-md border border-gray-200" alt="Review Evidence" />
                                ))}
                             </div>
                           )}
@@ -2032,7 +2054,7 @@ ${shareUrl}`;
                 </span>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-15 rounded-lg overflow-hidden border border-gray-150 bg-gray-100 shrink-0">
-                    <img referrerPolicy="no-referrer" src={cleanImgUrl(matchedPairProduct.images[0], matchedPairProduct.category)} alt="Pairing Match" className="w-full h-full object-cover" />
+                    <SultaImage referrerPolicy="no-referrer" src={cleanImgUrl(matchedPairProduct.images[0], matchedPairProduct.category)} alt="Pairing Match" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] font-bold text-gray-900 truncate">{matchedPairProduct.nameAr}</p>
@@ -2088,7 +2110,7 @@ ${shareUrl}`;
                 type="button"
                 onClick={() => {
                   if (isCurrentConfigOutOfStock) {
-                    const phoneNumber = '201110095403';
+                    const phoneNumber = country === 'SA' ? '966596894393' : (settings?.whatsapp || '201110095403');
                     const text = `مرحباً براند Sulta الفاخر 🌸، أريد حجز مقاس مسبق (تحت الحياكة اليدوية):
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}

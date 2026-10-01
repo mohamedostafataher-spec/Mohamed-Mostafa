@@ -90,6 +90,7 @@ export default function ExecutiveCommandCenter({
     products.forEach((p) => {
       if (!p.sku || p.sku.trim() === '') healthIssues++;
       if (!p.descriptionAr || p.descriptionAr.trim().length < 20) healthIssues++;
+      if (!p.images || p.images.length === 0 || p.images.some(img => !img || img.trim() === '' || img.includes('placeholder'))) healthIssues++;
     });
 
     return {

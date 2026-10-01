@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useState, useMemo } from 'react';
 import { Star, MessageSquare, Image as ImageIcon, CheckCircle, XCircle, Trash2, EyeOff, Search, TrendingUp, TrendingDown, Eye } from 'lucide-react';
 import { dbService, cleanImgUrl } from '../services/db';
@@ -79,7 +80,7 @@ export default function AdminReviewsCenter({ reviews, products }: AdminReviewsCe
            <div className="flex gap-4">
              {analytics.topRated.map(p => (
                <div key={p.id} className="flex items-center gap-2">
-                 <img src={cleanImgUrl(p.images[0], p.category)} className="w-8 h-8 rounded-md object-cover" />
+                 <SultaImage src={cleanImgUrl(p.images[0], p.category)} className="w-8 h-8 rounded-md object-cover" />
                  <div className="text-right">
                    <p className="text-[10px] font-bold truncate max-w-[100px]">{p.nameAr}</p>
                    <p className="text-[9px] text-amber-500">{'⭐'.repeat(Math.round(p.avgRating))} ({p.reviewCount})</p>
@@ -144,7 +145,7 @@ export default function AdminReviewsCenter({ reviews, products }: AdminReviewsCe
                       <div className="flex gap-2 mt-3">
                         {r.images.map((img, idx) => (
                            <div key={idx} className="relative group rounded-md border border-gray-200 overflow-hidden w-16 h-16 bg-gray-50">
-                             <img src={cleanImgUrl(img)} className="w-full h-full object-cover" />
+                             <SultaImage src={cleanImgUrl(img)} className="w-full h-full object-cover" />
                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                <ImageIcon className="w-4 h-4 text-white" />
                              </div>

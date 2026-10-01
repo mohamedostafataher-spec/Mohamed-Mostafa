@@ -16,6 +16,7 @@ import AdminMarketingCenter from './AdminMarketingCenter';
 import AdminExperienceCenter from './AdminExperienceCenter';
 import AdminPackagingCenter from './AdminPackagingCenter';
 import AdminAICenter from './AdminAICenter';
+import AdminSystemLogs from './AdminSystemLogs';
 import SalesByRegionChart from './SalesByRegionChart';
 import ExecutiveCommandCenter from './ExecutiveCommandCenter';
 
@@ -1380,7 +1381,7 @@ export default function Dashboard({
     }
   });
 
-  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center' | 'packaging_center' | 'ai_center'>('kpis');
+  const [activeMenu, setActiveMenu] = useState<'kpis' | 'products' | 'orders' | 'inventory' | 'customers' | 'discounts' | 'promotions' | 'content' | 'settings' | 'analytics' | 'seo' | 'categories' | 'shipping' | 'collections' | 'media' | 'blog' | 'activity_logs' | 'system_health' | 'homepage' | 'marketing' | 'support' | 'cx' | 'experience_center' | 'packaging_center' | 'ai_center' | 'system_logs'>('kpis');
   const [aiTab, setAiTab] = useState<'forecast' | 'segments' | 'assistant'>('forecast');
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
   const [copiedOrderIds, setCopiedOrderIds] = useState<Record<string, boolean>>({});
@@ -2896,6 +2897,16 @@ export default function Dashboard({
             >
               <Activity size={16} />
               <span>حالة وصحة النظام (System Health)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveMenu('system_logs')}
+              className={`w-full text-right px-4 py-3 rounded-xl transition-all flex items-center gap-3 font-semibold ${
+                activeMenu === 'system_logs' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <Terminal size={16} />
+              <span>سجل الأخطاء التقنية (Error Logs)</span>
             </button>
           </div>
         </nav>
@@ -4503,6 +4514,10 @@ export default function Dashboard({
 
           {activeMenu === 'system_health' && (
             <AdminSystemHealth products={products} orders={orders} categories={categories} />
+          )}
+
+          {activeMenu === 'system_logs' && (
+            <AdminSystemLogs />
           )}
 
           {activeMenu === 'marketing' && (

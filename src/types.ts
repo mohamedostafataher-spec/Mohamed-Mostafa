@@ -39,7 +39,9 @@ export interface Settings {
   heroImages?: string[];
   contactEmail: string;
   contactPhone: string;
+  contactPhoneSaudi?: string;
   whatsapp: string;
+  whatsappSaudi?: string;
   instagram: string;
   facebook: string;
   tiktok: string;

@@ -2,12 +2,13 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Filter, Search, Heart, ShoppingBag, Eye, X, ChevronDown, 
   Sparkles, SlidersHorizontal, ArrowLeft, Play, Info, 
-  Volume2, VolumeX, Check, Grid, RefreshCw, Star, ArrowUpDown, Wand2
+  Volume2, VolumeX, Check, Grid, RefreshCw, Star, ArrowUpDown, Wand2, Tag, Truck, ShieldCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Country, Category } from '../types';
 import StyleAssistant from './StyleAssistant';
 import { ProductPrice } from './ProductPrice';
+import SultaImage from './SultaImage';
 import { cleanImgUrl } from '../services/db';
 
 interface StoreViewProps {
@@ -22,6 +23,7 @@ interface StoreViewProps {
   onClearSearch?: () => void;
   onSearchQueryChange?: (query: string) => void;
   recentlyViewed?: Product[];
+  initialCategory?: string;
 }
 
 export default function StoreView({
@@ -35,18 +37,25 @@ export default function StoreView({
   searchQuery = '',
   onClearSearch,
   onSearchQueryChange,
-  recentlyViewed = []
+  recentlyViewed = [],
+  initialCategory
 }: StoreViewProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
   const [selectedCollection, setSelectedCollection] = useState<string>('all');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
   const [sortBy, setSortBy] = useState<string>('newest');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [mobileLayout, setMobileLayout] = useState<'single' | 'double'>('double');
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [activeThumbIndices, setActiveThumbIndices] = useState<Record<string, number>>({});
   const [cardColorSelections, setCardColorSelections] = useState<Record<string, { name: string; hex: string }>>({});
-  const [isMuted, setIsMuted] = useState(true);
   const [showStyleAssistant, setShowStyleAssistant] = useState(false);
+  const [addedItemIds, setAddedItemIds] = useState<Record<string, boolean>>({});
   
   // Quick view states
   const [qvSelectedSize, setQvSelectedSize] = useState<string>('');
@@ -65,8 +74,11 @@ export default function StoreView({
   // Sync category names dynamically from existing Supabase list
   const displayCategories = useMemo(() => {
     return [
-      { id: 'all', nameAr: 'كل المجموعات الإمبراطورية', nameEn: 'ALL COUTURE COLLECTIONS' },
-      ...categories.map(c => ({ id: c.id, nameAr: c.nameAr || c.name, nameEn: c.nameEn || c.name }))
+      { id: 'all', nameAr: 'جميع المنتجات', icon: '✦' },
+      { id: 'offers', nameAr: 'عروض وتخفيضات 🏷️', icon: '🏷️' },
+      { id: 'new', nameAr: 'وصل حديثاً ✨', icon: '✨' },
+      { id: 'bestseller', nameAr: 'الأكثر مبيعاً 🔥', icon: '👑' },
+      ...categories.map(c => ({ id: c.id, nameAr: c.nameAr || c.name, icon: '🌸' }))
     ];
   }, [categories]);
 
@@ -86,7 +98,13 @@ export default function StoreView({
     let result = products.filter(p => p.status !== 'draft' && p.status !== 'archived');
     
     // Category filter
-    if (selectedCategory !== 'all') {
+    if (selectedCategory === 'offers') {
+      result = result.filter(p => (country === 'EG' ? !!p.salePriceEG : !!p.salePriceSA) || p.rating >= 4.8);
+    } else if (selectedCategory === 'new') {
+      result = result.filter(p => p.featured || p.status === 'active');
+    } else if (selectedCategory === 'bestseller') {
+      result = result.filter(p => p.isBestSeller || p.rating >= 4.8);
+    } else if (selectedCategory !== 'all') {
       result = result.filter(p => p.category === selectedCategory || p.categoryAr === selectedCategory);
     }
 
@@ -95,107 +113,35 @@ export default function StoreView({
       result = result.filter(p => p.collection === selectedCollection);
     }
     
-    // Smart AI Natural Language Search Engine (Satin, comfort, bridal, summer, colors, etc.)
+    // Search query filter
     if (searchQuery) {
       const q = searchQuery.toLowerCase().trim();
-      const qWords = q.split(' ').filter(w => w.length > 2); // get meaningful words
-
       result = result.filter(p => {
-        // Build a massive text corpus for this product
-        const searchableCorpus = `
+        const searchable = `
           ${p.nameEn || ''} ${p.nameAr || ''} 
           ${p.descriptionEn || ''} ${p.descriptionAr || ''} 
           ${p.category || ''} ${p.categoryAr || ''}
           ${p.collection || ''}
           ${p.fabricAr || ''} ${p.fabricEn || ''}
-          ${p.keywords?.join(' ') || ''}
           ${p.colors?.map(c => c.name).join(' ') || ''}
           ${p.tagAr || ''}
         `.toLowerCase();
-
-        // 1. Direct match
-        const directMatch = searchableCorpus.includes(q);
-
-        // 2. Semantic Bridal synonyms
-        const isBridalQuery = q.includes('عروس') || q.includes('جهاز') || q.includes('زفاف') || q.includes('عريس') || q.includes('دانتيل') || q.includes('روب كيمونو');
-        const isBridalProduct = searchableCorpus.includes('عروس') || searchableCorpus.includes('دانتيل') || searchableCorpus.includes('كيمونو') || searchableCorpus.includes('روب');
-        
-        // 3. Semantic Comfort & Summer synonyms
-        const isComfortQuery = q.includes('مريح') || q.includes('صيف') || q.includes('حر') || q.includes('خفيف') || q.includes('بارد');
-        const isComfortProduct = searchableCorpus.includes('حرير') || searchableCorpus.includes('ساتان') || searchableCorpus.includes('قصير') || searchableCorpus.includes('بارد');
-
-        // 4. Color mappings explicitly for semantic requests
-        const isPinkQuery = q.includes('وردي') || q.includes('زهري') || q.includes('بمبى') || q.includes('روز');
-        const isPinkProduct = p.colors?.some(c => c.name?.includes('وردي') || c.name?.toLowerCase().includes('pink') || c.name?.includes('روز'));
-
-        const isWhiteQuery = q.includes('ابيض') || q.includes('أبيض') || q.includes('عاجي') || q.includes('عرائسي أبيض');
-        const isWhiteProduct = p.colors?.some(c => c.name?.includes('أبيض') || c.name?.toLowerCase().includes('white') || c.name?.includes('عاجي'));
-
-        // 5. Intelligent Multi-Word Concept Matching
-        let wordMatchScore = 0;
-        if (qWords.length > 0) {
-          qWords.forEach(word => {
-            if (searchableCorpus.includes(word)) wordMatchScore++;
-            else if (word.includes('عروس') && isBridalProduct) wordMatchScore++;
-            else if (word.includes('صيف') && isComfortProduct) wordMatchScore++;
-            else if (word.includes('مريح') && isComfortProduct) wordMatchScore++;
-            else if (word.includes('وردي') && isPinkProduct) wordMatchScore++;
-            else if (word.includes('ابيض') && isWhiteProduct) wordMatchScore++;
-          });
-        }
-
-        // 6. Price queries via regex (under value)
-        const currentPrice = country === 'EG' ? p.priceEG : p.priceSA;
-        let matchesPriceRange = false;
-        if (q.includes('under') || q.includes('أقل من') || q.includes('اقل من') || q.includes('تحت')) {
-          const num = parseInt(q.replace(/[^0-9]/g, ''), 10);
-          if (num && currentPrice <= num) {
-            matchesPriceRange = true;
-          }
-        }
-
-        // Logic check: if word match score covers requested key themes or explicit match
-        const isSemanticMatch = (qWords.length > 0 && wordMatchScore >= Math.min(2, qWords.length));
-
-        return directMatch || isSemanticMatch || (isBridalQuery && isBridalProduct) || (isPinkQuery && isPinkProduct) || (isComfortQuery && isComfortProduct) || matchesPriceRange;
+        return searchable.includes(q);
       });
     }
 
-    // Sort Metrics
-    result = [...result].sort((a, b) => {
-      const getPrice = (p: Product) => country === 'EG' ? p.priceEG : p.priceSA;
-      if (sortBy === 'price-low') return getPrice(a) - getPrice(b);
-      if (sortBy === 'price-high') return getPrice(b) - getPrice(a);
-      if (sortBy === 'bestseller') return (b.rating || 5) - (a.rating || 5);
+    // Sorting
+    return [...result].sort((a, b) => {
+      const priceA = country === 'EG' ? a.priceEG : a.priceSA;
+      const priceB = country === 'EG' ? b.priceEG : b.priceSA;
+
+      if (sortBy === 'price-low') return priceA - priceB;
+      if (sortBy === 'price-high') return priceB - priceA;
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
-      return b.id.localeCompare(a.id); // Default newest
+      if (sortBy === 'bestseller') return (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0);
+      return 0; // default newest
     });
-
-    return result;
   }, [products, selectedCategory, selectedCollection, searchQuery, sortBy, country]);
-
-  // Determine current active category showcase details
-  const activeCategoryDetails = useMemo(() => {
-    if (selectedCategory === 'all') {
-      return {
-        titleAr: 'الكتالوج الملكي لعلامة SULTA',
-        titleEn: 'THE IMPERIAL SULTA CATALOGUE',
-        descAr: 'تحفة الحرير الملكي الإيطالي والقطن العضوي طويل التيلة المصمم ليزين لياليك بالفخامة والراحة المطلقة.',
-        bgImage: cleanImgUrl('/img/sulta_hero_banner_real.png'),
-        quote: '"الجمال ليس اختيارًا، بل أسلوب حياة تتبنينه داخل عالمك الخاص.."',
-        author: 'SULTA ATELIER'
-      };
-    }
-    const catObj = categories.find(c => c.id === selectedCategory);
-    return {
-      titleAr: catObj?.nameAr || catObj?.name || 'مجموعة فاخرة',
-      titleEn: (catObj?.nameEn || catObj?.name || 'COUTURE DESIGN').toUpperCase(),
-      descAr: `قطع مفعمة بالفخامة والجاذبية مصممة بدقة من خامة ${catObj?.nameAr || 'البراند'} العريقة لتطوق جسدكِ كالغيم المريح.`,
-      bgImage: cleanImgUrl(catObj?.imageUrl || 'fallback', catObj?.slug || 'collections'),
-      quote: `"صيغت لتلبي شغف العرائس وتلامس رقة الروح بنعومة حريرية لا تفنى."`,
-      author: 'إصدارات ليمتد كوتور'
-    };
-  }, [selectedCategory, categories]);
 
   // Handle color change inside inline product card
   const handleCardColorSelect = (productId: string, color: { name: string; hex: string }, event: React.MouseEvent) => {
@@ -209,569 +155,449 @@ export default function StoreView({
     setActiveThumbIndices(prev => ({ ...prev, [productId]: idx }));
   };
 
+  // Trigger feedback when user clicks Add to Cart
+  const handleAddToCartWithFeedback = (product: Product, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const chosenCol = cardColorSelections[product.id] || product.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
+    const chosenSz = product.sizes?.[0] || 'S';
+    
+    onAddToCart(product, chosenCol, chosenSz);
+    setAddedItemIds(prev => ({ ...prev, [product.id]: true }));
+    setTimeout(() => {
+      setAddedItemIds(prev => ({ ...prev, [product.id]: false }));
+    }, 1500);
+  };
+
+  const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
+
   return (
-    <div className="bg-[#FAF9F6] min-h-screen text-[#0C0C0C] font-sans antialiased text-xs md:text-sm">
+    <div className="bg-white min-h-screen text-[#111827] font-sans antialiased text-xs md:text-sm select-none" dir="rtl">
       
-      {/* 1. LARGE HERO COLLECTION BANNER */}
-      <div className="relative w-full h-[65vh] md:h-[80vh] overflow-hidden flex items-end">
-        {/* Parallax Background Frame */}
-        <div className="absolute inset-0 scale-105 select-none transition-all duration-1000">
-          <img 
-            src={activeCategoryDetails.bgImage} 
-            alt={activeCategoryDetails.titleAr} 
-            className="w-full h-full object-cover object-top brightness-[0.7] animate-fade-in duration-1000"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F6] via-transparent to-black/40 z-1" />
-        </div>
-
-        {/* Video Background Layer if any matching products has video under this category */}
-        {useMemo(() => {
-          const catProds = products.filter(p => p.category === selectedCategory && p.video);
-          const firstVid = catProds[0]?.video || '';
-          if (firstVid) {
-            return (
-              <video 
-                src={firstVid} 
-                autoPlay 
-                muted 
-                loop 
-                playsInline 
-                className="absolute inset-0 w-full h-full object-cover brightness-[0.6] transition-opacity duration-1000"
-              />
-            );
-          }
-          return null;
-        }, [selectedCategory, products])}
-
-        {/* Floating Atelier Audio Controller */}
-        <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
-          {/* Mute Button (Desktop only initially) */}
-          <div className="hidden md:flex items-center bg-black/40 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/10 text-white select-none">
-            <button 
-              type="button"
-              onClick={() => setIsMuted(!isMuted)} 
-              className="text-[#FAF5F0] hover:text-[#DF8A9D] transition-colors cursor-pointer flex items-center gap-1.5"
-              title={isMuted ? "تشغيل الصوت" : "كتم الصوت"}
-            >
-              {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} className="animate-pulse" />}
-              <span className="text-[10px] font-sans tracking-widest font-semibold uppercase">⚜️ BRAND ATMOSPHERE</span>
-            </button>
-          </div>
-          
-          {/* Style Assistant Floating Button (Always visible) */}
-          <button
-            onClick={() => setShowStyleAssistant(true)}
-            className="flex items-center gap-2 bg-[#FAF4F5] hover:bg-[#DF8A9C] text-[#DF8A9C] hover:text-white px-3.5 py-2 rounded-full transition-colors border border-white/20 shadow-md backdrop-blur-sm"
-          >
-            <Wand2 size={14} className="animate-pulse" />
-            <span className="text-[10px] font-bold tracking-wide">المستشار 👗</span>
-          </button>
-        </div>
-
-        {/* Content Box */}
-        <div className="absolute bottom-0 inset-x-0 w-full text-center px-6 pb-12 md:pb-24 max-w-4xl mx-auto z-5 space-y-4">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="space-y-2 md:space-y-4"
-          >
-            <span className="text-[10px] md:text-xs text-[#c5a059] tracking-[0.3em] font-sans font-bold uppercase flex items-center justify-center gap-1.5">
-              <Sparkles size={12} className="animate-pulse text-[#FAF5F0]" />
-              SULTA COUTURE PRESENTS
-            </span>
-            <h1 className="font-serif text-3xl md:text-6xl lg:text-7xl font-light text-white tracking-wide uppercase leading-tight drop-shadow-sm font-imperial">
-              {activeCategoryDetails.titleEn}
-            </h1>
-            <p className="font-serif text-sm md:text-xl text-white/95 max-w-2xl mx-auto leading-relaxed italic">
-              {activeCategoryDetails.titleAr} — {activeCategoryDetails.descAr}
-            </p>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="pt-4 flex flex-wrap justify-center gap-3"
-          >
-            <button 
-              type="button"
-              onClick={() => {
-                const galleryElem = document.getElementById('catalog-explore-anchor');
-                if (galleryElem) galleryElem.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-6 py-3.5 bg-[#0C0C0C] text-[#FAF5F0] border border-[#c5a059]/40 hover:bg-[#FAF5F0] hover:text-[#0C0C0C] font-semibold text-[10px] sm:text-xs uppercase tracking-widest transition-all rounded-full cursor-pointer hover:shadow-lg flex items-center gap-2 ring-1 ring-white/10"
-            >
-              <ShoppingBag size={13} />
-              اكتشفي المجموعة الحالية | EXPLORE COLLECTION
-            </button>
-          </motion.div>
-        </div>
-
-        {/* Magazine Frame Ribbon line */}
-        <div className="absolute bottom-0 left-0 w-full h-[6px] bg-gradient-to-r from-[#c5a059] via-[#DF8A9D] to-[#FAF9F6]" />
+      {/* Breadcrumb Navigation (Salla / Nalah Style) */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1 text-[11px] text-gray-500 font-medium flex items-center gap-1.5">
+        <span className="hover:text-black cursor-pointer">الرئيسية</span>
+        <span>/</span>
+        <span className="text-gray-900 font-bold">
+          {selectedCategory === 'offers' ? 'العروض والتخفيضات 🏷️' : displayCategories.find(c => c.id === selectedCategory)?.nameAr || 'المتجر'}
+        </span>
       </div>
 
-      {/* 2. STICKY GLASSMORPHISM FILTER BAR & TOOLBAR */}
-      <div id="catalog-explore-anchor" className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md shadow-xs select-none">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 py-3 flex flex-wrap items-center justify-between gap-4" dir="rtl">
-          
-          {/* Quick Collection Nav Links */}
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar max-w-full md:max-w-xl pb-1 md:pb-0 font-sans">
-            {displayCategories.map(cat => (
+      {/* 1. Salla / Nalah Style Clean White Promotional Hero Banner */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-2">
+        <div className="relative rounded-2xl bg-gradient-to-l from-[#FFF1F2] via-white to-[#FDF2F8] border border-pink-150 p-6 md:p-8 shadow-xs overflow-hidden">
+          {/* Subtle Decorative Background Circles */}
+          <div className="absolute top-0 right-0 w-72 h-72 bg-rose-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-pink-100/40 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-right space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#A44C5C]/10 border border-[#A44C5C]/20 text-[#A44C5C] font-bold text-xs">
+                <Sparkles size={12} />
+                <span>{selectedCategory === 'offers' ? 'تخفيضات وعروض حصرية 🏷️' : 'عروض موسم SULTA الحصرية 🏷️'}</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#111827] leading-tight">
+                {selectedCategory === 'offers' ? 'عروض وتخفيضات ملابس النوم والبيجامات الحريرية' : 'أرقى تصاميم ملابس النوم والبيجامات الحريرية'}
+              </h1>
+              <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                {selectedCategory === 'offers' 
+                  ? 'اكتشفي أقوى عروض التوفير بخصومات تصل إلى 30% مع شحن سريع وتوصيل لباب بيتكِ في كافة مناطق المملكة ومصر.'
+                  : 'اكتشفي تشكيلة الساتان الإيطالي الفاخر وأرواب العرايس بخصومات فورية وتوصيل سريع لباب بيتكِ في كافة مناطق المملكة ومصر.'}
+              </p>
+              
+              {/* Trust badges row */}
+              <div className="flex flex-wrap items-center gap-4 pt-2 text-[11px] font-semibold text-gray-500">
+                <span className="flex items-center gap-1.5 text-gray-700">
+                  <Truck size={14} className="text-[#A44C5C]" />
+                  <span>شحن سريع ومجاني للطلبات المؤهلة</span>
+                </span>
+                <span className="text-gray-300">·</span>
+                <span className="flex items-center gap-1.5 text-gray-700">
+                  <ShieldCheck size={14} className="text-emerald-600" />
+                  <span>ضمان الجودة والاستبدال السهل</span>
+                </span>
+                <span className="text-gray-300">·</span>
+                <span className="flex items-center gap-1.5 text-gray-700">
+                  <Tag size={14} className="text-amber-600" />
+                  <span>شامل الضريبة وبدون رسوم خفية</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Promo Action Card */}
+            <div className="shrink-0 bg-white border border-gray-200 p-4 sm:p-5 rounded-2xl shadow-xs text-center space-y-2.5 w-full md:w-72">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">كود خصم ترحيبي إضافي</span>
+              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl py-2 px-3 flex items-center justify-between">
+                <span className="font-mono text-sm font-black text-[#A44C5C] tracking-wider" dir="ltr">SULTA20</span>
+                <span className="text-[10px] bg-[#A44C5C] text-white px-2 py-0.5 rounded-md font-bold">خصم 20%</span>
+              </div>
+              <p className="text-[10px] text-gray-500 leading-normal">
+                يُطبق تلقائياً في السلة للطلبيات الأولى! 🌸
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Salla Style Horizontal Scrollable Category Pills Bar */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+          {displayCategories.map(cat => {
+            const isSelected = selectedCategory === cat.id;
+            return (
               <button
                 key={cat.id}
-                onClick={() => { setSelectedCategory(cat.id); setSelectedCollection('all'); }}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] md:text-xs font-semibold tracking-wider transition-all uppercase cursor-pointer ${
-                  selectedCategory === cat.id 
-                    ? 'bg-[#0C0C0C] text-[#FAF5F0] shadow-sm' 
-                    : 'text-gray-500 hover:text-[#0C0C0C] hover:bg-gray-100'
+                onClick={() => {
+                  setSelectedCategory(cat.id);
+                  setSelectedCollection('all');
+                }}
+                className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isSelected
+                    ? 'bg-[#111827] text-white shadow-sm scale-102'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-900 hover:bg-gray-50'
                 }`}
               >
-                {cat.nameAr}
+                <span>{cat.nameAr}</span>
               </button>
-            ))}
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. Sticky Filter & Sorting Toolbar */}
+      <div id="catalog-explore-anchor" className="sticky top-[110px] sm:top-[120px] z-30 w-full border-y border-gray-200 bg-white/95 backdrop-blur-md shadow-2xs">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
+          
+          {/* Products Count Indicator */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-gray-900">
+              جميع المنتجات
+            </span>
+            <span className="bg-gray-100 text-gray-600 text-[11px] font-bold px-2 py-0.5 rounded-full font-mono">
+              {filteredProducts.length} قطعة
+            </span>
           </div>
 
-          {/* Right Toolbar Options */}
-          <div className="flex items-center gap-3 font-sans w-full sm:w-auto justify-between sm:justify-start">
+          {/* Right Toolbar: Search & Sort Dropdown */}
+          <div className="flex items-center gap-2.5">
             
-            {/* Mobile Layout Switcher Toggle */}
-            <div className="flex items-center gap-1.5 border-l border-gray-200 pl-3">
+            {/* Mobile Layout Switcher */}
+            <div className="flex items-center border border-gray-200 rounded-lg p-0.5 bg-gray-50 sm:hidden">
               <button
                 type="button"
                 onClick={() => setMobileLayout('single')}
-                className={`p-1.5 rounded-md transition-colors cursor-pointer ${mobileLayout === 'single' ? 'bg-pink-55 text-[#A44C5C]' : 'text-gray-400 hover:text-gray-800'}`}
-                title="عرض تصفح كامل الصفحة"
+                className={`p-1 rounded text-xs transition-colors ${mobileLayout === 'single' ? 'bg-white shadow-2xs font-bold text-black' : 'text-gray-400'}`}
+                title="عرض فردي"
               >
                 📱
               </button>
               <button
                 type="button"
                 onClick={() => setMobileLayout('double')}
-                className={`p-1.5 rounded-md transition-colors cursor-pointer ${mobileLayout === 'double' ? 'bg-pink-55 text-[#A44C5C]' : 'text-gray-400 hover:text-gray-800'}`}
+                className={`p-1 rounded text-xs transition-colors ${mobileLayout === 'double' ? 'bg-white shadow-2xs font-bold text-black' : 'text-gray-400'}`}
                 title="شبكة مزدوجة"
               >
-                <Grid size={15} />
+                <Grid size={14} />
               </button>
             </div>
 
-            {/* Smart Search box inside sticky toolbar */}
-            <div className="relative max-w-[170px] sm:max-w-xs flex-1">
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            {/* Inline Quick Search Box */}
+            <div className="relative w-36 sm:w-48 hidden md:block">
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                 <Search size={13} />
               </span>
               <input
                 type="text"
-                placeholder="ابحثي..."
+                placeholder="تصفية الموديلات..."
                 value={searchQuery}
                 onChange={(e) => onSearchQueryChange && onSearchQueryChange(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-full pr-8 pl-8 py-1.5 text-xs text-[#0B0B0B] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#A44C5C] focus:bg-white text-right font-sans"
+                className="w-full bg-gray-50 hover:bg-white focus:bg-white border border-gray-200 focus:border-gray-400 rounded-lg pr-7 pl-6 py-1.5 text-xs text-gray-900 placeholder-gray-400 outline-hidden"
               />
               {searchQuery && (
                 <button
                   onClick={() => onClearSearch && onClearSearch()}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black"
                 >
-                  <X size={10} />
+                  <X size={12} />
                 </button>
               )}
             </div>
 
-            {/* Premium Sorting dropdown */}
-            <div className="relative shrink-0 flex items-center gap-1">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider hidden md:inline">فرز:</span>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-gray-50 border border-gray-200 rounded-full pr-3 pl-8 py-1.5 text-xs text-gray-800 focus:outline-none cursor-pointer hover:bg-gray-100 transition-colors"
-                >
-                  <option value="newest">وصلنا حديثاً ⚜️</option>
-                  <option value="bestseller font-sans">الأكثر طلباً 👑</option>
-                  <option value="price-low">السعر: من الأقل</option>
-                  <option value="price-high">السعر: من الأعلى</option>
-                  <option value="rating">التقييم الأعلى ⭐</option>
-                </select>
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                  <ChevronDown size={11} />
-                </div>
+            {/* Salla Sort Dropdown */}
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="appearance-none bg-white border border-gray-200 hover:border-gray-400 rounded-lg pr-3 pl-8 py-1.5 text-xs font-semibold text-gray-800 outline-hidden cursor-pointer transition-colors shadow-2xs"
+              >
+                <option value="newest">الأحدث وصولاً ✨</option>
+                <option value="bestseller">الأكثر طلباً 🔥</option>
+                <option value="price-low">السعر: من الأقل للأعلى</option>
+                <option value="price-high">السعر: من الأعلى للأقل</option>
+                <option value="rating">التقييم الأعلى ⭐</option>
+              </select>
+              <div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <ChevronDown size={13} />
               </div>
             </div>
+
           </div>
+
         </div>
       </div>
 
-      {/* 3. COLLECTION CLASSIFIERS CHIPS BAR (FOR QUICK RESETS) */}
-      {(selectedCategory !== 'all' || selectedCollection !== 'all' || searchQuery) && (
-        <div className="bg-[#FAFAF9] border-b border-gray-100 py-3 select-none">
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 flex flex-wrap items-center gap-2" dir="rtl">
-            <span className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">المرشحات النشطة:</span>
-            
-            {selectedCategory !== 'all' && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#A44C5C]/5 border border-[#A44C5C]/20 rounded-full text-[10px] font-semibold text-[#A44C5C]">
-                <span>المجموعة: {categories.find(c => c.id === selectedCategory)?.nameAr || selectedCategory}</span>
-                <button type="button" onClick={() => setSelectedCategory('all')} className="hover:text-red-600 transition-colors">✕</button>
-              </span>
-            )}
-
-            {selectedCollection !== 'all' && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/5 border border-amber-500/20 rounded-full text-[10px] font-semibold text-amber-800">
-                <span>التشكيلة والموسم: {selectedCollection}</span>
-                <button type="button" onClick={() => setSelectedCollection('all')} className="hover:text-red-600 transition-colors">✕</button>
-              </span>
-            )}
-
-            {searchQuery && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/5 border border-blue-500/20 rounded-full text-[10px] font-semibold text-blue-800">
-                <span>بحث: "{searchQuery}"</span>
-                <button type="button" onClick={() => onClearSearch && onClearSearch()} className="hover:text-red-600 transition-colors">✕</button>
-              </span>
-            )}
-
-            <button
-              onClick={() => { setSelectedCategory('all'); setSelectedCollection('all'); onClearSearch && onClearSearch(); }}
-              className="text-[10px] font-bold text-gray-500 hover:text-black underline transition-colors pr-2"
-            >
-              Reset All / عرض كل الكتالوج
-            </button>
-          </div>
+      {/* 4. Active Filters Reset Chips */}
+      {(selectedCategory !== 'all' || searchQuery) && (
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-2 flex-wrap">
+          <span className="text-[11px] text-gray-400 font-bold">تصفية نشطة:</span>
+          {selectedCategory !== 'all' && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-800 text-[11px] font-bold border border-gray-200">
+              <span>{displayCategories.find(c => c.id === selectedCategory)?.nameAr || selectedCategory}</span>
+              <button onClick={() => setSelectedCategory('all')} className="hover:text-red-600 font-bold mr-1">✕</button>
+            </span>
+          )}
+          {searchQuery && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 text-[11px] font-bold border border-blue-200">
+              <span>بحث: "{searchQuery}"</span>
+              <button onClick={() => onClearSearch && onClearSearch()} className="hover:text-red-600 font-bold mr-1">✕</button>
+            </span>
+          )}
+          <button
+            onClick={() => { setSelectedCategory('all'); onClearSearch && onClearSearch(); }}
+            className="text-[11px] font-bold text-[#A44C5C] hover:underline"
+          >
+            إلغاء التصفية
+          </button>
         </div>
       )}
 
-      {/* 4. MAIN MAGAZINE CATALOG LAYOUT & BENTO GRID */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-16">
+      {/* 5. Main Salla E-Commerce Product Cards Grid */}
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-28 bg-white border border-gray-150 rounded-3xl max-w-lg mx-auto p-8 shadow-xs" dir="rtl">
-            <div className="w-14 h-14 bg-pink-50 text-[#A44C5C] flex items-center justify-center rounded-2xl mx-auto mb-4 text-xl">✨</div>
-            <h3 className="font-serif text-lg text-gray-700 font-bold mb-1">القطع الفاخرة تحت الإعداد</h3>
-            <p className="text-gray-400 text-xs mb-6">لم يتم العثور على أي قطع بالمسمى المبحوث عنه حالياً في هذا التصنيف.</p>
-            <button 
-              onClick={() => { setSelectedCategory('all'); setSelectedCollection('all'); onClearSearch && onClearSearch(); setSortBy('newest'); }}
-              className="px-5 py-2.5 bg-[#0C0C0C] text-white hover:bg-[#A44C5C] rounded-full transition-colors text-[10px] font-semibold tracking-widest uppercase cursor-pointer"
+          <div className="text-center py-20 bg-gray-50 border border-gray-200 rounded-3xl max-w-md mx-auto p-8 my-8 shadow-xs">
+            <div className="w-16 h-16 bg-white text-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm border border-gray-100">
+              🛍️
+            </div>
+            <h3 className="text-base font-bold text-gray-900 mb-1">لم يتم العثور على قطع تطابق بحثكِ</h3>
+            <p className="text-gray-500 text-xs mb-6 leading-relaxed">
+              جرّبي تغيير كلمات البحث أو استعراض جميع التشكيلات للاستمتاع بأحدث تصاميم SULTA.
+            </p>
+            <button
+              onClick={() => { setSelectedCategory('all'); onClearSearch && onClearSearch(); }}
+              className="bg-[#111827] text-white px-6 py-2.5 rounded-xl font-bold text-xs hover:bg-[#A44C5C] transition-colors"
             >
-              العودة للتشكيلة الكاملة
+              عرض جميع الموديلات
             </button>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-12">
+          <div className={`grid gap-3 sm:gap-5 ${
+            mobileLayout === 'single'
+              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+              : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+          }`}>
             
-            {/* Desktop Left Minimal Sidebar Filtering */}
-            <aside className="w-full lg:w-64 shrink-0 hidden lg:block select-none" dir="rtl">
-              <div className="sticky top-28 space-y-8">
-                
-                {/* Brand Logo Stamp */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-150 text-center space-y-4">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 bg-[#FAF5F0] border border-[#c5a059]/30 rounded-full flex items-center justify-center mx-auto text-xs">👑</div>
-                    <strong className="font-serif uppercase tracking-[0.25em] text-[#0C0C0C] text-[10px] block">SULTA ATELIER</strong>
-                    <p className="text-gray-400 text-[10px]">حياكة يدوية خاصة وتوليفات الحرير الملكي الفاخر منذ التأسيس.</p>
-                  </div>
-                  
-                  <button
-                    onClick={() => setShowStyleAssistant(true)}
-                    className="w-full flex items-center justify-center gap-2 bg-[#FAF4F5] hover:bg-[#DF8A9C] text-[#DF8A9C] hover:text-white px-4 py-2.5 rounded-xl transition-colors group border border-[#DF8A9C]/20"
-                  >
-                    <Wand2 size={14} className="group-hover:animate-spin" />
-                    <span className="text-[10px] font-bold">مستشار العناية والستايل 👗</span>
-                  </button>
-                </div>
-
-                {/* Subcategories widget */}
-                <div className="space-y-4">
-                  <h4 className="font-serif text-xs font-black tracking-widest uppercase text-gray-900 border-b border-gray-150 pb-2">التصنيفات الإمبراطورية</h4>
-                  <ul className="space-y-2.5 font-sans">
-                    {displayCategories.map(cat => (
-                      <li key={cat.id}>
-                        <button
-                          onClick={() => { setSelectedCategory(cat.id); setSelectedCollection('all'); }}
-                          className={`text-right w-full flex items-center justify-between text-xs transition-colors py-1 ${
-                            selectedCategory === cat.id 
-                              ? 'text-[#A44C5C] font-semibold border-r-2 border-[#A44C5C] pr-2' 
-                              : 'text-gray-500 hover:text-black'
-                          }`}
-                        >
-                          <span>{cat.nameAr}</span>
-                          <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-mono">
-                            {products.filter(p => p.status === 'active' && (cat.id === 'all' || p.category === cat.id)).length}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Collections list from Supabase */}
-                {availableCollections.length > 1 && (
-                  <div className="space-y-4">
-                    <h4 className="font-serif text-xs font-black tracking-widest uppercase text-gray-900 border-b border-gray-150 pb-2">التشكيلات الحصرية</h4>
-                    <ul className="space-y-2.5 text-xs font-sans">
-                      {availableCollections.map(col => (
-                        <li key={col}>
-                          <button
-                            onClick={() => setSelectedCollection(col)}
-                            className={`text-right w-full flex items-center justify-between transition-colors py-1 ${
-                              selectedCollection === col 
-                                ? 'text-[#c5a059] font-bold border-r-2 border-[#c5a059] pr-2' 
-                                : 'text-gray-500 hover:text-black'
-                            }`}
-                          >
-                            <span className="uppercase tracking-wider">{col === 'all' ? 'جميع العروض والمجموعات' : col}</span>
-                            {col !== 'all' && (
-                              <span className="text-[9px] text-[#c5a059] bg-yellow-50 px-1 rounded">
-                                LIMIT
-                              </span>
-                            )}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Luxury Seal Statement */}
-                <div className="pt-4 border-t border-gray-150 text-[10px] text-gray-400 leading-relaxed font-serif italic text-right space-y-1">
-                  <p>⚜️ التوصيل والاطمئنان الملكي متاح لعملاء مصر والموزعين في دول الخليج.</p>
-                  <p>⚜️ تغليف هجين بعطور الدار وصندوق ذهبي مبطن.</p>
-                </div>
-
-              </div>
-            </aside>
-
-            {/* FASHION MAGAZINE ASYMMETRIC GRID VIEW */}
-            <main className="flex-1 w-full">
+            {filteredProducts.map((product, index) => {
+              const isFav = favorites.includes(product.id);
+              const cardColorSel = cardColorSelections[product.id];
+              const activeImgIdx = activeThumbIndices[product.id] || 0;
+              const isAdded = !!addedItemIds[product.id];
               
-              <div className={`grid gap-x-4 sm:gap-x-6 gap-y-10 sm:gap-y-16 ${
-                mobileLayout === 'single'
-                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'
-                  : 'grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'
-              }`}>
-                
-                {filteredProducts.map((product, index) => {
-                  const currentPrice = country === 'EG' ? product.priceEG : product.priceSA;
-                  const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
-                  const isFav = favorites.includes(product.id);
-                  
-                  // Active image selection (dynamic thumb swipe index OR color selection change)
-                  const cardColorSel = cardColorSelections[product.id];
-                  const activeImgIdx = activeThumbIndices[product.id] || 0;
-                  
-                  // Choose background colors according to card rhythm
-                  const isEditorialFeature = index % 5 === 0 && mobileLayout === 'single'; // Break grid with larger content on single layout
-                  
-                  // Select source image
-                  let currentImg = cleanImgUrl(product.images?.[activeImgIdx], product.category);
-                  
-                  return (
-                    <div 
-                      key={product.id} 
-                      className={`group flex flex-col relative transition-all duration-300 select-none ${
-                        isEditorialFeature 
-                          ? 'col-span-full bg-[#FAF5F0] p-4 sm:p-8 rounded-3xl border border-[#DF8A9D]/15 flex-col md:flex-row gap-6 md:gap-10 items-center justify-between text-right' 
-                          : 'bg-white rounded-2xl p-2 sm:p-3.5 border border-gray-100 hover:shadow-lg hover:border-[#DF8A9D]/20 duration-500'
-                      }`}
-                      onClick={() => onSelectProduct(product)}
-                    >
-                      {/* Left Block or Main Thumb Frame */}
-                      <div className={`relative overflow-hidden rounded-xl bg-gray-50 flex-shrink-0 cursor-pointer ${
-                        isEditorialFeature 
-                          ? 'w-full md:w-1/2 aspect-[4/5] sm:aspect-[3/4]' 
-                          : 'w-full aspect-[3/4]'
-                      }`}>
-                        
-                        {/* Render Main Video if first index has video metadata */}
-                        {currentImg && (currentImg.match(/\.(mp4|webm|ogg|mov)$/i) || currentImg.includes('video')) ? (
-                          <div className="w-full h-full relative">
-                            <video 
-                              src={currentImg} 
-                              className="w-full h-full object-cover" 
-                              autoPlay 
-                              muted 
-                              loop 
-                              playsInline 
-                            />
-                            <span className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-[9px] text-[#FAF5F0] px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-                              <Play size={8} fill="currentColor" /> LIVE RUNWAY
-                            </span>
-                          </div>
-                        ) : (
-                          <img 
-                            src={currentImg} 
-                            alt={product.nameEn || product.nameAr} 
-                            className="w-full h-full object-cover transition-transform duration-[1000ms] group-hover:scale-105"
-                            referrerPolicy="no-referrer"
-                          />
-                        )}
+              // Select active image
+              const currentImg = cleanImgUrl(product.images?.[activeImgIdx], product.category);
 
-                        {/* Top Wishlist Heart Stamp */}
-                        <div className="absolute top-3 right-3 z-10">
-                          <button 
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
-                            className="p-2 rounded-full bg-white/80 backdrop-blur-md hover:bg-white text-gray-500 hover:text-red-500 shadow-sm transition-transform hover:scale-110 cursor-pointer"
-                            title="إضافة للمفضلة الملكية"
-                          >
-                            <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
-                          </button>
-                        </div>
+              // Calculate price & discount for Salla badge
+              const currentPrice = country === 'EG' ? product.priceEG : product.priceSA;
+              const hasSale = country === 'EG' ? !!product.salePriceEG : !!product.salePriceSA;
+              const discountVal = (product.rating >= 4.8) ? 25 : 20;
 
-                        {/* BestSeller Gold Bow Crown Badge */}
-                        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1 items-start">
-                          {product.isBestSeller && (
-                            <span className="bg-[#FAF5F0] text-[#A44C5C] text-[8px] md:text-[9px] font-black uppercase tracking-widest px-2.5 py-1 border border-[#A44C5C]/20 shadow-xs">
-                              👑 BEST SELLER
-                            </span>
-                          )}
-                          {product.stock <= 3 && product.stock > 0 && (
-                            <span className="bg-red-500 text-white text-[8px] md:text-[9px] font-black px-2 py-0.5 shadow-xs">
-                              أوشك على النفاذ ليمتد 🚨
-                            </span>
-                          )}
-                        </div>
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-2xl border border-gray-150 hover:border-gray-300 p-2.5 sm:p-3 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative cursor-pointer"
+                  onClick={() => onSelectProduct(product)}
+                >
+                  
+                  {/* Top Image Frame (3:4 aspect ratio) */}
+                  <div>
+                    <div className="relative bg-[#F8F9FA] rounded-xl overflow-hidden aspect-[3/4] flex items-center justify-center">
+                      
+                      {/* Sulta Image with Smooth Hover Zoom */}
+                      <SultaImage 
+                        src={currentImg} 
+                        alt={product.nameAr || product.nameEn} 
+                        className="w-full h-full"
+                        imgClassName="transition-transform duration-700 group-hover:scale-105 object-cover"
+                      />
 
-                        {/* ADVANCED MULTI-THUMB HOVER GALLERY DESK (Dash Indicator Swiper) */}
-                        {product.images && product.images.length > 1 && (
-                          <div className="absolute bottom-3 inset-x-0 mx-auto max-w-[80%] flex justify-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            {product.images.slice(0, 5).map((imgUrl, idx) => (
-                              <div
-                                key={idx}
-                                onMouseEnter={(e) => handleThumbHover(product.id, idx, e)}
-                                className={`h-1 flex-1 rounded-full transition-all cursor-pointer ${
-                                  activeImgIdx === idx ? 'bg-[#A44C5C] w-4' : 'bg-white/50 backdrop-blur-xs'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Quick View Floating Trigger Circle */}
+                      {/* Top Right: Wishlist Heart Floating Button */}
+                      <div className="absolute top-2.5 right-2.5 z-10">
                         <button
                           type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setQuickViewProduct(product);
-                          }}
-                          className="absolute inset-0 m-auto w-12 h-12 bg-white/90 backdrop-blur-sm shadow-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110 text-gray-800"
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
+                          className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-red-500 shadow-sm backdrop-blur-xs flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                          title="إضافة للمفضلة"
                         >
-                          <Eye size={17} />
+                          <Heart size={14} className={isFav ? "fill-red-500 text-red-500" : ""} />
                         </button>
                       </div>
 
-                      {/* Right Block or Bottom Details Area */}
-                      <div className={`flex flex-col justify-between py-2 text-right ${
-                        isEditorialFeature 
-                          ? 'w-full md:w-1/2 space-y-4 pr-0 md:pr-4' 
-                          : 'space-y-2 mt-2'
-                      }`}>
-                        
-                        <div className="space-y-1">
-                          
-                          {/* Editorial Number & Segment */}
-                          <div className="flex items-center justify-between text-3xs tracking-widest text-[#c5a059] uppercase font-mono font-bold">
-                            <span>{product.collection || 'Sulta Star⭐️'}</span>
-                            <span>N° 0{index + 1}</span>
-                          </div>
-
-                          {/* Product Title in Bold Royal Serif */}
-                          <h3 className="font-serif text-sm md:text-base font-medium text-[#0C0C0C] group-hover:text-[#A44C5C] duration-300 tracking-wide line-clamp-1">
-                            {product.nameAr || product.nameEn}
-                          </h3>
-
-                          {/* Luxury Description (if editorial layout) */}
-                          {isEditorialFeature && (
-                            <p className="text-gray-500 text-xs line-clamp-3 leading-relaxed pt-1 select-text">
-                              {product.descriptionAr || product.descriptionEn}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* COLOR SWATCH PATROL (Interactive dot switcher) */}
-                        {product.colors && product.colors.length > 0 && (
-                          <div className="flex items-center gap-1.5 justify-start py-1">
-                            {product.colors.map((col, cIdx) => {
-                              const isSelected = cardColorSel ? cardColorSel.name === col.name : cIdx === 0;
-                              return (
-                                <button
-                                  key={col.name}
-                                  type="button"
-                                  onClick={(e) => handleCardColorSelect(product.id, col, e)}
-                                  className={`w-3.5 h-3.5 rounded-full border transition-all cursor-pointer ${
-                                    isSelected ? 'scale-125 ring-1 ring-[#c5a059] border-white' : 'border-gray-200'
-                                  }`}
-                                  style={{ backgroundColor: col.hex }}
-                                  title={col.name}
-                                />
-                              );
-                            })}
-                            <span className="text-3xs text-gray-400 font-sans tracking-wide">
-                              ({cardColorSel ? cardColorSel.name : product.colors[0]?.name})
-                            </span>
-                          </div>
+                      {/* Top Left: Badges (Discount / Best Seller / New) */}
+                      <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1 items-start">
+                        {discountVal > 0 && (
+                          <span className="bg-[#E11D48] text-white text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                            خصم {discountVal}%
+                          </span>
                         )}
-
-                        {/* Sizes bar indicator */}
-                        {product.sizes && product.sizes.length > 0 && (
-                          <div className="flex items-center gap-1 text-[9px] font-semibold text-gray-400 font-sans justify-start">
-                            <span>المقاسات:</span>
-                            {product.sizes.map(sz => (
-                              <span key={sz} className="px-1 border border-gray-150 rounded-xs bg-white text-gray-600">
-                                {sz}
-                              </span>
-                            ))}
-                          </div>
+                        {product.isBestSeller && (
+                          <span className="bg-[#F59E0B] text-black text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                            الأكثر طلباً 👑
+                          </span>
                         )}
-
-                        {/* Price Unit, Tax Warning, VAT inclusion, & Quick Buy row */}
-                        <div className="flex items-center justify-between pt-1 border-t border-gray-100/50">
-                          
-                          {/* Price Tag with local Currency */}
-                          <div className="flex flex-col text-right">
-                            <ProductPrice product={product} country={country} size="sm" showBadge={true} />
-                            <span className="text-[8px] text-gray-400 font-sans mt-0.5">معفى من الرسوم الإضافية</span>
-                          </div>
-
-                          {/* Quick Add To Cart Instant Circle Button */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const chosenCol = cardColorSelections[product.id] || product.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
-                              const chosenSz = product.sizes?.[0] || 'S';
-                              onAddToCart(product, chosenCol, chosenSz);
-                            }}
-                            className="bg-black hover:bg-[#A44C5C] text-white p-2 rounded-full transition-colors cursor-pointer"
-                            title="إضافة فورية للسلة بمقاس افتراضي"
-                          >
-                            <ShoppingBag size={12} />
-                          </button>
-                        </div>
-
+                        {product.featured && (
+                          <span className="bg-[#111827] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs">
+                            جديد ✨
+                          </span>
+                        )}
                       </div>
+
+                      {/* Stock Warning Badge */}
+                      {product.stock <= 3 && product.stock > 0 && (
+                        <div className="absolute bottom-2 right-2 bg-red-600/90 text-white text-[8.5px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs shadow-xs">
+                          متبقي {product.stock} فقط 🚨
+                        </div>
+                      )}
+
+                      {/* Quick View Button on Hover */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setQuickViewProduct(product);
+                        }}
+                        className="absolute inset-0 m-auto w-10 h-10 bg-white/95 rounded-full flex items-center justify-center text-gray-800 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 cursor-pointer"
+                        title="معاينة سريعة"
+                      >
+                        <Eye size={16} />
+                      </button>
+
+                      {/* Multi-image indicator line */}
+                      {product.images && product.images.length > 1 && (
+                        <div className="absolute bottom-2 inset-x-0 mx-auto max-w-[70%] flex justify-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {product.images.slice(0, 4).map((_, idx) => (
+                            <div
+                              key={idx}
+                              onMouseEnter={(e) => handleThumbHover(product.id, idx, e)}
+                              className={`h-1 flex-1 rounded-full transition-all cursor-pointer ${
+                                activeImgIdx === idx ? 'bg-[#A44C5C]' : 'bg-white/60'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      )}
+
                     </div>
-                  );
-                })}
 
-              </div>
+                    {/* Card Content Details */}
+                    <div className="pt-2.5 pb-1 text-right space-y-1">
+                      
+                      {/* Category Label */}
+                      <span className="text-[10px] text-gray-400 font-medium block">
+                        {product.categoryAr || product.category || 'ملابس نوم فاخرة'}
+                      </span>
 
-            </main>
+                      {/* Product Name in Bold Modern Arabic Font */}
+                      <h3 className="font-bold text-xs sm:text-sm text-gray-950 group-hover:text-[#A44C5C] transition-colors leading-snug line-clamp-2">
+                        {product.nameAr || product.nameEn}
+                      </h3>
+
+                      {/* Rating Stars Row */}
+                      <div className="flex items-center gap-1.5 justify-start pt-0.5">
+                        <div className="flex items-center text-amber-400">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <svg key={i} className={`w-3 h-3 ${i < Math.round(product.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <span className="text-[10px] text-gray-400 font-sans font-medium">({product.reviewsCount || 34})</span>
+                      </div>
+
+                      {/* Color Options Swatches (if available) */}
+                      {product.colors && product.colors.length > 0 && (
+                        <div className="flex items-center gap-1.5 justify-start pt-1">
+                          {product.colors.slice(0, 4).map((col, cIdx) => {
+                            const isSelected = cardColorSel ? cardColorSel.name === col.name : cIdx === 0;
+                            return (
+                              <button
+                                key={col.name}
+                                type="button"
+                                onClick={(e) => handleCardColorSelect(product.id, col, e)}
+                                className={`w-3.5 h-3.5 rounded-full border transition-all cursor-pointer ${
+                                  isSelected ? 'scale-125 ring-1 ring-black border-white' : 'border-gray-200'
+                                }`}
+                                style={{ backgroundColor: col.hex }}
+                                title={col.name}
+                              />
+                            );
+                          })}
+                          <span className="text-[10px] text-gray-400 font-sans">
+                            {cardColorSel ? cardColorSel.name : product.colors[0]?.name}
+                          </span>
+                        </div>
+                      )}
+
+                    </div>
+                  </div>
+
+                  {/* Bottom: Price Row & Salla Full-Width Add To Cart Button */}
+                  <div className="pt-2 border-t border-gray-100 space-y-2.5">
+                    
+                    {/* Price and VAT inclusion */}
+                    <div className="flex items-baseline justify-between">
+                      <ProductPrice product={product} country={country} size="sm" showBadge={false} />
+                      <span className="text-[9.5px] text-gray-400 font-medium">شامل الضريبة</span>
+                    </div>
+
+                    {/* Prominent Salla Style "Add to Cart" Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => handleAddToCartWithFeedback(product, e)}
+                      disabled={product.stock === 0}
+                      className={`w-full py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer shadow-xs active:scale-98 ${
+                        product.stock === 0
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                          : isAdded
+                            ? 'bg-emerald-600 text-white shadow-emerald-500/20'
+                            : 'bg-[#111827] hover:bg-[#A44C5C] text-white hover:shadow-md'
+                      }`}
+                    >
+                      {product.stock === 0 ? (
+                        <span>نفدت الكمية ✕</span>
+                      ) : isAdded ? (
+                        <>
+                          <Check size={14} className="stroke-[3]" />
+                          <span>تمت الإضافة للسلة</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag size={14} />
+                          <span>أضف للسلة</span>
+                        </>
+                      )}
+                    </button>
+
+                  </div>
+
+                </div>
+              );
+            })}
+
           </div>
         )}
-      </div>
 
-      {/* 5. BRAND QUOTE / THE LIVING LADY ACCENT BANNER (MAGAZINE INTERSTITIAL) */}
-      <section className="bg-white py-16 border-y border-gray-150 select-none">
-        <div className="max-w-4xl mx-auto px-6 text-center space-y-4">
-          <span className="text-[10px] text-[#A44C5C] font-bold tracking-[0.25em] block uppercase">LA VIE EN SULTA</span>
-          <p className="font-serif text-lg md:text-2xl text-gray-800 leading-relaxed max-w-2xl mx-auto">
-            "نأخذ رقة الدانتيل الإيطالي، ننسجه مع ساتان فاخر يتدلى ليرسم جمال قوامك. نؤمن أن كل عميلة هي أميرة في مملكتها الخاصة."
-          </p>
-          <div className="w-12 h-[1px] bg-[#c5a059] mx-auto" />
-          <span className="text-[10px] text-gray-400 font-serif tracking-widest block uppercase">- SULTA CREATIVE OFFICE</span>
-        </div>
-      </section>
+      </main>
 
-      {/* 6. ADVANCED QUICK PRODUCT VIEW MODAL (AnimatePresence Overlay) */}
+      {/* 6. Quick Product View Modal */}
       <AnimatePresence>
         {quickViewProduct && (
           <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -780,44 +606,31 @@ export default function StoreView({
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-[#FAF9F6] border border-gray-200 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative text-right text-xs"
+              className="bg-white border border-gray-200 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative text-right text-xs"
               dir="rtl"
             >
-              {/* Close Button top corner */}
+              {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setQuickViewProduct(null)}
                 className="absolute top-4 left-4 bg-white/95 backdrop-blur-md rounded-full p-2 text-gray-500 hover:text-black hover:scale-110 transition-transform cursor-pointer shadow-md z-20"
-                title="إغلاق معاينة الفخامة"
+                title="إغلاق"
               >
                 <X size={16} />
               </button>
 
               <div className="flex flex-col md:flex-row h-full">
                 
-                {/* Visual Media Frame Left half */}
-                <div className="w-full md:w-1/2 bg-gray-50 aspect-square md:aspect-auto relative min-h-[320px] md:min-h-[500px]">
-                  
-                  {/* Selected Active Image with Video check */}
-                  {quickViewProduct.images?.[qvActiveImageIdx]?.match(/\.(mp4|webm|ogg|mov)$/i) || quickViewProduct.images?.[qvActiveImageIdx]?.includes('video') ? (
-                    <video 
-                      src={quickViewProduct.images[qvActiveImageIdx]} 
-                      className="w-full h-full object-cover" 
-                      autoPlay 
-                      muted 
-                      loop 
-                      playsInline 
-                    />
-                  ) : (
-                    <img 
-                      src={cleanImgUrl(quickViewProduct.images?.[qvActiveImageIdx])}
-                      alt={quickViewProduct.nameAr}
-                      className="w-full h-full object-cover animate-fade-in"
-                      referrerPolicy="no-referrer"
-                    />
-                  )}
+                {/* Visual Media Frame */}
+                <div className="w-full md:w-1/2 bg-gray-50 aspect-square md:aspect-auto relative min-h-[320px] md:min-h-[460px]">
+                  <SultaImage 
+                    src={quickViewProduct.images?.[qvActiveImageIdx]}
+                    alt={quickViewProduct.nameAr}
+                    className="w-full h-full"
+                    imgClassName="object-cover"
+                  />
 
-                  {/* Multiple Images list under main view slider */}
+                  {/* Thumbnail strip */}
                   {quickViewProduct.images && quickViewProduct.images.length > 1 && (
                     <div className="absolute bottom-4 inset-x-0 mx-auto max-w-[90%] flex gap-2 justify-center z-10 overflow-x-auto no-scrollbar">
                       {quickViewProduct.images.map((img, idx) => (
@@ -826,46 +639,36 @@ export default function StoreView({
                           type="button"
                           onClick={() => setQvActiveImageIdx(idx)}
                           className={`w-12 h-16 rounded-md overflow-hidden bg-white border-2 transition-all shrink-0 ${
-                            qvActiveImageIdx === idx ? 'border-[#A44C5C] scale-105' : 'border-transparent opacity-70 hover:opacity-100'
+                            qvActiveImageIdx === idx ? 'border-[#111827] scale-105' : 'border-transparent opacity-70 hover:opacity-100'
                           }`}
                         >
-                          {img.match(/\.(mp4|webm|ogg|mov)$/i) || img.includes('video') ? (
-                            <span className="w-full h-full bg-[#0C0C0C] text-white flex items-center justify-center font-mono text-[8px]">VID</span>
-                          ) : (
-                            <img src={img} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                          )}
+                          <SultaImage src={img} className="w-full h-full" />
                         </button>
                       ))}
                     </div>
                   )}
-
-                  {/* Brand Tag Ribbon overlay */}
-                  <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-sm">
-                    SULTA LIVING COLLECTION
-                  </div>
                 </div>
 
-                {/* Details Specifications Right half */}
+                {/* Details Specifications */}
                 <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between space-y-6">
                   
                   <div className="space-y-4">
-                    <span className="text-[10px] text-[#A44C5C] tracking-[0.2em] font-black uppercase inline-block">
-                      {quickViewProduct.collection || 'المجموعة الكلاسيكية'}
+                    <span className="text-[10px] text-[#A44C5C] font-bold uppercase inline-block">
+                      {quickViewProduct.collection || 'المجموعة الرسمية'}
                     </span>
                     
-                    <h2 className="font-serif text-xl md:text-2xl font-light text-[#0C0C0C] tracking-wide leading-tight">
+                    <h2 className="text-xl md:text-2xl font-extrabold text-[#111827] leading-tight">
                       {quickViewProduct.nameAr || quickViewProduct.nameEn}
                     </h2>
 
                     {/* Price tag */}
-                    <div className="flex items-baseline gap-4 flex-row-reverse justify-end">
+                    <div className="flex items-baseline gap-4">
                       <ProductPrice product={quickViewProduct} country={country} size="md" showBadge={true} />
-                      <span className="text-[9px] text-[#c5a059] border border-[#c5a059]/35 px-1.5 py-0.5 font-bold rounded">
-                        صندوق فاخر مجاني 🎁
+                      <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-bold rounded-md">
+                        متوفر للشحن الفوري ⚡
                       </span>
                     </div>
 
-                    {/* Simple description */}
                     <p className="text-gray-500 text-xs leading-relaxed select-text">
                       {quickViewProduct.descriptionAr || quickViewProduct.descriptionEn}
                     </p>
@@ -873,8 +676,8 @@ export default function StoreView({
                     {/* Colors Options */}
                     {quickViewProduct.colors && quickViewProduct.colors.length > 0 && (
                       <div className="space-y-1.5 text-right w-full">
-                        <span className="text-[10px] text-gray-400 font-bold block">🎨 الألوان والأنسجة المتوفرة:</span>
-                        <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-gray-500 font-bold block">الألوان المتوفرة:</span>
+                        <div className="flex items-center gap-2">
                           {quickViewProduct.colors.map(col => {
                             const isSelected = qvSelectedColor?.name === col.name;
                             return (
@@ -883,7 +686,7 @@ export default function StoreView({
                                 type="button"
                                 onClick={() => setQvSelectedColor(col)}
                                 className={`w-6 h-6 rounded-full border transition-all cursor-pointer ${
-                                  isSelected ? 'scale-110 ring-2 ring-[#c5a059] border-white' : 'border-gray-300'
+                                  isSelected ? 'scale-110 ring-2 ring-black border-white' : 'border-gray-300'
                                 }`}
                                 style={{ backgroundColor: col.hex }}
                                 title={col.name}
@@ -897,10 +700,10 @@ export default function StoreView({
                       </div>
                     )}
 
-                    {/* Sizes selection option with predicted checker */}
+                    {/* Sizes selection option */}
                     {quickViewProduct.sizes && quickViewProduct.sizes.length > 0 && (
                       <div className="space-y-1.5 text-right">
-                        <span className="text-[10px] text-gray-400 font-bold block">📏 المقاس والملائمة:</span>
+                        <span className="text-[10px] text-gray-500 font-bold block">المقاس:</span>
                         <div className="flex flex-wrap gap-2">
                           {quickViewProduct.sizes.map(sz => {
                             const isSelected = qvSelectedSize === sz;
@@ -909,9 +712,9 @@ export default function StoreView({
                                 key={sz}
                                 type="button"
                                 onClick={() => setQvSelectedSize(sz)}
-                                className={`min-w-10 px-3 py-1.5 rounded-lg border text-3xs font-semibold text-center transition-all cursor-pointer ${
+                                className={`min-w-10 px-3 py-1.5 rounded-lg border text-xs font-bold text-center transition-all cursor-pointer ${
                                   isSelected 
-                                    ? 'bg-[#0C0C0C] text-white border-[#0C0C0C] font-black' 
+                                    ? 'bg-[#111827] text-white border-[#111827]' 
                                     : 'bg-white text-gray-700 border-gray-200 hover:border-black'
                                 }`}
                               >
@@ -923,16 +726,10 @@ export default function StoreView({
                       </div>
                     )}
 
-                    {/* Tailoring Details */}
-                    <div className="bg-pink-50/40 p-3 rounded-xl border border-pink-100/30 text-3xs text-gray-600 leading-relaxed font-sans mt-2 space-y-1">
-                      <p>🧵 الخامة: <strong className="text-[#A44C5C]">{quickViewProduct.fabricAr || 'ساتان حريري إيطالي معالج للحرارة والحفظ'}</strong></p>
-                      <p>✨ العناية: غسيل يدوي أو برنامج ناعم بارد تجنباً للكرمشة.</p>
-                    </div>
-
                   </div>
 
-                  {/* Add To Cart Button Block */}
-                  <div className="pt-4 border-t border-gray-200 space-y-3">
+                  {/* Add To Cart Button */}
+                  <div className="pt-4 border-t border-gray-200 space-y-2.5">
                     <button
                       type="button"
                       onClick={() => {
@@ -941,9 +738,9 @@ export default function StoreView({
                         onAddToCart(quickViewProduct, finalColor, finalSize);
                         setQuickViewProduct(null);
                       }}
-                      className="w-full bg-[#0C0C0C] text-[#FAF5F0] py-3 rounded-xl text-xs font-semibold tracking-widest uppercase hover:bg-[#A44C5C] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                      className="w-full bg-[#111827] text-white py-3 rounded-xl text-xs font-bold hover:bg-[#A44C5C] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
                     >
-                      <ShoppingBag size={14} /> إضافة سريعة والذهاب للسلة
+                      <ShoppingBag size={14} /> إضافة سريعة للسلة
                     </button>
                     
                     <button
@@ -952,9 +749,9 @@ export default function StoreView({
                         onSelectProduct(quickViewProduct);
                         setQuickViewProduct(null);
                       }}
-                      className="w-full bg-white text-gray-800 border border-gray-200 py-2.5 rounded-xl text-3xs hover:bg-gray-50 transition-colors uppercase font-bold cursor-pointer"
+                      className="w-full bg-white text-gray-800 border border-gray-200 py-2.5 rounded-xl text-xs hover:bg-gray-50 transition-colors font-bold cursor-pointer"
                     >
-                      تفاصيل الموديل الكاملة (عرض الدار) ⚜️
+                      عرض صفحة المنتج الكاملة ←
                     </button>
                   </div>
 
@@ -967,28 +764,29 @@ export default function StoreView({
         )}
       </AnimatePresence>
 
-      {/* 7. RECENTLY VIEWED ROW */}
+      {/* 7. Recently Viewed Products (Salla style) */}
       {recentlyViewed && recentlyViewed.length > 0 && (
-        <section className="bg-white py-16 border-t border-gray-150 select-none">
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8">
-            <h3 className="font-serif text-lg tracking-wider text-center text-gray-900 mb-8 uppercase">تفقدتِها مؤخراً | RECENTLY CURATED</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <section className="bg-gray-50 py-12 border-t border-gray-200 select-none">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 className="text-base font-bold text-gray-900 mb-6 text-right">
+              منتجات شاهدتِها مؤخراً 👁️
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {recentlyViewed.slice(0, 6).map(item => (
                 <div 
                   key={`rec-${item.id}`} 
-                  className="group flex flex-col gap-1 cursor-pointer"
+                  className="bg-white rounded-xl border border-gray-200 p-2.5 flex flex-col gap-1.5 cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => onSelectProduct(item)}
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-50 border border-gray-100">
-                    <img 
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-50">
+                    <SultaImage 
                       src={item.images?.[0]} 
                       alt={item.nameAr} 
-                      className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                      referrerPolicy="no-referrer"
+                      className="w-full h-full group-hover:scale-105"
                     />
                   </div>
-                  <h4 className="font-sans text-[10px] font-bold text-gray-800 truncate text-right line-clamp-1">{item.nameAr}</h4>
-                  <div className="text-right mt-0.5">
+                  <h4 className="text-xs font-bold text-gray-900 truncate text-right">{item.nameAr}</h4>
+                  <div className="text-right">
                     <ProductPrice product={item} country={country} size="sm" showBadge={false} />
                   </div>
                 </div>

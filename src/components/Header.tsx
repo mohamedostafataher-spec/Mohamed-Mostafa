@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Heart, ShoppingBag, User, Menu, X, Sparkles, RefreshCcw, ShieldCheck, Truck } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Heart, ShoppingBag, User, Menu, X, Sparkles, Truck, Phone, ChevronDown, Check } from 'lucide-react';
 import { Country, CartItem, Product, Settings } from '../types';
-import { dbService, supabase } from '../services/db';
+import { cleanImgUrl } from '../services/db';
+import SultaImage from './SultaImage';
 
 interface HeaderProps {
   currentTab: string;
@@ -38,7 +39,9 @@ export default function Header({
 }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localQuery, setLocalQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [timeLeft, setTimeLeft] = useState<{ hours: number, mins: number, secs: number }>({ hours: 0, mins: 0, secs: 0 });
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   // Computed visual suggestions list matching query
   const suggestions = React.useMemo(() => {
@@ -57,7 +60,6 @@ export default function Header({
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Midnight countdown
       const now = new Date();
       const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
       const diff = tomorrow.getTime() - now.getTime();
@@ -76,266 +78,351 @@ export default function Header({
     return () => clearInterval(timer);
   }, []);
 
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  const getHeaderLogoParts = () => {
-    let rawName = settings?.siteName || 'SULTA';
-    // Forced override: Ensure SULTA branding
-    if (rawName.toLowerCase().includes('zoria')) {
-      rawName = rawName.replace(/zoria/ig, 'SULTA');
-    }
-    if (rawName === 'Store' || !rawName.trim()) {
-      rawName = 'SULTA';
-    }
-    // Uppercase of SULTA
-    rawName = rawName.replace(/sulta/i, 'SULTA');
-    const words = rawName.trim().split(/\s+/);
-    if (words.length >= 2) {
-      return {
-        main: words[0].toUpperCase(),
-        sub: words.slice(1).join(' ').toUpperCase()
-      };
-    }
-    return {
-      main: rawName.toUpperCase(),
-      sub: 'HIGH COUTURE SLEEPWEAR'
+  // Close search suggestions on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsSearchFocused(false);
+      }
     };
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const logoParts = getHeaderLogoParts();
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = cart.reduce((sum, item) => {
+    const itemPrice = country === 'EG' ? (item.product?.priceEG || 0) : (item.product?.priceSA || 0);
+    return sum + (itemPrice * item.quantity);
+  }, 0);
+  const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(localQuery);
-    setTab('store');
-    setSearchOpen(false);
+    if (localQuery.trim()) {
+      onSearch(localQuery);
+      setTab('store');
+      setIsSearchFocused(false);
+      setSearchOpen(false);
+    }
   };
 
-  const menuItems = [
+  const navCategories = [
     { id: 'home', label: 'الرئيسية' },
-    { id: 'store', label: 'المتجر' },
-    { id: 'royal-senses', label: 'صالون الحواس ⚜️' },
-    { id: 'ai_mirror', label: 'مرآة SULTA 🪞' },
-    { id: 'luxury-salon', label: 'صالون التجربة ✦' },
-    { id: 'collections', label: 'التشكيلات' },
-    { id: 'blog', label: 'المجلة' },
-    { id: 'about', label: 'من نحن' },
-    { id: 'track-order', label: 'تتبع الطلب' },
-    { id: 'contact', label: 'اتصل بنا' },
-    { id: 'dashboard', label: 'الإدارة' },
+    { id: 'offers', label: 'العروض والتخفيضات 🏷️' },
+    { id: 'store', label: 'المتجر الشامل 🛍️' },
+    { id: 'best-sellers', label: 'الأكثر طلباً 🔥' },
+    { id: 'new-arrivals', label: 'وصل حديثاً ✨' },
+    { id: 'collections', label: 'التشكيلات الحصرية 👑' },
+    { id: 'fabrics', label: 'دليل الخامات الملكي 🧵' },
+    { id: 'track-order', label: 'تتبع طلبيتكِ 📦' },
+    { id: 'contact', label: 'اتصل بنا 📞' },
   ];
 
+  const activeWhatsApp = country === 'SA' 
+    ? (settings?.whatsappSaudi || '966596894393')
+    : (settings?.whatsapp || '201110095403');
+  const activeWhatsAppClean = activeWhatsApp.replace(/\D/g, '');
+  const activeWhatsAppDisplay = country === 'SA' ? '0596894393' : '+20 111 009 5403';
+
   return (
-    <header className="sticky top-0 z-50 bg-[#FAF5F0]/95 backdrop-blur-md shadow-sm transition-luxury">
-      {/* Top Thin Announcement Bar */}
-      <div className="bg-[#FAF5F0] text-[#A44C5C] font-sans text-[10px] md:text-xs py-2.5 px-4 flex justify-between items-center transition-all border-b border-[#A44C5C]/10 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2 text-[10px] sm:text-xs">
-          <Truck size={14} className="text-[#A44C5C]" />
-          <span className="tracking-wide">SHIPPING WORLDWIDE | شحن سريع للدول العربية</span>
-        </div>
-        <div className="hidden lg:flex items-center gap-2 text-[10px] font-serif font-semibold">
-          <Sparkles size={11} className="text-[#DF8A9D] animate-pulse" />
-          <span className="tracking-[0.25em]">SULTA LINGERIE EXCLUSIVES</span>
-          <span className="text-gray-300 mx-2">|</span>
-          <div className="flex items-center gap-1.5 bg-[#A44C5C]/10 px-2 py-0.5 rounded text-[#A44C5C]">
-             <span>ينتهي العرض الخاص خلال:</span>
-             <span className="font-mono font-bold tracking-widest" dir="ltr">
-               {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.mins).padStart(2, '0')}:{String(timeLeft.secs).padStart(2, '0')}
-             </span>
-             <span className="animate-pulse">⏳</span>
+    <header className="sticky top-0 z-50 bg-white font-sans transition-all duration-200" dir="rtl">
+      {/* 1. Top Announcement Header Bar (Salla style) */}
+      <div className="bg-[#F8F9FA] text-gray-700 text-[11px] py-2 px-4 border-b border-gray-200/80">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          
+          {/* Shipping & Delivery Guarantee */}
+          <div className="flex items-center gap-2 text-gray-600 font-medium">
+            <Truck size={14} className="text-[#A44C5C]" />
+            <span className="hidden sm:inline">
+              شحن مجاني لكافة طلبات {country === 'SA' ? 'المملكة العربية السعودية فوق 299 ريال 🇸🇦' : 'محافظات مصر فوق 1500 ج.م 🇪🇬'}
+            </span>
+            <span className="sm:hidden font-semibold">
+              شحن سريع وتوصيل لباب بيتكِ 🚚
+            </span>
           </div>
-        </div>
-        <div className="flex items-center gap-2 md:gap-3 text-[10.5px]">
-          <span className="text-gray-400 font-sans hidden sm:inline">الشحن إلى:</span>
-          <button 
-            onClick={() => setCountry('SA')} 
-            className={`px-2 py-0.5 rounded transition-all flex items-center gap-1 ${country === 'SA' ? 'bg-[#A44C5C] text-[#FAF5F0] font-semibold' : 'opacity-60 hover:opacity-100 font-normal text-gray-700'}`}
-          >
-            <span>🇸🇦 SAR</span>
-          </button>
-          <button 
-            onClick={() => setCountry('EG')} 
-            className={`px-2 py-0.5 rounded transition-all flex items-center gap-1 ${country === 'EG' ? 'bg-[#A44C5C] text-[#FAF5F0] font-semibold' : 'opacity-60 hover:opacity-100 font-normal text-gray-700'}`}
-          >
-            <span>🇪🇬 EGP</span>
-          </button>
+
+          {/* Flash Promo Countdown */}
+          <div className="hidden md:flex items-center gap-1.5 text-[10.5px] font-bold text-gray-600">
+            <Sparkles size={12} className="text-[#DF8A9D] animate-pulse" />
+            <span>عروض الموسم تنتهي خلال:</span>
+            <span className="font-mono bg-white px-2 py-0.5 rounded border border-gray-200 text-gray-900 font-bold" dir="ltr">
+              {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.mins).padStart(2, '0')}:{String(timeLeft.secs).padStart(2, '0')}
+            </span>
+          </div>
+
+          {/* Right Controls: WhatsApp & Country Switcher */}
+          <div className="flex items-center gap-3 shrink-0">
+            <a
+              href={`https://wa.me/${activeWhatsAppClean}?text=${encodeURIComponent('مرحباً SULTA، أحتاج للمساعدة بخصوص الطلب 🌸')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 font-bold bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 px-2.5 py-0.5 rounded-full transition-all"
+              title="تواصل معنا عبر واتساب"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              <span>واتساب {country === 'SA' ? 'السعودية' : 'مصر'}:</span>
+              <span className="font-mono text-[10px]" dir="ltr">{activeWhatsAppDisplay}</span>
+            </a>
+
+            {/* Country and Currency Switcher */}
+            <div className="flex items-center bg-white border border-gray-200 rounded-lg p-0.5 shadow-2xs">
+              <button
+                onClick={() => setCountry('SA')}
+                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                  country === 'SA' ? 'bg-[#111827] text-white shadow-2xs' : 'text-gray-600 hover:text-black'
+                }`}
+              >
+                🇸🇦 ر.س
+              </button>
+              <button
+                onClick={() => setCountry('EG')}
+                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                  country === 'EG' ? 'bg-[#111827] text-white shadow-2xs' : 'text-gray-600 hover:text-black'
+                }`}
+              >
+                🇪🇬 ج.م
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 relative">
-        <div className="flex items-center justify-between w-full">
+      {/* 2. Main Navigation Bar (Clean White Salla / Nalah Layout) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+        <div className="flex items-center justify-between gap-4 md:gap-8 w-full">
           
-          {/* Mobile Menu & Search - Left */}
-          <div className="flex items-center gap-4 lg:hidden">
+          {/* Mobile Menu Toggle Button */}
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-[#0B0B0B] hover:text-[#DF8A9D] transition-colors p-1"
+              className="text-gray-800 hover:text-[#A44C5C] p-2 rounded-xl bg-gray-50 border border-gray-200 transition-colors"
+              aria-label="القائمة"
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="text-[#0B0B0B] hover:text-[#DF8A9D] transition-colors p-1"
+              className="text-gray-800 hover:text-[#A44C5C] p-2 rounded-xl bg-gray-50 border border-gray-200 transition-colors"
+              aria-label="البحث"
             >
-              <Search size={22} />
+              <Search size={20} />
             </button>
           </div>
- 
-          {/* BRAND LOGO */}
-          <div className="flex items-center justify-center flex-1 lg:flex-none select-none cursor-pointer" onClick={() => setTab('home')}>
-            <div className="text-center group max-w-[280px]">
-              <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-[0.15em] text-[#A44C5C] group-hover:text-[#DF8A9D] transition-colors duration-700 flex items-center justify-center leading-none">
-                <span className="uppercase">{logoParts.main}</span>
-              </h1>
-              <span className="text-[7px] sm:text-[9px] tracking-[0.3em] uppercase font-sans text-gray-500 mt-1.5 block leading-tight truncate max-w-[260px] mx-auto">
-                {logoParts.sub || 'HIGH COUTURE SLEEPWEAR'}
+
+          {/* SULTA Brand Logo */}
+          <div 
+            className="flex items-center cursor-pointer select-none" 
+            onClick={() => setTab('home')}
+          >
+            <div className="flex flex-col items-start group">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xl sm:text-2xl font-black tracking-widest text-[#111827] group-hover:text-[#A44C5C] transition-colors font-serif uppercase">
+                  {settings?.siteName || 'SULTA'}
+                </span>
+                <span className="text-[#A44C5C] text-sm">👑</span>
+              </div>
+              <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-gray-600 font-sans -mt-0.5">
+                سُـلـطَـة · أزياء النوم الفاخرة
               </span>
             </div>
           </div>
- 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center justify-center gap-8 flex-1 pl-4">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setTab(item.id)}
-                className={`text-xs tracking-widest uppercase transition-colors relative py-1 hover:text-[#A44C5C] ${
-                  currentTab === item.id || (currentTab === '' && item.id === 'home')
-                    ? 'text-[#A44C5C] font-semibold border-b border-[#A44C5C]'
-                    : 'text-[#0B0B0B]'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
 
-          {/* Right Section: Nav Icons */}
-          <div className="flex items-center justify-end gap-5 sm:gap-6 select-none shrink-0 text-[#0B0B0B]">
+          {/* 3. Center Wide Search Bar (Signature Salla Feature) */}
+          <div ref={searchContainerRef} className="hidden lg:flex flex-1 max-w-xl relative">
+            <form onSubmit={handleSearchSubmit} className="w-full relative">
+              <input
+                type="text"
+                placeholder="ابحثي عن بيجامات، أرواب عرايس، لانجيري، خامات ساتان..."
+                value={localQuery}
+                onChange={(e) => {
+                  setLocalQuery(e.target.value);
+                  setIsSearchFocused(true);
+                }}
+                onFocus={() => setIsSearchFocused(true)}
+                className="w-full bg-[#F8F9FA] hover:bg-white focus:bg-white text-gray-900 border border-gray-250 focus:border-[#A44C5C] rounded-full py-2.5 pr-11 pl-24 text-xs font-sans placeholder-gray-400 shadow-2xs focus:shadow-md transition-all outline-hidden text-right"
+                dir="rtl"
+              />
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                <Search size={18} />
+              </div>
+              <button
+                type="submit"
+                className="absolute left-1.5 top-1/2 -translate-y-1/2 bg-[#111827] hover:bg-[#A44C5C] text-white text-[11px] font-bold px-4 py-1.5 rounded-full transition-all cursor-pointer shadow-2xs"
+              >
+                بحث
+              </button>
+            </form>
+
+            {/* Instant Live Suggestions Dropdown (Salla Style) */}
+            {isSearchFocused && suggestions.length > 0 && (
+              <div className="absolute top-full mt-2 w-full bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden z-50 animate-scale-up text-right">
+                <div className="p-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between text-[11px] text-gray-500 font-bold">
+                  <span>منتجات مقترحة فورية</span>
+                  <span className="text-[#A44C5C]">{suggestions.length} نتائج</span>
+                </div>
+                <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                  {suggestions.map((p) => {
+                    const priceVal = country === 'EG' ? p.priceEG : p.priceSA;
+                    return (
+                      <div
+                        key={p.id}
+                        onClick={() => {
+                          onSearch(p.nameAr);
+                          setLocalQuery(p.nameAr);
+                          setTab('store');
+                          setIsSearchFocused(false);
+                        }}
+                        className="p-3 hover:bg-[#F8F9FA] flex items-center justify-between gap-3 cursor-pointer transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-14 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200">
+                            <SultaImage 
+                              src={cleanImgUrl(p.images?.[0], p.category)} 
+                              alt={p.nameAr} 
+                              className="w-full h-full"
+                              imgClassName="object-cover"
+                            />
+                          </div>
+                          <div className="text-right">
+                            <h4 className="text-xs font-bold text-gray-900 line-clamp-1">{p.nameAr}</h4>
+                            <span className="text-[10px] text-gray-400 block mt-0.5">{p.categoryAr || p.category}</span>
+                          </div>
+                        </div>
+                        <div className="text-left shrink-0">
+                          <span className="font-bold text-xs text-[#A44C5C] font-mono" dir="ltr">
+                            {priceVal} {currencyLabel}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="p-2.5 bg-gray-50 text-center border-t border-gray-100">
+                  <button
+                    onClick={() => {
+                      onSearch(localQuery);
+                      setTab('store');
+                      setIsSearchFocused(false);
+                    }}
+                    className="text-xs font-bold text-[#A44C5C] hover:underline"
+                  >
+                    عرض كافة النتائج في المتجر ←
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Action Cluster: Account, Favorites, Cart */}
+          <div className="flex items-center gap-3 sm:gap-4 select-none shrink-0">
             
+            {/* User Account */}
             <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="hover:text-[#DF8A9D] transition-colors hidden lg:block"
+              onClick={() => setTab('account')}
+              className={`p-2.5 rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
+                currentTab === 'account' 
+                  ? 'bg-gray-100 border-gray-300 text-black' 
+                  : 'bg-white border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50'
+              }`}
+              title="حسابي والطلبات"
             >
-              <Search size={22} strokeWidth={1.5} />
+              <User size={18} />
+              <span className="hidden xl:inline text-xs font-bold">حسابي</span>
             </button>
 
+            {/* Wishlist Button */}
             <button
               onClick={onOpenFavorites}
-              className="hover:text-[#DF8A9D] transition-colors relative"
+              className="p-2.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700 transition-all relative cursor-pointer"
+              title="المفضلة"
             >
-              <Heart size={22} strokeWidth={1.5} />
+              <Heart size={18} className={favorites.length > 0 ? "fill-red-500 text-red-500" : ""} />
               {favorites.length > 0 && (
-                <span className="absolute -top-1 -right-2 bg-[#DF8A9D] text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-sans">
+                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm animate-scale-up">
                   {favorites.length}
                 </span>
               )}
             </button>
 
-            <button
-              onClick={() => setTab('account')}
-              className={`hover:text-[#DF8A9D] transition-colors hidden sm:block ${currentTab === 'account' ? 'text-[#DF8A9D]' : ''}`}
-            >
-              <User size={22} strokeWidth={1.5} />
-              {session && (
-                <span className="absolute top-0 right-0 bg-green-500 w-2 h-2 rounded-full border border-white" />
-              )}
-            </button>
-
+            {/* Cart Button (Salla Style with Item Count & Live Total) */}
             <button
               onClick={onOpenCart}
-              className="hover:text-[#DF8A9D] transition-colors relative"
+              className="flex items-center gap-2 bg-[#111827] hover:bg-[#A44C5C] active:scale-98 text-white px-3.5 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer group"
+              title="سلة المشتريات"
             >
-              <ShoppingBag size={22} strokeWidth={1.5} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-[#A44C5C] text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-sans">
-                  {cartCount}
+              <div className="relative">
+                <ShoppingBag size={18} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[9px] font-black w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-[#111827]">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col text-right leading-none">
+                <span className="text-[11px] font-bold">السلة</span>
+                <span className="text-[10px] text-gray-300 font-mono mt-0.5" dir="ltr">
+                  {cartTotal > 0 ? `${cartTotal} ${currencyLabel}` : 'فارغة'}
                 </span>
-              )}
+              </div>
             </button>
+
           </div>
+
         </div>
       </div>
 
+      {/* 4. Category Ribbon Navigation Bar (Salla style) */}
+      <nav className="bg-white border-y border-gray-150 overflow-x-auto scrollbar-none shadow-2xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-start gap-1 py-1 text-xs whitespace-nowrap">
+          {navCategories.map((item) => {
+            const isActive = currentTab === item.id || (currentTab === '' && item.id === 'home');
+            return (
+              <button
+                key={item.id}
+                onClick={() => setTab(item.id)}
+                className={`px-3.5 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#111827] text-white shadow-2xs'
+                    : 'text-gray-700 hover:text-black hover:bg-gray-100'
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Mobile Search Overlay Bar */}
       {searchOpen && (
-        <div className="absolute top-full left-0 w-full bg-[#FAF5F0] border-b border-[#A44C5C]/10 py-6 px-6 shadow-md transition-all duration-300 z-40 animate-slide-up">
-          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto flex gap-3">
+        <div className="lg:hidden bg-white border-b border-gray-200 p-3 shadow-md animate-slide-down">
+          <form onSubmit={handleSearchSubmit} className="flex gap-2">
             <input
               type="text"
-              placeholder="ابحثي عن ملابس النوم الفاخرة، أطقم الساتان، ملابس مريحة..."
+              placeholder="ابحثي عن الموديل أو اللون أو المقاس..."
               value={localQuery}
               onChange={(e) => setLocalQuery(e.target.value)}
-              className="flex-1 border-b-2 border-gray-300 bg-transparent px-2 py-2 text-lg font-serif focus:outline-none focus:border-[#A44C5C] text-[#0B0B0B] placeholder-gray-400 text-right"
+              className="flex-1 bg-gray-50 border border-gray-250 rounded-xl px-3.5 py-2 text-xs text-right outline-hidden"
               dir="rtl"
               autoFocus
             />
             <button
               type="submit"
-              className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] px-8 py-2.5 text-sm uppercase tracking-wider transition-colors font-sans"
+              className="bg-[#111827] text-white text-xs font-bold px-4 py-2 rounded-xl"
             >
               بحث
             </button>
             <button
               type="button"
-              onClick={() => {
-                setSearchOpen(false);
-                setLocalQuery('');
-              }}
-              className="text-gray-500 hover:text-gray-800 px-4 text-sm uppercase tracking-wider transition-colors"
+              onClick={() => setSearchOpen(false)}
+              className="p-2 text-gray-500 hover:text-black"
             >
-              إغلاق
+              <X size={18} />
             </button>
           </form>
-
-          {/* Luxury Instant Real-Time Visual Suggestions */}
-          {suggestions.length > 0 && (
-            <div className="max-w-3xl mx-auto mt-4 bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-lg animate-fade-in-rapid font-sans text-right" dir="rtl">
-              <div className="p-3.5 bg-gray-50 text-[10px] text-gray-400 font-bold border-b border-gray-100 uppercase tracking-widest">
-                مقترحات بحث ذكية فورية لـ SULTA ⚜️
-              </div>
-              <div className="divide-y divide-gray-100">
-                {suggestions.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      onSearch(p.nameAr);
-                      setLocalQuery(p.nameAr);
-                      setTab('store');
-                      setSearchOpen(false);
-                    }}
-                    type="button"
-                    className="w-full text-right p-3.5 hover:bg-[#FAF5F0] flex items-center justify-between transition-colors cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-3">
-                      {p.images && p.images.length > 0 ? (
-                        <img
-                          src={p.images[0]}
-                          referrerPolicy="no-referrer"
-                          alt=""
-                          className="w-12 h-14 rounded-lg object-cover border border-gray-150 shrink-0 group-hover:scale-105 transition-all"
-                        />
-                      ) : (
-                        <div className="w-12 h-14 bg-gray-100 rounded-lg shrink-0 flex items-center justify-center text-gray-300">?</div>
-                      )}
-                      <div>
-                        <h4 className="font-bold text-gray-900 group-hover:text-[#A44C5C] text-xs transition-colors">{p.nameAr}</h4>
-                        <span className="text-[10px] text-gray-400 block mt-0.5">{p.categoryAr}</span>
-                      </div>
-                    </div>
-
-                    <div className="text-left font-sans text-xs">
-                      <span className="font-bold text-[#A44C5C]">
-                        {country === 'SA' ? `${p.priceSA} SAR` : `${p.priceEG} EGP`}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </header>
   );
 }
-

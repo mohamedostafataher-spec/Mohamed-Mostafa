@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React from 'react';
 import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 import { BlogPost } from '../types';
@@ -42,11 +43,7 @@ export default function BlogPostView({ post, onBack }: BlogPostViewProps) {
 
         {post.imageUrl && (
           <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden rounded-sm bg-gray-100 mb-16">
-            <img 
-              src={post.imageUrl} 
-              alt={post.title} 
-              className="w-full h-full object-cover"
-            />
+            <SultaImage src={post.imageUrl} alt={post.title} className="w-full h-full" imgClassName="object-cover" />
           </div>
         )}
 

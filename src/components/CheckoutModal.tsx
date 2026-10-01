@@ -3,6 +3,7 @@ import { X, CreditCard, ShieldCheck, CheckCircle, Smartphone, Truck, ArrowRight,
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { dbService } from '../services/db';
 import { agentSystem } from '../services/agentSystem';
+import SultaImage from './SultaImage';
 
 interface CheckoutModalProps {
   country: Country;
@@ -216,7 +217,11 @@ export default function CheckoutModal({
                      `يرجى تأكيد ومعالجة طلبي هذا في أسرع وقت ممكن! ❤️`;
         
         const encodedText = encodeURIComponent(text);
-        const whatsappUrl = `https://wa.me/${settings?.whatsapp || '201110095403'}?text=${encodedText}`;
+        const targetWhatsapp = newOrder.country === 'SA'
+          ? (settings?.whatsappSaudi || '966596894393')
+          : (settings?.whatsapp || '201110095403');
+        const cleanWhatsapp = targetWhatsapp.replace(/\D/g, '');
+        const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodedText}`;
         window.open(whatsappUrl, '_blank');
       }
     } catch (err) {
@@ -246,7 +251,11 @@ export default function CheckoutModal({
                    `يرجى تأكيد ومعالجة طلبي هذا في أسرع وقت ممكن! ❤️`;
       
       const encodedText = encodeURIComponent(text);
-      const whatsappUrl = `https://wa.me/${settings?.whatsapp || '201110095403'}?text=${encodedText}`;
+      const targetWhatsapp = successOrder.country === 'SA'
+        ? (settings?.whatsappSaudi || '966596894393')
+        : (settings?.whatsapp || '201110095403');
+      const cleanWhatsapp = targetWhatsapp.replace(/\D/g, '');
+      const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodedText}`;
       window.open(whatsappUrl, '_blank');
     };
 
@@ -367,7 +376,7 @@ export default function CheckoutModal({
               <span>تسريع عملية المعالجة والتأكيد الفوري ⚡</span>
             </h4>
             <p className="text-[11px] text-emerald-950 leading-relaxed font-semibold">
-              يرجى إرسال رقم الطلب <strong className="font-mono text-xs bg-white px-2 py-0.5 rounded border border-emerald-300 mx-1">{successOrder.id}</strong> إلى واتساب خدمة العملاء الموحد <strong className="text-emerald-700 font-mono text-xs" dir="ltr">(+201110095403)</strong> لمتابعة الشحنة وتثبيت الحجز بأقصى سرعة ممكنة.
+              يرجى إرسال رقم الطلب <strong className="font-mono text-xs bg-white px-2 py-0.5 rounded border border-emerald-300 mx-1">{successOrder.id}</strong> إلى واتساب خدمة العملاء <strong className="text-emerald-700 font-mono text-xs" dir="ltr">({successOrder.country === 'SA' ? '0596894393' : '+201110095403'})</strong> لمتابعة الشحنة وتثبيت الحجز بأقصى سرعة ممكنة.
             </p>
           </div>
 
@@ -622,7 +631,7 @@ export default function CheckoutModal({
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="text-xs font-bold text-gray-900 block font-sans">تأكيد طلبي الملكي عبر واتساب فوراً 💬</span>
-                    <p className="text-[10px] text-gray-500 leading-normal mt-0.5">سيتم فتح محادثة كونسيرج خدمة العملاء الموحد تلقائياً عبر الرقم <strong className="text-emerald-700 font-mono" dir="ltr">(+201110095403)</strong> لإرسال ملخص الفاتورة وتسريع عملية تتبع البكج الملكي.</p>
+                    <p className="text-[10px] text-gray-500 leading-normal mt-0.5">سيتم فتح محادثة كونسيرج خدمة العملاء الموحد تلقائياً عبر الرقم <strong className="text-emerald-700 font-mono" dir="ltr">({country === 'SA' ? '0596894393' : '+201110095403'})</strong> لإرسال ملخص الفاتورة وتسريع عملية تتبع البكج الملكي.</p>
                   </div>
                 </div>
 
@@ -700,7 +709,7 @@ export default function CheckoutModal({
                     {item.product.images[0]?.match(/\.(mp4|webm|ogg|mov)$/i) || item.product.images[0]?.includes('video') ? (
                        <video src={item.product.images[0]} className="w-8 h-10 object-cover rounded-md shrink-0" autoPlay muted loop playsInline />
                     ) : (
-                       <img src={item.product.images[0]} alt={item.product.nameAr} className="w-8 h-10 object-cover rounded-md shrink-0" />
+                       <SultaImage src={item.product.images[0]} alt={item.product.nameAr} className="w-8 h-10 rounded-md shrink-0" imgClassName="object-cover" />
                     )}
                     <div className="flex-1 min-w-0 pr-2">
                       <span className="font-bold text-gray-900 line-clamp-1 block leading-tight">{item.product.nameAr}</span>

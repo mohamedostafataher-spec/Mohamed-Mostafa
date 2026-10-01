@@ -244,6 +244,12 @@ export function cleanImgUrl(url: any, fallbackCategory?: string): string {
   if (cleaned.includes('/img/')) {
     const parts = cleaned.split('/');
     const filename = parts[parts.length - 1];
+    
+    // Check if it's already a valid sulta image
+    if (filename.startsWith('sulta_')) {
+      return cleaned;
+    }
+
     if (IMAGE_MAPPING[filename]) {
       return IMAGE_MAPPING[filename];
     }
@@ -317,6 +323,9 @@ function mapSettings(data: any): Settings {
     mappedContactEmail = 'support@sulta-atelier.com';
   }
 
+  let mappedWhatsappSaudi = data.whatsapp_saudi || data.whatsappSaudi || '966596894393';
+  let mappedContactPhoneSaudi = data.contact_phone_saudi || data.contactPhoneSaudi || '+966 59 689 4393';
+
   return {
     siteName: mappedSiteName,
     logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_luxury_pajama_hero_2_1780682794821.png',
@@ -328,7 +337,9 @@ function mapSettings(data: any): Settings {
     heroImages: checkedHero.map((imgUrl: any) => cleanImgUrl(imgUrl, 'sleepwear')),
     contactEmail: mappedContactEmail,
     contactPhone: mappedContactPhone,
+    contactPhoneSaudi: mappedContactPhoneSaudi,
     whatsapp: mappedWhatsapp,
+    whatsappSaudi: mappedWhatsappSaudi,
     instagram: data.instagram,
     facebook: data.facebook,
     tiktok: data.tiktok,
@@ -687,7 +698,9 @@ export const dbService = {
       settingsObj = {
         siteName: 'SULTA',
         contactPhone: '+20 111 009 5403',
+        contactPhoneSaudi: '+966 59 689 4393',
         whatsapp: '201110095403',
+        whatsappSaudi: '966596894393',
         contactEmail: 'support@sulta-atelier.com',
         shippingRates: [
           { regionAr: 'شحن موحد لجميع محافظات مصر 🇪🇬', regionEn: 'Egypt Flat Shipping Rate', fee: 100 },

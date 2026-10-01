@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useMemo, useState } from 'react';
 import { Eye, Layers, Star, Plus, ThumbsUp, Sparkles, Pin, CheckCircle2, ChevronRight, ListCollapse, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Product, Collection } from '../types';
@@ -122,7 +123,7 @@ export default function VisualMerchandising({
                 }`}>
                   <div className="flex gap-3">
                     {p.images && p.images.length > 0 ? (
-                      <img src={p.images[0]} referrerPolicy="no-referrer" alt="" className="w-16 h-20 rounded-xl object-cover border border-gray-100 shrink-0" />
+                      <SultaImage src={p.images[0]} referrerPolicy="no-referrer" alt="" className="w-16 h-20 rounded-xl object-cover border border-gray-100 shrink-0" />
                     ) : (
                       <div className="w-16 h-20 bg-gray-100 rounded-xl flex items-center justify-center text-gray-300 shrink-0">?</div>
                     )}
@@ -224,7 +225,7 @@ export default function VisualMerchandising({
               <div className="space-y-2.5">
                 {dynamicCollections.newest.map((p) => (
                   <div key={p.id} className="flex gap-2 items-center bg-white p-2 border border-gray-100 rounded-xl">
-                    <img src={p.images?.[0]} referrerPolicy="no-referrer" alt="" className="w-8 h-10 rounded-lg object-cover" />
+                    <SultaImage src={p.images?.[0]} referrerPolicy="no-referrer" alt="" className="w-8 h-10 rounded-lg object-cover" />
                     <span className="font-bold text-gray-900 line-clamp-1">{p.nameAr}</span>
                   </div>
                 ))}
@@ -240,7 +241,7 @@ export default function VisualMerchandising({
               <div className="space-y-2.5">
                 {dynamicCollections.bestSellers.map((p) => (
                   <div key={p.id} className="flex gap-2 items-center bg-white p-2 border border-gray-100 rounded-xl">
-                    <img src={p.images?.[0]} referrerPolicy="no-referrer" alt="" className="w-8 h-10 rounded-lg object-cover" />
+                    <SultaImage src={p.images?.[0]} referrerPolicy="no-referrer" alt="" className="w-8 h-10 rounded-lg object-cover" />
                     <span className="font-bold text-gray-900 line-clamp-1">{p.nameAr}</span>
                   </div>
                 ))}
@@ -256,7 +257,7 @@ export default function VisualMerchandising({
               <div className="space-y-2.5">
                 {dynamicCollections.topRated.map((p) => (
                   <div key={p.id} className="flex gap-2 items-center bg-white p-2 border border-gray-100 rounded-xl">
-                    <img src={p.images?.[0]} referrerPolicy="no-referrer" alt="" className="w-8 h-10 rounded-lg object-cover" />
+                    <SultaImage src={p.images?.[0]} referrerPolicy="no-referrer" alt="" className="w-8 h-10 rounded-lg object-cover" />
                     <span className="font-bold text-gray-900 line-clamp-1">{p.nameAr}</span>
                   </div>
                 ))}

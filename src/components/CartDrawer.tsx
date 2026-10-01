@@ -1,5 +1,6 @@
+import SultaImage from "./SultaImage";
 import React, { useState } from 'react';
-import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check } from 'lucide-react';
+import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check, Truck } from 'lucide-react';
 import { CartItem, Country, Product, DiscountCoupon } from '../types';
 
 interface CartDrawerProps {
@@ -34,7 +35,7 @@ export default function CartDrawer({
 
   if (!isOpen) return null;
 
-  const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
+  const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
   // Total pricing logic
   const subtotal = cart.reduce((sum, item) => {
@@ -73,23 +74,48 @@ export default function CartDrawer({
       <div className="absolute inset-y-0 left-0 max-w-full flex pl-0">
         
         {/* Panel Frame content */}
-        <div className="w-[450px] max-w-[95vw] bg-[#FAFAF7] h-full shadow-2xl flex flex-col justify-between animate-slide-left pointer-events-auto">
+        <div className="w-[450px] max-w-[95vw] bg-white h-full shadow-2xl flex flex-col justify-between animate-slide-left pointer-events-auto" dir="rtl">
           
           {/* Header */}
-          <div className="px-6 py-5 border-b border-gray-100 bg-white flex items-center justify-between">
+          <div className="px-6 py-4 border-b border-gray-150 bg-white flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ShoppingBag size={20} className="text-[#0B0B0B]" />
-              <h3 className="font-serif text-lg font-light text-[#0B0B0B]">حقيبة التسوق الفاخرة</h3>
-              <span className="text-[10px] bg-[#0B0B0B] text-[#F6E7A6] px-2 py-0.5 rounded-full font-sans font-medium">
-                {cart.reduce((sum, i) => sum + i.quantity, 0)} قطع
+              <ShoppingBag size={20} className="text-[#111827]" />
+              <h3 className="font-bold text-base text-[#111827]">سلة المشتريات 🛒</h3>
+              <span className="text-[11px] bg-[#111827] text-white px-2 py-0.5 rounded-full font-bold font-mono">
+                {cart.reduce((sum, i) => sum + i.quantity, 0)}
               </span>
             </div>
             
-            <button onClick={onClose} className="p-1 rounded-full text-gray-400 hover:text-[#0B0B0B] hover:bg-gray-50 flex items-center gap-1 text-xs">
+            <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-black hover:bg-gray-100 flex items-center gap-1 text-xs cursor-pointer">
               <span>إغلاق</span>
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
+
+          {/* Salla Free Shipping Progress Bar */}
+          {cart.length > 0 && (
+            <div className="bg-emerald-50/60 border-b border-emerald-100 px-6 py-2.5">
+              {subtotal >= (country === 'SA' ? 299 : 1500) ? (
+                <div className="flex items-center gap-2 text-emerald-800 text-xs font-bold">
+                  <Check size={14} className="stroke-[3] text-emerald-600" />
+                  <span>مبروك! لقد حصلتِ على شحن مجاني لكامل الطلب 🚚</span>
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-semibold text-emerald-900">
+                    <span>أضيفي بقيمة <strong className="text-emerald-700 font-mono">{(country === 'SA' ? 299 : 1500) - subtotal} {currencyLabel}</strong> للحصول على شحن مجاني!</span>
+                    <Truck size={14} className="text-emerald-600 shrink-0" />
+                  </div>
+                  <div className="w-full bg-emerald-200/50 rounded-full h-1.5 overflow-hidden">
+                    <div 
+                      className="bg-emerald-600 h-full rounded-full transition-all duration-500" 
+                      style={{ width: `${Math.min(100, (subtotal / (country === 'SA' ? 299 : 1500)) * 100)}%` }} 
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Core scrollable item grid */}
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
@@ -239,7 +265,7 @@ export default function CartDrawer({
                         onClick={() => { onSelectProduct(p); onClose(); }}
                         className="bg-white rounded-xl p-2 cursor-pointer border border-transparent hover:border-[#F4B6C2]/40 transition-all flex flex-col justify-between"
                       >
-                        <img src={p.images[0]} alt="Recommended" className="w-full aspect-[4/5] object-cover rounded-lg mb-1.5" />
+                        <SultaImage src={p.images[0]} alt="Recommended" className="w-full aspect-[4/5] object-cover rounded-lg mb-1.5" />
                         <div>
                           <span className="text-[9px] font-semibold text-gray-800 line-clamp-1 block">{p.nameAr}</span>
                           <span className="text-[9px] font-sans text-gray-400">{recPrice.toLocaleString()} {currencyLabel}</span>
@@ -314,16 +340,18 @@ export default function CartDrawer({
               {/* Check out buttons */}
               <button
                 onClick={() => onCheckout(appliedCoupon)}
-                className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold tracking-wide transition-luxury flex items-center justify-center gap-2 shadow-xs"
+                className="w-full bg-[#111827] hover:bg-[#A44C5C] text-white py-3.5 rounded-xl text-xs font-bold tracking-wide transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer active:scale-98"
                 id="submit-order-checkout"
               >
-                <span>إتمام الطلب والدفع الفاخر</span>
-                <ArrowRight size={14} className="rotate-180" />
+                <span>إتمام الطلب والدفع السريع</span>
+                <ArrowRight size={15} className="rotate-180" />
               </button>
 
-              <p className="text-center text-[9px] text-gray-400 uppercase tracking-widest font-serif">
-                SULTA COUTUBE • SECURE SSL ENCRYPTED checkout
-              </p>
+              <div className="flex items-center justify-center gap-3 pt-1 text-[10px] text-gray-400 font-semibold">
+                <span>🔒 دفع آمن ومشفر 100%</span>
+                <span>•</span>
+                <span>استرجاع واستبدال فوري</span>
+              </div>
 
             </div>
           )}

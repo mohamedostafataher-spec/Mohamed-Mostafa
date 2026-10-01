@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { Settings } from '../types';
 import { cleanImgUrl } from '../services/db';
+import SultaImage from './SultaImage';
 
 interface HeroProps {
   onExplore: () => void;
@@ -115,7 +116,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   if (!currentSlideData) return null; // No static fallbacks
 
   return (
-    <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-start overflow-hidden bg-[#FAF5F0]">
+    <section className="relative min-h-[75vh] lg:min-h-[85vh] flex items-center justify-start overflow-hidden bg-white">
       {/* Background elegant visuals with auto slider */}
       <div className="absolute inset-0 z-0">
         {slides.map((slide, idx) => {
@@ -137,16 +138,14 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
                   className="w-full h-full object-cover object-center"
                 />
               ) : (
-                <img
+                <SultaImage
                   src={slide.url}
                   alt={slide.alt}
-                  className="w-full h-full object-cover object-center"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => { (e.target as HTMLImageElement).src = cleanImgUrl('fallback', 'sleepwear'); }}
+                  className="w-full h-full"
                 />
               )}
-              {/* Optional elegant gradient overlay to ensure text legibility */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FAF5F0]/80 via-[#FAF5F0]/40 to-transparent" />
+              {/* Clean white gradient overlay for maximum legibility */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent" />
             </div>
           );
         })}

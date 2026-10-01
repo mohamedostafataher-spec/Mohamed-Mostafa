@@ -1,3 +1,4 @@
+import SultaImage from "./SultaImage";
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Sparkles, Camera, Upload, RotateCw, ZoomIn, ZoomOut, ArrowUp, ArrowDown, 
@@ -30,6 +31,29 @@ export default function AiMirror({
   // Customer Model Photo
   const [customerPhoto, setCustomerPhoto] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  // Live video streaming states for premium Interactive Smart Mirror
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
+  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Clean up video stream on component unmount
+  useEffect(() => {
+    return () => {
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [videoStream]);
+
+  // Blend/styling adjustments to make it look "natural" as requested by user
+  const [dressOpacity, setDressOpacity] = useState<number>(0.95);
+  const [dressBrightness, setDressBrightness] = useState<number>(1.0);
+  const [dressContrast, setDressContrast] = useState<number>(1.0);
+  const [dressSaturation, setDressSaturation] = useState<number>(1.0);
+  const [shadowAlpha, setShadowAlpha] = useState<number>(0.4);
+  const [blendMode, setBlendMode] = useState<string>('normal');
 
   // Selected Product inside Mirror
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -140,7 +164,51 @@ export default function AiMirror({
 
   }, [heightCm, weightKg, bodyType, selectedProduct]);
 
-  // Drag handlers for overlay
+  // Global smooth window-level drag tracking to prevent page scroll lockups on mobile
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleWindowMouseMove = (e: MouseEvent) => {
+      const dx = e.clientX - dragStartPos.current.x;
+      const dy = e.clientY - dragStartPos.current.y;
+      setTranslateX(dressStartOffset.current.x + dx);
+      setTranslateY(dressStartOffset.current.y + dy);
+    };
+
+    const handleWindowMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const handleWindowTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      // Prevent browser bounce/scroll while actively dragging the dress
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      const dx = e.touches[0].clientX - dragStartPos.current.x;
+      const dy = e.touches[0].clientY - dragStartPos.current.y;
+      setTranslateX(dressStartOffset.current.x + dx);
+      setTranslateY(dressStartOffset.current.y + dy);
+    };
+
+    const handleWindowTouchEnd = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('mousemove', handleWindowMouseMove);
+    window.addEventListener('mouseup', handleWindowMouseUp);
+    window.addEventListener('touchmove', handleWindowTouchMove, { passive: false });
+    window.addEventListener('touchend', handleWindowTouchEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', handleWindowMouseMove);
+      window.removeEventListener('mouseup', handleWindowMouseUp);
+      window.removeEventListener('touchmove', handleWindowTouchMove);
+      window.removeEventListener('touchend', handleWindowTouchEnd);
+    };
+  }, [isDragging]);
+
+  // Touch & Mouse initializations (on the dress itself)
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
@@ -148,19 +216,6 @@ export default function AiMirror({
     dressStartOffset.current = { x: translateX, y: translateY };
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    const dx = e.clientX - dragStartPos.current.x;
-    const dy = e.clientY - dragStartPos.current.y;
-    setTranslateX(dressStartOffset.current.x + dx);
-    setTranslateY(dressStartOffset.current.y + dy);
-  };
-
-  const handleMouseUpOrLeave = () => {
-    setIsDragging(false);
-  };
-
-  // Touch handlers for mobile devices
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length === 1) {
       setIsDragging(true);
@@ -169,38 +224,131 @@ export default function AiMirror({
     }
   };
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!isDragging || e.touches.length !== 1) return;
-    const dx = e.touches[0].clientX - dragStartPos.current.x;
-    const dy = e.touches[0].clientY - dragStartPos.current.y;
-    setTranslateX(dressStartOffset.current.x + dx);
-    setTranslateY(dressStartOffset.current.y + dy);
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-  };
-
   // Image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        alert('يرجى اختيار صورة بصيغة ممتازة مثل JPG, PNG أو WEBP ✦');
+      // Robust image verification: check if MIME type starts with image/ OR file extension matches typical image formats
+      const isImg = file.type?.startsWith('image/') || /\.(jpg|jpeg|png|webp|heic|heif|gif)$/i.test(file.name);
+      if (!isImg) {
+        alert('يرجى اختيار صورة صالحة وبجودة عالية ✦');
         return;
       }
       const localUrl = URL.createObjectURL(file);
       setCustomerPhoto(localUrl);
-      // Reset position
+      // Reset position & blend adjustments
       setScale(1.0);
       setRotation(0);
       setTranslateX(0);
       setTranslateY(0);
+      setDressOpacity(0.95);
+      setDressBrightness(1.0);
+      setDressContrast(1.0);
+      setDressSaturation(1.0);
+      setBlendMode('normal');
+    }
+  };
+
+  // Auto alignment and auto-sizing function based on body metrics (Phase 5 + Phase 8 Integration)
+  const autoFitDress = () => {
+    if (!selectedProduct) return;
+    
+    const h = parseFloat(heightCm) || 165;
+    const w = parseFloat(weightKg) || 60;
+    
+    // Auto scale calculation relative to standard height/weight proportions
+    // Height standard: 165cm, Weight standard: 60kg
+    const heightRatio = h / 165;
+    const weightRatio = w / 60;
+    
+    // Smooth weighted scale factor
+    let calculatedScale = 1.0 * heightRatio * (0.85 + 0.15 * weightRatio);
+    
+    // Adjust slightly for body shape
+    if (bodyType === 'petite') {
+      calculatedScale *= 0.9;
+    } else if (bodyType === 'tall') {
+      calculatedScale *= 1.08;
+    } else if (bodyType === 'pear') {
+      calculatedScale *= 1.03;
+    }
+
+    // Set state
+    setScale(Math.max(0.5, Math.min(2.3, Number(calculatedScale.toFixed(2)))));
+    setRotation(0);
+    
+    // Center it with a slight downward offset of 35px to align perfectly on the body torso
+    setTranslateX(0);
+    setTranslateY(35);
+    
+    // Smooth natural blend defaults
+    setDressOpacity(0.92);
+    setDressBrightness(1.02);
+    setDressContrast(1.05);
+    setShadowAlpha(0.45);
+    setBlendMode('multiply'); // Multiply blend works magic on photo fabrics for seamless look!
+  };
+
+  // Camera stream handlers for Live Video Trial (Premium Feature)
+  const startCameraStream = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 800 } }
+      });
+      setVideoStream(mediaStream);
+      setIsStreaming(true);
+      setCustomerPhoto(null); // Clear static customer photo
+      
+      // Delay slightly to ensure element is rendered
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+        }
+      }, 150);
+    } catch (err) {
+      console.error("Error accessing camera stream:", err);
+      alert("عذراً، لم نتمكن من تشغيل الكاميرا المباشرة. يرجى التحقق من منح صلاحية الكاميرا في متصفحكِ ✦");
+    }
+  };
+
+  const stopCameraStream = () => {
+    if (videoStream) {
+      videoStream.getTracks().forEach(track => track.stop());
+      setVideoStream(null);
+    }
+    setIsStreaming(false);
+  };
+
+  const captureFromStream = () => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 800;
+      const context = canvas.getContext('2d');
+      if (context) {
+        // Draw the current video frame mirrored (since front camera is mirrored)
+        context.translate(canvas.width, 0);
+        context.scale(-1, 1);
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        try {
+          const dataUrl = canvas.toDataURL('image/jpeg');
+          setCustomerPhoto(dataUrl);
+        } catch (e) {
+          console.error("Failed to export captured frame as Data URL", e);
+        }
+        stopCameraStream();
+      }
     }
   };
 
   const triggerUploadClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const triggerCameraClick = () => {
+    cameraInputRef.current?.click();
   };
 
   // Render static demo model image if none uploaded, to give beautiful preview instantly
@@ -269,8 +417,26 @@ export default function AiMirror({
           ctx.rotate((rotation * Math.PI) / 180);
           ctx.scale(scale, scale);
 
+          // Apply opacity & filters to make it look highly natural on export
+          ctx.globalAlpha = dressOpacity;
+          try {
+            ctx.filter = `brightness(${dressBrightness}) contrast(${dressContrast}) saturate(${dressSaturation})`;
+          } catch (e) {
+            console.warn("Canvas filter not supported, falling back to pure opacity", e);
+          }
+
+          // Apply blend modes to canvas compositing!
+          if (blendMode && blendMode !== 'normal') {
+            ctx.globalCompositeOperation = blendMode as any;
+          } else {
+            ctx.globalCompositeOperation = 'source-over';
+          }
+
           // Draw the transparent dress centering
           ctx.drawImage(dressImg, -dressWidth / 2, -dressHeight / 2, dressWidth, dressHeight);
+          
+          // Reset composite operation for watermark text
+          ctx.globalCompositeOperation = 'source-over';
           ctx.restore();
 
           // Write signature watermark 
@@ -399,71 +565,249 @@ export default function AiMirror({
               <div className="absolute inset-0 border border-white/5 pointer-events-none rounded-xl" />
 
               {/* Client or fallback photo display */}
-              <div className="w-full h-full relative overflow-hidden select-none">
-                {customerPhoto ? (
-                  <img 
-                    src={customerPhoto} 
-                    alt="client" 
-                    className="w-full h-full object-cover object-center"
-                    referrerPolicy="no-referrer"
-                  />
+              <div 
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (!target.closest('.group\\/dress') && !target.closest('.preset-btn') && !target.closest('.photo-ctrl')) {
+                    if (!isStreaming) {
+                      triggerUploadClick();
+                    }
+                  }
+                }}
+                className="w-full h-full relative overflow-hidden select-none cursor-pointer group/mirror"
+                title="اضغطي هنا في أي مكان بالمرآة لرفع صورتكِ أو التقاط صورة"
+              >
+                {isStreaming ? (
+                  <div className="w-full h-full relative" onClick={(e) => e.stopPropagation()}>
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      className="w-full h-full object-cover object-center"
+                      style={{ transform: 'scaleX(-1)' }}
+                    />
+                    {/* Floating help button on top left to reset */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        stopCameraStream();
+                      }}
+                      className="photo-ctrl absolute top-4 left-4 z-30 bg-black/75 hover:bg-black text-[#F4B6C2] border border-[#F4B6C2]/30 text-[10px] font-bold py-1 px-2.5 rounded-full shadow-lg flex items-center gap-1 active:scale-95 transition"
+                    >
+                      ❌ إيقاف البث والرجوع للموديل
+                    </button>
+                    {/* Floating trigger button on top right to quickly change photo */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        captureFromStream();
+                      }}
+                      className="photo-ctrl absolute top-4 right-4 z-30 bg-[#A44C5C] hover:bg-[#8D3B4A] text-white border border-[#A44C5C]/30 text-[10px] font-bold py-1 px-3.5 rounded-full shadow-lg flex items-center gap-1 active:scale-95 transition animate-pulse"
+                    >
+                      📸 التقاط الصورة فورياً
+                    </button>
+                  </div>
+                ) : customerPhoto ? (
+                  <div className="w-full h-full relative">
+                    <SultaImage 
+                      src={customerPhoto} 
+                      alt="client" 
+                      className="w-full h-full object-cover object-center"
+                      referrerPolicy="no-referrer"
+                    />
+                    {/* Floating help button on top left to reset */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCustomerPhoto(null);
+                      }}
+                      className="photo-ctrl absolute top-4 left-4 z-30 bg-black/75 hover:bg-black text-[#F4B6C2] border border-[#F4B6C2]/30 text-[10px] font-bold py-1 px-2.5 rounded-full shadow-lg flex items-center gap-1 active:scale-95 transition"
+                    >
+                      ❌ حذف صورتي والعودة للموديل
+                    </button>
+                    {/* Floating trigger button on top right to quickly change photo */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerUploadClick();
+                      }}
+                      className="photo-ctrl absolute top-4 right-4 z-30 bg-black/75 hover:bg-black text-[#F6E7A6] border border-[#F6E7A6]/30 text-[10px] font-bold py-1 px-2.5 rounded-full shadow-lg flex items-center gap-1 active:scale-95 transition animate-pulse"
+                    >
+                      📸 تغيير الصورة الشخصية
+                    </button>
+                  </div>
                 ) : (
                   <div className="w-full h-full relative">
                     {/* Fallback elegant model image */}
-                    <img 
+                    <SultaImage 
                       src={demoModelUrl} 
                       alt="demo model representation" 
                       className="w-full h-full object-cover object-center opacity-85 grayscale hover:grayscale-0 transition duration-700"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-6 text-center text-white space-y-3 z-10">
-                      <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/25">
-                        <Upload size={20} className="text-[#F6E7A6]" />
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-6 text-center text-white space-y-4 z-10">
+                      <div className="w-16 h-16 rounded-full bg-[#A44C5C]/20 border-2 border-[#F6E7A6] backdrop-blur-md flex items-center justify-center animate-bounce shadow-xl">
+                        <Camera size={28} className="text-[#F6E7A6]" />
                       </div>
-                      <p className="font-serif text-sm font-bold text-[#F6E7A6]">عينة محاكاة توضيحية لصالون سلطة</p>
-                      <p className="text-[10px] text-gray-200 max-w-xs leading-relaxed">
-                        اضغطي على الزر بالأسفل لرفع صورتك الشخصية الكاملة لرؤية الكوتور مباشرة على مقاسك.
-                      </p>
-                    </div>
-                  </div>
-                )}
+                      <div className="space-y-1">
+                        <p className="font-serif text-base font-bold text-[#F6E7A6]">اضغطي في أي مكان بالمرآة لرفع صورتكِ 📸</p>
+                        <p className="text-[11px] text-gray-200 max-w-xs leading-relaxed">
+                          أو التقاط صورة حية بكاميرا هاتفكِ لتجربة البيجامة الملكية فورياً وبخصوصية تامة!
+                        </p>
+                      </div>
 
-                {/* Overlaid Dress Image Component with Transforms */}
-                {selectedProduct && (
-                  <div 
-                    className="absolute inset-0 flex items-center justify-center pointer-events-auto z-20"
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUpOrLeave}
-                    onMouseLeave={handleMouseUpOrLeave}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-                  >
-                    <div
-                      style={{
-                        transform: `translate(${translateX}px, ${translateY}px) rotate(${rotation}deg) scale(${scale}) ${isFlipped ? 'scaleX(-1)' : ''}`,
-                        transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                        width: '260px',
-                        height: '360px',
-                      }}
-                      className="relative shrink-0 select-none pointer-events-none"
-                    >
-                      <img
-                        src={cleanImgUrl(
-                          selectedProduct.colors?.[selectedColorIndex]?.images?.[0] || selectedProduct.images[0]
-                        )}
-                        alt={selectedProduct.nameAr}
-                        className="w-full h-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.55)]"
-                        referrerPolicy="no-referrer"
-                      />
-                      
-                      {/* Interactive indicator glow on dress outer edge */}
-                      <div className="absolute inset-0 border border-dashed border-[#F6E7A6]/20 rounded-lg pointer-events-none group-hover:border-[#F6E7A6]/50 animate-pulse" />
+                      <div className="flex flex-col sm:flex-row gap-2 w-full justify-center">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerCameraClick();
+                          }}
+                          className="bg-white/10 hover:bg-white/20 text-[#FAF5F0] border border-white/20 text-xs font-bold py-2.5 px-5 rounded-full shadow-lg flex items-center justify-center gap-1.5 active:scale-95 transition"
+                        >
+                          <Camera size={14} />
+                          التقاط صورة سريعة بالكاميرا 🤳
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startCameraStream();
+                          }}
+                          className="bg-[#A44C5C] hover:bg-[#8D3B4A] text-white text-xs font-bold py-2.5 px-5 rounded-full shadow-lg flex items-center justify-center gap-1.5 active:scale-95 transition animate-pulse"
+                        >
+                          <Eye size={14} />
+                          تشغيل البث المباشر التفاعلي 🎥
+                        </button>
+                      </div>
+
+                      {/* Interactive model quick presets for testing if they don't want to upload */}
+                      <div className="pt-2 border-t border-white/10 w-full" onClick={(e) => e.stopPropagation()}>
+                        <p className="text-[10px] text-gray-400 mb-2">أو اختاري موديل جسم تجريبي جاهز:</p>
+                        <div className="flex justify-center gap-1.5 flex-wrap">
+                          {[
+                            { name: 'جسم دقيق (Petite)', url: '/img/sulta_collections_1_1781140831329.png' },
+                            { name: 'جسم طويل (Tall)', url: '/img/sulta_sleepwear_1_1781140797178.png' },
+                            { name: 'جسم كلاسيكي (Hourglass)', url: '/img/sulta_homewear_1_1781140849645.png' }
+                          ].map((model, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => {
+                                setCustomerPhoto(model.url);
+                                setBodyType(model.name.includes('دقيق') ? 'petite' : model.name.includes('طويل') ? 'tall' : 'hourglass');
+                              }}
+                              className="preset-btn bg-white/10 hover:bg-white/20 active:bg-white/30 text-[9.5px] font-sans font-medium text-[#F6E7A6] border border-white/20 rounded-full px-2.5 py-1 transition-all"
+                            >
+                              👩‍🦰 {model.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
+ 
+                 {/* Overlaid Dress Image Component with Transforms - Now optimized to allow background scrolling! */}
+                 {selectedProduct && (
+                   <div 
+                     className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+                   >
+                     <div
+                       onMouseDown={handleMouseDown}
+                       onTouchStart={handleTouchStart}
+                       style={{
+                         transform: `translate(${translateX}px, ${translateY}px) rotate(${rotation}deg) scale(${scale}) ${isFlipped ? 'scaleX(-1)' : ''}`,
+                         transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                         width: '240px',
+                         height: '340px',
+                         cursor: isDragging ? 'grabbing' : 'grab',
+                         touchAction: 'none'
+                       }}
+                       className="relative shrink-0 select-none pointer-events-auto group/dress"
+                     >
+                       <img
+                         src={cleanImgUrl(
+                           selectedProduct.colors?.[selectedColorIndex]?.images?.[0] || selectedProduct.images[0]
+                         )}
+                         alt={selectedProduct.nameAr}
+                         style={{
+                           opacity: dressOpacity,
+                           filter: `brightness(${dressBrightness}) contrast(${dressContrast}) saturate(${dressSaturation}) drop-shadow(0 15px 25px rgba(0,0,0,${shadowAlpha}))`,
+                           mixBlendMode: blendMode as any,
+                         }}
+                         className="w-full h-full object-contain transition-transform duration-300 group-hover/dress:scale-102"
+                         referrerPolicy="no-referrer"
+                       />
+                      
+                      {/* Drag Hint Tooltip floating just above the dress when not active */}
+                      {!isDragging && (
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0B0B0B] text-[#F6E7A6] text-[9px] font-sans font-semibold py-1 px-2.5 rounded-full shadow-lg border border-[#F6E7A6]/30 whitespace-nowrap animate-bounce flex items-center gap-1">
+                          <span>اسحبي القطعة للتحريك 👆</span>
+                        </div>
+                      )}
+
+                      {/* Interactive indicator glow on dress outer edge */}
+                      <div className={`absolute inset-0 border border-dashed rounded-xl pointer-events-none transition-colors duration-300 ${
+                        isDragging ? 'border-[#F6E7A6] scale-102 ring-4 ring-[#F6E7A6]/10' : 'border-[#F6E7A6]/20 group-hover/dress:border-[#F6E7A6]/50'
+                      }`} />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* FLOATING QUICK CONTROLS OVERLAY (Extremely intuitive on mobile! Prevents scrolling below fold) */}
+              <div className="absolute right-4 top-16 flex flex-col gap-2 z-30">
+                {/* Reset / Center */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScale(1.0);
+                    setRotation(0);
+                    setTranslateX(0);
+                    setTranslateY(0);
+                    setIsFlipped(false);
+                  }}
+                  title="إعادة ضبط ومطابقة"
+                  className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 text-[#F6E7A6] flex items-center justify-center transition-all shadow-lg active:scale-90 cursor-pointer"
+                >
+                  <RefreshCw size={13} className={isDragging ? 'animate-spin' : ''} />
+                </button>
+
+                {/* Zoom In */}
+                <button
+                  type="button"
+                  onClick={() => setScale(prev => Math.min(2.5, prev + 0.15))}
+                  title="تكبير الحجم"
+                  className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white flex items-center justify-center transition-all shadow-lg active:scale-90 cursor-pointer"
+                >
+                  <ZoomIn size={14} />
+                </button>
+
+                {/* Zoom Out */}
+                <button
+                  type="button"
+                  onClick={() => setScale(prev => Math.max(0.4, prev - 0.15))}
+                  title="تصغير الحجم"
+                  className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white flex items-center justify-center transition-all shadow-lg active:scale-90 cursor-pointer"
+                >
+                  <ZoomOut size={14} />
+                </button>
+
+                {/* Flip Horizontal */}
+                <button
+                  type="button"
+                  onClick={() => setIsFlipped(prev => !prev)}
+                  title="عكس الاتجاه"
+                  className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white flex items-center justify-center transition-all shadow-lg active:scale-90 cursor-pointer"
+                >
+                  <Share2 size={13} className="rotate-180" />
+                </button>
               </div>
 
               {/* Dynamic Interactive Watermark Overlay bottom */}
@@ -520,24 +864,28 @@ export default function AiMirror({
               {/* D-Pad Buttons for absolute tuning */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
                 <button
+                  type="button"
                   onClick={() => setTranslateY(prev => prev - 12)}
                   className="bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 py-1.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition"
                 >
                   <ArrowUp size={12} /> للأعلى
                 </button>
                 <button
+                  type="button"
                   onClick={() => setTranslateY(prev => prev + 12)}
                   className="bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 py-1.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition"
                 >
                   <ArrowDown size={12} /> للأسفل
                 </button>
                 <button
+                  type="button"
                   onClick={() => setTranslateX(prev => prev - 12)}
                   className="bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 py-1.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition"
                 >
                   <ArrowRight size={12} /> لليمين
                 </button>
                 <button
+                  type="button"
                   onClick={() => setTranslateX(prev => prev + 12)}
                   className="bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 py-1.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition"
                 >
@@ -545,10 +893,142 @@ export default function AiMirror({
                 </button>
               </div>
 
+              {/* Smart Auto-Fit Action (Phase 5) */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={autoFitDress}
+                  className="w-full bg-gradient-to-r from-[#A44C5C] to-[#C86B7C] hover:from-[#8D3B4A] hover:to-[#B5596A] text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition active:scale-98 shadow-sm cursor-pointer"
+                >
+                  <Sparkle size={13} className="text-[#F6E7A6] animate-pulse" />
+                  🪄 مواءمة ومطابقة القطعة تلقائياً على قوامكِ (Auto-Fit)
+                </button>
+              </div>
+
+              {/* Natural Blending Controls */}
+              <div className="border-t border-gray-150 pt-4 mt-2 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-[#A44C5C] uppercase tracking-widest block">
+                    🎨 دمج وتناسق الألوان والظلال (لمظهر طبيعي بالكامل)
+                  </span>
+                  {customerPhoto && (
+                    <span className="text-[9px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">
+                      تم رفع صورتكِ المخصصة
+                    </span>
+                  )}
+                </div>
+
+                {/* Blend Mode Selector */}
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[11px] text-gray-500 font-medium block">
+                    🧬 وضع دمج وملمس القماش مع ظلال جسمكِ:
+                  </span>
+                  <div className="grid grid-cols-4 gap-1">
+                    {[
+                      { id: 'normal', name: 'عادي (مستقل)', desc: 'الألوان الأصلية كاملة' },
+                      { id: 'multiply', name: 'مدمج حريري', desc: 'تطابق مع ظلال صورتك' },
+                      { id: 'overlay', name: 'مشع فاخر', desc: 'إضاءة مضاعفة ممتازة' },
+                      { id: 'soft-light', name: 'ناعم جداً', desc: 'انعكاس خفيف للأقمشة' }
+                    ].map((mode) => (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        onClick={() => setBlendMode(mode.id)}
+                        title={mode.desc}
+                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all border text-center cursor-pointer ${
+                          blendMode === mode.id
+                            ? 'bg-[#A44C5C] text-white border-[#A44C5C] shadow-xs'
+                            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        {mode.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Opacity Slider */}
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-xs text-gray-500 font-medium shrink-0 flex items-center gap-1 font-sans">
+                    <Sparkles size={12} className="text-[#A44C5C]" /> شفافية القطعة:
+                  </span>
+                  <input 
+                    type="range"
+                    min="0.4"
+                    max="1.0"
+                    step="0.01"
+                    value={dressOpacity}
+                    onChange={(e) => setDressOpacity(parseFloat(e.target.value))}
+                    className="w-full accent-[#A44C5C] h-1 bg-gray-200 rounded-lg cursor-pointer"
+                  />
+                  <span className="text-xs font-bold font-mono text-gray-700 w-12 text-left shrink-0">
+                    {Math.round(dressOpacity * 100)}%
+                  </span>
+                </div>
+
+                {/* Brightness Slider */}
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-xs text-gray-500 font-medium shrink-0 flex items-center gap-1 font-sans">
+                    <Info size={12} className="text-gray-400" /> إضاءة/سطوع الموديل:
+                  </span>
+                  <input 
+                    type="range"
+                    min="0.5"
+                    max="1.5"
+                    step="0.05"
+                    value={dressBrightness}
+                    onChange={(e) => setDressBrightness(parseFloat(e.target.value))}
+                    className="w-full accent-[#A44C5C] h-1 bg-gray-200 rounded-lg cursor-pointer"
+                  />
+                  <span className="text-xs font-bold font-mono text-gray-700 w-12 text-left shrink-0">
+                    {Math.round(dressBrightness * 100)}%
+                  </span>
+                </div>
+
+                {/* Contrast Slider */}
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-xs text-gray-500 font-medium shrink-0 flex items-center gap-1 font-sans">
+                    <Sliders size={12} className="text-gray-400" /> تباين وتداخل الأقمشة:
+                  </span>
+                  <input 
+                    type="range"
+                    min="0.5"
+                    max="1.5"
+                    step="0.05"
+                    value={dressContrast}
+                    onChange={(e) => setDressContrast(parseFloat(e.target.value))}
+                    className="w-full accent-[#A44C5C] h-1 bg-gray-200 rounded-lg cursor-pointer"
+                  />
+                  <span className="text-xs font-bold font-mono text-gray-700 w-12 text-left shrink-0">
+                    {Math.round(dressContrast * 100)}%
+                  </span>
+                </div>
+
+                {/* Shadow Slider */}
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-xs text-gray-500 font-medium shrink-0 flex items-center gap-1 font-sans">
+                    <Sparkles size={12} className="text-gray-400" /> عمق الظل ثلاثي الأبعاد:
+                  </span>
+                  <input 
+                    type="range"
+                    min="0.0"
+                    max="0.9"
+                    step="0.05"
+                    value={shadowAlpha}
+                    onChange={(e) => setShadowAlpha(parseFloat(e.target.value))}
+                    className="w-full accent-[#A44C5C] h-1 bg-gray-200 rounded-lg cursor-pointer"
+                  />
+                  <span className="text-xs font-bold font-mono text-gray-700 w-12 text-left shrink-0">
+                    {Math.round(shadowAlpha * 100)}%
+                  </span>
+                </div>
+              </div>
+
               {/* Mirror tools */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-gray-100">
                 <div className="flex gap-2">
                   <button
+                    type="button"
                     onClick={() => setIsFlipped(!isFlipped)}
                     className={`py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
                       isFlipped 
@@ -560,12 +1040,17 @@ export default function AiMirror({
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => {
                       setScale(1.0);
                       setRotation(0);
                       setTranslateX(0);
                       setTranslateY(0);
                       setIsFlipped(false);
+                      setDressOpacity(0.95);
+                      setDressBrightness(1.0);
+                      setDressContrast(1.0);
+                      setDressSaturation(1.0);
                     }}
                     className="bg-white hover:bg-gray-150 text-gray-600 border border-gray-200 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
                   >
@@ -573,7 +1058,7 @@ export default function AiMirror({
                   </button>
                 </div>
 
-                <div className="w-full sm:w-auto">
+                <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
                   <input 
                     type="file" 
                     ref={fileInputRef} 
@@ -581,12 +1066,47 @@ export default function AiMirror({
                     accept="image/png, image/jpeg, image/webp" 
                     className="hidden" 
                   />
+                  <input 
+                    type="file" 
+                    ref={cameraInputRef} 
+                    onChange={handleImageUpload} 
+                    accept="image/*" 
+                    capture="user" 
+                    className="hidden" 
+                  />
                   <button
+                    type="button"
                     onClick={triggerUploadClick}
-                    className="w-full bg-black text-[#F6E7A6] hover:bg-neutral-800 transition py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="bg-black text-[#F6E7A6] hover:bg-neutral-800 transition py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-initial"
+                  >
+                    <Upload size={13} />
+                    {customerPhoto ? "تغيير صورتكِ 📁" : "ارفعي صورتكِ 📁"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={triggerCameraClick}
+                    className="bg-[#A44C5C] text-white hover:bg-[#8D3B4A] transition py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-initial"
                   >
                     <Camera size={13} />
-                    {customerPhoto ? "تغيير صورتكِ الشخصية 📁" : "ارفعي صورتكِ لتجربتها 📁"}
+                    التقاط حقيقي 🤳
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isStreaming) {
+                        stopCameraStream();
+                      } else {
+                        startCameraStream();
+                      }
+                    }}
+                    className={`transition py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-initial ${
+                      isStreaming 
+                        ? 'bg-amber-600 text-white hover:bg-amber-700' 
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    }`}
+                  >
+                    <Eye size={13} />
+                    {isStreaming ? "إيقاف البث 🛑" : "بث فيديو حي 🎥"}
                   </button>
                 </div>
               </div>
@@ -1001,7 +1521,7 @@ export default function AiMirror({
                               setSelectedColorIndex(0);
                               setActiveView('mirror');
                             }}>
-                              <img 
+                              <SultaImage 
                                 src={p.images[0]} 
                                 alt={p.nameAr} 
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
