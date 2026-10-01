@@ -172,10 +172,7 @@ export default function WhatsAppFloat({
             className="w-13 h-13 md:w-14 md:h-14 bg-[#25D366] text-white rounded-full shadow-[0_6px_25px_rgba(37,211,102,0.45)] hover:shadow-[0_8px_30px_rgba(37,211,102,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center relative cursor-pointer"
             aria-label="تواصل معنا عبر واتساب SULTA"
           >
-            <MessageCircle size={28} className="animate-pulse" />
-            <span className="absolute -top-1 -right-1 bg-[#F6E7A6] text-[#0B0B0B] text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-serif font-black shadow-md border border-black/20">
-              👑
-            </span>
+            <MessageCircle size={28} />
           </button>
 
           {/* Quick Tooltip on Hover */}

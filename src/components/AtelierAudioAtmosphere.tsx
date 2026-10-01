@@ -752,11 +752,11 @@ export default function AtelierAudioAtmosphere({
 
           </motion.div>
         ) : (
-          /* FLOATING BUTTON (TRULY PREMIUM LOOK WITH RIPPLE RINGS) */
+          /* FLOATING BUTTON (HIDDEN ON MOBILE TO PREVENT CLUTTER & SCREEN OVERLAP) */
           <motion.button
             layoutId="atelier-radio-btn"
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-[#F6E7A6]/20 ring-4 ring-neutral-500/10"
+            className="hidden md:flex items-center gap-2 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-[#F6E7A6]/20 ring-4 ring-neutral-500/10"
             title="افتح مرشد SULTA الملكي الفاخر 👑"
           >
             <div className="relative flex items-center justify-center">

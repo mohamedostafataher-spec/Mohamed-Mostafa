@@ -40,6 +40,7 @@ import SultaConcierge from './components/SultaConcierge';
 import AiMirror from './components/AiMirror';
 import RoyalSensesSalon from './components/RoyalSensesSalon';
 import WhatsAppFloat from './components/WhatsAppFloat';
+import MobileBottomNav from './components/MobileBottomNav';
 
 import { dbService, supabase, cleanImgUrl } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -742,8 +743,12 @@ function AppContent() {
     // We can simulate an active selection by leaving it to StoreView filter
   };
 
-  // Dynamic live homepage filtering systems
+  // Dynamic live homepage filtering systems - Excluding lingerie per user request
   const filteredProducts = products.filter(p => {
+    const text = (p.nameAr + ' ' + p.nameEn + ' ' + (p.categoryAr || '') + ' ' + (p.category || '')).toLowerCase();
+    if (text.includes('لانجيري') || text.includes('lingerie')) {
+      return false;
+    }
     if (country === 'EG') {
       if (settings?.saExclusiveProductIds && Array.isArray(settings.saExclusiveProductIds) && settings.saExclusiveProductIds.includes(p.id)) {
         return false;
@@ -756,22 +761,27 @@ function AppContent() {
     return true;
   });
 
-  const bestSellers = filteredProducts.filter(p => p.isBestSeller && p.status === 'active').slice(0, 6);
-  const newArrivals = [...filteredProducts]
-    .filter(p => p.status === 'active')
-    .sort((a, b) => b.id.localeCompare(a.id))
-    .slice(0, 6);
-  const featuredProducts = filteredProducts.filter(p => p.featured && p.status === 'active').slice(0, 6);
-  const trendingProducts = filteredProducts
-    .filter(p => p.status === 'active')
-    .sort((a, b) => (b.rating || 5) - (a.rating || 5))
-    .slice(0, 6);
-  const latestProducts = [...filteredProducts]
-    .filter(p => p.status === 'active')
-    .slice(0, 6);
-  const seasonalCollections = filteredProducts
-    .filter(p => p.status === 'active' && (p.descriptionEn?.toLowerCase().includes('summer') || p.descriptionAr?.includes('صيف') || p.category === 'satin'))
-    .slice(0, 6);
+  // Safe product pool ensuring products are ALWAYS visible and never empty
+  const activeProducts = filteredProducts.filter(p => p.status === 'active' || !p.status);
+  const catalogPool = activeProducts.length > 0 ? activeProducts : (filteredProducts.length > 0 ? filteredProducts : products);
+
+  const bestSellers = catalogPool.filter(p => p.isBestSeller).length > 0
+    ? catalogPool.filter(p => p.isBestSeller).slice(0, 8)
+    : catalogPool.slice(0, 8);
+
+  const newArrivals = catalogPool.filter(p => p.featured || p.tagAr?.includes('جديد')).length > 0
+    ? catalogPool.filter(p => p.featured || p.tagAr?.includes('جديد')).slice(0, 8)
+    : catalogPool.slice(2, 10);
+
+  const featuredProducts = catalogPool.filter(p => p.featured).length > 0
+    ? catalogPool.filter(p => p.featured).slice(0, 8)
+    : catalogPool.slice(4, 12);
+
+  const trendingProducts = catalogPool.length > 0 ? catalogPool.slice(0, 8) : [];
+
+  const seasonalCollections = catalogPool.filter(p => (p.category === 'satin' || p.descriptionAr?.includes('صيف') || p.descriptionAr?.includes('حرير') || p.category === 'pajamas')).length > 0
+    ? catalogPool.filter(p => (p.category === 'satin' || p.descriptionAr?.includes('صيف') || p.descriptionAr?.includes('حرير') || p.category === 'pajamas')).slice(0, 8)
+    : catalogPool.slice(1, 9);
 
   return (
       <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
@@ -892,272 +902,197 @@ function AppContent() {
               }}
             />
 
-            {/* 2. SALLA TRUST PILLARS BAR */}
-            <div className="bg-white border-y border-gray-150 py-4 px-4 sm:px-6 lg:px-8 shadow-2xs">
-              <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-semibold text-gray-700">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full bg-rose-50 text-[#A44C5C] flex items-center justify-center shrink-0">
-                    <Truck size={17} />
-                  </div>
-                  <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-xs">شحن سريع ومجاني</span>
-                    <span className="text-[10px] text-gray-400">فوق {country === 'SA' ? '299 ر.س 🇸🇦' : '1500 ج.م 🇪🇬'}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-                    <ShieldCheck size={17} />
-                  </div>
-                  <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-xs">سداد آمن 100%</span>
-                    <span className="text-[10px] text-gray-400">مدى، Apple Pay والدفع عند الاستلام</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-                    <RefreshCw size={17} />
-                  </div>
-                  <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-xs">استبدال واسترجاع سهل</span>
-                    <span className="text-[10px] text-gray-400">خلال 14 يوماً بكل مرونة</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-                    <Phone size={17} />
-                  </div>
-                  <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-xs">واتساب {country === 'SA' ? 'السعودية' : 'مصر'}</span>
-                    <a 
-                      href={country === 'SA' ? "https://wa.me/966596894393" : "https://wa.me/201110095403"} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-[10px] text-emerald-700 font-mono font-bold hover:underline"
-                    >
-                      {country === 'SA' ? '0596894393' : '+20 111 009 5403'}
-                    </a>
-                  </div>
-                </div>
+            {/* 2. FAST HORIZONTAL SALLA CATEGORY CHIPS RAIL */}
+            <div className="bg-white border-b border-gray-200/80 sticky top-[95px] sm:top-[112px] z-30 py-2 sm:py-2.5 px-3 sm:px-6 shadow-2xs">
+              <div className="max-w-7xl mx-auto flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth">
+                {[
+                  { id: 'all', label: 'الكل 👑', action: () => setTab('store') },
+                  { id: 'offers', label: 'العروض والتخفيضات 🏷️', action: () => setTab('offers'), isHot: true },
+                  { id: 'best-sellers', label: 'الأكثر طلباً 🔥', action: () => setTab('best-sellers') },
+                  { id: 'new-arrivals', label: 'وصل حديثاً ✨', action: () => setTab('new-arrivals') },
+                  { id: 'pajamas', label: 'أطقم بيجامات 🎀', action: () => { setTab('store'); handleSearchQueryChange('بيجاما'); } },
+                  { id: 'dresses', label: 'فساتين نوم 👗', action: () => { setTab('store'); handleSearchQueryChange('فستان'); } },
+                  { id: 'robes', label: 'أرواب وكيمونو 🌸', action: () => { setTab('store'); handleSearchQueryChange('روب'); } },
+                  { id: 'satin', label: 'ساتان ملكي 💎', action: () => { setTab('store'); handleSearchQueryChange('ساتان'); } },
+                ].map((chip) => (
+                  <button
+                    key={chip.id}
+                    onClick={chip.action}
+                    className={`shrink-0 px-3 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer border select-none ${
+                      chip.isHot 
+                        ? 'bg-rose-50 text-[#A44C5C] border-rose-200 hover:bg-rose-100 shadow-2xs' 
+                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:text-black hover:border-gray-300'
+                    }`}
+                  >
+                    <span>{chip.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* 3. SALLA BRAND CATEGORIES GRID (تسوقي حسب القسم) */}
-            <section className="py-12 bg-[#F8F9FA] border-b border-gray-150">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between mb-8 pb-2">
-                  <div className="text-right">
-                    <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-                      تسوقي حسب القسم 🛍️
-                    </h3>
-                    <p className="text-gray-500 text-xs mt-1 font-medium">
-                      اختاري تشكيلتكِ المفضلة بنقرة واحدة
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setTab('store')}
-                    className="text-xs font-bold text-[#A44C5C] hover:underline flex items-center gap-1"
-                  >
-                    <span>كافة الأقسام</span>
-                    <span>←</span>
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
-                  {categories.slice(0, 4).map((category) => (
-                    <div
-                      key={category.id}
-                      onClick={() => handleSelectCategoryHome(category.id)}
-                      className="group relative flex flex-col items-center cursor-pointer text-center aspect-[4/5] rounded-2xl overflow-hidden shadow-xs hover:shadow-lg border border-gray-200 bg-white transition-all duration-300"
-                    >
-                      {/* Category Background Image */}
-                      <div className="absolute inset-0 bg-gray-100">
-                        {category.imageUrl && (
-                          <img
-                            src={category.imageUrl}
-                            alt={category.name}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                            referrerPolicy="no-referrer"
-                          />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/75 transition-colors" />
-                      </div>
-
-                      {/* Title Box */}
-                      <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-white/90 backdrop-blur-md shadow-xs text-center">
-                        <h4 className="text-gray-950 font-bold text-xs sm:text-sm">
-                          {category.nameAr || category.name}
-                        </h4>
-                        <span className="text-[10px] text-[#A44C5C] font-bold block mt-0.5">
-                          تصفحي التشكيلة ←
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* 4. SALLA FLASH OFFERS PROMO BANNER (عروض الموسم الحصرية) */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <div className="rounded-3xl bg-gradient-to-l from-rose-50 via-white to-pink-50 border border-pink-200 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-                <div className="text-right space-y-2 max-w-xl">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#A44C5C]/10 text-[#A44C5C] font-bold text-xs">
-                    <Sparkles size={12} />
-                    <span>عروض وتخفيضات كبرى 🏷️</span>
-                  </div>
-                  <h3 className="text-xl sm:text-3xl font-extrabold text-gray-950">
-                    وفري حتى 30% على تشكيلة النوم والحرير الملكي
-                  </h3>
-                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                    استخدمي كود الخصم الترحيبي <strong className="font-mono text-[#A44C5C] bg-white px-2 py-0.5 rounded border border-pink-200">SULTA20</strong> عند إتمام الطلب للحصول على خصم فوري وشحن مجاني!
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <button
-                    onClick={() => setTab('offers')}
-                    className="bg-[#111827] hover:bg-[#A44C5C] text-white px-7 py-3 rounded-xl text-xs font-bold transition-all shadow-md hover:scale-102 cursor-pointer flex items-center gap-2"
-                  >
-                    <span>تسوقي العروض الآن</span>
-                    <ArrowLeft size={14} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* 5. DYNAMIC METRIC-DRIVEN HOMEPAGE PRODUCT SECTIONS */}
+            {/* 3. DYNAMIC METRIC-DRIVEN HOMEPAGE PRODUCT SECTIONS */}
             {[
               { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
               { title: 'وصلنا حديثاً ✨', label: 'أحدث تصاميم موسم SULTA الفاخر', data: newArrivals },
               { title: 'روائع الكوتور واللانجيري 👑', label: 'مختارات مصممة لأمسيات مفعمة بالأناقة', data: featuredProducts },
               { title: 'المجموعات الموسمية 🌸', label: 'ساتان إيطالي بارد وأرواب دانتيل ساحرة', data: seasonalCollections },
             ].map((section, sectionIdx) => (
-              <section key={section.title} className={`py-12 ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  
-                  <div className="flex items-center justify-between mb-8 pb-3 border-b border-gray-200/80">
-                    <div className="text-right">
-                      <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-                        {section.title}
-                      </h3>
-                      <p className="text-gray-500 text-xs mt-1">
-                        {section.label}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => setTab('store')}
-                      className="text-xs font-bold text-[#A44C5C] hover:underline flex items-center gap-1"
-                    >
-                      <span>عرض الكل</span>
-                      <span>←</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5">
-                    {section.data.length > 0 ? section.data.slice(0, 8).map((prod) => {
-                      const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
-                      const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
-                      const isFav = favorites.includes(prod.id);
-
-                      return (
-                        <div
-                          key={prod.id}
-                          className="group flex flex-col h-full bg-white rounded-2xl p-2.5 sm:p-3 overflow-hidden border border-gray-150 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer justify-between"
-                          onClick={() => handleSelectProduct(prod)}
-                        >
-                          <div>
-                            {/* Top Photo Frame */}
-                            <div className="relative aspect-[3/4] overflow-hidden bg-[#F8F9FA] rounded-xl mb-2.5 flex items-center justify-center">
-                              {/* Badges */}
-                              <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-                                {prod.isBestSeller && (
-                                  <span className="bg-[#F59E0B] text-black text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
-                                    الأكثر طلباً 👑
-                                  </span>
-                                )}
-                                {prod.featured && (
-                                  <span className="bg-[#111827] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs">
-                                    جديد ✨
-                                  </span>
-                                )}
-                              </div>
-
-                              {/* Favorite Heart Button */}
-                              <div className="absolute top-2 right-2 z-10">
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                                  className="w-7 h-7 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-500 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
-                                  title="إضافة للمفضلة"
-                                >
-                                  <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
-                                </button>
-                              </div>
-
-                              <img
-                                src={cleanImgUrl(prod.images[0], prod.category)}
-                                alt={prod.nameAr || prod.nameEn}
-                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                                referrerPolicy="no-referrer"
-                              />
-                            </div>
-
-                            {/* Text details bottom */}
-                            <div className="space-y-1 text-right">
-                              <span className="text-[10px] text-gray-400 font-medium block">
-                                {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
-                              </span>
-                              <h4 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-[#A44C5C] transition-colors">
-                                {prod.nameAr || prod.nameEn}
-                              </h4>
-                              
-                              {/* Rating */}
-                              <div className="flex items-center gap-1 justify-start pt-0.5">
-                                <div className="flex items-center text-amber-400">
-                                  {Array.from({ length: 5 }).map((_, i) => (
-                                    <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                  ))}
-                                </div>
-                                <span className="text-[10px] text-gray-400 font-mono">({prod.reviewsCount || 28})</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Price & Add to Cart button */}
-                          <div className="pt-2 mt-2 border-t border-gray-100 space-y-2">
-                            <div className="flex items-baseline justify-between">
-                              <span className="font-extrabold text-sm sm:text-base text-gray-950 font-mono" dir="ltr">
-                                {priceVal.toLocaleString()} {currencyLabel}
-                              </span>
-                              <span className="text-[9.5px] text-gray-400">شامل الضريبة</span>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const chosenCol = prod.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
-                                const chosenSz = prod.sizes?.[0] || 'S';
-                                handleAddToCart(prod, chosenCol, chosenSz, 1);
-                              }}
-                              className="w-full py-2 px-3 rounded-xl bg-[#111827] hover:bg-[#A44C5C] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-98 cursor-pointer"
-                            >
-                              <ShoppingBag size={13} />
-                              <span>أضف للسلة</span>
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    }) : (
-                      <div className="col-span-full text-center text-gray-400 py-6 text-xs">
-                        جاري تحديث تشكيلة القطع الحالية.
+              <React.Fragment key={section.title}>
+                <section className={`py-8 sm:py-12 ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
+                    <div className="flex items-center justify-between mb-5 sm:mb-8 pb-2 sm:pb-3 border-b border-gray-200/80">
+                      <div className="text-right">
+                        <h3 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight">
+                          {section.title}
+                        </h3>
+                        <p className="text-gray-500 text-[11px] sm:text-xs mt-0.5 sm:mt-1">
+                          {section.label}
+                        </p>
                       </div>
-                    )}
+                      <button
+                        onClick={() => setTab('store')}
+                        className="text-xs font-bold text-[#A44C5C] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>عرض الكل</span>
+                        <span>←</span>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+                      {section.data.length > 0 ? section.data.slice(0, 8).map((prod) => {
+                        const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
+                        const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
+                        const isFav = favorites.includes(prod.id);
+
+                        return (
+                          <div
+                            key={prod.id}
+                            className="group flex flex-col h-full bg-white rounded-2xl p-2 sm:p-3 overflow-hidden border border-gray-150 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer justify-between"
+                            onClick={() => handleSelectProduct(prod)}
+                          >
+                            <div>
+                              {/* Top Photo Frame */}
+                              <div className="relative aspect-[3/4] overflow-hidden bg-[#F8F9FA] rounded-xl mb-2 sm:mb-2.5 flex items-center justify-center">
+                                {/* Badges */}
+                                <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+                                  {prod.isBestSeller && (
+                                    <span className="bg-[#F59E0B] text-black text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
+                                      الأكثر طلباً 👑
+                                    </span>
+                                  )}
+                                  {prod.featured && (
+                                    <span className="bg-[#111827] text-white text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
+                                      جديد ✨
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Favorite Heart Button */}
+                                <div className="absolute top-2 right-2 z-10">
+                                  <button 
+                                    onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
+                                    className="w-7 h-7 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-500 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
+                                    title="إضافة للمفضلة"
+                                  >
+                                    <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
+                                  </button>
+                                </div>
+
+                                <img
+                                  src={cleanImgUrl(prod.images[0], prod.category)}
+                                  alt={prod.nameAr || prod.nameEn}
+                                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+
+                              {/* Text details bottom */}
+                              <div className="space-y-1 text-right">
+                                <span className="text-[10px] text-gray-400 font-medium block">
+                                  {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
+                                </span>
+                                <h4 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-[#A44C5C] transition-colors">
+                                  {prod.nameAr || prod.nameEn}
+                                </h4>
+                                
+                                {/* Rating */}
+                                <div className="flex items-center gap-1 justify-start pt-0.5">
+                                  <div className="flex items-center text-amber-400">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                      </svg>
+                                    ))}
+                                  </div>
+                                  <span className="text-[10px] text-gray-400 font-mono">({prod.reviewsCount || 28})</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Price & Add to Cart button */}
+                            <div className="pt-2 mt-2 border-t border-gray-100 space-y-2">
+                              <div className="flex items-baseline justify-between">
+                                <span className="font-extrabold text-sm sm:text-base text-gray-950 font-mono" dir="ltr">
+                                  {priceVal.toLocaleString()} {currencyLabel}
+                                </span>
+                                <span className="text-[9.5px] text-gray-400">شامل الضريبة</span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const chosenCol = prod.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
+                                  const chosenSz = prod.sizes?.[0] || 'S';
+                                  handleAddToCart(prod, chosenCol, chosenSz, 1);
+                                }}
+                                className="w-full py-2 px-2.5 rounded-xl bg-[#111827] hover:bg-[#A44C5C] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-98 cursor-pointer"
+                              >
+                                <ShoppingBag size={13} />
+                                <span>أضف للسلة</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      }) : (
+                        <div className="col-span-full text-center text-gray-400 py-6 text-xs">
+                          جاري تحديث تشكيلة القطع الحالية.
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </section>
+                </section>
+
+                {/* SALLA FLASH OFFERS PROMO RIBBON (Placed between sections seamlessly) */}
+                {sectionIdx === 0 && (
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                    <div className="rounded-2xl bg-gradient-to-l from-rose-50 via-white to-pink-50 border border-pink-200 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+                      <div className="text-right space-y-1 max-w-xl">
+                        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#A44C5C]/10 text-[#A44C5C] font-bold text-[11px]">
+                          <Sparkles size={11} />
+                          <span>خصم إضافي وشحن مجاني 🏷️</span>
+                        </div>
+                        <h4 className="text-base sm:text-xl font-black text-gray-950">
+                          وفري حتى 30% على تشكيلات النوم والحرير الملكي
+                        </h4>
+                        <p className="text-gray-600 text-[11px] sm:text-xs">
+                          استخدمي كود الخصم الترحيبي <strong className="font-mono text-[#A44C5C] bg-white px-2 py-0.5 rounded border border-pink-200">SULTA20</strong> عند إتمام الطلب للحصول على خصم فوري وشحن مجاني!
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                        <button
+                          onClick={() => setTab('offers')}
+                          className="w-full sm:w-auto bg-[#111827] hover:bg-[#A44C5C] text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <span>تسوقي العروض الآن</span>
+                          <ArrowLeft size={13} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </React.Fragment>
             ))}
 
             {/* 6. FULL WIDTH LUXURIOUS BANNER WITH FALLBACK */}
@@ -1232,6 +1167,58 @@ function AppContent() {
                 )}
               </div>
             </section>
+
+            {/* 9. SALLA TRUST PILLARS BAR (Placed cleanly above footer) */}
+            <div className="bg-white border-y border-gray-200/80 py-6 px-4 sm:px-6 lg:px-8">
+              <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-xs font-semibold text-gray-700">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full bg-rose-50 text-[#A44C5C] flex items-center justify-center shrink-0">
+                    <Truck size={18} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">شحن سريع ومجاني</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">فوق {country === 'SA' ? '299 ر.س 🇸🇦' : '1500 ج.م 🇪🇬'}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                    <ShieldCheck size={18} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">سداد آمن 100%</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">مدى، Apple Pay والدفع عند الاستلام</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                    <RefreshCw size={18} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">استبدال واسترجاع سهل</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">خلال 14 يوماً بكل مرونة</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                    <Phone size={18} />
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">خدمة عملاء واتساب</span>
+                    <a 
+                      href={country === 'SA' ? "https://wa.me/966596894393" : "https://wa.me/201110095403"} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-[10px] sm:text-[11px] text-emerald-700 font-mono font-bold hover:underline"
+                    >
+                      {country === 'SA' ? '0596894393 🇸🇦' : '+20 111 009 5403 🇪🇬'}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           </div>
         )}
@@ -1826,48 +1813,15 @@ function AppContent() {
         </div>
       )}
 
-      {/* STICKY BOTTOM NAVIGATION BAR FOR MOBILE FIRST EXPERIENCE */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-150 py-2.5 px-6 z-40 flex justify-around items-center shadow-lg select-none">
-        <button 
-          onClick={() => setTab('home')}
-          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'home' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
-        >
-          <Home size={18} />
-          <span className="text-[9px] font-sans font-bold">الرئيسية</span>
-        </button>
-
-        <button 
-          onClick={() => setTab('store')}
-          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'store' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
-        >
-          <ShoppingBag size={18} />
-          <span className="text-[9px] font-sans font-bold">المتجر</span>
-        </button>
-
-        <button 
-          onClick={() => setIsBottomSearchOpen(true)}
-          className="flex flex-col items-center gap-1 transition-all text-gray-400 hover:text-gray-750"
-        >
-          <Search size={18} />
-          <span className="text-[9px] font-sans font-bold">البحث</span>
-        </button>
-
-        <button 
-          onClick={() => setTab('account')}
-          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'account' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
-        >
-          <Heart size={18} className={favorites.length > 0 ? "text-red-500 fill-red-500" : ""} />
-          <span className="text-[9px] font-sans font-bold">المفضلة</span>
-        </button>
-
-        <button 
-          onClick={() => setTab('account')}
-          className={`flex flex-col items-center gap-1 transition-all ${currentTab === 'account' ? 'text-[#A44C5C] scale-105' : 'text-gray-400 hover:text-gray-750'}`}
-        >
-          <User size={18} />
-          <span className="text-[9px] font-sans font-bold">حسابي</span>
-        </button>
-      </div>
+      {/* SALLA MOBILE BOTTOM NAVIGATION BAR */}
+      <MobileBottomNav
+        currentTab={currentTab}
+        setTab={setTab}
+        cart={cart}
+        favorites={favorites}
+        onOpenCart={() => setIsCartOpen(true)}
+        onOpenFavorites={() => setTab('account')}
+      />
 
       {/* FLOATING BOTTOM SEARCH MODAL */}
       {isBottomSearchOpen && (

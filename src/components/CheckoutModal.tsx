@@ -95,9 +95,9 @@ export default function CheckoutModal({
   ];
 
   const saudiPayments = [
-    { id: 'visa', name: 'بطاقة الائتمان (فيزا / ماستركارد)', icon: <CreditCard size={16} /> },
-    { id: 'mada', name: 'بطاقة نقدية مدى المدعومة (Mada)', icon: <CreditCard size={16} /> },
+    { id: 'visa', name: 'بطاقة فيزا إنفاز الائتمانية (Enjaz Visa **** 3727 - بنك الجزيرة)', icon: <CreditCard size={16} /> },
     { id: 'apple', name: 'أبل باي السريع (Apple Pay)', icon: <Smartphone size={16} /> },
+    { id: 'tamara', name: 'تمارا - قسمي قسطك على 3 أو 4 دفعات بدون فوائد (Tamara)', icon: <CreditCard size={16} /> },
     { id: 'stc', name: 'إس تي سي باي الذكي (STC Pay)', icon: <Smartphone size={16} /> },
     { id: 'cod', name: 'الدفع عند الاستلام مع التغليف الفاخر', icon: <Truck size={16} /> },
   ];

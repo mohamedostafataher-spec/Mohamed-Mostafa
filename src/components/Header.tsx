@@ -108,14 +108,11 @@ export default function Header({
 
   const navCategories = [
     { id: 'home', label: 'الرئيسية' },
-    { id: 'offers', label: 'العروض والتخفيضات 🏷️' },
-    { id: 'store', label: 'المتجر الشامل 🛍️' },
-    { id: 'best-sellers', label: 'الأكثر طلباً 🔥' },
-    { id: 'new-arrivals', label: 'وصل حديثاً ✨' },
-    { id: 'collections', label: 'التشكيلات الحصرية 👑' },
-    { id: 'fabrics', label: 'دليل الخامات الملكي 🧵' },
-    { id: 'track-order', label: 'تتبع طلبيتكِ 📦' },
-    { id: 'contact', label: 'اتصل بنا 📞' },
+    { id: 'store', label: 'المتجر والتشكيلات 🛍️' },
+    { id: 'best-sellers', label: 'البيجامات وأرواب النوم 🎀' },
+    { id: 'new-arrivals', label: 'فساتين النوم 👗' },
+    { id: 'about', label: 'من نحن' },
+    { id: 'contact', label: 'اتصلي بنا' }
   ];
 
   const activeWhatsApp = country === 'SA' 
@@ -126,41 +123,42 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-50 bg-white font-sans transition-all duration-200" dir="rtl">
-      {/* 1. Top Announcement Header Bar (Salla style) */}
-      <div className="bg-[#F8F9FA] text-gray-700 text-[11px] py-2 px-4 border-b border-gray-200/80">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      {/* 1. Top Announcement Header Bar (Clean Salla style) */}
+      <div className="bg-[#F8F9FA] text-gray-700 text-[10px] sm:text-[11px] py-1.5 px-3 sm:px-4 border-b border-gray-200/80">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
-          {/* Shipping & Delivery Guarantee */}
-          <div className="flex items-center gap-2 text-gray-600 font-medium">
-            <Truck size={14} className="text-[#A44C5C]" />
+          {/* Shipping & Promo Notification */}
+          <div className="flex items-center gap-1.5 text-gray-700 font-medium truncate">
+            <Truck size={13} className="text-[#A44C5C] shrink-0" />
             <span className="hidden sm:inline">
-              شحن مجاني لكافة طلبات {country === 'SA' ? 'المملكة العربية السعودية فوق 299 ريال 🇸🇦' : 'محافظات مصر فوق 1500 ج.م 🇪🇬'}
+              شحن مجاني لكافة طلبات {country === 'SA' ? 'المملكة العربية السعودية فوق 299 ريال 🇸🇦' : 'محافظات مصر فوق 1500 ج.م 🇪🇬'} | كود الخصم: <strong className="font-mono text-[#A44C5C]">SULTA20</strong>
             </span>
-            <span className="sm:hidden font-semibold">
-              شحن سريع وتوصيل لباب بيتكِ 🚚
+            <span className="sm:hidden font-semibold truncate text-[10px]">
+              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س 🇸🇦' : 'شحن مجاني فوق 1500 ج.م 🇪🇬'} • كود: <strong className="text-[#A44C5C]">SULTA20</strong>
             </span>
           </div>
 
-          {/* Flash Promo Countdown */}
-          <div className="hidden md:flex items-center gap-1.5 text-[10.5px] font-bold text-gray-600">
+          {/* Flash Promo Countdown (Desktop) */}
+          <div className="hidden md:flex items-center gap-1.5 text-[10.5px] font-bold text-gray-600 shrink-0">
             <Sparkles size={12} className="text-[#DF8A9D] animate-pulse" />
-            <span>عروض الموسم تنتهي خلال:</span>
+            <span>ينتهي عرض الموسم خلال:</span>
             <span className="font-mono bg-white px-2 py-0.5 rounded border border-gray-200 text-gray-900 font-bold" dir="ltr">
               {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.mins).padStart(2, '0')}:{String(timeLeft.secs).padStart(2, '0')}
             </span>
           </div>
 
-          {/* Right Controls: WhatsApp & Country Switcher */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Right Controls: Country Switcher */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Desktop WhatsApp Link */}
             <a
               href={`https://wa.me/${activeWhatsAppClean}?text=${encodeURIComponent('مرحباً SULTA، أحتاج للمساعدة بخصوص الطلب 🌸')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 font-bold bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 px-2.5 py-0.5 rounded-full transition-all"
+              className="hidden lg:inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 font-bold bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 px-2.5 py-0.5 rounded-full transition-all text-[10.5px]"
               title="تواصل معنا عبر واتساب"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-              <span>واتساب {country === 'SA' ? 'السعودية' : 'مصر'}:</span>
+              <span>واتساب:</span>
               <span className="font-mono text-[10px]" dir="ltr">{activeWhatsAppDisplay}</span>
             </a>
 
@@ -168,7 +166,7 @@ export default function Header({
             <div className="flex items-center bg-white border border-gray-200 rounded-lg p-0.5 shadow-2xs">
               <button
                 onClick={() => setCountry('SA')}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded text-[9.5px] sm:text-[10px] font-bold transition-all cursor-pointer ${
                   country === 'SA' ? 'bg-[#111827] text-white shadow-2xs' : 'text-gray-600 hover:text-black'
                 }`}
               >
@@ -176,7 +174,7 @@ export default function Header({
               </button>
               <button
                 onClick={() => setCountry('EG')}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded text-[9.5px] sm:text-[10px] font-bold transition-all cursor-pointer ${
                   country === 'EG' ? 'bg-[#111827] text-white shadow-2xs' : 'text-gray-600 hover:text-black'
                 }`}
               >
@@ -189,40 +187,40 @@ export default function Header({
       </div>
 
       {/* 2. Main Navigation Bar (Clean White Salla / Nalah Layout) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
-        <div className="flex items-center justify-between gap-4 md:gap-8 w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3.5">
+        <div className="flex items-center justify-between gap-3 sm:gap-6 w-full">
           
-          {/* Mobile Menu Toggle Button */}
-          <div className="flex items-center gap-2 lg:hidden">
+          {/* Mobile Menu & Search Toggle Buttons */}
+          <div className="flex items-center gap-1.5 lg:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-800 hover:text-[#A44C5C] p-2 rounded-xl bg-gray-50 border border-gray-200 transition-colors"
               aria-label="القائمة"
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <button
               onClick={() => setSearchOpen(!searchOpen)}
               className="text-gray-800 hover:text-[#A44C5C] p-2 rounded-xl bg-gray-50 border border-gray-200 transition-colors"
               aria-label="البحث"
             >
-              <Search size={20} />
+              <Search size={19} />
             </button>
           </div>
 
-          {/* SULTA Brand Logo */}
+          {/* SULTA Brand Logo (Centered on mobile, left/right on desktop) */}
           <div 
             className="flex items-center cursor-pointer select-none" 
             onClick={() => setTab('home')}
           >
-            <div className="flex flex-col items-start group">
+            <div className="flex flex-col items-center sm:items-start group">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl sm:text-2xl font-black tracking-widest text-[#111827] group-hover:text-[#A44C5C] transition-colors font-serif uppercase">
+                <span className="text-lg sm:text-2xl font-black tracking-widest text-[#111827] group-hover:text-[#A44C5C] transition-colors font-serif uppercase">
                   {settings?.siteName || 'SULTA'}
                 </span>
-                <span className="text-[#A44C5C] text-sm">👑</span>
+                <span className="text-[#A44C5C] text-xs sm:text-sm">👑</span>
               </div>
-              <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-gray-600 font-sans -mt-0.5">
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-bold text-gray-500 font-sans -mt-0.5">
                 سُـلـطَـة · أزياء النوم الفاخرة
               </span>
             </div>
@@ -315,12 +313,12 @@ export default function Header({
           </div>
 
           {/* Right Action Cluster: Account, Favorites, Cart */}
-          <div className="flex items-center gap-3 sm:gap-4 select-none shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 select-none shrink-0">
             
             {/* User Account */}
             <button
               onClick={() => setTab('account')}
-              className={`p-2.5 rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`hidden md:flex p-2.5 rounded-xl border transition-all items-center gap-1.5 cursor-pointer ${
                 currentTab === 'account' 
                   ? 'bg-gray-100 border-gray-300 text-black' 
                   : 'bg-white border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50'
@@ -331,15 +329,15 @@ export default function Header({
               <span className="hidden xl:inline text-xs font-bold">حسابي</span>
             </button>
 
-            {/* Wishlist Button */}
+            {/* Wishlist Button (Desktop & Tablet) */}
             <button
               onClick={onOpenFavorites}
-              className="p-2.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700 transition-all relative cursor-pointer"
+              className="hidden sm:flex p-2 sm:p-2.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700 transition-all relative cursor-pointer"
               title="المفضلة"
             >
-              <Heart size={18} className={favorites.length > 0 ? "fill-red-500 text-red-500" : ""} />
+              <Heart size={17} className={favorites.length > 0 ? "fill-red-500 text-red-500" : ""} />
               {favorites.length > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm animate-scale-up">
+                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full shadow-sm animate-scale-up">
                   {favorites.length}
                 </span>
               )}
@@ -348,18 +346,18 @@ export default function Header({
             {/* Cart Button (Salla Style with Item Count & Live Total) */}
             <button
               onClick={onOpenCart}
-              className="flex items-center gap-2 bg-[#111827] hover:bg-[#A44C5C] active:scale-98 text-white px-3.5 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer group"
+              className="flex items-center gap-1.5 sm:gap-2 bg-[#111827] hover:bg-[#A44C5C] active:scale-98 text-white px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl transition-all shadow-sm cursor-pointer group"
               title="سلة المشتريات"
             >
               <div className="relative">
-                <ShoppingBag size={18} />
+                <ShoppingBag size={17} />
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[9px] font-black w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-[#111827]">
                     {cartCount}
                   </span>
                 )}
               </div>
-              <div className="flex flex-col text-right leading-none">
+              <div className="hidden sm:flex flex-col text-right leading-none">
                 <span className="text-[11px] font-bold">السلة</span>
                 <span className="text-[10px] text-gray-300 font-mono mt-0.5" dir="ltr">
                   {cartTotal > 0 ? `${cartTotal} ${currencyLabel}` : 'فارغة'}

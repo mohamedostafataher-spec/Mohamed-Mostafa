@@ -116,7 +116,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   if (!currentSlideData) return null; // No static fallbacks
 
   return (
-    <section className="relative min-h-[75vh] lg:min-h-[85vh] flex items-center justify-start overflow-hidden bg-white">
+    <section className="relative min-h-[260px] sm:min-h-[360px] md:min-h-[460px] lg:min-h-[520px] flex items-center justify-start overflow-hidden bg-white">
       {/* Background elegant visuals with auto slider */}
       <div className="absolute inset-0 z-0">
         {slides.map((slide, idx) => {
@@ -145,47 +145,64 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
                 />
               )}
               {/* Clean white gradient overlay for maximum legibility */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-transparent" />
             </div>
           );
         })}
       </div>
 
       {/* Content overlay matched with mockup layout (Right aligned for Arabic) */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 pt-20 pb-32" dir="rtl">
-        <div className="max-w-xl animate-fade-in text-right">
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 pb-8 sm:pt-14 sm:pb-16" dir="rtl">
+        <div className="max-w-lg animate-fade-in text-right">
           
-          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-[72px] text-[#A44C5C] font-normal leading-[1.1] tracking-normal mb-2 shadow-sm drop-shadow-sm whitespace-pre-line">
+          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-[#A44C5C] font-normal leading-[1.2] tracking-normal mb-1.5 sm:mb-2 drop-shadow-2xs whitespace-pre-line">
             {currentSlideData.title}
             {currentSlideData.subtitle && (
-              <span className="block text-[#DF8A9D]">{currentSlideData.subtitle}</span>
+              <span className="block text-[#DF8A9D] text-lg sm:text-2xl md:text-3xl mt-0.5">{currentSlideData.subtitle}</span>
             )}
           </h2>
           
-          {/* Decorative Ribbon Icon Placement (Simulated with text/lucide for now) */}
-          <div className="my-6">
-            <svg width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#A44C5C] scale-x-[-1]">
+          {/* Decorative Ribbon Icon Placement */}
+          <div className="my-2 sm:my-4">
+            <svg width="32" height="20" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#A44C5C] scale-x-[-1] opacity-60">
                <path d="M16 12C16 16.4183 12.4183 20 8 20C3.58172 20 0 16.4183 0 12C0 7.58172 3.58172 4 8 4C12.4183 4 16 7.58172 16 12Z" fill="currentColor" fillOpacity="0.2"/>
                <path d="M40 12C40 16.4183 36.4183 20 32 20C27.5817 20 24 16.4183 24 12C24 7.58172 27.5817 4 32 4C36.4183 4 40 7.58172 40 12Z" fill="currentColor" fillOpacity="0.2"/>
                <circle cx="20" cy="12" r="4" fill="currentColor"/>
             </svg>
           </div>
 
-          <p className="font-serif text-xl md:text-3xl text-[#0B0B0B] mb-10 drop-shadow-sm">
+          <p className="font-sans text-xs sm:text-sm md:text-base text-gray-800 mb-4 sm:mb-6 line-clamp-2 sm:line-clamp-none max-w-sm sm:max-w-md leading-relaxed">
             {currentSlideData.description}
           </p>
 
-          <div className="flex flex-wrap gap-4 items-center justify-start">
+          <div className="flex flex-wrap gap-3 items-center justify-start">
             <button
               onClick={onExplore}
-              className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#DF8A9D] border border-transparent px-8 py-3.5 rounded-full text-sm tracking-wider uppercase transition-colors inline-flex items-center justify-center gap-2 font-sans font-medium hover:scale-105 duration-300"
+              className="bg-[#A44C5C] text-white hover:bg-[#111827] px-5 py-2 sm:px-7 sm:py-3 rounded-full text-xs sm:text-sm tracking-wider uppercase transition-all inline-flex items-center justify-center gap-2 font-sans font-bold shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
             >
               <span>{currentSlideData.ctaText}</span>
-              <ArrowRight size={16} className="rotate-180" />
+              <ArrowRight size={14} className="rotate-180" />
             </button>
           </div>
         </div>
       </div>
+
+      {/* Slide Indicator Dots */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-2.5 sm:bottom-4 inset-x-0 flex justify-center gap-1.5 z-20">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setCurrentSlide(idx)}
+              className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                idx === currentSlide ? 'w-5 sm:w-6 bg-[#A44C5C]' : 'w-2 bg-gray-300 hover:bg-gray-400'
+              }`}
+              aria-label={`شريحة ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

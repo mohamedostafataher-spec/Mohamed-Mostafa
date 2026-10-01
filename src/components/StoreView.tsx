@@ -183,19 +183,19 @@ export default function StoreView({
       </div>
 
       {/* 1. Salla / Nalah Style Clean White Promotional Hero Banner */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-2">
-        <div className="relative rounded-2xl bg-gradient-to-l from-[#FFF1F2] via-white to-[#FDF2F8] border border-pink-150 p-6 md:p-8 shadow-xs overflow-hidden">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-2">
+        <div className="relative rounded-2xl bg-gradient-to-l from-[#FFF1F2] via-white to-[#FDF2F8] border border-pink-150 p-3.5 sm:p-6 md:p-8 shadow-xs overflow-hidden">
           {/* Subtle Decorative Background Circles */}
           <div className="absolute top-0 right-0 w-72 h-72 bg-rose-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-pink-100/40 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-right space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#A44C5C]/10 border border-[#A44C5C]/20 text-[#A44C5C] font-bold text-xs">
-                <Sparkles size={12} />
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+            <div className="text-right space-y-1.5 sm:space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#A44C5C]/10 border border-[#A44C5C]/20 text-[#A44C5C] font-bold text-[10.5px] sm:text-xs">
+                <Sparkles size={11} />
                 <span>{selectedCategory === 'offers' ? 'تخفيضات وعروض حصرية 🏷️' : 'عروض موسم SULTA الحصرية 🏷️'}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#111827] leading-tight">
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-[#111827] leading-tight">
                 {selectedCategory === 'offers' ? 'عروض وتخفيضات ملابس النوم والبيجامات الحريرية' : 'أرقى تصاميم ملابس النوم والبيجامات الحريرية'}
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
@@ -203,9 +203,16 @@ export default function StoreView({
                   ? 'اكتشفي أقوى عروض التوفير بخصومات تصل إلى 30% مع شحن سريع وتوصيل لباب بيتكِ في كافة مناطق المملكة ومصر.'
                   : 'اكتشفي تشكيلة الساتان الإيطالي الفاخر وأرواب العرايس بخصومات فورية وتوصيل سريع لباب بيتكِ في كافة مناطق المملكة ومصر.'}
               </p>
+
+              {/* Mobile Quick Promo Code Pill */}
+              <div className="sm:hidden pt-1 flex items-center gap-2">
+                <span className="text-[10px] bg-white border border-pink-200 text-[#A44C5C] font-bold px-2 py-0.5 rounded-lg shadow-2xs">
+                  كود الخصم: <strong className="font-mono text-black">SULTA20</strong> (خصم 20%)
+                </span>
+              </div>
               
               {/* Trust badges row */}
-              <div className="flex flex-wrap items-center gap-4 pt-2 text-[11px] font-semibold text-gray-500">
+              <div className="hidden sm:flex flex-wrap items-center gap-4 pt-2 text-[11px] font-semibold text-gray-500">
                 <span className="flex items-center gap-1.5 text-gray-700">
                   <Truck size={14} className="text-[#A44C5C]" />
                   <span>شحن سريع ومجاني للطلبات المؤهلة</span>
@@ -223,8 +230,8 @@ export default function StoreView({
               </div>
             </div>
 
-            {/* Quick Promo Action Card */}
-            <div className="shrink-0 bg-white border border-gray-200 p-4 sm:p-5 rounded-2xl shadow-xs text-center space-y-2.5 w-full md:w-72">
+            {/* Quick Promo Action Card (Desktop / Tablet) */}
+            <div className="hidden sm:block shrink-0 bg-white border border-gray-200 p-4 sm:p-5 rounded-2xl shadow-xs text-center space-y-2.5 w-full md:w-72">
               <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">كود خصم ترحيبي إضافي</span>
               <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl py-2 px-3 flex items-center justify-between">
                 <span className="font-mono text-sm font-black text-[#A44C5C] tracking-wider" dir="ltr">SULTA20</span>
@@ -239,8 +246,8 @@ export default function StoreView({
       </div>
 
       {/* 2. Salla Style Horizontal Scrollable Category Pills Bar */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none pb-1">
           {displayCategories.map(cat => {
             const isSelected = selectedCategory === cat.id;
             return (
@@ -250,7 +257,7 @@ export default function StoreView({
                   setSelectedCategory(cat.id);
                   setSelectedCollection('all');
                 }}
-                className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 ${
                   isSelected
                     ? 'bg-[#111827] text-white shadow-sm scale-102'
                     : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-900 hover:bg-gray-50'
@@ -264,7 +271,7 @@ export default function StoreView({
       </div>
 
       {/* 3. Sticky Filter & Sorting Toolbar */}
-      <div id="catalog-explore-anchor" className="sticky top-[110px] sm:top-[120px] z-30 w-full border-y border-gray-200 bg-white/95 backdrop-blur-md shadow-2xs">
+      <div id="catalog-explore-anchor" className="sticky top-[78px] sm:top-[115px] z-30 w-full border-y border-gray-200 bg-white/95 backdrop-blur-md shadow-2xs">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
           
           {/* Products Count Indicator */}
@@ -390,10 +397,10 @@ export default function StoreView({
             </button>
           </div>
         ) : (
-          <div className={`grid gap-3 sm:gap-5 ${
+          <div className={`grid ${
             mobileLayout === 'single'
-              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-              : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5'
+              : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5'
           }`}>
             
             {filteredProducts.map((product, index) => {
@@ -413,7 +420,7 @@ export default function StoreView({
               return (
                 <div
                   key={product.id}
-                  className="bg-white rounded-2xl border border-gray-150 hover:border-gray-300 p-2.5 sm:p-3 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative cursor-pointer"
+                  className="bg-white rounded-2xl border border-gray-150 hover:border-gray-300 p-2 sm:p-3 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative cursor-pointer"
                   onClick={() => onSelectProduct(product)}
                 >
                   
@@ -430,31 +437,31 @@ export default function StoreView({
                       />
 
                       {/* Top Right: Wishlist Heart Floating Button */}
-                      <div className="absolute top-2.5 right-2.5 z-10">
+                      <div className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10">
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
-                          className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-red-500 shadow-sm backdrop-blur-xs flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                          className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-red-500 shadow-sm backdrop-blur-xs flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                           title="إضافة للمفضلة"
                         >
-                          <Heart size={14} className={isFav ? "fill-red-500 text-red-500" : ""} />
+                          <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
                         </button>
                       </div>
 
                       {/* Top Left: Badges (Discount / Best Seller / New) */}
-                      <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1 items-start">
+                      <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 z-10 flex flex-col gap-1 items-start">
                         {discountVal > 0 && (
-                          <span className="bg-[#E11D48] text-white text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                          <span className="bg-[#E11D48] text-white text-[8.5px] sm:text-[9.5px] font-black px-1.5 py-0.5 sm:px-2 rounded-md shadow-xs">
                             خصم {discountVal}%
                           </span>
                         )}
                         {product.isBestSeller && (
-                          <span className="bg-[#F59E0B] text-black text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                          <span className="bg-[#F59E0B] text-black text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 sm:px-2 rounded-md shadow-xs">
                             الأكثر طلباً 👑
                           </span>
                         )}
                         {product.featured && (
-                          <span className="bg-[#111827] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs">
+                          <span className="bg-[#111827] text-white text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 rounded-md shadow-xs">
                             جديد ✨
                           </span>
                         )}
@@ -462,7 +469,7 @@ export default function StoreView({
 
                       {/* Stock Warning Badge */}
                       {product.stock <= 3 && product.stock > 0 && (
-                        <div className="absolute bottom-2 right-2 bg-red-600/90 text-white text-[8.5px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs shadow-xs">
+                        <div className="absolute bottom-2 right-2 bg-red-600/90 text-white text-[8px] sm:text-[8.5px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-xs shadow-xs">
                           متبقي {product.stock} فقط 🚨
                         </div>
                       )}
@@ -474,7 +481,7 @@ export default function StoreView({
                           e.stopPropagation();
                           setQuickViewProduct(product);
                         }}
-                        className="absolute inset-0 m-auto w-10 h-10 bg-white/95 rounded-full flex items-center justify-center text-gray-800 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 cursor-pointer"
+                        className="hidden sm:flex absolute inset-0 m-auto w-10 h-10 bg-white/95 rounded-full items-center justify-center text-gray-800 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 cursor-pointer"
                         title="معاينة سريعة"
                       >
                         <Eye size={16} />
@@ -498,33 +505,33 @@ export default function StoreView({
                     </div>
 
                     {/* Card Content Details */}
-                    <div className="pt-2.5 pb-1 text-right space-y-1">
+                    <div className="pt-2 sm:pt-2.5 pb-1 text-right space-y-1">
                       
                       {/* Category Label */}
-                      <span className="text-[10px] text-gray-400 font-medium block">
+                      <span className="text-[9.5px] sm:text-[10px] text-gray-400 font-medium block truncate">
                         {product.categoryAr || product.category || 'ملابس نوم فاخرة'}
                       </span>
 
                       {/* Product Name in Bold Modern Arabic Font */}
-                      <h3 className="font-bold text-xs sm:text-sm text-gray-950 group-hover:text-[#A44C5C] transition-colors leading-snug line-clamp-2">
+                      <h3 className="font-bold text-xs sm:text-sm text-gray-950 group-hover:text-[#A44C5C] transition-colors leading-snug line-clamp-2 min-h-[32px] sm:min-h-[38px]">
                         {product.nameAr || product.nameEn}
                       </h3>
 
                       {/* Rating Stars Row */}
-                      <div className="flex items-center gap-1.5 justify-start pt-0.5">
+                      <div className="flex items-center gap-1 sm:gap-1.5 justify-start pt-0.5">
                         <div className="flex items-center text-amber-400">
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <svg key={i} className={`w-3 h-3 ${i < Math.round(product.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
+                            <svg key={i} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${i < Math.round(product.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                           ))}
                         </div>
-                        <span className="text-[10px] text-gray-400 font-sans font-medium">({product.reviewsCount || 34})</span>
+                        <span className="text-[9.5px] sm:text-[10px] text-gray-400 font-sans font-medium">({product.reviewsCount || 34})</span>
                       </div>
 
                       {/* Color Options Swatches (if available) */}
                       {product.colors && product.colors.length > 0 && (
-                        <div className="flex items-center gap-1.5 justify-start pt-1">
+                        <div className="flex items-center gap-1 sm:gap-1.5 justify-start pt-1">
                           {product.colors.slice(0, 4).map((col, cIdx) => {
                             const isSelected = cardColorSel ? cardColorSel.name === col.name : cIdx === 0;
                             return (
@@ -532,7 +539,7 @@ export default function StoreView({
                                 key={col.name}
                                 type="button"
                                 onClick={(e) => handleCardColorSelect(product.id, col, e)}
-                                className={`w-3.5 h-3.5 rounded-full border transition-all cursor-pointer ${
+                                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border transition-all cursor-pointer ${
                                   isSelected ? 'scale-125 ring-1 ring-black border-white' : 'border-gray-200'
                                 }`}
                                 style={{ backgroundColor: col.hex }}
@@ -540,7 +547,7 @@ export default function StoreView({
                               />
                             );
                           })}
-                          <span className="text-[10px] text-gray-400 font-sans">
+                          <span className="text-[9.5px] sm:text-[10px] text-gray-400 font-sans truncate">
                             {cardColorSel ? cardColorSel.name : product.colors[0]?.name}
                           </span>
                         </div>
@@ -550,12 +557,12 @@ export default function StoreView({
                   </div>
 
                   {/* Bottom: Price Row & Salla Full-Width Add To Cart Button */}
-                  <div className="pt-2 border-t border-gray-100 space-y-2.5">
+                  <div className="pt-2 border-t border-gray-100 space-y-2">
                     
                     {/* Price and VAT inclusion */}
                     <div className="flex items-baseline justify-between">
                       <ProductPrice product={product} country={country} size="sm" showBadge={false} />
-                      <span className="text-[9.5px] text-gray-400 font-medium">شامل الضريبة</span>
+                      <span className="text-[9px] sm:text-[9.5px] text-gray-400 font-medium">شامل الضريبة</span>
                     </div>
 
                     {/* Prominent Salla Style "Add to Cart" Button */}
@@ -563,7 +570,7 @@ export default function StoreView({
                       type="button"
                       onClick={(e) => handleAddToCartWithFeedback(product, e)}
                       disabled={product.stock === 0}
-                      className={`w-full py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer shadow-xs active:scale-98 ${
+                      className={`w-full py-2 sm:py-2.5 px-2 sm:px-3 rounded-xl font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer shadow-xs active:scale-98 ${
                         product.stock === 0
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                           : isAdded
@@ -575,12 +582,12 @@ export default function StoreView({
                         <span>نفدت الكمية ✕</span>
                       ) : isAdded ? (
                         <>
-                          <Check size={14} className="stroke-[3]" />
+                          <Check size={13} className="stroke-[3]" />
                           <span>تمت الإضافة للسلة</span>
                         </>
                       ) : (
                         <>
-                          <ShoppingBag size={14} />
+                          <ShoppingBag size={13} />
                           <span>أضف للسلة</span>
                         </>
                       )}
