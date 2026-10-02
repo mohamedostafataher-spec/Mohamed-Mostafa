@@ -214,7 +214,7 @@ export function cleanImgUrl(url: any, fallbackCategory?: string): string {
 
   let cleaned = url.trim();
 
-  // If it is a direct Supabase Storage CDN URL or any valid full https URL (except unsplash), return directly
+  // If it is a direct Supabase Storage CDN URL or any valid full https URL, return directly
   if (cleaned.startsWith('https://') || cleaned.startsWith('http://')) {
     if (cleaned.includes('supabase.co') || cleaned.includes('/storage/v1/object/public/')) {
       return cleaned;
@@ -227,6 +227,10 @@ export function cleanImgUrl(url: any, fallbackCategory?: string): string {
     cleaned = cleaned.replace(/^src\/assets\//, '/img/');
   } else if (cleaned.startsWith('/assets/images/')) {
     cleaned = cleaned.replace(/^\/assets\/images\//, '/img/');
+  }
+
+  if (cleaned.startsWith('/img/')) {
+    return cleaned;
   }
 
   // Pre-configured mappings so local asset paths load our new generated beautiful SULTA imagery
