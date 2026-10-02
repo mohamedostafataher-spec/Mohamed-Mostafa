@@ -9,7 +9,7 @@ interface SultaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   imgClassName?: string;
 }
 
-const DEFAULT_FALLBACK = '/img/sulta_hero_banner_real.png'; // A safe fallback if image completely fails
+const DEFAULT_FALLBACK = '/img/sulta_default_1_1781140865386.png'; // A safe fallback if image completely fails
 
 export default function SultaImage({ 
   src, 

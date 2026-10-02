@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import { Settings } from '../types';
 import { cleanImgUrl } from '../services/db';
 import SultaImage from './SultaImage';
@@ -106,10 +105,9 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
         })}
       </div>
 
-      {/* Content overlay - Minimal & Elegant like Salla */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12" dir="rtl">
-        <div className="max-w-md text-right space-y-2 sm:space-y-3">
-          
+      {/* Content overlay - Clean & Minimal Salla style without intrusive buttons or descriptions */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pointer-events-none" dir="rtl">
+        <div className="max-w-md text-right space-y-1 sm:space-y-2">
           <h2 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-[#111827] font-bold leading-tight drop-shadow-2xs">
             {currentSlideData.title}
           </h2>
@@ -119,41 +117,8 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
               {currentSlideData.subtitle}
             </p>
           )}
-
-          <div className="pt-1 sm:pt-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onExplore();
-              }}
-              className="bg-[#111827] hover:bg-[#A44C5C] text-white px-5 py-2 sm:px-6 sm:py-2.5 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-2 shadow-sm hover:scale-102 active:scale-98 cursor-pointer"
-            >
-              <span>{currentSlideData.ctaText}</span>
-              <ArrowLeft size={13} />
-            </button>
-          </div>
         </div>
       </div>
-
-      {/* Slide Indicator Dots */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-20">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentSlide(idx);
-              }}
-              className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                idx === currentSlide ? 'w-5 bg-[#111827]' : 'w-2 bg-gray-300 hover:bg-gray-400'
-              }`}
-              aria-label={`شريحة ${idx + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </section>
   );
 }

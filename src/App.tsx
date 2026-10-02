@@ -900,8 +900,8 @@ function AppContent() {
                   { id: 'all', label: 'الكل 👑', action: () => setTab('store') },
                   { id: 'offers', label: 'العروض والتخفيضات 🏷️', action: () => setTab('offers'), isHot: true },
                   { id: 'pajamas', label: 'بيجامات النوم 🎀', action: () => { setTab('store'); handleSearchQueryChange('بيجاما'); } },
-                  { id: 'dresses', label: 'فساتين النوم 👗', action: () => { setTab('store'); handleSearchQueryChange('فستان'); } },
-                  { id: 'robes', label: 'أرواب الساتان 🌸', action: () => { setTab('store'); handleSearchQueryChange('روب'); } },
+                  
+                  
                   { id: 'best-sellers', label: 'الأكثر طلباً 🔥', action: () => setTab('best-sellers') },
                 ].map((chip) => (
                   <button
@@ -991,6 +991,13 @@ function AppContent() {
                                   alt={prod.nameAr || prod.nameEn}
                                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                   referrerPolicy="no-referrer"
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    if (!target.src.includes('sulta_default')) {
+                                      target.src = '/img/sulta_default_1_1781140865386.png';
+                                    }
+                                  }}
                                 />
                               </div>
 

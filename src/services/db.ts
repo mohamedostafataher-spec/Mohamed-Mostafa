@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // --- ROBUST CONFIGURATION ---
 const DEFAULT_URL = 'https://fwadgmhabzaudusxghnh.supabase.co';
-const DEFAULT_KEY = 'NOT_CONFIGURED';
+const DEFAULT_KEY = 'sb_publishable_pYBVo5mba3tEpuMDxUlt6g_3aCk67gj';
 
 let urlToUse = DEFAULT_URL;
 let keyToUse = DEFAULT_KEY;
@@ -100,7 +100,11 @@ const isUrlStructurallyValid = (u: string) => {
     }
 };
 
-if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
+const isKeyValid = (k: string) => {
+    return typeof k === 'string' && k.trim().length > 20 && !k.includes('NOT_CONFIGURED') && !k.includes('YOUR_');
+};
+
+if (isUrlStructurallyValid(urlToUse) && isKeyValid(keyToUse)) {
     try {
         const cleanUrl = urlToUse.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
         console.log(`[SULTA DB] Correctly configured with real Supabase database: ${cleanUrl} (Key length: ${keyToUse.length})`);
@@ -110,7 +114,7 @@ if (isUrlStructurallyValid(urlToUse) && keyToUse !== DEFAULT_KEY) {
         supabaseInstance = createDummyClient();
     }
 } else {
-    console.warn(`[SULTA DB] Using offline fallback Dummy Client. Missing or invalid Supabase configurations. URL: ${urlToUse}, Key: ${keyToUse === DEFAULT_KEY ? 'DEFAULT_KEY' : 'PRESENT'}`);
+    console.warn(`[SULTA DB] Using offline fallback Dummy Client. Missing or invalid Supabase configurations. URL: ${urlToUse}, Key configured: ${isKeyValid(keyToUse)}`);
     supabaseInstance = createDummyClient();
 }
 
@@ -209,6 +213,14 @@ export function cleanImgUrl(url: any, fallbackCategory?: string): string {
   }
 
   let cleaned = url.trim();
+
+  // If it is a direct Supabase Storage CDN URL or any valid full https URL (except unsplash), return directly
+  if (cleaned.startsWith('https://') || cleaned.startsWith('http://')) {
+    if (cleaned.includes('supabase.co') || cleaned.includes('/storage/v1/object/public/')) {
+      return cleaned;
+    }
+  }
+
   if (cleaned.startsWith('/src/assets/')) {
     cleaned = cleaned.replace(/^\/src\/assets\//, '/img/');
   } else if (cleaned.startsWith('src/assets/')) {
@@ -358,11 +370,24 @@ function mapSettings(data: any): Settings {
 
 function mapProduct(data: any): Product {
   const catKey = data.category || 'sleepwear';
-  let rawImages = Array.isArray(data.images) ? data.images : (data.images ? JSON.parse(data.images) : []);
-  if (!Array.isArray(rawImages) || rawImages.length === 0 || rawImages.every(img => !img || String(img).trim() === '')) {
-    rawImages = [''];
+  let rawImages: any[] = [];
+  if (Array.isArray(data.images)) {
+    rawImages = data.images;
+  } else if (typeof data.images === 'string' && data.images.trim()) {
+    try {
+      const parsed = JSON.parse(data.images);
+      rawImages = Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      rawImages = [data.images];
+    }
   }
-  const cleanedImages = rawImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey));
+  if ((!rawImages || rawImages.length === 0) && data.image_url) {
+    rawImages = [data.image_url];
+  }
+  const validImages = (rawImages || []).filter((img: any) => img && typeof img === 'string' && img.trim() !== '');
+  const cleanedImages = validImages.length > 0
+    ? validImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey))
+    : [cleanImgUrl('', catKey)];
 
   // Default fallbacks from physical columns
   let nameAr = data.name_ar || '';
@@ -1064,11 +1089,16 @@ export const dbService = {
   ): (() => void) => {
     supabase.from('products').select('*').then(({ data, error }) => {
       if (error) {
+        console.error('[SULTA DB] Error querying products from Supabase:', error);
         onSuccess([]);
       } else if (data) {
+        console.log(`[SULTA DB] Successfully synced ${data.length} products from Supabase.`);
         onSuccess(data.map(mapProduct));
       }
-    }).catch(() => onSuccess([]));
+    }).catch((err: any) => {
+      console.error('[SULTA DB] Exception fetching products from Supabase:', err);
+      onSuccess([]);
+    });
 
     const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
@@ -1077,8 +1107,10 @@ export const dbService = {
         try {
           const { data, error } = await supabase.from('products').select('*');
           if (error) {
+            console.error('[SULTA DB] Realtime error on products update:', error);
             onSuccess([]);
           } else if (data) {
+            console.log(`[SULTA DB] Realtime update: ${data.length} products loaded.`);
             onSuccess(data.map(mapProduct));
           }
         } catch {

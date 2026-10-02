@@ -1101,92 +1101,7 @@ export default function ProductDetailModal({
               </div>
             </div>
 
-            {/* SULTA LUXURY PERSONALIZATION RITUALS */}
-            <div className="mb-5 bg-[#FAF5F0]/80 rounded-2xl p-4 border border-[#DF8A9D]/15 text-right font-sans space-y-4">
-              <div className="flex justify-between items-center border-b border-[#DF8A9D]/10 pb-2 flex-row-reverse">
-                <span className="text-xs font-serif font-semibold text-[#A44C5C] flex items-center gap-1.5">
-                  <Sparkles size={13} className="text-[#DF8A9D] animate-pulse" />
-                  <span>طقوس التدليل والتعطير الفاخرة من SULTA ⚜️</span>
-                </span>
-                <span className="text-[9px] text-gray-400">إضافات حصرية لطلبيتكِ</span>
-              </div>
 
-              {/* Fragrance mist spray Selection */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5 justify-end text-[10px] font-bold text-gray-500">
-                  <span>تعطير القطعة الفاخرة عطر من اختياركِ</span>
-                  <Wind size={11} className="text-[#A44C5C]" />
-                </div>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {[
-                    { id: 'none', label: 'بدون تعطير', extraSA: '', extraEG: '' },
-                    { id: 'Lavender', label: 'خزامى فرنسية ملكية 💜', extraSA: '+5 SAR', extraEG: '+20 EGP' },
-                    { id: 'Oud', label: 'عود السلاطين الملكي 🪵', extraSA: '+8 SAR', extraEG: '+30 EGP' },
-                    { id: 'Vanilla', label: 'فانيلا الحرير الدافئة 🍦', extraSA: '+6 SAR', extraEG: '+25 EGP' },
-                    { id: 'Rose', label: 'باقة الورد المذهب 🌹', extraSA: '+5 SAR', extraEG: '+20 EGP' },
-                  ].map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setSelectedScent(s.label)}
-                      className={`px-2.5 py-1.5 text-[10.5px] rounded-lg border text-right transition-all flex flex-col justify-between cursor-pointer ${
-                        selectedScent === s.label
-                          ? 'bg-[#0B0B0B] text-[#F6E7A6] border-black shadow-xs font-semibold'
-                          : 'bg-white text-gray-700 border-gray-200 hover:border-[#DF8A9D]/40'
-                      }`}
-                    >
-                      <span className="font-sans font-medium">{s.label}</span>
-                      <span className="text-[8.5px] text-[#A44C5C] font-mono mt-0.5">{country === 'EG' ? s.extraEG : s.extraSA}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Packaging & Card selection */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5 justify-end text-[10px] font-bold text-gray-500">
-                  <span>خيارات التغليف الملكي ومذكرة الإهداء</span>
-                  <Gift size={11} className="text-[#A44C5C]" />
-                </div>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {[
-                    { id: 'none', label: 'تغليف SULTA الأساسي الأنيق', extraSA: 'مشمول', extraEG: 'مشمول' },
-                    { id: 'Velvet', label: 'علبة القطيفة والشرائط المذهبة 🎀', extraSA: '+12 SAR', extraEG: '+50 EGP' },
-                    { id: 'Silk', label: 'كيس الحرير ببتلات الورد 🌸', extraSA: '+8 SAR', extraEG: '+30 EGP' },
-                    { id: 'Card', label: 'بطاقة إهداء مذهبة بخط اليد ✍️', extraSA: '+4 SAR', extraEG: '+15 EGP' },
-                  ].map((w) => (
-                    <button
-                      key={w.id}
-                      type="button"
-                      onClick={() => setSelectedWrap(w.label)}
-                      className={`px-2.5 py-1.5 text-[10.5px] rounded-lg border text-right transition-all flex flex-col justify-between cursor-pointer ${
-                        selectedWrap === w.label
-                          ? 'bg-[#0B0B0B] text-[#F6E7A6] border-black shadow-xs font-semibold'
-                          : 'bg-white text-gray-700 border-gray-200 hover:border-[#DF8A9D]/40'
-                      }`}
-                    >
-                      <span className="font-sans font-medium leading-tight">{w.label}</span>
-                      <span className="text-[8.5px] text-[#A44C5C] font-mono mt-0.5">{country === 'EG' ? w.extraEG : w.extraSA}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Textarea for gift message if wrap or card is selected */}
-              {selectedWrap !== 'none' && selectedWrap !== 'تغليف SULTA الأساسي الأنيق' && (
-                <div className="space-y-1.5 animate-fadeIn text-right" dir="rtl">
-                  <label className="text-[9.5px] text-gray-400 font-bold block">اكتبي رسالة الإهداء الخاصة بكِ (خط اليد):</label>
-                  <textarea
-                    rows={2}
-                    value={giftCardMessage}
-                    onChange={(e) => setGiftCardMessage(e.target.value)}
-                    placeholder="اكتبي مشاعركِ الملكية هنا... (مثال: عيد ميلاد سعيد لملكتي الفاتنة!)"
-                    className="w-full text-xs font-sans text-right p-2.5 rounded-xl border border-[#DF8A9D]/25 bg-white focus:ring-1 focus:ring-[#A44C5C] focus:outline-none placeholder-gray-300"
-                  />
-                  <span className="text-[8px] text-gray-400 block leading-tight">سيقوم خطاط صالون SULTA بكتابتها يدوياً بماء الذهب لتقديمها كتحفة فنية فريدة! ✨</span>
-                </div>
-              )}
-            </div>
 
             {/* Stock Status Bar */}
             <div className="mb-4 space-y-1.5" dir="rtl">
@@ -1287,12 +1202,7 @@ export default function ProductDetailModal({
               >
                 طريقة الغسيل
               </button>
-              <button
-                onClick={() => setActiveTab('pack')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'pack' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
-              >
-                التغليف الفاخر
-              </button>
+
               <button
                 onClick={() => setActiveTab('size')}
                 className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'size' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
@@ -1337,27 +1247,7 @@ export default function ProductDetailModal({
                   </div>
                 </div>
               )}
-              {activeTab === 'pack' && (
-                <div className="space-y-6 text-right">
-                  <div className="flex gap-2 items-start">
-                    <Box size={16} className="text-[#F4B6C2] shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold text-gray-900 mb-0.5">تقديم ملكي مميز:</p>
-                      <ul className="list-disc pr-3 space-y-0.5 text-xs text-gray-600">
-                        <li>الصندوق: {PACKAGING_INFO.boxColorAr} مع شعار {PACKAGING_INFO.logoColorAr}</li>
-                        <li>الشريط: {PACKAGING_INFO.ribbonColorAr}</li>
-                        <li>التغليف الداخلي: {PACKAGING_INFO.paperTypeAr}</li>
-                        <li>{PACKAGING_INFO.cardAr}</li>
-                      </ul>
-                    </div>
-                  </div>
 
-                  <div className="border-t border-gray-100 pt-4">
-                    <span className="text-[10px] text-[#A44C5C] font-semibold tracking-wider block mb-2">المحاكاة البصرية الفاخرة للتغليف الملكي:</span>
-                    <RealPackagingPreview />
-                  </div>
-                </div>
-              )}
               {activeTab === 'size' && (
                 <div className="bg-white p-3 rounded-xl border border-gray-150 text-right space-y-3">
                   {isQuizMode ? (
