@@ -765,23 +765,14 @@ function AppContent() {
   const activeProducts = filteredProducts.filter(p => p.status === 'active' || !p.status);
   const catalogPool = activeProducts.length > 0 ? activeProducts : (filteredProducts.length > 0 ? filteredProducts : products);
 
-  const bestSellers = catalogPool.filter(p => p.isBestSeller).length > 0
-    ? catalogPool.filter(p => p.isBestSeller).slice(0, 8)
-    : catalogPool.slice(0, 8);
-
-  const newArrivals = catalogPool.filter(p => p.featured || p.tagAr?.includes('جديد')).length > 0
-    ? catalogPool.filter(p => p.featured || p.tagAr?.includes('جديد')).slice(0, 8)
-    : catalogPool.slice(2, 10);
-
-  const featuredProducts = catalogPool.filter(p => p.featured).length > 0
-    ? catalogPool.filter(p => p.featured).slice(0, 8)
-    : catalogPool.slice(4, 12);
-
-  const trendingProducts = catalogPool.length > 0 ? catalogPool.slice(0, 8) : [];
-
-  const seasonalCollections = catalogPool.filter(p => (p.category === 'satin' || p.descriptionAr?.includes('صيف') || p.descriptionAr?.includes('حرير') || p.category === 'pajamas')).length > 0
-    ? catalogPool.filter(p => (p.category === 'satin' || p.descriptionAr?.includes('صيف') || p.descriptionAr?.includes('حرير') || p.category === 'pajamas')).slice(0, 8)
-    : catalogPool.slice(1, 9);
+  // Distinct product pools to eliminate repetitive product displays (Zero duplication)
+  const bestSellers = catalogPool.slice(0, 6);
+  const bestSellerIds = new Set(bestSellers.map(p => p.id));
+  const remainingProducts = catalogPool.filter(p => !bestSellerIds.has(p.id));
+  const newArrivals = remainingProducts.length > 0 ? remainingProducts.slice(0, 6) : catalogPool.slice(6, 12);
+  const featuredProducts = catalogPool.slice(0, 6);
+  const trendingProducts = catalogPool.slice(0, 6);
+  const seasonalCollections = catalogPool.slice(0, 6);
 
   return (
       <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
@@ -908,12 +899,10 @@ function AppContent() {
                 {[
                   { id: 'all', label: 'الكل 👑', action: () => setTab('store') },
                   { id: 'offers', label: 'العروض والتخفيضات 🏷️', action: () => setTab('offers'), isHot: true },
+                  { id: 'pajamas', label: 'بيجامات النوم 🎀', action: () => { setTab('store'); handleSearchQueryChange('بيجاما'); } },
+                  { id: 'dresses', label: 'فساتين النوم 👗', action: () => { setTab('store'); handleSearchQueryChange('فستان'); } },
+                  { id: 'robes', label: 'أرواب الساتان 🌸', action: () => { setTab('store'); handleSearchQueryChange('روب'); } },
                   { id: 'best-sellers', label: 'الأكثر طلباً 🔥', action: () => setTab('best-sellers') },
-                  { id: 'new-arrivals', label: 'وصل حديثاً ✨', action: () => setTab('new-arrivals') },
-                  { id: 'pajamas', label: 'أطقم بيجامات 🎀', action: () => { setTab('store'); handleSearchQueryChange('بيجاما'); } },
-                  { id: 'dresses', label: 'فساتين نوم 👗', action: () => { setTab('store'); handleSearchQueryChange('فستان'); } },
-                  { id: 'robes', label: 'أرواب وكيمونو 🌸', action: () => { setTab('store'); handleSearchQueryChange('روب'); } },
-                  { id: 'satin', label: 'ساتان ملكي 💎', action: () => { setTab('store'); handleSearchQueryChange('ساتان'); } },
                 ].map((chip) => (
                   <button
                     key={chip.id}
@@ -930,12 +919,10 @@ function AppContent() {
               </div>
             </div>
 
-            {/* 3. DYNAMIC METRIC-DRIVEN HOMEPAGE PRODUCT SECTIONS */}
+            {/* 3. DYNAMIC HOMEPAGE PRODUCT SECTIONS (ONLY 2 CLEAN DISTINCT LISTS - NO REPETITION) */}
             {[
               { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
-              { title: 'وصلنا حديثاً ✨', label: 'أحدث تصاميم موسم SULTA الفاخر', data: newArrivals },
-              { title: 'روائع الكوتور واللانجيري 👑', label: 'مختارات مصممة لأمسيات مفعمة بالأناقة', data: featuredProducts },
-              { title: 'المجموعات الموسمية 🌸', label: 'ساتان إيطالي بارد وأرواب دانتيل ساحرة', data: seasonalCollections },
+              { title: 'وصل حديثاً من تشكيلة البيجامات والفساتين ✨', label: 'أحدث تصاميم أزياء النوم والساتان الملكي', data: newArrivals },
             ].map((section, sectionIdx) => (
               <React.Fragment key={section.title}>
                 <section className={`py-8 sm:py-12 ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">

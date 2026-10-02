@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Settings } from '../types';
 import { cleanImgUrl } from '../services/db';
 import SultaImage from './SultaImage';
@@ -13,118 +13,72 @@ interface HeroProps {
 
 export default function Hero({ onExplore, onDiscoverNew, settings, homepageSections = [] }: HeroProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [aiInjectedBanner, setAiInjectedBanner] = useState<any>(null);
 
-  // 🔮 Module 10: AI Dynamic Homepage Logic
-  useEffect(() => {
-    try {
-      const searchHistory = localStorage.getItem('sulta_search_history') || '';
-      const recentViews = localStorage.getItem('sulta_recently_viewed') || '[]';
-      
-      const combinedHistory = `${searchHistory} ${recentViews}`.toLowerCase();
-      
-      // Determine if preference is strongly Bridal
-      const isBridal = combinedHistory.includes('عروس') || combinedHistory.includes('جهاز') || combinedHistory.includes('زفاف') || combinedHistory.includes('دانتيل');
-      // Determine if preference is strongly Satin / Silk
-      const isSatin = combinedHistory.includes('ساتان') || combinedHistory.includes('حرير') || combinedHistory.includes('silk') || combinedHistory.includes('satin');
-
-      if (isBridal) {
-        setAiInjectedBanner({
-          url: '/img/hero_bridal_exclusive.png', // Fallback internal aesthetic
-          alt: 'Sulta Bridal Special',
-          title: 'تشكيلة عرائس SULTA 👑',
-          subtitle: 'ليلتكِ الاستثنائية\nتبدأ من هنا',
-          description: 'تخصيص دقيق ومقاسات ملكية ناعمة مصممة لكِ في يوم الزفاف..',
-          ctaText: 'تصفحي كوتور الخادمات والعروس',
-          mediaType: 'image'
-        });
-      } else if (isSatin) {
-        setAiInjectedBanner({
-          url: '/img/hero_satin_exclusive.png',
-          alt: 'Sulta Satin Special',
-          title: 'بريق الحرير البارد ✨',
-          subtitle: 'اكتشفي نعومة\nكوتور الساتان الايطالي',
-          description: 'وفقاً لمفضلاتكِ: مجموعة قطع الساتان الحريري للترطيب الصيفي متاحة الآن.',
-          ctaText: 'تصفحي مقاساتكِ من الحرير',
-          mediaType: 'image'
-        });
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  // Parse dynamic hero banners from Supabase table 'homepage_sections'
+  // Parse dynamic hero banners from table 'homepage_sections' or use clean fallbacks
   const heroSection = homepageSections.find(s => s.section_key === 'hero_banners');
   const dynamicBanners = heroSection?.content_json?.banners || [];
   const dbActiveBanners = dynamicBanners.filter((b: any) => b.active !== false);
-  
+
   const fallbackBanners = [
     {
       mediaUrl: '/img/hero_pajama_lifestyle_1_1780682110287.png',
-      title: 'فخامةٌ تليقُ بِمَلِكَة',
-      subtitle: 'أناقةٌ لا تَعرفُ الحدود',
-      description: 'بيجامات الحرير الإيطالي المعالج لنعومة فائقة طوال الليل',
-      ctaText: 'تسوقي التشكيلة الجديدة',
+      title: 'أزياء النوم الفاخرة',
+      subtitle: 'بيجامات وأرواب الساتان الإيطالي المبرد',
+      ctaText: 'تسوقي التشكيلة الآن',
       mediaType: 'image'
     },
     {
       mediaUrl: '/img/hero_pajama_editorial_2_1780682126486.png',
-      title: 'سُلْطَة.. للراحةِ مَعنىً آخَر',
-      subtitle: 'كوتور ملابسِ النومِ الفاخِرة',
-      description: 'تصاميمُ ملكيّة تجمعُ بين الرقي والراحةِ المطلقة في منزلكِ',
-      ctaText: 'اكتشفي الأناقة المنزليّة',
+      title: 'تشكيلة SULTA الملكية',
+      subtitle: 'نعومة فائقة وأناقة منسوجة بعناية',
+      ctaText: 'اكتشفي الموديلات',
       mediaType: 'image'
     },
     {
       mediaUrl: '/img/hero_pajama_detail_3_1780682140472.png',
-      title: 'أدَقُ التفاصيلِ لأرقَى الأذواق',
-      subtitle: 'جودةٌ تلمسينَها في كُلِ غرزة',
-      description: 'نستخدمُ أجودَ خاماتِ المودال والكتان لتجربةِ نومٍ مثاليّة',
-      ctaText: 'دليل المنتجات الفاخرة',
+      title: 'فساتين نوم كوتور',
+      subtitle: 'تصاميم راقية لأمسيات مفعمة بالراحة',
+      ctaText: 'تصفحي الفساتين',
       mediaType: 'image'
     }
   ];
 
   const activeBanners = dbActiveBanners.length > 0 ? dbActiveBanners : fallbackBanners;
 
-  let slides = activeBanners.map((b: any) => ({
+  const slides = activeBanners.map((b: any) => ({
     url: cleanImgUrl(b.mediaUrl || b.url, 'sleepwear'),
-    alt: b.title || 'Sulta Banner',
-    title: b.title || 'CURATED LUXURY.',
-    subtitle: b.subtitle || 'TIMELESS STYLE.\nYOUR RESET.',
-    description: b.description || 'Zero Effort. Full Comfort.',
-    ctaText: b.ctaText || 'SHOP NOW',
+    alt: b.title || 'SULTA',
+    title: b.title || 'أزياء النوم الفاخرة',
+    subtitle: b.subtitle || 'بيجامات وأرواب الساتان الملكي',
+    ctaText: b.ctaText || 'تسوقي الآن',
     mediaType: b.mediaType || 'image'
   }));
-
-  // ✨ Inject the AI-personalized banner at the very beginning if it exists
-  if (aiInjectedBanner) {
-    slides = [aiInjectedBanner, ...slides];
-  }
 
   useEffect(() => {
     if (slides.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [slides.length]);
 
   const currentSlideData = slides[currentSlide];
 
-  if (!currentSlideData) return null; // No static fallbacks
+  if (!currentSlideData) return null;
 
   return (
-    <section className="relative min-h-[260px] sm:min-h-[360px] md:min-h-[460px] lg:min-h-[520px] flex items-center justify-start overflow-hidden bg-white">
-      {/* Background elegant visuals with auto slider */}
+    <section 
+      className="relative h-[200px] sm:h-[280px] md:h-[360px] lg:h-[420px] flex items-center justify-start overflow-hidden bg-white select-none cursor-pointer group"
+      onClick={onExplore}
+    >
+      {/* Background visual with slide transition */}
       <div className="absolute inset-0 z-0">
         {slides.map((slide, idx) => {
           const isActive = idx === currentSlide;
           return (
             <div
               key={slide.url + idx}
-              className={`absolute inset-0 w-full h-full transform transition-all duration-[2000ms] ease-in-out ${
+              className={`absolute inset-0 w-full h-full transform transition-all duration-1000 ease-in-out ${
                 isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 z-0'
               }`}
             >
@@ -142,46 +96,40 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
                   src={slide.url}
                   alt={slide.alt}
                   className="w-full h-full"
+                  imgClassName="object-cover object-center"
                 />
               )}
-              {/* Clean white gradient overlay for maximum legibility */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-transparent" />
+              {/* Clean Salla style gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/60 to-transparent sm:from-white/85 sm:via-white/50" />
             </div>
           );
         })}
       </div>
 
-      {/* Content overlay matched with mockup layout (Right aligned for Arabic) */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 pb-8 sm:pt-14 sm:pb-16" dir="rtl">
-        <div className="max-w-lg animate-fade-in text-right">
+      {/* Content overlay - Minimal & Elegant like Salla */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12" dir="rtl">
+        <div className="max-w-md text-right space-y-2 sm:space-y-3">
           
-          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-[#A44C5C] font-normal leading-[1.2] tracking-normal mb-1.5 sm:mb-2 drop-shadow-2xs whitespace-pre-line">
+          <h2 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-[#111827] font-bold leading-tight drop-shadow-2xs">
             {currentSlideData.title}
-            {currentSlideData.subtitle && (
-              <span className="block text-[#DF8A9D] text-lg sm:text-2xl md:text-3xl mt-0.5">{currentSlideData.subtitle}</span>
-            )}
           </h2>
-          
-          {/* Decorative Ribbon Icon Placement */}
-          <div className="my-2 sm:my-4">
-            <svg width="32" height="20" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#A44C5C] scale-x-[-1] opacity-60">
-               <path d="M16 12C16 16.4183 12.4183 20 8 20C3.58172 20 0 16.4183 0 12C0 7.58172 3.58172 4 8 4C12.4183 4 16 7.58172 16 12Z" fill="currentColor" fillOpacity="0.2"/>
-               <path d="M40 12C40 16.4183 36.4183 20 32 20C27.5817 20 24 16.4183 24 12C24 7.58172 27.5817 4 32 4C36.4183 4 40 7.58172 40 12Z" fill="currentColor" fillOpacity="0.2"/>
-               <circle cx="20" cy="12" r="4" fill="currentColor"/>
-            </svg>
-          </div>
 
-          <p className="font-sans text-xs sm:text-sm md:text-base text-gray-800 mb-4 sm:mb-6 line-clamp-2 sm:line-clamp-none max-w-sm sm:max-w-md leading-relaxed">
-            {currentSlideData.description}
-          </p>
+          {currentSlideData.subtitle && (
+            <p className="font-sans text-xs sm:text-sm md:text-base text-gray-700 font-medium">
+              {currentSlideData.subtitle}
+            </p>
+          )}
 
-          <div className="flex flex-wrap gap-3 items-center justify-start">
+          <div className="pt-1 sm:pt-2">
             <button
-              onClick={onExplore}
-              className="bg-[#A44C5C] text-white hover:bg-[#111827] px-5 py-2 sm:px-7 sm:py-3 rounded-full text-xs sm:text-sm tracking-wider uppercase transition-all inline-flex items-center justify-center gap-2 font-sans font-bold shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onExplore();
+              }}
+              className="bg-[#111827] hover:bg-[#A44C5C] text-white px-5 py-2 sm:px-6 sm:py-2.5 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-2 shadow-sm hover:scale-102 active:scale-98 cursor-pointer"
             >
               <span>{currentSlideData.ctaText}</span>
-              <ArrowRight size={14} className="rotate-180" />
+              <ArrowLeft size={13} />
             </button>
           </div>
         </div>
@@ -189,14 +137,17 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
 
       {/* Slide Indicator Dots */}
       {slides.length > 1 && (
-        <div className="absolute bottom-2.5 sm:bottom-4 inset-x-0 flex justify-center gap-1.5 z-20">
+        <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-20">
           {slides.map((_, idx) => (
             <button
               key={idx}
               type="button"
-              onClick={() => setCurrentSlide(idx)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentSlide(idx);
+              }}
               className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                idx === currentSlide ? 'w-5 sm:w-6 bg-[#A44C5C]' : 'w-2 bg-gray-300 hover:bg-gray-400'
+                idx === currentSlide ? 'w-5 bg-[#111827]' : 'w-2 bg-gray-300 hover:bg-gray-400'
               }`}
               aria-label={`شريحة ${idx + 1}`}
             />
