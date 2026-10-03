@@ -25,7 +25,7 @@ import RibbonBowDivider from './components/RibbonBowDivider';
 import SocialLinksView from './components/SocialLinksView';
 import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
 import FabricGuide from './components/FabricGuide';
-import AtelierAudioAtmosphere from './components/AtelierAudioAtmosphere';
+import SupabaseConnectionChecker from './components/SupabaseConnectionChecker';
 
 // Luxury Add-on views
 import SultaCollections from './components/SultaCollections';
@@ -37,7 +37,7 @@ import LimitedPieces from './components/LimitedPieces';
 import SleepExperience from './components/SleepExperience';
 import SultaMagazine from './components/SultaMagazine';
 import SultaConcierge from './components/SultaConcierge';
-import AiMirror from './components/AiMirror';
+
 import RoyalSensesSalon from './components/RoyalSensesSalon';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import MobileBottomNav from './components/MobileBottomNav';
@@ -62,52 +62,6 @@ function AppContent() {
   const [session, setSession] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [showSplash, setShowSplash] = useState<boolean>(true);
-  const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  const [aiSplashImage, setAiSplashImage] = useState<string | null>(null);
-
-  // Optimized Splash Loading Timer
-  useEffect(() => {
-    if (!showSplash) return;
-    
-    // Safety exit: if we get stuck for more than 4 seconds, force hide splash
-    const safetyTimer = setTimeout(() => {
-      setShowSplash(false);
-    }, 4500);
-
-    const interval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) return 100;
-        return prev + Math.floor(Math.random() * 12) + 5;
-      });
-    }, 120);
-
-    // Fetch AI Splash Image
-    const fetchAiSplash = async () => {
-      try {
-        const res = await fetch('/api/generate-splash');
-        const data = await res.json();
-        if (data.imageUrl) {
-          setAiSplashImage(data.imageUrl);
-        }
-      } catch (err) {
-        console.error("Splash image generate error:", err);
-      }
-    };
-    fetchAiSplash();
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(safetyTimer);
-    };
-  }, [showSplash]);
-
-  useEffect(() => {
-    if (loadingProgress >= 100 && showSplash) {
-      const timer = setTimeout(() => setShowSplash(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [loadingProgress, showSplash]);
 
   const [country, setCountry] = useState<Country>(() => {
     try {
@@ -437,8 +391,6 @@ function AppContent() {
       } catch (err) {
         console.error("Critical initialization error:", err);
         setAuthLoading(false);
-        // Force hide splash on critical error after 1s
-        setTimeout(() => setShowSplash(false), 1000);
       }
     };
 
@@ -743,10 +695,10 @@ function AppContent() {
     // We can simulate an active selection by leaving it to StoreView filter
   };
 
-  // Dynamic live homepage filtering systems - Excluding lingerie per user request
+  // Dynamic live homepage filtering systems - Excluding lingerie & sleep dresses per user request
   const filteredProducts = products.filter(p => {
     const text = (p.nameAr + ' ' + p.nameEn + ' ' + (p.categoryAr || '') + ' ' + (p.category || '')).toLowerCase();
-    if (text.includes('لانجيري') || text.includes('lingerie')) {
+    if (text.includes('لانجيري') || text.includes('lingerie') || text.includes('فساتين نوم') || text.includes('فستان نوم') || text.includes('فساتين') || p.category === 'dresses') {
       return false;
     }
     if (country === 'EG') {
@@ -777,67 +729,8 @@ function AppContent() {
   return (
       <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
       
-      {/* SCREEN 1: BRAND SPLASH SCREEN OVERLAY */}
-      {showSplash && (
-        <div className="fixed inset-0 bg-[#0B0B0B] z-[100] flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in overflow-hidden">
-          {/* AI Generated Background Layer */}
-          {aiSplashImage && (
-            <div className="absolute inset-0 z-0 animate-fade-in duration-1000">
-              <SultaImage 
-                src={aiSplashImage} 
-                className="w-full h-full object-cover opacity-20 scale-110 blur-sm" 
-                alt="AI Generated Background"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0B] via-transparent to-[#0B0B0B]" />
-            </div>
-          )}
-
-          <div className="max-w-md w-full space-y-6 relative z-10">
-            <div className="space-y-3">
-              <span className="text-[10px] text-[#F4B6C2] font-semibold tracking-[0.3em] uppercase block animate-pulse font-sans">
-                ✦ BIENVENUE DANS L'ATELIER SULTA ✦
-              </span>
-              <h1 className="font-serif text-5xl md:text-7xl font-extralight text-white tracking-[0.2em] translate-x-[4px] uppercase">
-                SULTA
-              </h1>
-              <div className="w-12 h-[1px] bg-white/20 mx-auto my-3" />
-              <div className="flex flex-col items-center space-y-1">
-                <span className="text-[10.5px] font-serif italic text-[#F6E7A6] tracking-wider block">
-                  Where Comfort Meets Elegance
-                </span>
-                {aiSplashImage && (
-                  <span className="text-[8px] text-[#F4B6C2]/60 font-sans tracking-widest uppercase">
-                    AI Visual Re-generated
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Custom high quality loading percentage bar */}
-            <div className="space-y-2 max-w-[240px] mx-auto pt-3">
-              <div className="w-full bg-white/10 h-[2px] rounded-full overflow-hidden relative">
-                <div 
-                  className="bg-gradient-to-r from-[#F4B6C2] via-pink-400 to-[#F6E7A6] h-full rounded-full transition-all duration-150" 
-                  style={{ width: `${loadingProgress}%` }}
-                />
-              </div>
-              <div className="flex justify-between items-center text-[9px] font-sans text-gray-500 font-bold">
-                <span>{loadingProgress}%</span>
-                <span>يجري تجهيز البكج الفاخر لكي...</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowSplash(false)}
-              type="button"
-              className="text-[10px] text-gray-500 hover:text-[#F4B6C2] underline cursor-pointer pt-6 block mx-auto transition-all"
-            >
-              تخطي العرض والولوج للبوتيك مباشرة
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Supabase Realtime Connection Diagnostic Bar */}
+      <SupabaseConnectionChecker />
 
       {/* GLOBAL HEADER BAR */}
       <Header
@@ -922,7 +815,7 @@ function AppContent() {
             {/* 3. DYNAMIC HOMEPAGE PRODUCT SECTIONS (ONLY 2 CLEAN DISTINCT LISTS - NO REPETITION) */}
             {[
               { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
-              { title: 'وصل حديثاً من تشكيلة البيجامات والفساتين ✨', label: 'أحدث تصاميم أزياء النوم والساتان الملكي', data: newArrivals },
+              { title: 'وصل حديثاً من تشكيلة البيجامات الملكية ✨', label: 'أحدث تصاميم أزياء النوم والحرير الفاخر', data: newArrivals },
             ].map((section, sectionIdx) => (
               <React.Fragment key={section.title}>
                 <section className={`py-8 sm:py-12 ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
@@ -986,18 +879,11 @@ function AppContent() {
                                   </button>
                                 </div>
 
-                                <img
-                                  src={cleanImgUrl(prod.images[0], prod.category)}
+                                <SultaImage
+                                  src={cleanImgUrl(prod.images?.[0] || '', prod.category)}
                                   alt={prod.nameAr || prod.nameEn}
-                                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                                  referrerPolicy="no-referrer"
-                                  loading="lazy"
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    if (!target.src.includes('sulta_default')) {
-                                      target.src = '/img/sulta_default_1_1781140865386.png';
-                                    }
-                                  }}
+                                  className="w-full h-full"
+                                  imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                 />
                               </div>
 
@@ -1420,17 +1306,7 @@ function AppContent() {
           />
         )}
 
-        {/* VIEW: SULTA AI MIRROR */}
-        {currentTab === 'ai_mirror' && (
-          <AiMirror
-            products={products}
-            setTab={setTab}
-            country={country}
-            onSelectProduct={handleSelectProduct}
-            favorites={favorites}
-            toggleFavorite={toggleFavorite}
-          />
-        )}
+        
 
         {/* VIEW: ROYAL SENSES SALON */}
         {currentTab === 'royal-senses' && (
@@ -1469,7 +1345,7 @@ function AppContent() {
         )}
 
           {/* Professional 404 Fallback View */}
-          {!['home', 'offers', 'store', 'collections', 'best-sellers', 'new-arrivals', 'trending', 'luxury-gifts', 'limited-pieces', 'sleep-experience', 'concierge', 'fabrics', 'about', 'contact', 'track-order', 'system-status', 'account', 'faq', 'returns', 'blog', 'magazine', 'luxury-salon', 'ai_mirror', 'royal-senses', 'dashboard', 'dbtest'].includes(currentTab) && (
+          {!['home', 'offers', 'store', 'collections', 'best-sellers', 'new-arrivals', 'trending', 'luxury-gifts', 'limited-pieces', 'sleep-experience', 'concierge', 'fabrics', 'about', 'contact', 'track-order', 'system-status', 'account', 'faq', 'returns', 'blog', 'magazine', 'luxury-salon', 'royal-senses', 'dashboard', 'dbtest'].includes(currentTab) && (
             <div className="py-32 flex flex-col items-center justify-center text-center bg-[#FAF9F6] min-h-[60vh] px-4" dir="rtl">
               <span className="text-8xl mb-4 font-serif text-[#DF8A9C]/20 opacity-50">404</span>
               <h2 className="text-2xl md:text-3xl font-serif text-[#0B0B0B] mb-4">الغرفة الملكية غير موجودة</h2>
@@ -1588,7 +1464,7 @@ function AppContent() {
               <button type="button" onClick={() => setTab('faq')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
               <button type="button" onClick={() => setTab('track-order')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">تتبع طلبيتكِ</button>
               <button type="button" onClick={() => setTab('returns')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
-              <button type="button" onClick={() => setTab('fabrics')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات الحريرية والساتان</button>
+              <button type="button" onClick={() => setTab('fabrics')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات الحريرية والحرير</button>
               <button type="button" onClick={() => setTab('contact')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">اتصلي بنا</button>
               <div className="pt-2 text-[10.5px] text-gray-400 leading-normal">
                 ✓ شحن سريع ومغلف بعناية فائقة<br />
@@ -1639,12 +1515,9 @@ function AppContent() {
             <div className="pt-2">
               <h5 className="font-bold text-[11px] text-gray-900 mb-2">وسائل الدفع المعتمدة</h5>
               <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">مدى Mada</span>
-                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">Apple Pay</span>
-                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">تابي Tabby</span>
-                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">تمارا Tamara</span>
-                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs">Visa / Master</span>
-                <span className="bg-[#F8F9FA] border border-gray-200 px-2 py-1 rounded text-[10px] font-bold text-gray-800 shadow-2xs font-sans">الدفع عند الاستلام</span>
+                <span className="bg-[#111827] text-white px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">Pay Apple Pay</span>
+                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
+                <span className="bg-amber-50 text-amber-900 border border-amber-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (بنك الجزيرة)</span>
               </div>
             </div>
           </div>
@@ -1702,7 +1575,7 @@ function AppContent() {
                   { id: 'best-sellers', label: 'الأكثر مبيعاً 🏆' },
                   { id: 'new-arrivals', label: 'أحدث الإصدارات 🆕' },
                   { id: 'collections', label: 'SULTA Collections ✨' },
-                  { id: 'ai_mirror', label: 'مرآة SULTA الذكية 🪞' },
+                  
                   { id: 'trending', label: 'الأكثر رواجاً 🔥' },
                   { id: 'luxury-gifts', label: 'هدايا SULTA 🎁' },
                   { id: 'limited-pieces', label: 'القطع المحدودة 💎' },
@@ -1910,17 +1783,6 @@ function AppContent() {
         number={settings?.whatsapp || '201110095403'} 
         saudiNumber={settings?.whatsappSaudi || '966596894393'} 
         country={country} 
-      />
-
-      <AtelierAudioAtmosphere 
-        products={products}
-        collections={collections}
-        coupons={coupons}
-        country={country}
-        setTab={setTab}
-        onSelectProduct={handleSelectProduct}
-        onAddToCart={handleAddToCart}
-        session={session}
       />
     </div>
   );

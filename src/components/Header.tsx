@@ -107,12 +107,11 @@ export default function Header({
   };
 
   const navCategories = [
-    { id: 'home', label: 'الرئيسية' },
-    { id: 'store', label: 'المتجر والتشكيلات 🛍️' },
-    { id: 'best-sellers', label: 'البيجامات وأرواب النوم 🎀' },
-    { id: 'new-arrivals', label: 'فساتين النوم 👗' },
-    { id: 'about', label: 'من نحن' },
-    { id: 'contact', label: 'اتصلي بنا' }
+    { id: 'home', label: 'الرئيسية 🏠' },
+    { id: 'store', label: 'المتجر 🛍️' },
+    { id: 'best-sellers', label: 'الأكثر طلباً 🔥' },
+    { id: 'offers', label: 'العروض 🏷️' },
+    { id: 'contact', label: 'تواصل معنا 💬' }
   ];
 
   const activeWhatsApp = country === 'SA' 
@@ -231,7 +230,7 @@ export default function Header({
             <form onSubmit={handleSearchSubmit} className="w-full relative">
               <input
                 type="text"
-                placeholder="ابحثي عن بيجامات، أرواب عرايس، لانجيري، خامات ساتان..."
+                placeholder="ابحثي عن بيجامات، أرواب عرايس، أطقم نوم فاخرة..."
                 value={localQuery}
                 onChange={(e) => {
                   setLocalQuery(e.target.value);

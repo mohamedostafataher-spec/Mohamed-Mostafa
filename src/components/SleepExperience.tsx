@@ -33,7 +33,7 @@ export default function SleepExperience({
     },
     {
       title: '٢. التنفس ونقاء الجسد ليلاً',
-      desc: 'بيجامات سولتة مصممة بنسب فضفاضة ملكية لعدم تقييد الشرايين والأوعية اللمفاوية أثناء النوم، مما يؤمن تهوية فائقة بفضل مسامات الساتان المغسول بمبرد حراري بارد وصحي.',
+      desc: 'بيجامات سولتة مصممة بنسب فضفاضة ملكية لعدم تقييد الشرايين والأوعية اللمفاوية أثناء النوم، مما يؤمن تهوية فائقة بفضل مسامات الحرير الناعم المغسول بعناية فائقة.',
       benefit: 'التهوية العميقة وتنقية العضلات'
     },
     {
@@ -70,7 +70,7 @@ export default function SleepExperience({
               HEALTH & BEAUTY DICTATE | صحتك وجمالك في الليل
             </span>
             <h3 className="font-serif text-2xl font-light text-[#0B0B0B]">
-              لماذا الحرير والساتان من SULTA؟
+              لماذا الحرير الفاخر من SULTA؟
             </h3>
             <p className="text-gray-500 text-xs leading-relaxed">
               تصفحي الدليل التفصيلي والطقوس الموصى بها من أطباء البشرية والجلدية وخبراء الأزياء الملكية بباريس لتحصلي على أقصى سُموّ واسترخاء.
@@ -120,7 +120,7 @@ export default function SleepExperience({
           <div className="flex justify-center gap-6 pt-2 text-[#A44C5C] text-xs font-sans">
             <div className="flex flex-col items-center gap-1">
               <span className="font-bold">١٠٠٪</span>
-              <span className="text-[9px] text-gray-500 text-3xs uppercase">ساتان فاخر غسيل غازي</span>
+              <span className="text-[9px] text-gray-500 text-3xs uppercase">حرير فاخر ناعم</span>
             </div>
             <div className="h-8 w-[1px] bg-[#A44C5C]/20" />
             <div className="flex flex-col items-center gap-1">

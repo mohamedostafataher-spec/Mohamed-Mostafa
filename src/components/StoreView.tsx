@@ -78,7 +78,9 @@ export default function StoreView({
       { id: 'offers', nameAr: 'عروض وتخفيضات 🏷️', icon: '🏷️' },
       { id: 'new', nameAr: 'وصل حديثاً ✨', icon: '✨' },
       { id: 'bestseller', nameAr: 'الأكثر مبيعاً 🔥', icon: '👑' },
-      ...categories.map(c => ({ id: c.id, nameAr: c.nameAr || c.name, icon: '🌸' }))
+      ...categories
+        .filter(c => !c.name?.includes('فساتين') && !c.nameAr?.includes('فساتين') && c.slug !== 'dresses')
+        .map(c => ({ id: c.id, nameAr: c.nameAr || c.name, icon: '🌸' }))
     ];
   }, [categories]);
 
@@ -95,7 +97,14 @@ export default function StoreView({
 
   // Smart Query Filter & Sort
   const filteredProducts = useMemo(() => {
-    let result = products.filter(p => p.status !== 'draft' && p.status !== 'archived');
+    let result = products.filter(p => {
+      if (p.status === 'archived') return false;
+      const text = (p.nameAr + ' ' + p.nameEn + ' ' + (p.categoryAr || '') + ' ' + (p.category || '')).toLowerCase();
+      if (text.includes('لانجيري') || text.includes('lingerie') || text.includes('فساتين نوم') || text.includes('فستان نوم') || text.includes('فساتين') || p.category === 'dresses') {
+        return false;
+      }
+      return true;
+    });
     
     // Category filter
     if (selectedCategory === 'offers') {
@@ -201,7 +210,7 @@ export default function StoreView({
               <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
                 {selectedCategory === 'offers' 
                   ? 'اكتشفي أقوى عروض التوفير بخصومات تصل إلى 30% مع شحن سريع وتوصيل لباب بيتكِ في كافة مناطق المملكة ومصر.'
-                  : 'اكتشفي تشكيلة الساتان الإيطالي الفاخر وأرواب العرايس بخصومات فورية وتوصيل سريع لباب بيتكِ في كافة مناطق المملكة ومصر.'}
+                  : 'اكتشفي تشكيلة بيجامات وأرواب النوم الفاخرة بخصومات فورية وتوصيل سريع لباب بيتكِ في كافة مناطق المملكة ومصر.'}
               </p>
 
               {/* Mobile Quick Promo Code Pill */}

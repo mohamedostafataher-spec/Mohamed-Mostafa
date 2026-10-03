@@ -187,8 +187,8 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                   {[
                     { hex: '#0B0B0B', name: 'أسود مخملي ملوكي (Midnight Velvet Black)', desc: 'يرمز للسيادة العريقة والأناقة الكلاسيكية الفائقة.', text: 'text-[#FAF5F0]' },
                     { hex: '#DF8A9D', name: 'وردي ناعم مخملي (Satin Soft Pink)', desc: 'لون الأنوثة والدلال الحالم والفيونكات اليدوية الرقيقة.', text: 'text-[#0B0B0B]' },
-                    { hex: '#A44C5C', name: 'بورغندي فاخر (Royal Burgundy)', desc: 'يمثل التطريزات النادرة وشغف كوتور مشاغلنا الإيطالية.', text: 'text-[#FAF5F0]' },
-                    { hex: '#DBC082', name: 'ذهبي شامبين لامع (Champagne Gold)', desc: 'يعكس بريق أزرار الساتان والحفر المذهب لصناديق الهدايا.', text: 'text-[#0B0B0B]' },
+                    { hex: '#A44C5C', name: 'بورغندي فاخر (Royal Burgundy)', desc: 'يمثل التطريزات النادرة وشغف كوتور مشاغلنا الفاخرة.', text: 'text-[#FAF5F0]' },
+                    { hex: '#DBC082', name: 'ذهبي شامبين لامع (Champagne Gold)', desc: 'يعكس بريق أزرار الحرير والحفر المذهب لصناديق الهدايا.', text: 'text-[#0B0B0B]' },
                     { hex: '#FAF5F0', name: 'عاجي أوف وايت دافئ (Satin Off-White)', desc: 'يحاكي ملمس الحرير الخام المبرد ويريح عين الزبونة الفاخرة.', text: 'text-[#0B0B0B]' }
                   ].map((color, i) => {
                     const [isCopied, setIsCopied] = useState(false);
@@ -283,8 +283,8 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                 {(() => {
                   const [activeFabric, setActiveFabric] = useState('silk');
                   const fabrics = [
-                    { id: 'silk', name: 'الحرير الإيطالي', colorHex: '#DF8A9D', bg: 'bg-[#0B0B0B]', border: 'border-[#DF8A9D]/50', text: 'text-[#DF8A9D]', fontColor: '#FAF5F0', badge: 'وردية كوتور' },
-                    { id: 'satin', name: 'الساتان المبرد', colorHex: '#0B0B0B', bg: 'bg-[#FAF5F0]', border: 'border-[#DBC082]/50', text: 'text-[#0B0B0B]', fontColor: '#A44C5C', badge: 'تطريز ذهبي' },
+                    { id: 'silk', name: 'الحرير الفاخر', colorHex: '#DF8A9D', bg: 'bg-[#0B0B0B]', border: 'border-[#DF8A9D]/50', text: 'text-[#DF8A9D]', fontColor: '#FAF5F0', badge: 'وردية كوتور' },
+                    { id: 'satin', name: 'الحرير المبرد', colorHex: '#0B0B0B', bg: 'bg-[#FAF5F0]', border: 'border-[#DBC082]/50', text: 'text-[#0B0B0B]', fontColor: '#A44C5C', badge: 'تطريز ذهبي' },
                     { id: 'lace', name: 'الدانتيل الفرنسي', colorHex: '#FAF5F0', bg: 'bg-[#A44C5C]', border: 'border-white/40', text: 'text-[#FAF5F0]', fontColor: '#FAF5F0', badge: 'أبيض عاجي' }
                   ];
                   const currentFab = fabrics.find(f => f.id === activeFabric) || fabrics[0];

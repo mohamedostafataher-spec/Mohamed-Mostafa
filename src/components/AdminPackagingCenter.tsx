@@ -850,11 +850,11 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   SEC 04: دليل الغسيل الملكي (Satin Care Pro)
                 </h4>
                 <p className="text-[10px] text-stone-505 leading-relaxed">
-                  تم دمج صالون الحرير وغسل الدانتيل في 4 أركان ذكية تناسب الحرير المصرى الكوزى والساتان العضوى.
+                  تم دمج صالون الحرير وغسل الدانتيل في 4 أركان ذكية تناسب الحرير المصرى الكوزى والحرير العضوى.
                 </p>
                 <div className="text-[10px] space-y-1 text-stone-600 bg-white p-2 rounded border border-stone-150">
                   <span className="font-bold text-[#A44C5C]">✓ نوصي بـ:</span>
-                  <div className="leading-normal">الغسيل اليدوي في ماء بارد (تحت 30 درجة) مع تجنب عصر الساتان العنيف للحفاظ على ملمس الألياف الملكية للأبد.</div>
+                  <div className="leading-normal">الغسيل اليدوي في ماء بارد (تحت 30 درجة) مع تجنب عصر الحرير العنيف للحفاظ على ملمس الألياف الملكية للأبد.</div>
                 </div>
               </div>
 
@@ -866,7 +866,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
 
                 <div className="space-y-2.5 text-xs">
                   <div className="space-y-1">
-                    <label className="text-stone-600 block">اسم بجامة الدانتيل الساتان:</label>
+                    <label className="text-stone-600 block">اسم بجامة الدانتيل الحرير:</label>
                     <input 
                       type="text" 
                       value={productTagName} 
@@ -993,7 +993,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               {/* SECTION 06: Luxury Packaging Box Designer */}
               <div className="space-y-3">
                 <h3 className="text-sm font-black text-stone-900 border-b border-stone-100 pb-2">
-                  📦 SEC 06: مصمم بوكس الساتان والملابس كوتور
+                  📦 SEC 06: مصمم بوكس الحرير والملابس كوتور
                 </h3>
 
                 <div className="space-y-2 text-xs">
@@ -1003,7 +1003,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                       { id: 'drawer_box', name: '📦 علبة السحاب المنزلق (Drawer Slide)', desc: 'قالب كرتون متداخل يعطي برستيج فوري عند سحبه.' },
                       { id: 'pizza_box', name: '🍕 علبة البيتزا المسطحة العصرية (Tulia Box)', desc: 'ستايل الفتيات اللطيف في بنترست من الكرتون المقوى البسيط.' },
                       { id: 'magnetic_clasp', name: '💎 البوكس المغناطيسي الـصّلب (Luxury Rigid Mag)', desc: 'أعلى معايير التغليف بالشرق الأوسط مع قفل مغناطيسي خفي.' },
-                      { id: 'shopping_bag', name: '🛍️ حقيبة الهدايا الحريرية (Atelier Shopping Bag)', desc: 'شنطة من الكرافت العاجي مع فيونكة ساتان عريضة ومذهلة.' }
+                      { id: 'shopping_bag', name: '🛍️ حقيبة الهدايا الحريرية (Atelier Shopping Bag)', desc: 'شنطة من الكرافت العاجي مع فيونكة حريرية عريضة ومذهلة.' }
                     ].map((box) => (
                       <button
                         key={box.id}
@@ -1057,7 +1057,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               {/* SECTION 07: SULTA Brand Premium Illustrative Art-work Info */}
               <div className="space-y-2 text-xs text-stone-600 leading-relaxed bg-[#FFF0F2]/30 p-3 rounded-xl border border-pink-100">
                 <span className="font-bold text-[#A44C5C] block">🎨 SEC 07: الرسم الفني الأنثوي الحصري لـ SULTA:</span>
-                تم دمج الفيونكات 🎀، والأقمار الفضية 🌙، وأكواب القهوة العطرة ☕، وحقائب السفر كوتور، وأيقونات الساتان لتعبر عن طيف وروح فتيات سولا الشغوفات بالجمال والأمسيات الهادئة، مستبدلين بذلك أي عناصر لعلامات تجارية غربية أخرى.
+                تم دمج الفيونكات 🎀، والأقمار الفضية 🌙، وأكواب القهوة العطرة ☕، وحقائب السفر كوتور، وأيقونات الحرير لتعبر عن طيف وروح فتيات سولا الشغوفات بالجمال والأمسيات الهادئة، مستبدلين بذلك أي عناصر لعلامات تجارية غربية أخرى.
               </div>
 
             </div>

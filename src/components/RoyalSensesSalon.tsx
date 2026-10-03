@@ -26,7 +26,7 @@ const DEFAULT_WAX_COLORS = [
 
 const DEFAULT_RIBBONS = [
   { id: 'champagne', nameAr: 'شريط شامبين ميتاليك فخم', hex: '#F6E7A6' },
-  { id: 'pink', nameAr: 'شريط ستان وردي كراميل ناعم', hex: '#F4B6C2' },
+  { id: 'pink', nameAr: 'شريط وردي كراميل ناعم', hex: '#F4B6C2' },
   { id: 'black', nameAr: 'شريط حريري أسود فاحم دراماتيكي', hex: '#0B0B0B' }
 ];
 
@@ -185,7 +185,7 @@ export default function RoyalSensesSalon({
     setHarmonyScore(finalScore);
 
     if (finalScore >= 95) {
-      setHarmonyText("✦ توليفة ملوكية إيطالية تحبس الأنفاس! تزاوج الألوان والأقمشة في قمة التناغم والترف.");
+      setHarmonyText("✦ توليفة ملوكية فاخرة تحبس الأنفاس! تزاوج الألوان والأقمشة في قمة التناغم والترف.");
     } else if (finalScore >= 85) {
       setHarmonyText("✦ تنسيق منسجم جداً ومناسب للمناسبات والزيارات الرسمية الراقية.");
     } else {
@@ -216,7 +216,7 @@ export default function RoyalSensesSalon({
       waxInitial: customInitial,
       waxColor: waxColor.nameAr,
       ribbonColor: ribbonColor.nameAr,
-      customNote: `تم تصميم الساتان وتجهيزه عبر صالون الأناقة الذكي لـ SULTA koutour.`
+      customNote: `تم تصميم القطعة وتجهيزها عبر صالون الأناقة لـ SULTA koutour.`
     };
 
     onAddToCart(prod, defaultColor, defaultSize, 1, extraMetadata);
@@ -384,7 +384,7 @@ export default function RoyalSensesSalon({
                 </div>
 
                 <div className="mt-5 text-center max-w-sm space-y-1">
-                  <span className="text-xs font-bold text-gray-800 block">مرشد صالون الألياف لبريق الساتان:</span>
+                  <span className="text-xs font-bold text-gray-800 block">مرشد صالون الألياف لبريق الحرير:</span>
                   <p className="text-[11px] text-gray-550 leading-relaxed font-sans">
                     حركي المزلاج بالأسفل لتوجيه أشعة ضوء الثريا أو الغروب على الثوب، وانظري كيف تتولد التماوجات المضيئة وتتراقص حواف ريش السروال بشكل مدهش.
                   </p>
@@ -448,7 +448,7 @@ export default function RoyalSensesSalon({
 
                     {/* Styled Ribbon colors */}
                     <div className="space-y-1 font-sans">
-                      <span className="text-[10px] text-gray-400 block pb-1">شريط الستان الملكي:</span>
+                      <span className="text-[10px] text-gray-400 block pb-1">الشريط الحريري الفاخر:</span>
                       <div className="flex gap-2 justify-center items-center">
                         <span className="w-16 h-3 rounded" style={{ backgroundColor: ribbonColor.hex }} />
                         <span className="text-[10px] text-white font-semibold">{ribbonColor.nameAr.split(' ')[1]}</span>
@@ -622,7 +622,7 @@ export default function RoyalSensesSalon({
                   <div className="space-y-3 font-sans text-[11px] text-gray-700">
                     <div className="space-y-1">
                       <div className="flex justify-between flex-row-reverse">
-                        <span>قوة وهج الساتان (Light Angle):</span>
+                        <span>قوة وهج الحرير (Light Angle):</span>
                         <strong className="text-[#A44C5C]">{lightSlider}%</strong>
                       </div>
                       <input 
@@ -712,7 +712,7 @@ export default function RoyalSensesSalon({
 
                   {/* Ribbon colors list */}
                   <div className="space-y-2">
-                    <span className="text-xs font-bold text-gray-700 block text-right">3. لون شريط الساتان المحيط:</span>
+                    <span className="text-xs font-bold text-gray-700 block text-right">3. لون الشريط الحريري المحيط:</span>
                     <div className="space-y-2 font-sans text-xs">
                       {ribbonsList.map(ri => (
                         <div

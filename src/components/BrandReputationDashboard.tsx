@@ -272,7 +272,7 @@ export default function BrandReputationDashboard({
           <span>مركز دراسات الرضا، مقترحات كبار العملاء والشكاوى</span>
         </h3>
         <p className="text-gray-400 text-xs mb-6 max-w-3xl leading-relaxed">
-          فرع استماع خاص لآراء العملاء غير التقليدية المسجلة عبر الكونسيرج ومساعد المظهر، لتطوير أطقم الساتان وخطابات التعبئة والتغليف.
+          فرع استماع خاص لآراء العملاء غير التقليدية المسجلة عبر الكونسيرج ومساعد المظهر، لتطوير أطقم الحرير وخطابات التعبئة والتغليف.
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -13,19 +13,19 @@ export default function FabricRealityCenter() {
       softness: 98,
       stretch: 15,
       thickness: 'ثقيل مترف 22 Momme (~95 gsm)',
-      weaveAr: 'نسيج ساتان حريري منسوج بمغزل أحادي دقيق جداً (Sateen Weave)',
+      weaveAr: 'نسيج حريري ناعم منسوج بمغزل أحادي دقيق جداً (Silk Weave)',
       descriptionAr: 'أنعم ألياف بروتينية طبيعية مكافحة للتجاعيد، مصبوغة بصبغات عضوية لا تسبب الحساسية للجلد، وتمنحكِ شعوراً بالبرودة والانتعاش الطارد للحرارة.',
-      originAr: 'مقاطعة كومو المرموقة، إيطاليا 🇮🇹',
+      originAr: 'أرقى مصانع النسيج الفاخر 🌸',
       airflow: 'مثالي نفاذ بنسبة 93%'
     },
     satin: {
-      nameAr: 'ساتان كوتور المطور (Luxury Stretch Satin)',
+      nameAr: 'حرير كوتور المطور (Luxury Stretch Silk)',
       softness: 90,
       stretch: 65,
       thickness: 'متوسط النعومة مريح (~120 gsm)',
       weaveAr: 'نسيج لولبي مائل مع ألياف مطاطية ليكرا (Four-Way Diagonal)',
       descriptionAr: 'خامة مكسوة بلمعان متلألئ بديع، تمتاز بمرونة ممتازة تجاري تحركات الجسد أثناء النوم دون مقاومة، ومقاومة تامة للتكسر والتجعد.',
-      originAr: 'أتيلييه الغزل الخاص بنا بجدة 🇸🇦',
+      originAr: 'أتيلييه الغزل الخاص بنا 🌸',
       airflow: 'ممتاز بنسبة 85%'
     },
     cotton: {
@@ -148,8 +148,8 @@ export default function FabricRealityCenter() {
             
             <div className="space-y-2.5">
               {[
-                { id: 'silk', labelAr: 'حرير الحرير الطبيعي (Italian Mulberry)', subAr: 'نعومة قصوى فائقة دافئة وخالية من التجهيز' },
-                { id: 'satin', labelAr: 'ساتان كوتور المطور (Luxury Stretch)', subAr: 'مرونة ارتدادية خارقة مع لمعة قوية مقاومة للتكسر' },
+                { id: 'silk', labelAr: 'حرير التوت الطبيعي (Mulberry Silk)', subAr: 'نعومة قصوى فائقة دافئة وخالية من التجهيز' },
+                { id: 'satin', labelAr: 'حرير كوتور المطور (Luxury Stretch)', subAr: 'مرونة ارتدادية خارقة مع لمعة قوية مقاومة للتكسر' },
                 { id: 'cotton', labelAr: 'كتان التوت العضوي (Mulberry Cotton)', subAr: 'تنفس مسامي فريد مناسب لشهور الصيف وحرارة الغلاف' }
               ].map((f) => (
                 <div

@@ -832,7 +832,7 @@ export default function OrderDetailView({
               { step: 1, label: 'تم الطلب', icon: Clock, desc: 'سجلنا طلبكِ في المنظومة' },
               { step: 2, label: 'تم التأكيد', icon: ShieldCheck, desc: 'مراجعة وتأكيد البيانات' },
               { step: 3, label: 'جاري التجهيز', icon: Package, desc: 'تحضير البجامة وكوتور الخياطة' },
-              { step: 4, label: 'تم التغليف', icon: CheckCircle, desc: 'وضع شريط الستان والختم الشمعي' },
+              { step: 4, label: 'تم التغليف', icon: CheckCircle, desc: 'وضع شريط الحرير والختم الشمعي' },
               { step: 5, label: 'تم الشحن', icon: Truck, desc: 'مغادرة الشحنة مع الناقل الملكي' },
               { step: 6, label: 'في الطريق', icon: MapPin, desc: 'المندوب متوجه حالياً لعتبة الدار' },
               { step: 7, label: 'تم التسليم', icon: GiftIconPlaceholder, desc: 'استلام مبارك وسعيد بتمام الأناقة' }

@@ -143,14 +143,14 @@ export default function AdminMarketingCenter() {
         {
           id: 'sulta-m2',
           title: 'عندما تكون بيجامتكِ أغلى من مستقبلي 💅',
-          description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الإيطالي صالون صولا.',
+          description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الفاخر صالون صولا.',
           imageUrl: 'https://images.unsplash.com/photo-1549046486-3a62df998e36?q=80&w=600&auto=format&fit=crop',
           category: 'meme',
           sharesCount: 228
         },
         {
           id: 'sulta-s2',
-          title: 'سحر الملمس الإيطالي الفاتن ✨',
+          title: 'سحر الملمس الفاخر الفاتن ✨',
           description: 'تحذير ملكي: القطعة ناعمة جداً لدرجة تخدر الحواس فور ملامستها للبشرة.',
           imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600&auto=format&fit=crop',
           category: 'sticker',
@@ -482,7 +482,7 @@ export default function AdminMarketingCenter() {
           setCalendarEvents(JSON.parse(localCal));
         } else {
           const defaults: ContentCalendarEvent[] = [
-            { id: 'cal-1', title: 'إعلان خط التشكيلة مع فيونكات وردية 🎀', platform: 'Instagram', scheduledTime: '2026-06-12T18:00', status: 'scheduled', notes: 'التركيز على ريب النسيج والخامات الإيطالية الفاخرة.' },
+            { id: 'cal-1', title: 'إعلان خط التشكيلة مع فيونكات وردية 🎀', platform: 'Instagram', scheduledTime: '2026-06-12T18:00', status: 'scheduled', notes: 'التركيز على ريب النسيج والخامات الفاخرة الفاخرة.' },
             { id: 'cal-2', title: 'فيديو فتح صندوق العبوة الملكية والختم 📦', platform: 'TikTok', scheduledTime: '2026-06-15T21:00', status: 'draft', notes: 'فيديو ممتع يشرح تفاصيل الشحن الفاخر.' }
           ];
           setCalendarEvents(defaults);
@@ -1524,7 +1524,7 @@ export default function AdminMarketingCenter() {
                 </h4>
                 <div className="space-y-2">
                   <p>• <strong>العلامة:</strong> SULTA | بيجامات وملابس نوم العرائس الفاخرة بالرياض ومصر</p>
-                  <p>• <strong>الوصف الملكي:</strong> تسوقي أرقى تصاميم البيجامات المصنوعة يدوياً من القطن البارد والساتان الفاخر مع فيونكات أنيقة لراحة تسكن أحلامكِ.</p>
+                  <p>• <strong>الوصف الملكي:</strong> تسوقي أرقى تصاميم البيجامات المصنوعة يدوياً من القطن البارد والحرير الفاخر مع فيونكات أنيقة لراحة تسكن أحلامكِ.</p>
                   <p>• <strong>أكواد التتبع المدمجة:</strong> Snapchat Pixel, TikTok Pixel, Facebook CAPI</p>
                 </div>
                 <div className="pt-2 border-t border-gray-200 flex justify-between items-center">

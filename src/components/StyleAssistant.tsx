@@ -99,7 +99,7 @@ export default function StyleAssistant({
                     <Droplets size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-[#0B0B0B]">ساتان معالج (برودة ونعومة)</h4>
+                    <h4 className="font-bold text-[#0B0B0B]">حرير معالج ناعم (برودة ونعومة)</h4>
                     <p className="text-xs text-gray-500">ملمس يشبه خفة الماء على البشرة.</p>
                   </div>
                 </button>

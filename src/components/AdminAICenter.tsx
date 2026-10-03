@@ -105,7 +105,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
               title: 'التقرير التأسيسي لمؤشرات الأداء العليا لدار SULTA',
               type: 'monthly',
               timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-              content: 'نظام رصد المبيعات التلقائي يعمل بكفاءة 100%. تم الكشف عن معدلات تحويل قوية في كل من المملكة العربية السعودية وجمهورية مصر العربية، مع تفضيل عالي لمجموعات الساتان الحريري الملكي باللون الوردي والأرجواني.'
+              content: 'نظام رصد المبيعات التلقائي يعمل بكفاءة 100%. تم الكشف عن معدلات تحويل قوية في كل من المملكة العربية السعودية وجمهورية مصر العربية، مع تفضيل عالي لمجموعات الحرير الحريري الملكي باللون الوردي والأرجواني.'
             }
           ];
           setAiReports(defaultReports);
@@ -892,7 +892,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                           <label className="block text-xs font-bold text-gray-700">موضوع المحتوى أو اسم التشكيلة</label>
                           <input
                             type="text"
-                            placeholder="مثال: تشكيلة الصيف المذهلة بالساتان"
+                            placeholder="مثال: تشكيلة الصيف المذهلة بالحرير"
                             value={agentInputPayload.topic || ''}
                             onChange={(e) => setAgentInputPayload({ ...agentInputPayload, topic: e.target.value })}
                             className="w-full border border-gray-200 bg-stone-50 rounded-xl px-4 py-3 text-xs text-right"

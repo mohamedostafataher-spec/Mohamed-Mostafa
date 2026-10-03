@@ -145,7 +145,7 @@ export default function AiMirror({
     if (selectedProduct.categoryAr?.includes('نوم') || selectedProduct.category?.toLowerCase().includes('sleep')) {
       adviceText = `قصة الكوتور هذه مصممة لتتدلى بنعومة فائقة حول القوام بحرية تامة. نقترح مقاس ${suggestedSize} لمزيد من الدلال عند الاستلقاء.`;
     } else {
-      adviceText = `أطقم الساتان الإيطالي الفاخر تأتي بقصة مستوحاة من صالونات فلورنسا الكلاسيكية. مقاس ${suggestedSize} يبرز تفاصيل الأكمام المترفة.`;
+      adviceText = `أطقم الحرير الفاخر الفاخر تأتي بقصة مستوحاة من صالونات فلورنسا الكلاسيكية. مقاس ${suggestedSize} يبرز تفاصيل الأكمام المترفة.`;
     }
 
     if (bodyType === 'hourglass') {
@@ -1460,7 +1460,7 @@ export default function AiMirror({
                 🏬 بهو وبوتيك SULTA الافتراضي لملابس النوم
               </h2>
               <p className="text-gray-300 text-xs leading-relaxed max-w-lg mx-auto">
-                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع الساتان المنسدل من المشغل الإيطالي، واجلسي مع مستشارة سلطة بلمسة واحدة.
+                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع الحرير المنسدل من المشغل الفاخر، واجلسي مع مستشارة سلطة بلمسة واحدة.
               </p>
             </div>
           </div>

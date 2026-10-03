@@ -415,13 +415,13 @@ export default function SultaAutomationStudio({
     "Sweet Dreams Are Made of SULTA 🌟",
     "لا توقظي الأميرة قبل الظهر من فضلك! 😴",
     "Cozy Girlhood Forever ✨",
-    "نصفي ممتلئ بالقهوة.. والنصف الآخر بالساتان ☕",
+    "نصفي ممتلئ بالقهوة.. والنصف الآخر بالحرير ☕",
     "Eau De Sleep: 100% SULTA 🌸",
     "مستوى الدلال اليومي: ملكي متوج 👑",
     "Sleeping is my cardio 🛌",
     "أعطوني بيجامة وسأغير العالم.. غداً! 🦄",
     "SULTA Sweetheart ❤️",
-    "عالم مليء بالفيونكات والساتين الخالص 🎀",
+    "عالم مليء بالفيونكات والحرير الخالص 🎀",
     "Overthinking is canceled, Bedtime is active! 🚫",
     "دائماً متألقة ببيجامتي الوردية ★ SULTA 💖"
   ]);
@@ -466,10 +466,10 @@ export default function SultaAutomationStudio({
       
       setTagSku(activeProduct.sku || `SLT-${activeProduct.id ? activeProduct.id.slice(0, 5).toUpperCase() : 'COUT'}`);
       setTagSize(activeProduct.sizes && activeProduct.sizes.length > 0 ? activeProduct.sizes.join(' / ') : 'M / L');
-      setTagFabric(activeProduct.fabricAr || 'حرير الساتان العضوي الملكي المعالج');
+      setTagFabric(activeProduct.fabricAr || 'حرير عضوي ملكي معالج');
       setTagPrice(`${activeProduct.priceEG ? activeProduct.priceEG.toLocaleString() : '3,900'} ج.م`);
       
-      setCareWashing(activeProduct.washInstructionsAr || 'يغسل يدوياً بماء بارد (تحت 30 درجة) مع تجنب المحاليل المبيضة للحفاظ على مرونة الساتين اللطيف.');
+      setCareWashing(activeProduct.washInstructionsAr || 'يغسل يدوياً بماء بارد (تحت 30 درجة) مع تجنب المحاليل المبيضة للحفاظ على مرونة النسيج اللطيف.');
       setCareDrying(`يجفف بالتعليق في مكان ظليل بعيداً عن أشعة الشمس المباشرة لمنع بهتان الألياف وبقاء رونقها.`);
       setCareIroning(`يكوى بكيّ بارد خفيف وبخار ذكي من الناحية الداخلية وببطانة رقيقة لحفظ رقة دانتيل سولا.`);
       
@@ -695,7 +695,7 @@ export default function SultaAutomationStudio({
 تفاصيل المقاسات والمواد المطلوبة لكل من العناصر الـ 8 الفنية:
 1- كارت الشكر الفاخر (Thank You Card): مقاس 14.8 × 10.5 سم | ورق محبب (Textured Cardstock) بوزن 350 جرام.
 2- الستيكر المستدير (Luxury Sticker): مقاس 6 × 6 سم | طباعة ورق مذهب مطفي أو فينيل شفاف محمي عيار Spot UV.
-3- كارت السعر والعلاقة (Hang Tag): مقاس 5 × 9 سم | فتحة شريط ستان علوي 3.5 ملم | سلوفان مخملي مطفي.
+3- كارت السعر والعلاقة (Hang Tag): مقاس 5 × 9 سم | فتحة شريط حريري علوي 3.5 ملم | سلوفان مخملي مطفي.
 4- كارت رعاية النسيج الصديق (Care Instructions): مقاس 9 × 9 سم | طباعة حبرية آمنة على ورق كرافت ناعم.
 5- كارت مواصفات النسيج المترف (Fabric Info): مقاس 12 × 8 سم | كرتون سلوفان عاكس للضوء مع طلاء ملمسي.
 6- بطاقات الـ VIP الذهبية المعدنية (VIP Card): مقاس 8.5 × 5.4 سم | طباعة PVC مع هولوغرام ورموز مذهبة نافرة.
@@ -1360,7 +1360,7 @@ export default function SultaAutomationStudio({
                       className="accent-[#A44C5C]"
                     />
                     <label htmlFor="boxRibbonCheck" className="text-[10px] text-stone-700 font-bold cursor-pointer select-none">
-                      إضافة شريط ستان تزييني (Satin Ribbon) حول العلبة
+                      إضافة شريط حريري تزييني (Silk Ribbon) حول العلبة
                     </label>
                   </div>
                 </div>

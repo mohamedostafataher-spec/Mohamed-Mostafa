@@ -821,15 +821,6 @@ export default function AccountView({
               <Clock size={16} />
               <span>سجل النشاط</span>
             </button>
-
-            <button
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent('setTab', { detail: 'ai_mirror' }));
-              }}
-              className="flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold border border-dashed border-amber-300 shadow-3xs"
-            >
-              <span>🪞 مرآة SULTA الملكية</span>
-            </button>
           </div>
         </aside>
 
@@ -1409,14 +1400,6 @@ export default function AccountView({
                     const price = country === "EG" ? p.priceEG : p.priceSA;
                     const defaultColor = p.colors && p.colors.length > 0 ? p.colors[0] : { name: "أساسي", hex: "#000000" };
                     const defaultSize = p.sizes && p.sizes.length > 0 ? p.sizes[0] : "Free Size";
-                    
-                    const handleTryOnMirror = (e: React.MouseEvent) => {
-                      e.stopPropagation();
-                      // Preselect in LocalStorage and send CustomEvent to App.tsx
-                      localStorage.setItem('mirror_preselected_product', JSON.stringify(p));
-                      toast(`جاري تشغيل مرآة SULTA الذكية للمعاينة الافتراضية لـ "${p.nameAr}" 🪞🪄`, 'success');
-                      window.dispatchEvent(new CustomEvent('setTab', { detail: 'ai_mirror' }));
-                    };
 
                     const handleMoveToCart = (e: React.MouseEvent) => {
                       e.stopPropagation();
@@ -1489,21 +1472,13 @@ export default function AccountView({
                         </div>
 
                         {/* Actions line */}
-                        <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100">
-                          <button
-                            onClick={handleTryOnMirror}
-                            className="bg-[#FAF5F0] text-[#A44C5C] hover:bg-[#A44C5C] hover:text-[#FAF5F0] text-[10px] sm:text-xs font-bold py-2.5 px-1.5 text-center rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 border border-[#A44C5C]/10"
-                            title="جربي المنتج على صورتك فوراً بنظام القياس الافتراضي"
-                          >
-                            <span>جربي للمرآة 🪞🪄</span>
-                          </button>
-                          
+                        <div className="mt-4 pt-3 border-t border-gray-100">
                           <button
                             onClick={handleMoveToCart}
                             disabled={p.stock <= 0}
-                            className="bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#8D3F4E] disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed text-[10px] sm:text-xs font-bold py-2.5 px-1.5 text-center rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                            className="w-full bg-[#A44C5C] text-[#FAF5F0] hover:bg-[#8D3F4E] disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed text-xs font-bold py-2.5 px-3 text-center rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <span>حقيبة تسوق 🛍️</span>
+                            <span>أضف إلى حقيبة التسوق 🛍️</span>
                           </button>
                         </div>
                         
@@ -1827,7 +1802,7 @@ export default function AccountView({
                       </div>
                       <p className="text-right">
                         {activeStepTab === "new" && "تم استلام طلبيتكِ الفاخرة واعتمادها بنجاح في أنظمة SULTA المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
-                        {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الحرير الخالص لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط ساتان كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
+                        {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الحرير الخالص لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط حريري كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
                         {activeStepTab === "shipped" && "بشرى سارة! تم تسليم باقتك لـ SULTA Fast Express وهي بصحبة سفير توصيل الأناقة كابتن سفيان الآن. تم تحسين مسار الرحلة ذكياً للوصول في دقة فائقة، الجوال متاح لتسهيل الاتصال والوصول المباشر."}
                         {activeStepTab === "delivered" && "تم تسليم الطرد الملكي في منتهى الرقي. نتمنى لك دوماً تجربة نوم هانئة تملؤها السكينة والأناقة المفرطة مع منسوجات SULTA. سعدنا بثقتِك ونتشرف بزيارة تقيمية تذكرين فيها رأيك في القطعة!"}
                       </p>

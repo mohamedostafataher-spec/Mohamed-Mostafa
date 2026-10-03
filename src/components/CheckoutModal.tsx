@@ -99,60 +99,30 @@ export default function CheckoutModal({
     country: 'المملكة العربية السعودية 🇸🇦'
   };
 
-  // Tamara installment calculation (4 equal installments)
-  const tamaraInstallment = (totalAmount / 4).toFixed(2);
-
-  // Country specific payment gateways
-  const egyptPayments = [
-    { id: 'visa', name: 'بطاقة فيزا / ماستركارد البنكية', icon: <CreditCard size={18} /> },
-    { id: 'wallet', name: 'المحافظ الإلكترونية (فودافون كاش / إنستاباي)', icon: <Smartphone size={18} /> },
-    { id: 'fawry', name: 'خدمة فوري ومصاريف الدفع', icon: <CheckCircle size={18} /> },
-    { id: 'cod', name: 'الدفع عند الاستلام مع التغليف الفاخر', icon: <Truck size={18} /> },
-  ];
-
-  const saudiPayments = [
+  // Country specific payment gateways restricted strictly to Apple Pay, COD, and Bank Transfer
+  const activePayments = [
     { 
       id: 'apple', 
-      name: 'Apple Pay (أبل باي المباشر)', 
-      subtitle: 'الدفع الفوري السريع بنقرة واحدة عبر بطاقتك البنكية',
+      name: 'Apple Pay (أبل باي)', 
+      subtitle: 'الدفع الفوري السريع بنقرة واحدة عبر بطاقتك البنكية المعتمدة',
       badge: 'الأسرع ⚡',
       icon: <span className="font-sans font-bold text-sm">Pay</span> 
     },
     { 
-      id: 'tamara', 
-      name: 'تمارا (Tamara) - قسّمي فاتورتك على 4 دفعات', 
-      subtitle: `ادفعي ${tamaraInstallment} ر.س اليوم والباقي على 3 أشهر بدون فوائد`,
-      badge: 'بدون فوائد ✨',
-      icon: <span className="font-bold text-xs text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">tamara</span> 
+      id: 'cod', 
+      name: 'الدفع عند الاستلام (Cash on Delivery)', 
+      subtitle: 'السداد نقداً لمندوب التوصيل فور استلام ومعاينة طلبيتكِ الفاخرة',
+      badge: 'معاينة قبل الدفع 📦',
+      icon: <Truck size={18} className="text-emerald-700" /> 
     },
     { 
       id: 'bank_transfer', 
-      name: 'تحويل بنكي مباشر (بنك الجزيرة / إنجاز السعودية)', 
-      subtitle: 'التحويل المباشر لحساب البائع البنكي برقم البطاقة المعتمدة',
-      badge: 'حساب رسمي 🏛️',
-      icon: <Building2 size={18} className="text-emerald-700" /> 
-    },
-    { 
-      id: 'visa', 
-      name: 'بطاقة فيزا الائتمانية (Visa / Mastercard)', 
-      subtitle: 'بوابة دفع إلكترونية آمنة ومشفرة 100%',
-      icon: <CreditCard size={18} /> 
-    },
-    { 
-      id: 'stc', 
-      name: 'إس تي سي باي الذكي (STC Pay)', 
-      subtitle: 'سداد فوري عبر تطبيق STC Pay',
-      icon: <Smartphone size={18} /> 
-    },
-    { 
-      id: 'cod', 
-      name: 'الدفع عند الاستلام', 
-      subtitle: 'السداد نقداً لمندوب التوصيل عند استلام الطلب',
-      icon: <Truck size={18} /> 
+      name: 'تحويل بنكي مباشر (بنك الجزيرة / إنجاز)', 
+      subtitle: 'التحويل المباشر لحساب المتجر الرسمي المعتمد برقم البطاقة',
+      badge: 'حساب موثق 🏛️',
+      icon: <Building2 size={18} className="text-[#A44C5C]" /> 
     },
   ];
-
-  const activePayments = country === 'EG' ? egyptPayments : saudiPayments;
 
   const handleCopyBank = () => {
     try {
@@ -180,6 +150,11 @@ export default function CheckoutModal({
     setIsSubmitting(true);
 
     try {
+      if (selectedPayment === 'apple') {
+        // Biometric/token simulation delay for Apple Pay
+        await new Promise(r => setTimeout(r, 1000));
+      }
+
       const generatedCode = `SULTA-${Math.floor(100000 + Math.random() * 900000)}`;
       const newUuid = crypto.randomUUID();
       
@@ -191,7 +166,7 @@ export default function CheckoutModal({
         country: country,
         city: city,
         address: address,
-        notes: selectedPayment === 'bank_transfer' ? 'طلب تحويل بنكي على حساب بنك الجزيرة 4550 1704 0413 3727' : undefined,
+        notes: selectedPayment === 'bank_transfer' ? 'طلب تحويل بنكي على حساب بنك الجزيرة / إنجاز 4550 1704 0413 3727' : undefined,
         shippingFee: shippingCost,
         items: cart.map(item => {
           const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
@@ -206,8 +181,10 @@ export default function CheckoutModal({
         }),
         totalPrice: totalAmount,
         currency: country === 'EG' ? 'EGP' : 'SAR',
-        paymentMethod: activePayments.find(p => p.id === selectedPayment)?.name || 'الدفع عند الاستلام',
-        status: 'pending',
+        paymentMethod: selectedPayment === 'apple'
+          ? 'Apple Pay (مدفوع إلكترونياً Pay)'
+          : (activePayments.find(p => p.id === selectedPayment)?.name || 'الدفع عند الاستلام'),
+        status: selectedPayment === 'apple' ? 'confirmed' : 'pending',
         date: new Date().toISOString().split('T')[0]
       };
 
@@ -513,35 +490,14 @@ export default function CheckoutModal({
                           </div>
                         )}
 
-                        {/* SPECIAL EXPANDED VIEW: TAMARA */}
-                        {active && p.id === 'tamara' && (
-                          <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
-                            <div className="bg-gradient-to-l from-amber-50 via-white to-pink-50 p-3 rounded-xl border border-amber-200 text-xs">
-                              <div className="flex items-center justify-between font-bold text-gray-950 mb-1">
-                                <span>خطة تمارا المعتمدة (4 دفعات ميسرة):</span>
-                                <span className="text-amber-800 font-mono">{tamaraInstallment} {currencyLabel} / شهر</span>
-                              </div>
-                              <div className="grid grid-cols-4 gap-1 mt-2 text-center text-[10px]">
-                                <div className="bg-white p-1 rounded border border-gray-200">
-                                  <span className="block text-gray-400">اليوم</span>
-                                  <strong className="text-emerald-700">{tamaraInstallment}</strong>
-                                </div>
-                                <div className="bg-white p-1 rounded border border-gray-200">
-                                  <span className="block text-gray-400">الشهر 1</span>
-                                  <strong>{tamaraInstallment}</strong>
-                                </div>
-                                <div className="bg-white p-1 rounded border border-gray-200">
-                                  <span className="block text-gray-400">الشهر 2</span>
-                                  <strong>{tamaraInstallment}</strong>
-                                </div>
-                                <div className="bg-white p-1 rounded border border-gray-200">
-                                  <span className="block text-gray-400">الشهر 3</span>
-                                  <strong>{tamaraInstallment}</strong>
-                                </div>
-                              </div>
-                              <span className="text-[9.5px] text-gray-500 block mt-1.5 text-center">
-                                ✓ بدون أي فوائد إضافية • متوافق مع أحكام الشريعة الإسلامية
-                              </span>
+                        {/* SPECIAL EXPANDED VIEW: CASH ON DELIVERY */}
+                        {active && p.id === "cod" && (
+                          <div className="mt-3 pt-3 border-t border-gray-200 text-right">
+                            <div className="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 text-xs space-y-1">
+                              <span className="font-bold text-emerald-950 block">✓ ميزة المعاينة قبل السداد:</span>
+                              <p className="text-[11px] text-emerald-900 leading-relaxed">
+                                استلمي طلبيتكِ مفحوصة ومغلفة بالكرتون الملكي، وقومي بسداد المبلغ ({totalAmount.toLocaleString()} {currencyLabel}) نقداً للمندوب عند باب المنزل.
+                              </p>
                             </div>
                           </div>
                         )}
@@ -636,12 +592,21 @@ export default function CheckoutModal({
                   type="button"
                   onClick={handleSubmitOrder}
                   disabled={isSubmitting}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-98"
+                  className={`flex-1 text-white py-3 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-98 ${
+                    selectedPayment === 'apple' 
+                      ? 'bg-black hover:bg-gray-900 ring-2 ring-black/10' 
+                      : 'bg-emerald-600 hover:bg-emerald-700'
+                  }`}
                 >
                   {isSubmitting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>جاري تأكيد حجز الطلب...</span>
+                      <span>{selectedPayment === 'apple' ? 'جاري الدفع بـ Apple Pay...' : 'جاري تأكيد حجز الطلب...'}</span>
+                    </>
+                  ) : selectedPayment === 'apple' ? (
+                    <>
+                      <span className="text-base font-sans font-bold">Pay</span>
+                      <span>سداد فوري عبر Apple Pay ({totalAmount.toLocaleString()} {currencyLabel})</span>
                     </>
                   ) : (
                     <>

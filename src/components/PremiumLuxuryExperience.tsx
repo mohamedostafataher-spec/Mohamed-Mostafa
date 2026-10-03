@@ -274,7 +274,7 @@ export default function PremiumLuxuryExperience({
   // =====================================
   const defaultMoods = [
     { slug: 'cozy', nameAr: 'ليالي مريحة ودافئة (Cozy Night)', icon: '🕯️', desc: 'بجايم وفساتين قطن مضلع معالج بنعومة عالية تمنحك استكناناً وهدوءاً.' },
-    { slug: 'luxury', nameAr: 'قمة الترف والوقار (Luxury Night)', icon: '👑', desc: 'أطقم كوتور ساتان ثقيل مع الدانتيل الإيطالي المطرز يدوياً لتكوني نجمة ساطعة.' },
+    { slug: 'luxury', nameAr: 'قمة الترف والوقار (Luxury Night)', icon: '👑', desc: 'أطقم كوتور حرير فاخر مع دانتيل راقي مطرز يدوياً لتكوني نجمة ساطعة.' },
     { slug: 'bride', nameAr: 'جناح سولتة للعروس (Bride Suite)', icon: '👰', desc: 'مزيج من الروز ناصع البياض والسلاسل الحريرية للأوقات الخاصة الخالدة.' },
     { slug: 'travel', nameAr: 'سفر دائم الترطيب (Travel Collection)', icon: '✈️', desc: 'تصاميم خفيفة للتوضيب، مريحة وأنيقة في ردهات الفنادق العالمية.' }
   ];
@@ -823,7 +823,7 @@ export default function PremiumLuxuryExperience({
                   <h4 className="text-sm font-serif font-semibold text-gray-900">النسيج والملمس الذي تذوبين فيه دلالاً؟</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button onClick={() => handleSelectQuizAnswer('fabric', 'satin')} className="p-4 border rounded-2xl border-gray-100 hover:border-[#DF8A9C] text-xs font-bold transition-all hover:bg-[#DF8A9C]/5">
-                      ✨ حرير ساتان ذكي بارد وخفيف كالحلم
+                      ✨ حرير ملكي ناعم بارد وخفيف كالحلم
                     </button>
                     <button onClick={() => handleSelectQuizAnswer('fabric', 'cotton')} className="p-4 border rounded-2xl border-gray-100 hover:border-[#DF8A9C] text-xs font-bold transition-all hover:bg-[#DF8A9C]/5">
                       🧶 قطن مصري عضوي طبيعي يتنفس معكِ
@@ -1272,7 +1272,7 @@ export default function PremiumLuxuryExperience({
                           <SultaImage src={cleanImgUrl("/img/sulta_product_1.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">ميار أسامة - الرياض</span>
-                            <p className="text-[9px] text-gray-400 line-clamp-2">" خام الساتان ثقيل وبديع، التغليف الملكي عطر الدار يجنن! "</p>
+                            <p className="text-[9px] text-gray-400 line-clamp-2">" خامة الحرير ثقيلة وبديعة، التغليف الملكي عطر الدار يجنن! "</p>
                           </div>
                         </div>
 

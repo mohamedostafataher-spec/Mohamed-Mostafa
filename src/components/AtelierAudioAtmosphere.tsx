@@ -40,17 +40,17 @@ interface AtelierAudioAtmosphereProps {
 const LUXURY_BRAND_MESSAGES = [
   "✨ أهلاً بكِ في عوالم SULTA حيث تلتقي الراحة المطلقة بترف التفاصيل.",
   "✨ جميع منتجاتنا مغزولة بعناية فائقة لتمنح جسدك تجربة نوم ملوكية تليق بكِ.",
-  "✨ خاماتنا من الساتان المبرد والقطيفة مصممة لتوفر روعة الملمس ونعومة فائقة في كل لحظة.",
+  "✨ خاماتنا من الحرير المبرد والقطيفة مصممة لتوفر روعة الملمس ونعومة فائقة في كل لحظة.",
   "✨ شكراً لثقتكِ الغالية ببراند SULTA. يسعدنا دائماً مرافقة طقوس أناقتك اليومية."
 ];
 
 const LUXURY_TIPS = [
   {
     title: "🌸 دليل اختيار أفضل خامات الصيف",
-    desc: "نوصي بالساتان الملكي المبرد المعالج لمقاومة الحرارة، فهو لطيف على البشرة ومقاوم للتعرق والخطوط الرفيعة لتنامي برفاهية تامة."
+    desc: "نوصي بالحرير الملكي المبرد المعالج لمقاومة الحرارة، فهو لطيف على البشرة ومقاوم للتعرق والخطوط الرفيعة لتنامي برفاهية تامة."
   },
   {
-    title: "📐 كيف تختارين قياسك الإيطالي بدقة؟",
+    title: "📐 كيف تختارين قياسك الفاخر بدقة؟",
     desc: "استخدمي دليلك الخاص في صفحة حسابك لتحديد المقاس عبر الوزن والطول. إن لم تكوني متأكدة، فإن السروال الفضفاض (Loose-fit) هو خيار مريح ممتاز دوماً."
   },
   {
@@ -525,7 +525,7 @@ export default function AtelierAudioAtmosphere({
                           <Truck size={11} className="text-[#A44C5C]" />
                         </div>
                         <div className="flex items-center gap-1.5 justify-end">
-                          <span>جودة كوتور إيطالية</span>
+                          <span>جودة كوتور فاخرة</span>
                           <Star size={11} className="text-[#A44C5C]" />
                         </div>
                         <div className="flex items-center gap-1.5 justify-end">
@@ -601,7 +601,7 @@ export default function AtelierAudioAtmosphere({
                       
                       <div className="space-y-2 text-[10px] text-gray-700">
                         <div className="bg-white/80 p-2 rounded-lg border border-gray-100 leading-relaxed">
-                          📌 <span className="font-bold text-gray-950">التشكيلة الجديدة:</span> تم توفير قطع صيفية جديدة من الساتان المعالج مضافة للتو فحصي "أحدث المنتجات".
+                          📌 <span className="font-bold text-gray-950">التشكيلة الجديدة:</span> تم توفير قطع صيفية جديدة من الحرير المعالج مضافة للتو فحصي "أحدث المنتجات".
                         </div>
                         <div className="bg-white/80 p-2 rounded-lg border border-gray-100 leading-relaxed">
                           📌 <span className="font-bold text-gray-950">الحالة العامة:</span> خامات فخمة بأرقى درجات الخياطة مع توفر {products.filter(p => p.stock > 0).length} قطعة فاخرة جاهزة للتجهيز والتغليف اليومي.
@@ -617,7 +617,7 @@ export default function AtelierAudioAtmosphere({
                           <span className="text-[8px] text-gray-400 bg-pink-50 text-[#A44C5C] px-1.5 py-0.5 rounded">موصى به</span>
                         </div>
                         <p className="text-[9.5px] text-gray-550 leading-relaxed text-right font-light">
-                          قطع فاخرة مصممة خصيصاً باللون الأبيض والوردي مع ريش طبيعي ودانتيل إيطالي لتخليد أجمل زفاف وصباحية:
+                          قطع فاخرة مصممة خصيصاً باللون الأبيض والوردي مع ريش طبيعي ودانتيل فاخر لتخليد أجمل زفاف وصباحية:
                         </p>
                         
                         <div className="grid grid-cols-2 gap-2 pt-1">

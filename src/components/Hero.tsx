@@ -20,24 +20,24 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
 
   const fallbackBanners = [
     {
-      mediaUrl: '/img/hero_pajama_lifestyle_1_1780682110287.png',
+      mediaUrl: '/img/sulta_sleepwear_1_1781140797178.png',
       title: 'أزياء النوم الفاخرة',
-      subtitle: 'بيجامات وأرواب الساتان الإيطالي المبرد',
+      subtitle: 'بيجامات وأرواب الحرير الفاخر المبرد',
       ctaText: 'تسوقي التشكيلة الآن',
       mediaType: 'image'
     },
     {
-      mediaUrl: '/img/hero_pajama_editorial_2_1780682126486.png',
+      mediaUrl: '/img/sulta_collections_1_1781140831329.png',
       title: 'تشكيلة SULTA الملكية',
       subtitle: 'نعومة فائقة وأناقة منسوجة بعناية',
       ctaText: 'اكتشفي الموديلات',
       mediaType: 'image'
     },
     {
-      mediaUrl: '/img/hero_pajama_detail_3_1780682140472.png',
-      title: 'فساتين نوم كوتور',
-      subtitle: 'تصاميم راقية لأمسيات مفعمة بالراحة',
-      ctaText: 'تصفحي الفساتين',
+      mediaUrl: '/img/sulta_loungewear_1_1781140813379.png',
+      title: 'أطقم بيجامات كوتور',
+      subtitle: 'تصاميم راقية لأمسيات مفعمة بالراحة والهدوء',
+      ctaText: 'تصفحي التشكيلة',
       mediaType: 'image'
     }
   ];
@@ -48,7 +48,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
     url: cleanImgUrl(b.mediaUrl || b.url, 'sleepwear'),
     alt: b.title || 'SULTA',
     title: b.title || 'أزياء النوم الفاخرة',
-    subtitle: b.subtitle || 'بيجامات وأرواب الساتان الملكي',
+    subtitle: b.subtitle || 'بيجامات وأرواب الحرير الملكي',
     ctaText: b.ctaText || 'تسوقي الآن',
     mediaType: b.mediaType || 'image'
   }));

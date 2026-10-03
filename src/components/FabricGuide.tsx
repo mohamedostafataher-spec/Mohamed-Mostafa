@@ -18,8 +18,8 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
     cottonLycraTitleAr: savedSection?.cottonLycraTitleAr || 'تشكيلة قطن ليكرا الإنشائية (Cotton Lycra Collection)',
     cottonLycraDescAr: savedSection?.cottonLycraDescAr || 'مزيج فريد يجمع بين نقاء القطن العضوي المتين ومرونة الليكرا الفائقة لمرونة انسيابية تناسب الحركة والنشاطات المنزلية بامتياز مع الحفاظ على الشكل الأنيق.',
     
-    satinTitleAr: savedSection?.satinTitleAr || 'مجموعة الساتان الإيطالي الملكية (Satin Collection)',
-    satinDescAr: savedSection?.satinDescAr || 'الساتان الملكي المعالج حرارياً بلمعة مطفأة ووزن خفيف منسدل بنعومة تضاهي الحرير الطبيعي. يوفر ملمساً بارداً ولطيفاً جداً على البشرة والعرائس بمظهر غاية في الجاذبية والفخامة.',
+    satinTitleAr: savedSection?.satinTitleAr || 'مجموعة الحرير الفاخر الملكية (Satin Collection)',
+    satinDescAr: savedSection?.satinDescAr || 'الحرير الملكي المعالج حرارياً بلمعة مطفأة ووزن خفيف منسدل بنعومة تضاهي الحرير الطبيعي. يوفر ملمساً بارداً ولطيفاً جداً على البشرة والعرائس بمظهر غاية في الجاذبية والفخامة.',
     
     summerTitleAr: savedSection?.summerTitleAr || 'الأقمشة الصيفية الخفيفة (Summer Fabrics)',
     summerDescAr: savedSection?.summerDescAr || 'أقمشة باردة معالجة لتنفس كامل ومقاومة درجات الحرارة. نعتمد خامات خفيفة ومفتحة للمسام تمنحكِ انتعاش الخلوة ونسمة هواء مستمرة حتى في أحر الأيام.',
@@ -50,7 +50,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
         </h2>
         <div className="w-16 h-[1.5px] bg-[#A44C5C]/50 mx-auto" />
         <p className="text-gray-500 text-xs md:text-sm pt-2 leading-relaxed font-serif italic">
-          ننتقي خيوط الدار من أرقى معالم الأنسجة الإيطالية والمصرية لنحيك لكِ تجربة نوم ملكية تلامس الروح قبل الجسد.
+          ننتقي خيوط الدار من أرقى معالم الأنسجة الفاخرة والمصرية لنحيك لكِ تجربة نوم ملكية تلامس الروح قبل الجسد.
         </p>
       </div>
 

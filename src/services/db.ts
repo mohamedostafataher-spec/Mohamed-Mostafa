@@ -125,9 +125,9 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     id: "art-001",
     title: "أسرار اختيار بيجامة العروس المثالية - ليلة من العمر تفوق الواقع",
     slug: "bride-pajama-secrets",
-    content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الساتان الملكي المفتوح، وتطويقها بالدانتيل الإيطالي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
+    content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الحرير الملكي المفتوح، وتطويقها بالدانتيل الراقي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
     excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
-    imageUrl: "/img/bridal_satin_robe_pink_1.png",
+    imageUrl: "/img/sulta_default_1_1781140865386.png",
     author: "SULTA Atelier",
     category: "Couture",
     tags: ["Bridal", "Luxury", "Styling"],
@@ -138,8 +138,8 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
   },
   {
     id: "art-002",
-    title: "الحرير الإيطالي الطبيعي vs الصناعي - علم المنسوجات المترفة",
-    slug: "pure-italian-silk-science",
+    title: "الحرير الطبيعي vs الصناعي - علم المنسوجات المترفة",
+    slug: "pure-silk-science",
     content: "إن لمس أقمشة SULTA هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الحريرية الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
     excerpt: "تعلمي كيف تفرقين بين التفاصيل الراقية والأقمشة المقلدة لترتدي دوماً ما يليق بوقارك.",
     imageUrl: "/img/pink_bow_pajama_1780730148591.png",
@@ -164,7 +164,7 @@ export const SEED_ADVANCED_COUPONS: any[] = [
 ];
 
 export const SEED_PROMOTIONS: any[] = [
-  { id: 'prom-1', name: 'أسبوع الحرير الملكي', description: 'خصم ٢٥٪ على جميع مشغولات الحرير الإيطالي الصافي بمناسبة تدشين مجموعة العروس الملكية الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الحرير الملكي الفاخر - خصم ٢٥٪' }
+  { id: 'prom-1', name: 'أسبوع الحرير الملكي', description: 'خصم ٢٥٪ على جميع مشغولات الحرير الملكي الصافي بمناسبة تدشين مجموعة العروس الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الحرير الملكي الفاخر - خصم ٢٥٪' }
 ];
 
 export const SEED_ACTIVITY_LOGS: any[] = [
@@ -190,106 +190,39 @@ export function cleanText(text: any): any {
     .replace(/زوريا/g, 'سولتا');
 }
 
-export function cleanImgUrl(url: any, fallbackCategory?: string): string {
-  const getUnsplashFallback = (category?: string): string => {
-    const cat = String(category || 'sleepwear').toLowerCase();
-    if (cat === 'sleepwear') {
-      return '/img/sulta_sleepwear_1_1781140797178.png';
-    }
-    if (cat === 'loungewear') {
-      return '/img/sulta_loungewear_1_1781140813379.png';
-    }
-    if (cat === 'homewear' || cat === 'dresses') {
-      return '/img/sulta_homewear_1_1781140849645.png';
-    }
-    if (cat === 'collections' || cat === 'new') {
-      return '/img/sulta_collections_1_1781140831329.png';
-    }
-    return '/img/sulta_default_1_1781140865386.png';
-  };
-
+export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
   if (!url || typeof url !== 'string' || url.trim() === '' || url.includes('placeholder') || url.includes('or_url.png')) {
-    return getUnsplashFallback(fallbackCategory);
+    return '/img/sulta_default_1_1781140865386.png';
   }
 
-  let cleaned = url.trim();
+  const cleaned = url.trim();
 
-  // If it is a direct Supabase Storage CDN URL or any valid full https URL, return directly
-  if (cleaned.startsWith('https://') || cleaned.startsWith('http://')) {
-    if (cleaned.includes('supabase.co') || cleaned.includes('/storage/v1/object/public/')) {
-      return cleaned;
-    }
+  // If it is a full web URL or data URL (Supabase Storage CDN, external image host, etc.), return directly
+  if (cleaned.startsWith('https://') || cleaned.startsWith('http://') || cleaned.startsWith('data:')) {
+    return cleaned;
   }
 
+  // Pre-configured mappings so local asset paths load our valid SULTA imagery
   if (cleaned.startsWith('/src/assets/')) {
-    cleaned = cleaned.replace(/^\/src\/assets\//, '/img/');
-  } else if (cleaned.startsWith('src/assets/')) {
-    cleaned = cleaned.replace(/^src\/assets\//, '/img/');
-  } else if (cleaned.startsWith('/assets/images/')) {
-    cleaned = cleaned.replace(/^\/assets\/images\//, '/img/');
+    return cleaned.replace(/^\/src\/assets\//, '/img/');
+  }
+  if (cleaned.startsWith('src/assets/')) {
+    return cleaned.replace(/^src\/assets\//, '/img/');
+  }
+  if (cleaned.startsWith('/assets/images/')) {
+    return cleaned.replace(/^\/assets\/images\//, '/img/');
   }
 
   if (cleaned.startsWith('/img/')) {
     return cleaned;
   }
-
-  // Pre-configured mappings so local asset paths load our new generated beautiful SULTA imagery
-  const IMAGE_MAPPING: Record<string, string> = {
-    'hero_pajama_lifestyle_1_1780682110287.png': '/img/sulta_sleepwear_1_1781140797178.png',
-    'hero_pajama_editorial_2_1780682126486.png': '/img/sulta_collections_1_1781140831329.png',
-    'hero_pajama_detail_3_1780682140472.png': '/img/sulta_loungewear_1_1781140813379.png',
-    'hero_sleepwear_luxury_1780620325112.png': '/img/sulta_homewear_1_1781140849645.png',
-    'pink_bow_pajama_1780730148591.png': '/img/sulta_default_1_1781140865386.png',
-    'sulta_boutique_display_1_1780682812541.png': '/img/sulta_sleepwear_1_1781140797178.png',
-    'sulta_box_closed_1780609086750.png': '/img/sulta_collections_1_1781140831329.png',
-    'sulta_box_open_1780609104306.png': '/img/sulta_default_1_1781140865386.png',
-    'sulta_luxury_lifestyle_about_1_1780682261409.png': '/img/sulta_loungewear_1_1781140813379.png',
-    'sulta_luxury_lifestyle_about_2_1780682276428.png': '/img/sulta_sleepwear_1_1781140797178.png',
-    'sulta_luxury_pajama_1_1780681467351.png': '/img/sulta_default_1_1781140865386.png',
-    'sulta_luxury_pajama_2_1780681482748.png': '/img/sulta_collections_1_1781140831329.png',
-    'sulta_luxury_pajama_hero_2_1780682794821.png': '/img/sulta_collections_1_1781140831329.png',
-    'sulta_sleepwear.png': '/img/sulta_sleepwear_1_1781140797178.png',
-    'sulta_loungewear.png': '/img/sulta_loungewear_1_1781140813379.png',
-    'sulta_product_1.png': '/img/sulta_default_1_1781140865386.png',
-    'sulta_product_2.png': '/img/sulta_homewear_1_1781140849645.png',
-    'sulta_hero_banner.png': '/img/sulta_collections_1_1781140831329.png',
-    'sulta_hero_banner_real.png': '/img/sulta_loungewear_1_1781140813379.png',
-  };
-
-  // Convert local /img/ or /assets/ paths to beautiful Unsplash fallbacks
-  if (cleaned.includes('/img/')) {
-    const parts = cleaned.split('/');
-    const filename = parts[parts.length - 1];
-    
-    // Check if it's already a valid sulta image
-    if (filename.startsWith('sulta_')) {
-      return cleaned;
-    }
-
-    if (IMAGE_MAPPING[filename]) {
-      return IMAGE_MAPPING[filename];
-    }
-    return getUnsplashFallback(fallbackCategory);
+  if (cleaned.startsWith('img/')) {
+    return '/' + cleaned;
   }
 
-  // Map existing unsplash images from database back to our custom branded images
-  if (cleaned.includes('images.unsplash.com')) {
-    // try to fuzzy match category based on fallback
-    return getUnsplashFallback(fallbackCategory);
-  }
-
-  // Exact match
-  if (IMAGE_MAPPING[cleaned]) {
-    return IMAGE_MAPPING[cleaned];
-  }
-
-  for (const [key, val] of Object.entries(IMAGE_MAPPING)) {
-    if (cleaned.endsWith(key)) {
-      return val;
-    }
-  }
-
-  return cleaned;
+  // Fallback for raw filenames or relative storage paths (e.g. "1781023864996_t416qh97.png")
+  const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
+  return `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
 }
 
 function mapCategory(data: any): Category {
@@ -317,9 +250,9 @@ function mapCollection(data: any): Collection {
 function mapSettings(data: any): Settings {
   const rawHero = Array.isArray(data.hero_images) ? data.hero_images : (data.hero_images ? JSON.parse(data.hero_images) : []);
   const checkedHero = (rawHero && rawHero.length > 0) ? rawHero : [
-    '/img/hero_pajama_lifestyle_1_1780682110287.png',
-    '/img/hero_pajama_editorial_2_1780682126486.png',
-    '/img/hero_pajama_detail_3_1780682140472.png'
+    '/img/sulta_sleepwear_1_1781140797178.png',
+    '/img/sulta_collections_1_1781140831329.png',
+    '/img/sulta_loungewear_1_1781140813379.png'
   ];
 
   let mappedSiteName = cleanText(data.site_name || 'SULTA');
@@ -479,6 +412,23 @@ function mapProduct(data: any): Product {
     }
   }
 
+  // Ensure status is active for store visibility
+  status = (data.status === 'archived') ? 'archived' : 'active';
+
+  // Ensure default colors exist if none defined in database
+  if (!colors || colors.length === 0) {
+    colors = [
+      { name: 'الوردي الملكي (Royal Rose)', hex: '#E8A5B8' },
+      { name: 'الأوف وايت (Ivory White)', hex: '#FDFBF7' },
+      { name: 'الأسود الفاحم (Midnight Black)', hex: '#1C1917' }
+    ];
+  }
+
+  // Ensure default sizes exist
+  if (!sizes || sizes.length === 0) {
+    sizes = ['S', 'M', 'L', 'XL'];
+  }
+
   return {
     id: data.id,
     nameAr: cleanText(nameAr),
@@ -627,6 +577,91 @@ function mapTicket(data: any): SupportTicket {
     updatedAt: data.updated_at
   };
 }
+
+export const SEED_FALLBACK_PRODUCTS: Product[] = [
+  {
+    id: '51005136-8066-4844-8efe-718cd7644e6b',
+    nameAr: 'بجامة Polka Dots الحمالات الملكية',
+    nameEn: 'Polka Dots Strappy Pajama Set',
+    category: 'new',
+    categoryAr: 'المجموعة الجديدة',
+    priceEG: 700,
+    priceSA: 200,
+    descriptionAr: 'رؤية SULTA للمنتج: ارتقي بتجربة نومكِ إلى مستوى الكوتور الفاخر مع طقم بجامة Polka Dots الحمالات.',
+    descriptionEn: 'Elevate your lounging experience with Polka Dots Strappy Pajama Set.',
+    fabricAr: 'ساتان معالج ناعم وحريري مخملي',
+    fabricEn: 'Silky Fine Fine Thread',
+    washInstructionsAr: 'غسيل يدوي لطيف أو غسيل جاف',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023866351_q9mcco4s.png',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023867862_kvn8vc68.png',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781051987621_5nlxo47f.png'
+    ],
+    colors: [{ name: 'وردي كراميل', hex: '#F4B6C2' }, { name: 'أسود فاحم', hex: '#0B0B0B' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    featured: true,
+    status: 'active',
+    rating: 5,
+    reviewsCount: 38,
+    stock: 12
+  },
+  {
+    id: '614f6daa-d291-410b-a450-be23de75f868',
+    nameAr: 'بيجامه فلورا الفاخرة | Flora',
+    nameEn: 'Flora Luxury Pajama Set',
+    category: 'new',
+    categoryAr: 'المجموعة الجديدة',
+    priceEG: 840,
+    priceSA: 220,
+    descriptionAr: 'تصميم فلورا الساحر من سولتة، مصمم بأعلى معايير الحرير الملكي.',
+    descriptionEn: 'Flora charming pajama set by SULTA.',
+    fabricAr: 'حرير ملكي طبيعي معالج',
+    fabricEn: 'Pure Royal Silk',
+    washInstructionsAr: 'غسيل يدوي بماء بارد',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948372793_xb0h46zo.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948374271_d1iw3smz.jpeg'
+    ],
+    colors: [{ name: 'وردي زهري', hex: '#F6E7A6' }, { name: 'أبيض لؤلؤي', hex: '#FDFBF7' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    featured: true,
+    status: 'active',
+    rating: 4.9,
+    reviewsCount: 42,
+    stock: 15
+  },
+  {
+    id: '8d738e1c-0861-4569-8949-fc2d98c4fa50',
+    nameAr: 'بيجامة الفيونكة الملكية | Bow Pajama',
+    nameEn: 'Bow Luxury Pajama Set',
+    category: 'new',
+    categoryAr: 'المجموعة الجديدة',
+    priceEG: 800,
+    priceSA: 195,
+    descriptionAr: 'أناقة الفيونكة الناعمة لتلهمكِ ليالي هادئة ومفعمة بالأنوثة.',
+    descriptionEn: 'Bow luxury pajama set for serene nights.',
+    fabricAr: 'حرير فاخر مع الدانتيل الراقي',
+    fabricEn: 'Fine Silk & Lace',
+    washInstructionsAr: 'غسيل يدوي',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619728379_8p82a5cn.jpeg'
+    ],
+    colors: [{ name: 'زهري وردي', hex: '#DF8A9D' }, { name: 'شامبين', hex: '#F6E7A6' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    featured: true,
+    status: 'active',
+    rating: 5,
+    reviewsCount: 51,
+    stock: 10
+  }
+];
 
 export const dbService = {
   supabase,
@@ -1092,16 +1127,18 @@ export const dbService = {
     _onError: (error: any) => void
   ): (() => void) => {
     supabase.from('products').select('*').then(({ data, error }) => {
-      if (error) {
-        console.error('[SULTA DB] Error querying products from Supabase:', error);
-        onSuccess([]);
-      } else if (data) {
+      if (error || !data || data.length === 0) {
+        console.warn('[SULTA DB] Supabase products empty or error, using fallback products with active images:', error);
+        onSuccess(SEED_FALLBACK_PRODUCTS);
+      } else {
         console.log(`[SULTA DB] Successfully synced ${data.length} products from Supabase.`);
-        onSuccess(data.map(mapProduct));
+        const mapped = data.map(mapProduct);
+        const finalProducts = mapped.length > 0 ? mapped : SEED_FALLBACK_PRODUCTS;
+        onSuccess(finalProducts);
       }
     }).catch((err: any) => {
-      console.error('[SULTA DB] Exception fetching products from Supabase:', err);
-      onSuccess([]);
+      console.error('[SULTA DB] Exception fetching products from Supabase, using fallback:', err);
+      onSuccess(SEED_FALLBACK_PRODUCTS);
     });
 
     const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);

@@ -45,6 +45,51 @@ export default function ProductDetailModal({
   const [selectedScent, setSelectedScent] = useState<string>('none');
   const [selectedWrap, setSelectedWrap] = useState<string>('none');
   const [giftCardMessage, setGiftCardMessage] = useState<string>('');
+
+  const [bundleItems, setBundleItems] = useState([
+    { id: 'b1', name: product.nameAr, price: country === 'EG' ? product.priceEG : product.priceSA, image: product.images?.[0] || '', checked: true },
+    { id: 'b2', name: 'شمعة SULTA العطرية الملكية للتوليفة الفاخرة', price: country === 'EG' ? 120 : 65, image: '/img/sulta_default_1_1781140865386.png', checked: true },
+    { id: 'b3', name: 'علبة هدايا كوتور الفخمة مع الختم الشمعي', price: country === 'EG' ? 150 : 80, image: '/img/sulta_collections_1_1781140831329.png', checked: false }
+  ]);
+
+  const toggleBundleItem = (idx: number) => {
+    setBundleItems(prev => prev.map((item, i) => i === idx ? { ...item, checked: !item.checked } : item));
+  };
+
+  const bundleTotal = bundleItems.filter(i => i.checked).reduce((sum, i) => sum + i.price, 0);
+
+  const handleAddBundleToCart = () => {
+    bundleItems.filter(i => i.checked).forEach((item, idx) => {
+      if (idx === 0) {
+        onAddToCart(product, selectedCol, selectedSz, quantity, {
+          scent: selectedScent !== 'none' ? selectedScent : undefined,
+          luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
+        });
+      } else {
+        onAddToCart({
+          id: `upsell-${item.id}`,
+          nameAr: item.name,
+          nameEn: item.name,
+          priceEG: country === 'EG' ? item.price : item.price * 5,
+          priceSA: country === 'SA' ? item.price : item.price / 5,
+          category: 'accessories',
+          categoryAr: 'إضافات وهدايا',
+          descriptionAr: item.name,
+          descriptionEn: item.name,
+          fabricAr: 'عضوي فاخر',
+          fabricEn: 'Luxury Organic',
+          washInstructionsAr: 'غسيل لطيف',
+          images: [item.image],
+          rating: 5,
+          reviewsCount: 12,
+          colors: [{ name: 'Default', hex: '#000000', images: [item.image] }],
+          sizes: ['Free'],
+          stock: 100
+        }, { name: 'Default', hex: '#000000' }, 'Free', 1);
+      }
+    });
+    toast('تمت إضافة البكج الكامل إلى السلة بنجاح! 🎁', 'success');
+  };
   
   // Luxury Gallery Logic: Show color-specific images if they exist, otherwise show all product images
   const displayImages = ((selectedCol && selectedCol.images && selectedCol.images.length > 0) 
@@ -471,7 +516,7 @@ export default function ProductDetailModal({
                       <span className="font-serif italic text-lg text-[#F6E7A6]">SULTA Haute-Couture Showcase</span>
                       <div className="w-16 h-1 rounded bg-[#F4B6C2] my-3 animate-pulse" />
                       <p className="text-xs text-gray-400 max-w-xs mb-6 leading-relaxed">
-                        فيديو حركي قصير يوضح انسيابية ونعومة الدانتيل الفاخر والساتان الإيطالي على العارضة عند الحركة الطبيعية.
+                        فيديو حركي قصير يوضح انسيابية ونعومة الدانتيل الفاخر والحرير الفاخر على العارضة عند الحركة الطبيعية.
                       </p>
                     </div>
                   )}
@@ -633,7 +678,7 @@ export default function ProductDetailModal({
                     const isCotton = product.nameAr?.includes('قطن') || product.nameEn?.toLowerCase().includes('cotton') || product.fabricAr?.includes('قطن');
                     const isVelvet = product.nameAr?.includes('مخمل') || product.fabricAr?.includes('مخمل');
                     
-                    let fabricLabelAr = "ساتان حريري إيطالي معالج دقيق";
+                    let fabricLabelAr = "حرير فاخر ناعم معالج دقيق";
                     let fabricThreadInfoAr = "ألياف فائقة النعومة بسماكة خيط كوتور تبلغ 0.08dtex";
                     let fabricSourceAr = "حياكة ناعمة لطيفة 100% مع غزل حراري واقي للبشرة";
                     
@@ -1449,7 +1494,7 @@ export default function ProductDetailModal({
                       <div className="bg-pink-50/45 p-2 rounded-lg border border-pink-100/50 text-[10px]">
                         <span className="font-bold text-[#A44C5C] block mb-0.5">ℹ️ ملاءمة القولبة وقوام القصّة:</span>
                         <p className="text-gray-655 font-sans">
-                          القصة فضفاضة بمقاس كروي مريح (Couture Comfort Fit) تتدلى بنعومة مطلقة بفضل نسيج <strong className="text-[#A44C5C]">{product.fabricAr || 'الساتان الفاهر'}</strong> المعالج حرارياً. توفر حرية حركة لا مثيل لها ونفوذ هواء مثالي للبشرة الحساسة أثناء الاستلقاء والنوم.
+                          القصة فضفاضة بمقاس كروي مريح (Couture Comfort Fit) تتدلى بنعومة مطلقة بفضل نسيج <strong className="text-[#A44C5C]">{product.fabricAr || 'الحرير الفاهر'}</strong> المعالج حرارياً. توفر حرية حركة لا مثيل لها ونفوذ هواء مثالي للبشرة الحساسة أثناء الاستلقاء والنوم.
                         </p>
                       </div>
 
@@ -1501,7 +1546,7 @@ export default function ProductDetailModal({
                         onClick={() => setIsQuizMode(true)}
                         className="w-full text-center text-[10px] text-[#DF8A9C] hover:underline font-bold block cursor-pointer"
                       >
-                        ⚡ جربي حاسبة قياس الأجسام الذكية بدقة %95
+                        ⚡ دليلكِ لاختيار المقاس المعتمد والمناسب بدقة %100
                       </button>
                     </div>
                   )}
@@ -1761,15 +1806,70 @@ export default function ProductDetailModal({
             </div>
           </div>
 
+          {/* Salla Video Inspired: "كفل طلبك" Bundle Upsell with Checkboxes */}
+          <div className="bg-[#FAF9F6] border border-amber-200/60 p-3.5 rounded-2xl space-y-3 text-right font-sans my-2">
+            <div className="flex items-center justify-between border-b border-amber-200/40 pb-2">
+              <span className="text-xs font-serif font-black text-gray-900 flex items-center gap-1.5">
+                <span>🎁 كفل طلبك</span>
+                <span className="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-sans">اكتشفي ما يشتريه العُملاء مع هذا المنتج</span>
+              </span>
+              <span className="text-[10px] text-amber-900 font-bold font-mono">
+                إجمالي البكج: {bundleTotal.toLocaleString()} {currencyLabel}
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {bundleItems.map((item, idx) => (
+                <div key={item.id} className="flex items-center justify-between bg-white p-2 rounded-xl border border-gray-150 hover:border-amber-300 transition-all">
+                  <div className="flex items-center gap-2.5">
+                    <input 
+                      type="checkbox" 
+                      checked={item.checked}
+                      onChange={() => toggleBundleItem(idx)}
+                      className="accent-[#0B0B0B] w-4 h-4 rounded cursor-pointer"
+                    />
+                    <div className="w-10 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-gray-150">
+                      <SultaImage src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-gray-900 line-clamp-1">{item.name}</p>
+                      <p className="text-[10px] font-mono text-[#A44C5C] font-semibold">{item.price} {currencyLabel}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddBundleToCart}
+              className="w-full bg-[#111827] text-[#F6E7A6] hover:bg-black py-2.5 rounded-xl text-xs font-bold font-sans transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            >
+              <span>🛒 اشتريها معاً بـ {bundleTotal.toLocaleString()} {currencyLabel}</span>
+            </button>
+          </div>
+
+          {/* Salla Video Inspired: Care Instructions */}
+          <div className="bg-white border border-gray-200 p-3.5 rounded-2xl space-y-2 text-right font-sans my-2">
+            <span className="text-xs font-serif font-black text-gray-900 block border-b border-gray-100 pb-1.5">
+              🧺 تعليمات الغسيل والعناية بالقطعة:
+            </span>
+            <ul className="text-[11px] text-gray-600 space-y-1.5 list-disc list-inside font-sans">
+              <li>يغسل يدوياً أو في غسالة الملابس بدرجة حرارة باردة لطيفة.</li>
+              <li>لا تستخدم المبيضات أو مساحيق الغسيل القوية الحارقة.</li>
+              <li>يكوى بدرجة حرارة منخفضة جداً من الداخل إن لزم الأمر.</li>
+            </ul>
+          </div>
+
           {/* Section C: Ultimate Add-to-cart & Actions drawer */}
           <div className="flex flex-col gap-2 mt-auto">
             
-            {/* Visual Promotes Banner: Smart Fit Guarantee SULTA V2.0 */}
+            {/* Visual Promotes Banner: Guarantee */}
             <div className="bg-emerald-50 border border-green-200 p-2.5 rounded-xl text-right flex items-start gap-2 text-[10px] text-green-800 font-sans">
               <Shield size={14} className="text-green-600 shrink-0 mt-0.5 animate-pulse" />
               <div>
-                <strong>🛡️ ضمان الملاءمة الذكية و المقاس الذهبي:</strong>
-                <p className="mt-0.5 text-gray-600">إذا اقترحت لكِ مرآة أو حاسبة مقاسات Sulta مقاساً ولم يكن مثالياً لكِ، فالاستبدال مجاني ١٠٠% مع مندوبنا بالمنزل دون تسديد أي رسوم شحن إضافية!</p>
+                <strong>🛡️ ضمان المقاس والملاءمة التامة:</strong>
+                <p className="mt-0.5 text-gray-600">إذا لم يكن المقاس مثالياً لكِ بعد التجربة، فالاستبدال مجاني ١٠٠% مع مندوبنا بالمنزل دون تسديد أي رسوم شحن إضافية!</p>
               </div>
             </div>
 
@@ -1965,20 +2065,6 @@ ${shareUrl}`;
                 </div>
               </div>
             )}
-
-            {/* SULTA AI Mirror try-on helper link */}
-            <button
-              type="button"
-              onClick={() => {
-                localStorage.setItem('mirror_preselected_product', JSON.stringify(product));
-                onClose();
-                window.dispatchEvent(new CustomEvent('setTab', { detail: 'ai_mirror' }));
-              }}
-              className="w-full mb-3.5 bg-gradient-to-r from-amber-50 to-amber-100/50 hover:from-amber-200/50 hover:to-amber-100 text-[#A44C5C] hover:text-black border border-[#D4AF37]/50 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs"
-            >
-              <Sparkles size={13} className="text-[#DF8A9D]" />
-              <span>جربي هذا الموديل افتراضياً الآن بمرآة SULTA 🪞🪄</span>
-            </button>
 
             {/* Quick buy and WhatsApp layout buttons */}
             <div className="grid grid-cols-2 gap-2">

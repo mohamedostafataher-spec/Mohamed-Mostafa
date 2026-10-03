@@ -66,7 +66,7 @@ export default function RealPackagingPreview() {
       boxColor: '#FDF2F4',
       hex: '#FDF2F4',
       nameAr: 'العيد والعروس: وردي الحواس المخملي كوتور',
-      descAr: 'علبة متينة فخمة بلون بودرة الوردي المخملي، بشريط ساتان منسوج يدوياً ومبطنة بورق الخزامى الحريري.',
+      descAr: 'علبة متينة فخمة بلون بودرة الوردي المخملي، بشريط حريري منسوج يدوياً ومبطنة بورق الخزامى الحريري.',
       image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1200&auto=format&fit=crop'
     },
     black: {

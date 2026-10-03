@@ -38,14 +38,14 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
     {
       id: 'sulta-m2',
       title: 'عندما تكون بيجامتكِ أغلى من مستقبلي 💅',
-      description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الإيطالي صالون صولا.',
+      description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الفاخر صالون صولا.',
       imageUrl: 'https://images.unsplash.com/photo-1549046486-3a62df998e36?q=80&w=600&auto=format&fit=crop',
       category: 'meme',
       sharesCount: 228
     },
     {
       id: 'sulta-s2',
-      title: 'سحر الملمس الإيطالي الفاتن ✨',
+      title: 'سحر الملمس الحريري الفاتن ✨',
       description: 'تحذير ملكي: القطعة ناعمة جداً لدرجة تخدر الحواس فور ملامستها للبشرة.',
       imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600&auto=format&fit=crop',
       category: 'sticker',

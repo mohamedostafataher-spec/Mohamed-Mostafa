@@ -137,7 +137,7 @@ export default function AdminExperienceCenter({
       const stored = localStorage.getItem('sulta_custom_ribbons');
       return stored ? JSON.parse(stored) : [
         { id: 'champagne', nameAr: 'شريط شامبين ميتاليك فخم', hex: '#F6E7A6' },
-        { id: 'pink', nameAr: 'شريط ستان وردي كراميل ناعم', hex: '#F4B6C2' },
+        { id: 'pink', nameAr: 'شريط حرير وردي كراميل ناعم', hex: '#F4B6C2' },
         { id: 'black', nameAr: 'شريط حريري أسود فاحم دراماتيكي', hex: '#0B0B0B' }
       ];
     } catch {
@@ -444,7 +444,7 @@ export default function AdminExperienceCenter({
 
         let desc = p.descriptionAr;
         if (!desc || desc.trim().length === 0) {
-          desc = `قطعة ملكية متفردة مصممة بعناية فائقة من نسيج الحرير الطبيعي الإيطالي البارد بخصائص انسياب عالية ملائمة لصالون الاستقبالات.`;
+          desc = `قطعة ملكية متفردة مصممة بعناية فائقة من نسيج الحرير الطبيعي الفاخر البارد بخصائص انسياب عالية ملائمة لصالون الاستقبالات.`;
           modified = true;
         }
 
@@ -971,7 +971,7 @@ export default function AdminExperienceCenter({
               <div>
                 <span className="bg-amber-100 text-amber-700 text-[9px] font-bold px-3 py-1 rounded-full">🏆 مقاييس جودة المحتوى</span>
                 <h3 className="font-serif text-2xl text-gray-950 mt-2">02. نظام تقييم جودة وتكامل المنتجات (Product Quality Score)</h3>
-                <p className="text-gray-500 text-xs mt-1">حساب تلقائي لدرجة كل قطعة تلبيةً لمتطلبات العميل المترهف (الصور، مواءمة الفستان، إتاحة الألوان والمقاسات اليدوية).</p>
+                <p className="text-gray-500 text-xs mt-1">حساب تلقائي لدرجة كل قطعة تلبيةً لمتطلبات العميل المترهف (الصور، مواءمة الفحرير، إتاحة الألوان والمقاسات اليدوية).</p>
               </div>
 
               <div className="bg-[#FAF5F0] p-4 rounded-2xl flex justify-between items-center border">
@@ -1702,7 +1702,7 @@ export default function AdminExperienceCenter({
                 <span className="bg-pink-100 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">👑 الـتـغـلـيـف الـفـاخـر كـوتـور • SULTA Luxury Couture Wrapping Suite</span>
                 <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold">15. لوحة التحكم وجناح التعبئة كوتور (Couture Wrapping Control Panel)</h3>
                 <p className="text-gray-500 text-xs mt-1 leading-relaxed">
-                  تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش وأشرطة الستان التي تختارها العرائس لتزيين الصناديق الفاخرة للبيجامات وأطقم المنسوجات.
+                  تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش وأشرطة الحرير التي تختارها العرائس لتزيين الصناديق الفاخرة للبيجامات وأطقم المنسوجات.
                 </p>
               </div>
 
@@ -1720,7 +1720,7 @@ export default function AdminExperienceCenter({
                   <span className="text-gray-500 block">أشرطة حرير كوتور:</span>
                   <div className="flex justify-between items-baseline mt-2">
                     <span className="text-2xl font-serif font-bold text-gray-950">{ribbons.length} موديلات</span>
-                    <span className="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded">ستان منسوج حصرياً</span>
+                    <span className="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded">حرير منسوج حصرياً</span>
                   </div>
                 </div>
               </div>

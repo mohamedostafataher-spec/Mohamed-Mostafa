@@ -246,7 +246,7 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
           refId: p.id,
           canAutoHeal: true,
           healAction: async () => {
-            const luxeDesc = `${p.nameAr} الفاخر، صُمم خصيصاً ليمنحكِ سحر الأنوثة وفخامة الليالي الهادئة. نسيج منسوج من خيوط الحرير والساتان الطبيعي لراحتك المطلقة بلمسة دافئة وتغليف ملكي فاخر تليق بأناقتكِ الفريدة ونقوش يدوية مميزة بملمس كالحلم.`;
+            const luxeDesc = `${p.nameAr} الفاخر، صُمم خصيصاً ليمنحكِ سحر الأنوثة وفخامة الليالي الهادئة. نسيج منسوج من خيوط الحرير والحرير الطبيعي لراحتك المطلقة بلمسة دافئة وتغليف ملكي فاخر تليق بأناقتكِ الفريدة ونقوش يدوية مميزة بملمس كالحلم.`;
             setRepairLogs(prev => [...prev, `💫 [المحتوى] صياغة مراجعة نصية فخمة لمنتج (${p.nameAr})`]);
             const { error } = await supabase.from('products').update({ descriptionAr: luxeDesc }).eq('id', p.id);
             if (!error) {
@@ -273,7 +273,7 @@ const AdminSystemHealth = ({ products: initialProducts, orders: initialOrders, c
           canAutoHeal: true,
           healAction: async () => {
             const metaTitle = `${p.nameAr} الملكي | بوتيك سلطة SULTA`;
-            const metaDesc = `تسوقي ${p.nameAr} المصمم من خامات المخمل والستان الفاخر. توصيل سريع ومجاني للمملكة العربية السعودية ومصر. جودة تليق بنومك الملكي.`;
+            const metaDesc = `تسوقي ${p.nameAr} المصمم من خامات المخمل والحرير الفاخر. توصيل سريع ومجاني للمملكة العربية السعودية ومصر. جودة تليق بنومك الملكي.`;
             const keywords = `${p.nameAr}, بجايم حرير, ملابس نوم, لانجري, بوتيك سلطة, ملابس نوم نسائية`;
             
             const updatedSeo = {
@@ -2336,13 +2336,13 @@ export default function Dashboard({
       nameEn: newProdNameEn,
       sku: generatedCode,
       category: newProdCategory,
-      categoryAr: categories.find(c => (c.slug === newProdCategory || c.id === newProdCategory))?.nameAr || (newProdCategory === 'satin' ? 'ساتان ملكي حريري' : newProdCategory === 'cotton' ? 'بيجامات قطن طبيعي' : newProdCategory === 'loungewear' ? 'لانج وير كوتور' : newProdCategory === 'dresses' ? 'فساتين نوم' : 'المجموعة الجديدة والتريند الأكثر مبيعاً بمصر والسعودية'),
+      categoryAr: categories.find(c => (c.slug === newProdCategory || c.id === newProdCategory))?.nameAr || (newProdCategory === 'satin' ? 'حرير ملكي فاخر' : newProdCategory === 'cotton' ? 'بيجامات قطن طبيعي' : newProdCategory === 'loungewear' ? 'لانج وير كوتور' : newProdCategory === 'dresses' ? 'فساتين نوم' : 'المجموعة الجديدة والتريند الأكثر مبيعاً بمصر والسعودية'),
       priceEG: newProdPriceEG,
       priceSA: newProdPriceSA,
       descriptionAr: newProdDescAr || 'قطعة حصرية فاخرة تمت حياكتها بعناية بمقاييس الجودة في معامل Sulta العالمية لتقديم أقصى درجات الفخامة لكي في منزلك.',
       descriptionEn: 'Luxury couture sleepwear meticulously tailored to provide comforting relaxation and sophisticated allure.',
-      fabricAr: 'ساتان إيطالي ناعم وحريري مخملي',
-      fabricEn: 'Silky Fine Italian Thread blend',
+      fabricAr: 'حرير فاخر ناعم مخملي',
+      fabricEn: 'Silky Fine Thread blend',
       washInstructionsAr: 'غسيل يدوي أو غسيل جاف فقط، لا تستخدمي المبيضات لتألق يدوم طويلاً.',
       images: finalImages,
       video: newProdVideo.trim() || undefined,
@@ -3505,10 +3505,9 @@ export default function Dashboard({
                           {cat.nameAr || cat.nameEn}
                         </option>
                       ))}
-                      <option value="satin">بيجامات ساتان</option>
+                      <option value="satin">بيجامات حرير</option>
                       <option value="cotton">بيجامات قطن</option>
                       <option value="loungewear">لانج وير</option>
-                      <option value="dresses">فساتين نوم</option>
                       <option value="new">المجموعة الجديدة والتريند الأكثر مبيعاً</option>
                     </select>
                   </div>
@@ -5134,7 +5133,7 @@ export default function Dashboard({
                           className="px-2.5 py-1.5 border border-gray-205 rounded-xl text-xs font-sans focus:outline-none bg-white cursor-pointer"
                         >
                           <option value="all">كل الأقسام</option>
-                          <option value="satin">ساتان</option>
+                          <option value="satin">حرير</option>
                           <option value="cotton">قطن</option>
                           <option value="loungewear">لانج وير</option>
                           <option value="dresses">فساتين</option>
