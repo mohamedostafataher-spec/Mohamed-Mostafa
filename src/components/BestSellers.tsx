@@ -65,7 +65,7 @@ export default function BestSellers({
 
               {/* Image Frame */}
               <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-white mb-4">
-                <SultaImage src={imgToUse} alt={prod.nameAr} className="w-full h-full" imgClassName="object-contain object-center group-hover:scale-105 transition-transform duration-700" />
+                <SultaImage src={imgToUse} alt={prod.nameAr} className="w-full h-full" imgClassName="object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-700" />
                 
                 {/* Save to Favorites toggle */}
                 <button

@@ -91,10 +91,10 @@ export default function Header({
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' ? (item.product?.priceEG || 0) : (item.product?.priceSA || 0);
+    const itemPrice = item.product?.priceSA || 0;
     return sum + (itemPrice * item.quantity);
   }, 0);
-  const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
+  const currencyLabel = 'ر.س';
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,11 +113,9 @@ export default function Header({
     { id: 'offers', label: 'العروض 🏷️' }
   ];
 
-  const activeWhatsApp = country === 'SA' 
-    ? (settings?.whatsappSaudi || '966596894393')
-    : (settings?.whatsapp || '201110095403');
+  const activeWhatsApp = settings?.whatsappSaudi || '966596894393';
   const activeWhatsAppClean = activeWhatsApp.replace(/\D/g, '');
-  const activeWhatsAppDisplay = country === 'SA' ? '0596894393' : '+20 111 009 5403';
+  const activeWhatsAppDisplay = '0596894393';
 
   return (
     <header className="sticky top-0 z-50 bg-white font-sans transition-all duration-200" dir="rtl">
@@ -129,10 +127,10 @@ export default function Header({
           <div className="flex items-center gap-1.5 text-gray-700 font-medium truncate">
             <Truck size={13} className="text-black shrink-0" />
             <span className="hidden sm:inline">
-              شحن مجاني لكافة طلبات {country === 'SA' ? 'المملكة العربية السعودية فوق 800 ريال 🇸🇦' : 'محافظات مصر فوق 1500 ج.م 🇪🇬'} | كود الخصم: <strong className="font-mono text-black">SULTA20</strong>
+              شحن سريع ومجاني لكافة مدن ومناطق المملكة العربية السعودية للطلبات فوق 800 ريال 🇸🇦 | كود الخصم: <strong className="font-mono text-black">SULTA20</strong>
             </span>
             <span className="sm:hidden font-semibold truncate text-[9px]">
-              شحن مجاني فوق {country === 'SA' ? '800 ر.س' : '1500 ج.م'} • كود: <strong className="text-black">SULTA20</strong>
+              شحن مجاني فوق 800 ر.س لكافة مدن المملكة • كود: <strong className="text-black">SULTA20</strong>
             </span>
           </div>
 
@@ -149,7 +147,7 @@ export default function Header({
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Desktop WhatsApp Link */}
             <a
-              href={`https://wa.me/${activeWhatsAppClean}?text=${encodeURIComponent('مرحباً SULTA، أحتاج للمساعدة بخصوص الطلب 🌸')}`}
+              href={`https://wa.me/${activeWhatsAppClean}?text=${encodeURIComponent('مرحباً SULTA، أحتاج للمساعدة بخصوص الطلب بالمملكة 🌸')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden lg:inline-flex items-center gap-1.5 text-black hover:text-black font-bold bg-gray-100 hover:bg-gray-200 border border-gray-300 px-2.5 py-0.5 rounded-full transition-all text-[10.5px]"
@@ -189,23 +187,9 @@ export default function Header({
             </a>
 
             {/* Country and Currency Switcher */}
-            <div className="flex items-center bg-white border border-gray-200 rounded-lg p-0.5 shadow-2xs">
-              <button
-                onClick={() => setCountry('SA')}
-                className={`px-2 py-0.5 rounded text-[9.5px] sm:text-[10px] font-bold transition-all cursor-pointer ${
-                  country === 'SA' ? 'bg-[#111827] text-white shadow-2xs' : 'text-gray-600 hover:text-black'
-                }`}
-              >
-                🇸🇦 ر.س
-              </button>
-              <button
-                onClick={() => setCountry('EG')}
-                className={`px-2 py-0.5 rounded text-[9.5px] sm:text-[10px] font-bold transition-all cursor-pointer ${
-                  country === 'EG' ? 'bg-[#111827] text-white shadow-2xs' : 'text-gray-600 hover:text-black'
-                }`}
-              >
-                🇪🇬 ج.م
-              </button>
+            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-2 py-0.5 shadow-2xs text-[9.5px] sm:text-[10px] font-bold text-gray-900">
+              <span>🇸🇦</span>
+              <span>ر.س</span>
             </div>
           </div>
 
@@ -287,7 +271,7 @@ export default function Header({
                 </div>
                 <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
                   {suggestions.map((p) => {
-                    const priceVal = country === 'EG' ? p.priceEG : p.priceSA;
+                    const priceVal = p.priceSA;
                     return (
                       <div
                         key={p.id}

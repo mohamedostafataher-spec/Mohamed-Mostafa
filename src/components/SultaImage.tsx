@@ -6,13 +6,13 @@ interface SultaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   imgClassName?: string;
 }
 
-const DEFAULT_FALLBACK = '/img/sulta_default_1_1781140865386.png';
+const DEFAULT_FALLBACK = '/img/sulta_product_1.png';
 
 export default function SultaImage({ 
   src, 
   alt, 
   className = '', 
-  imgClassName = 'object-contain',
+  imgClassName = 'object-cover object-center',
   fallbackSrc = DEFAULT_FALLBACK,
   ...props 
 }: SultaImageProps) {
@@ -39,7 +39,7 @@ export default function SultaImage({
       setCurrentSrc(fallbackSrc);
       setErrorCount(1);
     } else if (errorCount < 2) {
-      setCurrentSrc(DEFAULT_FALLBACK);
+      setCurrentSrc('/img/sulta_product_2.png');
       setErrorCount(2);
     }
   };
@@ -49,11 +49,11 @@ export default function SultaImage({
   };
 
   return (
-    <div className={`relative overflow-hidden bg-white ${className} flex items-center justify-center`}>
+    <div className={`relative overflow-hidden bg-gray-50 ${className}`}>
       {/* Loading Skeleton */}
       {!isLoaded && (
         <div className="absolute inset-0 z-0 bg-gray-100 animate-pulse flex items-center justify-center">
-          <div className="w-10 h-10 border-2 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin opacity-30" />
+          <div className="w-8 h-8 border-2 border-gray-200 border-t-black rounded-full animate-spin opacity-30" />
         </div>
       )}
 
@@ -62,7 +62,7 @@ export default function SultaImage({
         ref={imgRef}
         src={currentSrc}
         alt={alt || "SULTA Product"}
-        className={`w-full h-full block ${imgClassName} relative z-10 transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full block ${imgClassName} relative z-10 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onError={handleError}
         onLoad={handleLoad}
         loading="eager"

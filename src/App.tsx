@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe, Search, Truck, RefreshCw, Tag } from 'lucide-react';
 import { ToastProvider, useToast } from './components/Toast';
 import Header from './components/Header';
-import Hero from './components/Hero';
 import Features from './components/Features';
 import StoreView from './components/StoreView';
 import ProductDetailModal from './components/ProductDetailModal';
@@ -150,35 +149,18 @@ function AppContent() {
         }
       }
 
-      // Tier 3: Timezone check (Default fallback strategy)
-      if (!detected) {
-        try {
-          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-          if (tz === 'Africa/Cairo' || tz.includes('Cairo') || tz.includes('Egypt')) {
-            detected = 'EG';
-          } else if (tz.includes('Riyadh') || tz.includes('Saudi') || tz.includes('Asia/Qatar') || tz.includes('Asia/Kuwait') || tz.includes('Asia/Bahrain') || tz.includes('Asia/Muscat') || tz.includes('Asia/Aden')) {
-            detected = 'SA';
-          } else {
-            detected = 'EG'; // Default fallback
-          }
-        } catch {
-          detected = 'EG';
-        }
-      }
+      // Brand is strictly Saudi Arabia
+      detected = 'SA';
 
-      // Apply detected localization setting
-      if (detected && detected !== country) {
-        setCountry(detected);
+      if (country !== 'SA') {
+        setCountry('SA');
       }
 
       // Beautiful Luxe notification to make sure the customer feels welcomed and in control
       const sessionAlerted = sessionStorage.getItem('sulta_country_alerted');
-      if (!sessionAlerted && detected) {
+      if (!sessionAlerted) {
         sessionStorage.setItem('sulta_country_alerted', 'true');
-        const flag = detected === 'SA' ? '🇸🇦' : '🇪🇬';
-        const welcomeMessage = detected === 'SA' 
-          ? `أهلاً بكِ في سولا! تم تحديد موقعك الجغرافي وتجربة السفر وتخصيص المتجر تلقائياً للمملكة العربية السعودية ${flag} (ريال سعودي SAR).`
-          : `أهلاً بكِ في سولا! تم تحديد موقعك الجغرافي وتخصيص تجربة المتجر تلقائياً لجمهورية مصر العربية ${flag} (جنيه مصري EGP).`;
+        const welcomeMessage = `أهلاً بكِ في سُـلـطَـة 🇸🇦 متجر أزياء النوم والبيجامات الحريرية الفاخرة بالمملكة العربية السعودية.`;
         
         setTimeout(() => {
           toast(welcomeMessage, 'success');
@@ -811,52 +793,16 @@ function AppContent() {
         {currentTab === 'home' && (
           <div className="space-y-0">
             
-            {/* 1. SALLA HERO PROMOTIONS CAROUSEL */}
-            <Hero
-              settings={settings}
-              homepageSections={homepageSections}
-              onExplore={() => setTab('store')}
-              onDiscoverNew={() => {
-                setTab('offers');
-              }}
-            />
-
-            {/* 2. FAST HORIZONTAL SALLA CATEGORY CHIPS RAIL */}
-            <div className="bg-white border-b border-gray-200/80 sticky top-[95px] sm:top-[112px] z-30 py-2 sm:py-2.5 px-3 sm:px-6 shadow-2xs">
-              <div className="max-w-7xl mx-auto flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth">
-                {[
-                  { id: 'all', label: 'الكل 👑', action: () => setTab('store') },
-                  { id: 'offers', label: 'العروض والتخفيضات 🏷️', action: () => setTab('offers'), isHot: true },
-                  { id: 'pajamas', label: 'بيجامات النوم 🎀', action: () => { setTab('store'); handleSearchQueryChange('بيجاما'); } },
-                  
-                  
-                  { id: 'best-sellers', label: 'الأكثر طلباً 🔥', action: () => setTab('best-sellers') },
-                ].map((chip) => (
-                  <button
-                    key={chip.id}
-                    onClick={chip.action}
-                    className={`shrink-0 px-3 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer border select-none ${
-                      chip.isHot 
-                        ? 'bg-black text-white border-black shadow-2xs hover:bg-gray-800' 
-                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:text-black hover:border-gray-300'
-                    }`}
-                  >
-                    <span>{chip.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. DYNAMIC HOMEPAGE PRODUCT SECTIONS (ONLY 2 CLEAN DISTINCT LISTS - NO REPETITION) */}
+            {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}
             {[
               { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
               { title: 'وصل حديثاً من تشكيلة البيجامات الملكية ✨', label: 'أحدث تصاميم أزياء النوم والحرير الفاخر', data: newArrivals },
             ].map((section, sectionIdx) => (
               <React.Fragment key={section.title}>
-                <section className={`py-8 sm:py-12 ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
+                <section className={`${sectionIdx === 0 ? 'pt-3 sm:pt-5 pb-8 sm:pb-12' : 'py-8 sm:py-12'} ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     
-                    <div className="flex items-center justify-between mb-5 sm:mb-8 pb-2 sm:pb-3 border-b border-gray-200/80">
+                    <div className="flex items-center justify-between mb-3 sm:mb-5 pb-2 border-b border-gray-200/80">
                       <div className="text-right">
                         <h3 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight">
                           {section.title}
@@ -876,19 +822,19 @@ function AppContent() {
 
                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
                       {section.data.length > 0 ? section.data.slice(0, 8).map((prod) => {
-                        const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
-                        const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
+                        const priceVal = prod.priceSA;
+                        const currencyLabel = 'ر.س';
                         const isFav = favorites.includes(prod.id);
 
                         return (
                           <div
                             key={prod.id}
-                            className="group flex flex-col h-full bg-white rounded-2xl p-2 sm:p-3 overflow-hidden border border-gray-150 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer justify-between"
+                            className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer justify-between"
                             onClick={() => handleSelectProduct(prod)}
                           >
                             <div>
-                              {/* Top Photo Frame */}
-                              <div className="relative aspect-[3/4] overflow-hidden bg-white rounded-xl mb-2 sm:mb-2.5 flex items-center justify-center">
+                              {/* Top Photo Frame - Full Bleed 3:4 */}
+                              <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100 rounded-t-2xl">
                                 {/* Badges */}
                                 <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                                   {prod.isBestSeller && (
@@ -907,7 +853,7 @@ function AppContent() {
                                 <div className="absolute top-2 right-2 z-10">
                                   <button 
                                     onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                                    className="w-7 h-7 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-500 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-500 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
                                     title="إضافة للمفضلة"
                                   >
                                     <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
@@ -917,17 +863,17 @@ function AppContent() {
                                 <SultaImage
                                   src={cleanImgUrl(prod.images?.[0] || '', prod.category)}
                                   alt={prod.nameAr || prod.nameEn}
-                                  className="w-full h-full"
-                                  imgClassName="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-700"
+                                  className="absolute inset-0 w-full h-full"
+                                  imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                 />
                               </div>
 
                               {/* Text details bottom */}
-                              <div className="space-y-1 text-right">
+                              <div className="p-2.5 sm:p-3 space-y-1 text-right">
                                 <span className="text-[10px] text-gray-400 font-medium block">
                                   {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
                                 </span>
-                                <h4 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-[#A44C5C] transition-colors">
+                                <h4 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-black transition-colors">
                                   {prod.nameAr || prod.nameEn}
                                 </h4>
                                 
@@ -946,8 +892,8 @@ function AppContent() {
                             </div>
 
                             {/* Price & Add to Cart button */}
-                            <div className="pt-2 mt-2 border-t border-gray-100 space-y-2">
-                              <div className="flex items-baseline justify-between">
+                            <div className="p-2.5 sm:p-3 pt-0 space-y-2 mt-auto">
+                              <div className="flex items-baseline justify-between border-t border-gray-100 pt-2">
                                 <span className="font-extrabold text-sm sm:text-base text-gray-950 font-mono" dir="ltr">
                                   {priceVal.toLocaleString()} {currencyLabel}
                                 </span>
@@ -962,7 +908,7 @@ function AppContent() {
                                   const chosenSz = prod.sizes?.[0] || 'S';
                                   handleAddToCart(prod, chosenCol, chosenSz, 1);
                                 }}
-                                className="w-full py-2 px-2.5 rounded-xl bg-[#111827] hover:bg-[#A44C5C] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-98 cursor-pointer"
+                                className="w-full py-2 px-2.5 rounded-xl bg-[#111827] hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-98 cursor-pointer"
                               >
                                 <ShoppingBag size={13} />
                                 <span>أضف للسلة</span>
@@ -1058,7 +1004,7 @@ function AppContent() {
                   </div>
                   <div className="text-right">
                     <span className="block font-bold text-gray-950 text-xs sm:text-sm">شحن سريع ومجاني</span>
-                    <span className="text-[10px] sm:text-[11px] text-gray-500">فوق {country === 'SA' ? '800 ر.س 🇸🇦' : '1500 ج.م 🇪🇬'}</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">لكافة مدن ومناطق المملكة للطلبات فوق 800 ر.س 🇸🇦</span>
                   </div>
                 </div>
 
@@ -1430,7 +1376,7 @@ function AppContent() {
               سُـلـطَـة · أزياء النوم الفاخرة
             </span>
             <p className="text-gray-500 text-xs leading-relaxed max-w-xs pt-1">
-              متجر سعودي متكامل مصمم لتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ومصر بأعلى معايير الجودة والفخامة.
+              علامة سعودية فاخرة رائدة في تصميم وتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ودول الخليج العربي بأعلى معايير الجودة والأناقة.
             </p>
             <div className="pt-2">
               <SocialLinksView settings={settings} className="flex gap-2 pt-2 justify-start" />
@@ -1489,27 +1435,11 @@ function AppContent() {
                 <div className="flex items-center gap-2">
                   <span className="text-base">🇸🇦</span>
                   <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-[11px]">واتساب خدمة عملاء السعودية</span>
-                    <span className="text-[10px] text-gray-500">متاح للمساعدة الفورية والطلبات</span>
+                    <span className="block font-bold text-gray-950 text-[11px]">خدمة العملاء والواتساب - السعودية</span>
+                    <span className="text-[10px] text-gray-500">متاح للمساعدة الفورية وتأكيد الطلبات</span>
                   </div>
                 </div>
                 <span className="font-mono text-gray-900 font-black text-xs" dir="ltr">0596894393</span>
-              </a>
-
-              <a 
-                href="https://wa.me/201110095403?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D9%85%D8%B5%D8%B1" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors group shadow-2xs"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-base">🇪🇬</span>
-                  <div className="text-right">
-                    <span className="block font-bold text-gray-900 text-[11px]">واتساب خدمة عملاء مصر</span>
-                    <span className="text-[10px] text-gray-500">للاستفسارات ومتابعة الشحنات</span>
-                  </div>
-                </div>
-                <span className="font-mono text-gray-800 font-bold text-xs" dir="ltr">+20 111 009 5403</span>
               </a>
             </div>
 
@@ -1633,30 +1563,25 @@ function AppContent() {
             {/* Quick Country switcher & WhatsApp in Mobile menu list */}
             <div className="border-t border-gray-100 pt-4 mt-4 space-y-3">
               <a
-                href={country === 'SA' ? "https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8" : "https://wa.me/201110095403?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8"}
+                href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%B7%D9%84%D8%A8%D8%A7%D8%AA"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-[#111827] text-white py-2.5 px-3.5 rounded-xl font-sans font-bold text-xs flex items-center justify-between shadow-sm hover:bg-black transition-all border border-gray-700"
               >
                 <span className="flex items-center gap-1.5">
                   <span className="text-sm">💬</span>
-                  <span>واتساب خدمة العملاء ({country === 'SA' ? 'السعودية 🇸🇦' : 'مصر 🇪🇬'})</span>
+                  <span>واتساب خدمة العملاء (المملكة العربية السعودية 🇸🇦)</span>
                 </span>
                 <span className="font-mono text-[11px] bg-white/20 px-2 py-0.5 rounded-full" dir="ltr">
-                  {country === 'SA' ? '0596894393' : '+201110095403'}
+                  0596894393
                 </span>
               </a>
 
               <div className="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border border-gray-100">
                 <span className="text-[11px] font-bold text-gray-500">الوجهة والعملة:</span>
-                <button
-                  onClick={() => {
-                    setCountry(country === 'SA' ? 'EG' : 'SA');
-                  }}
-                  className="bg-white border border-gray-250 shadow-2xs text-[10.5px] px-2.5 py-1 rounded-full font-bold text-[#0B0B0B] hover:border-black transition-colors cursor-pointer"
-                >
-                  {country === 'SA' ? '🇸🇦 SAR (السعودية)' : '🇪🇬 EGP (مصر)'}
-                </button>
+                <span className="bg-white border border-gray-250 shadow-2xs text-[10.5px] px-2.5 py-1 rounded-full font-bold text-[#0B0B0B]">
+                  🇸🇦 SAR (المملكة العربية السعودية)
+                </span>
               </div>
 
               {/* Bottom footer text inside drawer */}
@@ -1755,7 +1680,7 @@ function AppContent() {
                             <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-gray-400 font-sans">
                               <span>{p.categoryAr}</span>
                               <span>•</span>
-                              <span className="text-black font-semibold">{country === 'EG' ? p.priceEG : p.priceSA} {country === 'EG' ? 'EGP' : 'SAR'}</span>
+                              <span className="text-black font-semibold font-mono">{p.priceSA} ر.س</span>
                             </div>
                           </div>
                         </div>

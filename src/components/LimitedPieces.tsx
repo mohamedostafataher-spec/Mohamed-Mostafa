@@ -81,7 +81,7 @@ export default function LimitedPieces({
                     src={imgToUse}
                     alt={prod.nameAr}
                     className="w-full h-full"
-                    imgClassName="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-[1000ms]"
+                    imgClassName="w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-[1000ms]"
                   />
                 </div>
 

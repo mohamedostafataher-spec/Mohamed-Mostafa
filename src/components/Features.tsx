@@ -1,7 +1,6 @@
 import React from 'react';
-import { Truck, ShieldCheck, RefreshCw, Globe, Sparkles, HeartHandshake, Heart } from 'lucide-react';
+import { Truck, ShieldCheck, RefreshCw, Globe, Sparkles, HeartHandshake } from 'lucide-react';
 import RibbonBowDivider from './RibbonBowDivider';
-import { cleanImgUrl } from '../services/db';
 
 interface FeaturesProps {
   homepageSections?: any[];
@@ -53,15 +52,8 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
       icon: defaultQualities[idx % defaultQualities.length].icon
     }));
 
-  const unboxing = dynamicContent?.unboxing || {
-    title: 'فخامة بيجامات سُلْطَة النسائية',
-    description: 'تجمع مجموعاتنا بين أرقى خامات الحرير الفاخر والتصاميم العصرية لتمنحكِ الراحة والجمال في كل لحظة. اكتشفي التميز في كل قطعة مصممة خصيصاً للمرأة التي تبحث عن الفخامة.',
-    bullet1: 'أقمشة باردة ناعمة تداعب بشرتكِ',
-    bullet2: 'تصاميم ملكية تجمع بين الأنوثة والرقي'
-  };
-
   return (
-    <section className="bg-white py-16 border-y border-gray-150 font-sans">
+    <section className="bg-white py-12 sm:py-16 border-y border-gray-150 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* GUARANTEES / BENEFITS GRID */}
@@ -90,63 +82,6 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
               </p>
             </div>
           ))}
-        </div>
-
-        {/* LUXURY UNBOXING SHOWCASE */}
-        <div className="mt-20 bg-white rounded-[40px] p-8 md:p-12 border border-gray-200 shadow-xl overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gray-100/50 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 text-right order-2 md:order-1">
-              <span className="text-[10px] text-gray-900 font-semibold tracking-[0.3em] uppercase block font-sans">
-                ✦ SULTA LUXURY COLLECTIONS ✦
-              </span>
-              <h3 className="font-serif text-3xl md:text-5xl text-[#0B0B0B] font-light leading-tight">
-                {unboxing.title}
-              </h3>
-              <p className="text-gray-500 text-sm md:text-base leading-relaxed font-serif">
-                {unboxing.description}
-              </p>
-              <ul className="space-y-4 pt-4">
-                <li className="flex items-center gap-3 justify-end text-[#0B0B0B] text-sm font-medium">
-                  <span>{unboxing.bullet1}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-black" />
-                </li>
-                <li className="flex items-center gap-3 justify-end text-[#0B0B0B] text-sm font-medium">
-                  <span>{unboxing.bullet2}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-black" />
-                </li>
-              </ul>
-            </div>
-            <div className="relative order-1 md:order-2">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-gray-200">
-                  <img 
-                    src={cleanImgUrl('fallback', 'loungewear')}
-                    alt="Sulta Brand Artwork" 
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      e.currentTarget.src = cleanImgUrl('fallback', 'sleepwear');
-                    }}
-                  />
-                </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-gray-200">
-                  <img 
-                    src={cleanImgUrl('fallback', 'sleepwear')}
-                    alt="Sulta Premium Lifestyle Art" 
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      e.currentTarget.src = cleanImgUrl('fallback', 'sleepwear');
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                <span className="text-white text-base font-serif">👑</span>
-              </div>
-            </div>
-          </div>
         </div>
 
       </div>

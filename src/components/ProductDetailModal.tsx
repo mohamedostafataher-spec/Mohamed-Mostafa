@@ -878,7 +878,7 @@ export default function ProductDetailModal({
                        <SultaImage
                          src={displayImages[activeImageIdx]}
                          alt={product.nameAr}
-                         imgClassName="w-full h-full object-contain object-center"
+                         imgClassName="w-full h-full object-cover object-center"
                          className="w-full h-full"
                        />
                     )}
@@ -1224,33 +1224,33 @@ export default function ProductDetailModal({
             <div className="flex border-b border-gray-200 pb-2 mb-2.5 overflow-x-auto text-[11px] no-scrollbar select-none gap-2 justify-start">
               <button
                 onClick={() => setActiveTab('desc')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'desc' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
+                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'desc' ? 'border-b-2 border-black text-[#0B0B0B] font-bold' : 'text-gray-400'}`}
               >
-                الوصف والخامة
+                الوصف
               </button>
               <button
                 onClick={() => setActiveTab('wash')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'wash' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
+                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'wash' ? 'border-b-2 border-black text-[#0B0B0B] font-bold' : 'text-gray-400'}`}
               >
                 طريقة الغسيل
               </button>
 
               <button
                 onClick={() => setActiveTab('size')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'size' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
+                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'size' ? 'border-b-2 border-black text-[#0B0B0B] font-bold' : 'text-gray-400'}`}
               >
                 دليل القياس
               </button>
 
               <button
                 onClick={() => setActiveTab('reviews')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'reviews' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
+                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'reviews' ? 'border-b-2 border-black text-[#0B0B0B] font-bold' : 'text-gray-400'}`}
               >
                 آراء وصور الزبائن 📸
               </button>
               <button
                 onClick={() => setActiveTab('questions')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'questions' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
+                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'questions' ? 'border-b-2 border-black text-[#0B0B0B] font-bold' : 'text-gray-400'}`}
               >
                 منتدى الأسئلة 💬
               </button>
@@ -1259,15 +1259,12 @@ export default function ProductDetailModal({
             <div className="text-[11px] leading-relaxed text-gray-600 font-sans min-h-[4.2rem]">
               {activeTab === 'desc' && (
                 <div>
-                  <p className="mb-1.5">{product.descriptionAr}</p>
-                  <div className="text-gray-500 italic bg-white p-2 rounded-lg border border-gray-100 font-serif">
-                    <strong>الخامة الدقيقة:</strong> {product.fabricAr}
-                  </div>
+                  <p className="leading-relaxed">{product.descriptionAr}</p>
                 </div>
               )}
               {activeTab === 'wash' && (
-                <div className="flex gap-2 items-start bg-white p-2.5 rounded-lg border border-gray-100">
-                  <Info size={13} className="text-[#F4B6C2] shrink-0 mt-0.5" />
+                <div className="flex gap-2 items-start bg-white p-2.5 rounded-lg border border-gray-150">
+                  <Info size={13} className="text-black shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-gray-800 mb-0.5">إرشادات الحفاظ على القطعة الملكية:</p>
                     <p>{product.washInstructionsAr}</p>
@@ -1473,10 +1470,10 @@ export default function ProductDetailModal({
                       </div>
 
                       {/* 2. Fit Information */}
-                      <div className="bg-pink-50/45 p-2 rounded-lg border border-pink-100/50 text-[10px]">
-                        <span className="font-bold text-[#A44C5C] block mb-0.5">ℹ️ ملاءمة القولبة وقوام القصّة:</span>
-                        <p className="text-gray-655 font-sans">
-                          القصة فضفاضة بمقاس كروي مريح (Couture Comfort Fit) تتدلى بنعومة مطلقة بفضل نسيج <strong className="text-[#A44C5C]">{product.fabricAr || 'الحرير الفاهر'}</strong> المعالج حرارياً. توفر حرية حركة لا مثيل لها ونفوذ هواء مثالي للبشرة الحساسة أثناء الاستلقاء والنوم.
+                      <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200 text-[10px]">
+                        <span className="font-bold text-gray-900 block mb-0.5">ℹ️ ملاءمة القولبة وقوام القصّة:</span>
+                        <p className="text-gray-600 font-sans leading-relaxed">
+                          القصة فضفاضة بمقاس كروي مريح (Couture Comfort Fit) تتدلى بنعومة فائقة. توفر حرية حركة لا مثيل لها ونفوذ هواء مثالي للبشرة الحساسة أثناء الاستلقاء والنوم.
                         </p>
                       </div>
 

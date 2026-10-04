@@ -424,20 +424,20 @@ export default function StoreView({
               return (
                 <div
                   key={product.id}
-                  className="bg-white rounded-2xl border border-gray-150 hover:border-gray-300 p-2 sm:p-3 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative cursor-pointer"
+                  className="bg-white rounded-2xl border border-gray-200 hover:border-gray-300 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative cursor-pointer"
                   onClick={() => onSelectProduct(product)}
                 >
                   
-                  {/* Top Image Frame (3:4 aspect ratio) */}
+                  {/* Top Image Frame (3:4 aspect ratio full bleed) */}
                   <div>
-                    <div className="relative bg-[#F8F9FA] rounded-xl overflow-hidden aspect-[3/4] flex items-center justify-center">
+                    <div className="relative bg-gray-100 w-full overflow-hidden aspect-[3/4] flex items-center justify-center">
                       
                       {/* Sulta Image with Smooth Hover Zoom */}
                       <SultaImage 
                         src={currentImg} 
                         alt={product.nameAr || product.nameEn} 
                         className="w-full h-full"
-                        imgClassName="transition-transform duration-700 group-hover:scale-105 object-contain"
+                        imgClassName="w-full h-full object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
                       />
 
                       {/* Top Right: Wishlist Heart Floating Button */}
@@ -509,7 +509,7 @@ export default function StoreView({
                     </div>
 
                     {/* Card Content Details */}
-                    <div className="pt-2 sm:pt-2.5 pb-1 text-right space-y-1">
+                    <div className="p-2.5 sm:p-3 pb-1 text-right space-y-1">
                       
                       {/* Category Label */}
                       <span className="text-[9.5px] sm:text-[10px] text-gray-400 font-medium block truncate">
@@ -561,7 +561,7 @@ export default function StoreView({
                   </div>
 
                   {/* Bottom: Price Row & Salla Full-Width Add To Cart Button */}
-                  <div className="pt-2 border-t border-gray-100 space-y-2">
+                  <div className="p-2.5 sm:p-3 pt-0 border-t border-gray-100 space-y-2 mt-auto">
                     
                     {/* Price and VAT inclusion */}
                     <div className="flex items-baseline justify-between">
@@ -789,12 +789,12 @@ export default function StoreView({
                   className="bg-white rounded-xl border border-gray-200 p-2.5 flex flex-col gap-1.5 cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => onSelectProduct(item)}
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-white">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100">
                     <SultaImage 
                       src={item.images?.[0]} 
                       alt={item.nameAr} 
                       className="w-full h-full group-hover:scale-105"
-                      imgClassName="object-contain"
+                      imgClassName="w-full h-full object-cover object-center"
                     />
                   </div>
                   <h4 className="text-xs font-bold text-gray-900 truncate text-right">{item.nameAr}</h4>
