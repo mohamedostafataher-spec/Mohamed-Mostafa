@@ -47,6 +47,8 @@ export default function CartDrawer({
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
   const totalAmount = subtotal - discountAmount;
 
+  const freeShippingThreshold = country === 'SA' ? 800 : 1500;
+
   // Coupon handle
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +97,7 @@ export default function CartDrawer({
           {/* Salla Free Shipping Progress Bar */}
           {cart.length > 0 && (
             <div className="bg-emerald-50/60 border-b border-emerald-100 px-6 py-2.5">
-              {subtotal >= (country === 'SA' ? 299 : 1500) ? (
+              {subtotal >= freeShippingThreshold ? (
                 <div className="flex items-center gap-2 text-emerald-800 text-xs font-bold">
                   <Check size={14} className="stroke-[3] text-emerald-600" />
                   <span>مبروك! لقد حصلتِ على شحن مجاني لكامل الطلب 🚚</span>
@@ -103,13 +105,13 @@ export default function CartDrawer({
               ) : (
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs font-semibold text-emerald-900">
-                    <span>أضيفي بقيمة <strong className="text-emerald-700 font-mono">{(country === 'SA' ? 299 : 1500) - subtotal} {currencyLabel}</strong> للحصول على شحن مجاني!</span>
+                    <span>أضيفي بقيمة <strong className="text-emerald-700 font-mono">{freeShippingThreshold - subtotal} {currencyLabel}</strong> للحصول على شحن مجاني!</span>
                     <Truck size={14} className="text-emerald-600 shrink-0" />
                   </div>
                   <div className="w-full bg-emerald-200/50 rounded-full h-1.5 overflow-hidden">
                     <div 
                       className="bg-emerald-600 h-full rounded-full transition-all duration-500" 
-                      style={{ width: `${Math.min(100, (subtotal / (country === 'SA' ? 299 : 1500)) * 100)}%` }} 
+                      style={{ width: `${Math.min(100, (subtotal / freeShippingThreshold) * 100)}%` }} 
                     />
                   </div>
                 </div>

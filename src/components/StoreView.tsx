@@ -441,7 +441,7 @@ export default function StoreView({
                         src={currentImg} 
                         alt={product.nameAr || product.nameEn} 
                         className="w-full h-full"
-                        imgClassName="transition-transform duration-700 group-hover:scale-105 object-cover"
+                        imgClassName="transition-transform duration-700 group-hover:scale-105 object-contain"
                       />
 
                       {/* Top Right: Wishlist Heart Floating Button */}
@@ -793,12 +793,12 @@ export default function StoreView({
                   className="bg-white rounded-xl border border-gray-200 p-2.5 flex flex-col gap-1.5 cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => onSelectProduct(item)}
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-50">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-white">
                     <SultaImage 
                       src={item.images?.[0]} 
                       alt={item.nameAr} 
                       className="w-full h-full group-hover:scale-105"
-                      imgClassName="object-cover"
+                      imgClassName="object-contain"
                     />
                   </div>
                   <h4 className="text-xs font-bold text-gray-900 truncate text-right">{item.nameAr}</h4>

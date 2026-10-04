@@ -770,7 +770,7 @@ export const dbService = {
           { regionAr: 'شحن موحد لجميع مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Flat Shipping Rate', fee: 50 }
         ],
         defaultShippingFee: 45,
-        instagram: '',
+        instagram: 'https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==',
         facebook: '',
         tiktok: ''
       };

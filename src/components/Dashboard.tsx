@@ -1510,7 +1510,7 @@ export default function Dashboard({
   const [defaultShippingFeeState, setDefaultShippingFeeState] = useState<number>(0);
 
   // Socials Editor States
-  const [instagramState, setInstagramState] = useState<string>('');
+  const [instagramState, setInstagramState] = useState<string>('https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==');
   const [tiktokState, setTiktokState] = useState<string>('');
   const [facebookState, setFacebookState] = useState<string>('');
   const [whatsappState, setWhatsappState] = useState<string>('');

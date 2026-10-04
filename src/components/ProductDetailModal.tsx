@@ -120,7 +120,7 @@ export default function ProductDetailModal({
 
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
-  const [imageScaleMode, setImageScaleMode] = useState<'contain' | 'cover'>('contain');
+  const [imageScaleMode, setImageScaleMode] = useState<'contain' | 'cover'>('cover');
 
   // Swipe threshold in pixels
   const minSwipeDistance = 40;
@@ -878,8 +878,7 @@ export default function ProductDetailModal({
                        <SultaImage
                          src={displayImages[activeImageIdx]}
                          alt={product.nameAr}
-                         style={zoomStyle}
-                         imgClassName={`transition-transform duration-150 ease-out origin-center select-none ${imageScaleMode === 'contain' ? 'object-contain px-2' : 'object-cover'} object-center`}
+                         imgClassName="w-full h-full object-contain object-center"
                          className="w-full h-full"
                        />
                     )}
@@ -908,19 +907,7 @@ export default function ProductDetailModal({
 
             {/* Corner label and fit mode indicators */}
             {!videoPlaying && !is360Active && !isMacroZoomActive && (
-              <div className="absolute bottom-3 inset-x-3 flex justify-between items-center z-10 pointer-events-none select-none">
-                {/* Fit Mode Toggle - Left aligned */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setImageScaleMode(prev => prev === 'contain' ? 'cover' : 'contain');
-                  }}
-                  className="pointer-events-auto bg-white/75 hover:bg-white backdrop-blur-xs text-[10px] font-sans font-bold text-gray-800 px-3 py-1.5 rounded-full border border-gray-200/50 shadow-sm transition-all hover:scale-103 cursor-pointer flex items-center gap-1"
-                >
-                  {imageScaleMode === 'contain' ? '🔍 ملء الإطار' : '📱 كامل القطعة'}
-                </button>
-
+              <div className="absolute bottom-3 right-3 z-10 pointer-events-none select-none">
                 {/* Picture Number indicator - Right aligned */}
                 <span className="bg-white/75 backdrop-blur-xs text-[10px] font-sans font-bold text-gray-800 px-3 py-1.5 rounded-full border border-gray-200/50 shadow-sm">
                   صورة {activeImageIdx + 1} / {displayImages.length}
@@ -2026,7 +2013,7 @@ ${shareUrl}`;
 
                     <button
                       type="button"
-                      onClick={() => window.open('https://instagram.com', '_blank')}
+                      onClick={() => window.open('https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==', '_blank')}
                       className="bg-gradient-to-tr from-[#f9ce71] via-[#ee2a7b] to-[#6228d7] text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition-all cursor-pointer hover:opacity-90 flex items-center gap-1"
                     >
                       <span>افتتح تطبيق Instagram ↗</span>

@@ -899,9 +899,6 @@ export default function OrderDetailView({
                 <p className="text-[10px] text-gray-400 font-sans">مستشار الكوتور الشخصي يعمل بالذكاء الاصطناعي التوليدي 24/7</p>
               </div>
             </div>
-            <span className="text-[9px] bg-[#A44C5C]/20 text-[#DF8A9C] px-2.5 py-1 rounded-full border border-[#A44C5C]/30 font-sans font-bold">
-              متصل بقاعدة البيانات مباشرة ●
-            </span>
           </div>
 
           {/* Message Thread container */}

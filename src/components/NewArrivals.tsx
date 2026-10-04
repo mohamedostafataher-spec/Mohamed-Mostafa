@@ -104,12 +104,12 @@ export default function NewArrivals({
                 </div>
 
                 {/* Main Photo */}
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">
+                <div className="relative aspect-[3/4] overflow-hidden bg-white rounded-xl mb-3">
                   <SultaImage
                     src={imgToUse}
                     alt={prod.nameAr}
                     className="w-full h-full"
-                    imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms]"
+                    imgClassName="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-[800ms]"
                   />
                 </div>
 

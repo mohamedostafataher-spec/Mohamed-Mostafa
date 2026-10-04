@@ -25,7 +25,6 @@ import RibbonBowDivider from './components/RibbonBowDivider';
 import SocialLinksView from './components/SocialLinksView';
 import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
 import FabricGuide from './components/FabricGuide';
-import SupabaseConnectionChecker from './components/SupabaseConnectionChecker';
 
 // Luxury Add-on views
 import SultaCollections from './components/SultaCollections';
@@ -414,6 +413,44 @@ function AppContent() {
     };
   }, []);
 
+  // Order Status Notification System (Shipped, Out for delivery, Delivered)
+  useEffect(() => {
+    if (!orders || orders.length === 0) return;
+    
+    try {
+      const notifiedMap = JSON.parse(sessionStorage.getItem('sulta_notified_orders_v2') || '{}');
+      let updated = false;
+
+      orders.forEach(ord => {
+        const currentStatus = ord.status;
+        const lastNotifiedStatus = notifiedMap[ord.id];
+
+        if (['shipped', 'out_for_delivery', 'delivered'].includes(currentStatus) && lastNotifiedStatus !== currentStatus) {
+          let msg = '';
+          if (currentStatus === 'shipped') {
+            msg = `🚚 تنبيه سولتة: تم شحن طلبيتك الملكية رقم #${ord.id} وهي في الطريق إليكِ!`;
+          } else if (currentStatus === 'out_for_delivery') {
+            msg = `🛵 تنبيه سولتة: طلبيتك رقم #${ord.id} خرجت مع سفير التوصيل الملكي لتصلكِ قريباً!`;
+          } else if (currentStatus === 'delivered') {
+            msg = `✨ تنبيه سولتة: تم تسليم طلبيتك الملكية رقم #${ord.id} بنجاح. نتمنى أن تنال إعجابكِ!`;
+          }
+
+          if (msg) {
+            toast(msg, 'success');
+            notifiedMap[ord.id] = currentStatus;
+            updated = true;
+          }
+        }
+      });
+
+      if (updated) {
+        sessionStorage.setItem('sulta_notified_orders_v2', JSON.stringify(notifiedMap));
+      }
+    } catch (e) {
+      console.warn("Order notification check error:", e);
+    }
+  }, [orders, toast]);
+
   // UI Theme & Overlay States
   const [isMidnightVelvet, setIsMidnightVelvet] = useState<boolean>(false);
 
@@ -730,9 +767,6 @@ function AppContent() {
   return (
       <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
       
-      {/* Supabase Realtime Connection Diagnostic Bar */}
-      <SupabaseConnectionChecker />
-
       {/* GLOBAL HEADER BAR */}
       <Header
         session={session}
@@ -854,7 +888,7 @@ function AppContent() {
                           >
                             <div>
                               {/* Top Photo Frame */}
-                              <div className="relative aspect-[3/4] overflow-hidden bg-[#F8F9FA] rounded-xl mb-2 sm:mb-2.5 flex items-center justify-center">
+                              <div className="relative aspect-[3/4] overflow-hidden bg-white rounded-xl mb-2 sm:mb-2.5 flex items-center justify-center">
                                 {/* Badges */}
                                 <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                                   {prod.isBestSeller && (
@@ -884,7 +918,7 @@ function AppContent() {
                                   src={cleanImgUrl(prod.images?.[0] || '', prod.category)}
                                   alt={prod.nameAr || prod.nameEn}
                                   className="w-full h-full"
-                                  imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                  imgClassName="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-700"
                                 />
                               </div>
 
@@ -1058,7 +1092,7 @@ function AppContent() {
                   </div>
                   <div className="text-right">
                     <span className="block font-bold text-gray-950 text-xs sm:text-sm">شحن سريع ومجاني</span>
-                    <span className="text-[10px] sm:text-[11px] text-gray-500">فوق {country === 'SA' ? '299 ر.س 🇸🇦' : '1500 ج.م 🇪🇬'}</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">فوق {country === 'SA' ? '800 ر.س 🇸🇦' : '1500 ج.م 🇪🇬'}</span>
                   </div>
                 </div>
 

@@ -129,10 +129,10 @@ export default function Header({
           <div className="flex items-center gap-1.5 text-gray-700 font-medium truncate">
             <Truck size={13} className="text-[#A44C5C] shrink-0" />
             <span className="hidden sm:inline">
-              شحن مجاني لكافة طلبات {country === 'SA' ? 'المملكة العربية السعودية فوق 299 ريال 🇸🇦' : 'محافظات مصر فوق 1500 ج.م 🇪🇬'} | كود الخصم: <strong className="font-mono text-[#A44C5C]">SULTA20</strong>
+              شحن مجاني لكافة طلبات {country === 'SA' ? 'المملكة العربية السعودية فوق 800 ريال 🇸🇦' : 'محافظات مصر فوق 1500 ج.م 🇪🇬'} | كود الخصم: <strong className="font-mono text-[#A44C5C]">SULTA20</strong>
             </span>
             <span className="sm:hidden font-semibold truncate text-[10px]">
-              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س 🇸🇦' : 'شحن مجاني فوق 1500 ج.م 🇪🇬'} • كود: <strong className="text-[#A44C5C]">SULTA20</strong>
+              {country === 'SA' ? 'شحن مجاني فوق 800 ر.س 🇸🇦' : 'شحن مجاني فوق 1500 ج.م 🇪🇬'} • كود: <strong className="text-[#A44C5C]">SULTA20</strong>
             </span>
           </div>
 
@@ -145,8 +145,8 @@ export default function Header({
             </span>
           </div>
 
-          {/* Right Controls: Country Switcher */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right Controls: Instagram & Country Switcher */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Desktop WhatsApp Link */}
             <a
               href={`https://wa.me/${activeWhatsAppClean}?text=${encodeURIComponent('مرحباً SULTA، أحتاج للمساعدة بخصوص الطلب 🌸')}`}
@@ -158,6 +158,21 @@ export default function Header({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
               <span>واتساب:</span>
               <span className="font-mono text-[10px]" dir="ltr">{activeWhatsAppDisplay}</span>
+            </a>
+
+            {/* Instagram Icon Link */}
+            <a
+              href="https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-gray-200 text-[#A44C5C] hover:bg-rose-50 transition-all shadow-2xs"
+              title="تابعونا على انستغرام"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
             </a>
 
             {/* Country and Currency Switcher */}

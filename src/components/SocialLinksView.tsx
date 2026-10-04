@@ -23,24 +23,13 @@ export default function SocialLinksView({ className = "flex gap-3", settings }: 
 
   const activeSocials = [];
   
-  if (settings?.instagram) activeSocials.push({ id: 'instagram', platform: 'instagram', url: settings.instagram.startsWith('http') ? settings.instagram : `https://instagram.com/${settings.instagram}`, label: 'Instagram' });
-  if (settings?.tiktok) activeSocials.push({ id: 'tiktok', platform: 'tiktok', url: settings.tiktok.startsWith('http') ? settings.tiktok : `https://tiktok.com/@${settings.tiktok}`, label: 'TikTok' });
-  if (settings?.facebook) activeSocials.push({ id: 'facebook', platform: 'facebook', url: settings.facebook.startsWith('http') ? settings.facebook : `https://facebook.com/${settings.facebook}`, label: 'Facebook' });
-  const saudiWa = (settings?.whatsappSaudi || '966596894393').replace(/[^0-9]/g, '');
-  activeSocials.push({ 
-    id: 'whatsapp-sa', 
-    platform: 'whatsapp', 
-    url: `https://wa.me/${saudiWa}?text=${encodeURIComponent('مرحباً SULTA السعودية 🌸')}`, 
-    label: 'واتساب السعودية (0596894393)' 
-  });
-
-  const egWa = (settings?.whatsapp || '201110095403').replace(/[^0-9]/g, '');
-  activeSocials.push({ 
-    id: 'whatsapp-eg', 
-    platform: 'whatsapp', 
-    url: `https://wa.me/${egWa}?text=${encodeURIComponent('مرحباً SULTA مصر 🌸')}`, 
-    label: 'واتساب مصر (+201110095403)' 
-  });
+  const instagramUrl = 'https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==';
+  activeSocials.push({ id: 'instagram', platform: 'instagram', url: instagramUrl, label: 'Instagram' });
+  
+  const tiktokUrl = settings?.tiktok && settings.tiktok.trim() !== ''
+    ? (settings.tiktok.startsWith('http') ? settings.tiktok : `https://tiktok.com/@${settings.tiktok}`)
+    : 'https://tiktok.com/@sultabrand';
+  activeSocials.push({ id: 'tiktok', platform: 'tiktok', url: tiktokUrl, label: 'TikTok' });
 
   // Add dummy placeholder if empty, but user thinks it's fake. So we just show empty or a fallback if there's none.
   if (activeSocials.length === 0) return null;
