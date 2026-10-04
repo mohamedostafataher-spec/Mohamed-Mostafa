@@ -5,18 +5,18 @@
   --font-sans: "Tajawal", "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: "Playfair Display", "Cairo", serif;
   
-  --color-luxury-black: #111827;
-  --color-burgundy: #A44C5C;
-  --color-soft-pink: #DF8A9D;
-  --color-light-pink: #FCE7F3;
-  --color-champagne-gold: #D4AF37;
+  --color-luxury-black: #0B0B0B;
+  --color-burgundy: #0B0B0B;
+  --color-soft-pink: #111827;
+  --color-light-pink: #F3F4F6;
+  --color-champagne-gold: #FFFFFF;
   --color-off-white: #FFFFFF;
 }
 
 body {
   font-family: var(--font-sans);
   background-color: #FFFFFF;
-  color: #111827;
+  color: #0B0B0B;
   direction: rtl;
   overflow-x: hidden;
   scroll-behavior: smooth;
@@ -29,49 +29,41 @@ img {
 }
 
 /* Global override to shift muddy beige to clean, pure white Salla style */
-.bg-\[\#FAFAF7\], .bg-\[\#FAFAF8\], .bg-\[\#FAF5F0\] {
+.bg-\[\#FAFAF7\], .bg-\[\#FAFAF8\], .bg-\[\#FAF5F0\], .bg-\[\#FAF4F5\], .bg-amber-50, .bg-pink-50, .bg-rose-50 {
   background-color: #FFFFFF !important;
 }
 
-/* Global override to shift literal light pink #F4B6C2 to our premium darker dusty rose #DF8A9D */
-.text-\[\#F4B6C2\] {
-  color: var(--color-soft-pink) !important;
+/* Shift pink/burgundy/yellow accents to crisp black & white */
+.text-\[\#F4B6C2\], .text-\[\#DF8A9C\], .text-\[\#DF8A9D\], .text-\[\#A44C5C\], .text-\[\#F6E7A6\],
+.text-emerald-500, .text-emerald-600, .text-emerald-700, .text-emerald-800, .text-green-600, .text-green-700,
+.text-rose-500, .text-rose-600, .text-rose-700, .text-pink-500, .text-pink-600, .text-pink-700 {
+  color: #0B0B0B !important;
 }
-.bg-\[\#F4B6C2\] {
-  background-color: var(--color-soft-pink) !important;
+
+.bg-\[\#F4B6C2\], .bg-\[\#DF8A9C\], .bg-\[\#DF8A9D\], .bg-\[\#A44C5C\], .bg-\[\#25D366\],
+.bg-emerald-500, .bg-emerald-600, .bg-emerald-700, .bg-emerald-800, .bg-green-600, .bg-green-700 {
+  background-color: #0B0B0B !important;
+  color: #FFFFFF !important;
 }
-.hover\:bg-\[\#F4B6C2\]:hover {
-  background-color: var(--color-soft-pink) !important;
+
+.border-\[\#F4B6C2\], .border-\[\#DF8A9C\], .border-\[\#DF8A9D\], .border-\[\#A44C5C\], .border-\[\#25D366\],
+.border-emerald-200, .border-emerald-300, .border-emerald-400, .border-green-200,
+.border-rose-200, .border-rose-300, .border-pink-200, .border-pink-300 {
+  border-color: #E5E7EB !important;
 }
-.hover\:text-\[\#F4B6C2\]:hover {
-  color: var(--color-soft-pink) !important;
+
+.bg-emerald-50, .bg-emerald-100, .bg-green-50, .bg-rose-50, .bg-rose-100, .bg-pink-50, .bg-pink-100 {
+  background-color: #F8F9FA !important;
 }
-.border-\[\#F4B6C2\] {
-  border-color: var(--color-soft-pink) !important;
+
+.hover\:bg-\[\#F4B6C2\]:hover, .hover\:bg-\[\#DF8A9C\]:hover, .hover\:bg-\[\#A44C5C\]:hover,
+.hover\:bg-emerald-100:hover, .hover\:bg-rose-100:hover {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
 }
-.ring-\[\#F4B6C2\]\/30 {
-  --tw-ring-color: rgba(223, 138, 157, 0.3) !important;
-}
-.accent-\[\#F4B6C2\] {
-  accent-color: var(--color-soft-pink) !important;
-}
-.text-\[\#DF8A9C\], .text-\[\#DF8A9D\] {
-  color: var(--color-soft-pink) !important;
-}
-.bg-\[\#DF8A9C\], .bg-\[\#DF8A9D\] {
-  background-color: var(--color-soft-pink) !important;
-}
-.shadow-\[0_0_10px_\#F4B6C2\] {
-  box-shadow: 0 0 10px rgba(223, 138, 156, 0.5) !important;
-}
-.bg-\[\#F4B6C2\]\/15 {
-  background-color: rgba(223, 138, 156, 0.15) !important;
-}
-.border-\[\#F4B6C2\]\/30 {
-  border-color: rgba(223, 138, 156, 0.3) !important;
-}
-.hover\:border-\[\#F4B6C2\]\/30:hover {
-  border-color: rgba(223, 138, 156, 0.3) !important;
+.hover\:text-\[\#F4B6C2\]:hover, .hover\:text-\[\#DF8A9C\]:hover, .hover\:text-\[\#A44C5C\]:hover,
+.hover\:text-emerald-800:hover, .hover\:text-rose-700:hover {
+  color: #0B0B0B !important;
 }
 
 /* Custom Scrollbars */
@@ -79,7 +71,7 @@ img {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAFAF7;
+  background: #FFFFFF;
 }
 ::-webkit-scrollbar-thumb {
   background: #0B0B0B;

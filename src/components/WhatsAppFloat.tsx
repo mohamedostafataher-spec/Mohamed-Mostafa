@@ -32,15 +32,15 @@ export default function WhatsAppFloat({
     <div className="fixed bottom-20 right-4 md:bottom-7 md:right-7 z-50 select-none font-sans" dir="rtl">
       {/* Floating Popover Menu */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 mb-2 w-80 max-w-[92vw] bg-[#0B0B0B] text-[#FAFAF7] rounded-2xl shadow-2xl border border-[#F6E7A6]/30 overflow-hidden animate-scale-up">
+        <div className="absolute bottom-16 right-0 mb-2 w-80 max-w-[92vw] bg-[#0B0B0B] text-white rounded-2xl shadow-2xl border border-white/20 overflow-hidden animate-scale-up">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#1b1b1b] to-[#252525] p-4 border-b border-white/10 flex items-center justify-between">
+          <div className="bg-[#171717] p-4 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-[#25D366]/20 border border-[#25D366]/40 flex items-center justify-center text-[#25D366]">
+              <div className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
                 <MessageCircle size={18} />
               </div>
               <div>
-                <h4 className="font-serif text-sm font-bold text-[#F6E7A6] flex items-center gap-1">
+                <h4 className="font-serif text-sm font-bold text-white flex items-center gap-1">
                   <span>كونسيرج SULTA الملكي</span>
                   <span className="text-xs">👑</span>
                 </h4>
@@ -65,8 +65,8 @@ export default function WhatsAppFloat({
               rel="noopener noreferrer"
               className={`block p-3 rounded-xl border transition-all duration-200 group ${
                 country === 'SA'
-                  ? 'bg-[#25D366]/10 border-[#25D366]/60 shadow-[0_0_12px_rgba(37,211,102,0.15)]'
-                  : 'bg-white/5 border-white/10 hover:border-[#25D366]/40 hover:bg-white/10'
+                  ? 'bg-white/10 border-white/40 shadow-sm'
+                  : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -74,21 +74,21 @@ export default function WhatsAppFloat({
                   <span className="text-lg">🇸🇦</span>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white group-hover:text-[#25D366] transition-colors">
+                      <span className="text-xs font-bold text-white group-hover:text-gray-200 transition-colors">
                         واتساب فرع السعودية
                       </span>
                       {country === 'SA' && (
-                        <span className="bg-[#25D366] text-[#0B0B0B] text-[9px] font-black px-1.5 py-0.2 rounded-full">
+                        <span className="bg-white text-black text-[9px] font-black px-1.5 py-0.2 rounded-full">
                           مفعل لكِ
                         </span>
                       )}
                     </div>
-                    <span className="font-mono text-xs text-[#F6E7A6] font-bold block mt-0.5" dir="ltr">
+                    <span className="font-mono text-xs text-white font-bold block mt-0.5" dir="ltr">
                       0596894393
                     </span>
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <Send size={13} className="rotate-220" />
                 </div>
               </div>
@@ -104,8 +104,8 @@ export default function WhatsAppFloat({
               rel="noopener noreferrer"
               className={`block p-3 rounded-xl border transition-all duration-200 group ${
                 country === 'EG'
-                  ? 'bg-[#25D366]/10 border-[#25D366]/60 shadow-[0_0_12px_rgba(37,211,102,0.15)]'
-                  : 'bg-white/5 border-white/10 hover:border-[#25D366]/40 hover:bg-white/10'
+                  ? 'bg-white/10 border-white/40 shadow-sm'
+                  : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -113,21 +113,21 @@ export default function WhatsAppFloat({
                   <span className="text-lg">🇪🇬</span>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white group-hover:text-[#25D366] transition-colors">
+                      <span className="text-xs font-bold text-white group-hover:text-gray-200 transition-colors">
                         واتساب فرع مصر
                       </span>
                       {country === 'EG' && (
-                        <span className="bg-[#25D366] text-[#0B0B0B] text-[9px] font-black px-1.5 py-0.2 rounded-full">
+                        <span className="bg-white text-black text-[9px] font-black px-1.5 py-0.2 rounded-full">
                           مفعل لكِ
                         </span>
                       )}
                     </div>
-                    <span className="font-mono text-xs text-gray-300 block mt-0.5" dir="ltr">
+                    <span className="font-mono text-xs text-white block mt-0.5" dir="ltr">
                       +20 111 009 5403
                     </span>
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                   <Send size={13} className="rotate-220" />
                 </div>
               </div>
@@ -138,9 +138,9 @@ export default function WhatsAppFloat({
           </div>
 
           {/* Footer note */}
-          <div className="bg-black/60 px-4 py-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400">
+          <div className="bg-black/80 px-4 py-2 border-t border-white/10 flex items-center justify-between text-[10px] text-gray-400">
             <span>رد فوري خلال دقائق ⚡</span>
-            <span className="text-[#F6E7A6]">SULTA ATELIER 👑</span>
+            <span className="text-white font-bold">SULTA ATELIER 👑</span>
           </div>
         </div>
       )}
@@ -150,26 +150,25 @@ export default function WhatsAppFloat({
         {/* Toggle options mini-button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="hidden sm:flex items-center gap-1 bg-white/95 text-gray-800 text-[11px] font-bold px-3 py-2 rounded-full shadow-lg border border-gray-200 hover:border-[#25D366] transition-all cursor-pointer hover:bg-white"
+          className="hidden sm:flex items-center gap-1 bg-white text-gray-900 text-[11px] font-bold px-3 py-2 rounded-full shadow-lg border border-gray-300 hover:border-black transition-all cursor-pointer"
           title="اختر فرع السعودية أو مصر"
         >
-          <Sparkles size={12} className="text-[#A44C5C]" />
+          <Sparkles size={12} className="text-black" />
           <span>واتساب {activeCountryLabel}</span>
           <ChevronUp size={14} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
-        {/* WhatsApp Icon Circle Button */}
+        {/* WhatsApp Icon Circle Button in Black & White */}
         <div className="relative group">
           <button
             onClick={() => {
-              // Open menu or directly navigate
               if (isOpen) {
                 setIsOpen(false);
               } else {
                 setIsOpen(true);
               }
             }}
-            className="w-13 h-13 md:w-14 md:h-14 bg-[#25D366] text-white rounded-full shadow-[0_6px_25px_rgba(37,211,102,0.45)] hover:shadow-[0_8px_30px_rgba(37,211,102,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center relative cursor-pointer"
+            className="w-13 h-13 md:w-14 md:h-14 bg-[#111827] hover:bg-black text-white rounded-full shadow-[0_6px_25px_rgba(0,0,0,0.35)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center relative cursor-pointer border-2 border-white"
             aria-label="تواصل معنا عبر واتساب SULTA"
           >
             <MessageCircle size={28} />
@@ -177,9 +176,9 @@ export default function WhatsAppFloat({
 
           {/* Quick Tooltip on Hover */}
           {!isOpen && (
-            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden md:group-hover:flex items-center gap-2 bg-[#0B0B0B] text-[#FAFAF7] text-xs px-3.5 py-2 rounded-xl shadow-xl border border-[#F6E7A6]/30 whitespace-nowrap pointer-events-none transition-all">
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden md:group-hover:flex items-center gap-2 bg-[#0B0B0B] text-white text-xs px-3.5 py-2 rounded-xl shadow-xl border border-white/20 whitespace-nowrap pointer-events-none transition-all">
               <span>تواصل واتساب:</span>
-              <strong className="text-[#25D366] font-mono" dir="ltr">
+              <strong className="text-white font-mono" dir="ltr">
                 {activePhoneDisplay}
               </strong>
             </div>

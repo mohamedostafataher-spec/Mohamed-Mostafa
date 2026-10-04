@@ -14,41 +14,44 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
 
   const defaultQualities = [
     {
-      icon: <Truck size={22} className="text-[#A44C5C]" />,
+      icon: <Truck size={22} className="text-black" />,
       title: 'شحن ملكي فائق السرعة',
-      desc: 'توصيل مخصص لباب المنزل مغلّف بصندوق هدايا أسود ووردي فاخر بعناية.',
+      desc: 'توصيل مخصص لباب المنزل مغلّف بصندوق هدايا أسود فاخر بعناية.',
     },
     {
-      icon: <ShieldCheck size={22} className="text-[#A44C5C]" />,
+      icon: <ShieldCheck size={22} className="text-black" />,
       title: 'سداد مشفر آمن بالكامل',
       desc: 'ندعم بوابات دفع Apple Pay وSTC Pay ومدى والفيزا وفوري بكل سلاسة.',
     },
     {
-      icon: <Sparkles size={22} className="text-[#A44C5C]" />,
+      icon: <Sparkles size={22} className="text-black" />,
       title: 'خامات فاخرة فائقة النعومة',
       desc: 'أقمشة معالجة بحرفية بنعومة تضاهي الغيوم، مع خامات نقية فاخرة ومريحة.',
     },
     {
-      icon: <RefreshCw size={22} className="text-[#A44C5C]" />,
+      icon: <RefreshCw size={22} className="text-black" />,
       title: 'سياسة إرجاع بلا مشقة',
       desc: 'لكِ كامل الراحة في الاستبدال والاسترجاع السهل في مصر والسعودية خلال حيز ١٤ يوماً.',
     },
     {
-      icon: <Globe size={22} className="text-[#A44C5C]" />,
+      icon: <Globe size={22} className="text-black" />,
       title: 'التوصيل لمصر والمملكة 🇸🇦 🇪🇬',
       desc: 'مخازن مجهزة بالكامل بالبلدين لضمان أسعار مرنة بدون جمارك إضافية.',
     },
     {
-      icon: <HeartHandshake size={22} className="text-[#A44C5C]" />,
-      title: 'صندوق الهدايا الملكي 🌸',
+      icon: <HeartHandshake size={22} className="text-black" />,
+      title: 'صندوق الهدايا الملكي 👑',
       desc: 'كل شحنة تأتي في صندوق دلال فاخر ببطاقة مخصصة لتليق بالأميرات العرائس.',
     }
   ];
 
-  const qualities = dynamicContent?.qualities?.map((q: any, idx: number) => ({
-    ...q,
-    icon: defaultQualities[idx % defaultQualities.length].icon
-  })) || defaultQualities;
+  const rawQualities = dynamicContent?.qualities || defaultQualities;
+  const qualities = rawQualities
+    .filter((q: any) => !q.title?.includes('إيطال') && !q.title?.includes('ايطال') && !q.title?.includes('عريقة'))
+    .map((q: any, idx: number) => ({
+      ...q,
+      icon: defaultQualities[idx % defaultQualities.length].icon
+    }));
 
   const unboxing = dynamicContent?.unboxing || {
     title: 'فخامة بيجامات سُلْطَة النسائية',
@@ -67,7 +70,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
           <h3 className="text-2xl md:text-3xl font-extrabold text-[#111827] tracking-tight mt-4">
             لماذا تختارين التسوق من SULTA؟
           </h3>
-          <p className="text-[#A44C5C] text-xs mt-2 font-bold tracking-wider">ضمان الجودة، سرعة الشحن، وراحة تليق بكِ</p>
+          <p className="text-gray-600 text-xs mt-2 font-bold tracking-wider">ضمان الجودة، سرعة الشحن، وراحة تليق بكِ</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -76,7 +79,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
               key={idx}
               className="group flex flex-col items-center text-center p-6 bg-[#F8F9FA] hover:bg-white rounded-2xl transition-all duration-300 border border-gray-200/80 hover:border-gray-300 hover:shadow-md cursor-default"
             >
-              <div className="w-12 h-12 rounded-full bg-white group-hover:bg-[#FFF1F2] border border-gray-200 flex items-center justify-center mb-4 transition-colors shadow-2xs">
+              <div className="w-12 h-12 rounded-full bg-white group-hover:bg-gray-100 border border-gray-200 flex items-center justify-center mb-4 transition-colors shadow-2xs">
                 {item.icon}
               </div>
               <h4 className="text-sm font-bold text-[#111827] mb-1.5">
@@ -90,11 +93,11 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
         </div>
 
         {/* LUXURY UNBOXING SHOWCASE */}
-        <div className="mt-20 bg-white rounded-[40px] p-8 md:p-12 border border-[#DF8A9D]/20 shadow-xl overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4B6C2]/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="mt-20 bg-white rounded-[40px] p-8 md:p-12 border border-gray-200 shadow-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gray-100/50 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 text-right order-2 md:order-1">
-              <span className="text-[10px] text-[#A44C5C] font-semibold tracking-[0.3em] uppercase block font-sans">
+              <span className="text-[10px] text-gray-900 font-semibold tracking-[0.3em] uppercase block font-sans">
                 ✦ SULTA LUXURY COLLECTIONS ✦
               </span>
               <h3 className="font-serif text-3xl md:text-5xl text-[#0B0B0B] font-light leading-tight">
@@ -106,17 +109,17 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
               <ul className="space-y-4 pt-4">
                 <li className="flex items-center gap-3 justify-end text-[#0B0B0B] text-sm font-medium">
                   <span>{unboxing.bullet1}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#DF8A9D]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-black" />
                 </li>
                 <li className="flex items-center gap-3 justify-end text-[#0B0B0B] text-sm font-medium">
                   <span>{unboxing.bullet2}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#DF8A9D]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-black" />
                 </li>
               </ul>
             </div>
             <div className="relative order-1 md:order-2">
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
+                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[-2deg] hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-gray-200">
                   <img 
                     src={cleanImgUrl('fallback', 'loungewear')}
                     alt="Sulta Brand Artwork" 
@@ -127,7 +130,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
                     }}
                   />
                 </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-pink-100">
+                <div className="rounded-3xl overflow-hidden shadow-2xl rotate-[3deg] translate-y-8 hover:rotate-0 transition-transform duration-500 aspect-[4/5] border border-gray-200">
                   <img 
                     src={cleanImgUrl('fallback', 'sleepwear')}
                     alt="Sulta Premium Lifestyle Art" 
@@ -139,8 +142,8 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
                   />
                 </div>
               </div>
-              <div className="absolute -bottom-4 -left-4 w-15 h-15 bg-amber-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce-subtle">
-                <span className="text-white text-lg font-serif">✨</span>
+              <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                <span className="text-white text-base font-serif">👑</span>
               </div>
             </div>
           </div>

@@ -837,7 +837,7 @@ function AppContent() {
                     onClick={chip.action}
                     className={`shrink-0 px-3 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer border select-none ${
                       chip.isHot 
-                        ? 'bg-rose-50 text-[#A44C5C] border-rose-200 hover:bg-rose-100 shadow-2xs' 
+                        ? 'bg-black text-white border-black shadow-2xs hover:bg-gray-800' 
                         : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:text-black hover:border-gray-300'
                     }`}
                   >
@@ -867,7 +867,7 @@ function AppContent() {
                       </div>
                       <button
                         onClick={() => setTab('store')}
-                        className="text-xs font-bold text-[#A44C5C] hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-xs font-bold text-gray-900 hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <span>عرض الكل</span>
                         <span>←</span>
@@ -982,9 +982,9 @@ function AppContent() {
                 {/* SALLA FLASH OFFERS PROMO RIBBON (Placed between sections seamlessly) */}
                 {sectionIdx === 0 && (
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-                    <div className="rounded-2xl bg-gradient-to-l from-rose-50 via-white to-pink-50 border border-pink-200 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+                    <div className="rounded-2xl bg-gray-50 border border-gray-200 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
                       <div className="text-right space-y-1 max-w-xl">
-                        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#A44C5C]/10 text-[#A44C5C] font-bold text-[11px]">
+                        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black text-white font-bold text-[11px]">
                           <Sparkles size={11} />
                           <span>خصم إضافي وشحن مجاني 🏷️</span>
                         </div>
@@ -992,13 +992,13 @@ function AppContent() {
                           وفري حتى 30% على تشكيلات النوم والحرير الملكي
                         </h4>
                         <p className="text-gray-600 text-[11px] sm:text-xs">
-                          استخدمي كود الخصم الترحيبي <strong className="font-mono text-[#A44C5C] bg-white px-2 py-0.5 rounded border border-pink-200">SULTA20</strong> عند إتمام الطلب للحصول على خصم فوري وشحن مجاني!
+                          استخدمي كود الخصم الترحيبي <strong className="font-mono text-black bg-white px-2 py-0.5 rounded border border-gray-300">SULTA20</strong> عند إتمام الطلب للحصول على خصم فوري وشحن مجاني!
                         </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                         <button
                           onClick={() => setTab('offers')}
-                          className="w-full sm:w-auto bg-[#111827] hover:bg-[#A44C5C] text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-2"
+                          className="w-full sm:w-auto bg-[#111827] hover:bg-black text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-2"
                         >
                           <span>تسوقي العروض الآن</span>
                           <ArrowLeft size={13} />
@@ -1010,41 +1010,7 @@ function AppContent() {
               </React.Fragment>
             ))}
 
-            {/* 6. FULL WIDTH LUXURIOUS BANNER WITH FALLBACK */}
-            {(() => {
-              const bannerSection = homepageSections.find(s => s.section_key === 'middle_banner');
-              const bannerData = bannerSection?.content_json || {
-                active: true,
-                imageUrl: '/img/sulta_luxury_pajama_hero_2_1780682794821.png',
-                subtitle: 'Because You Deserve',
-                title: 'THE SOFTEST LIFE',
-                buttonText: 'SHOP THE COLLECTION'
-              };
-              if (!bannerData.active) return null;
-              return (
-                <section className="relative py-20 md:py-24 overflow-hidden bg-gradient-to-r from-rose-50 via-white to-pink-50 border-y border-pink-100">
-                  <div className="relative z-20 max-w-4xl mx-auto px-4 text-center space-y-4">
-                    <span className="text-xs tracking-widest text-[#A44C5C] uppercase flex items-center justify-center gap-1.5 font-bold">
-                      <Sparkles size={14} />
-                      <span>{bannerData.subtitle}</span>
-                    </span>
-                    <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-gray-950 tracking-tight">
-                      {bannerData.title}
-                    </h3>
-                    <div className="pt-4">
-                      <button
-                        onClick={() => setTab('store')}
-                        className="bg-[#111827] text-white hover:bg-[#A44C5C] px-8 py-3.5 rounded-xl text-xs font-bold transition-all duration-300 shadow-md hover:scale-102 cursor-pointer"
-                      >
-                        {bannerData.buttonText}
-                      </button>
-                    </div>
-                  </div>
-                </section>
-              );
-            })()}
-
-            {/* 7. FEATURES & UNBOXING (DYNAMIC FROM SUPABASE) */}
+            {/* FEATURES & UNBOXING (DYNAMIC FROM SUPABASE) */}
             <Features homepageSections={homepageSections} />
 
             {/* 8. NEWSLETTER JOIN SECTION */}
@@ -1059,7 +1025,7 @@ function AppContent() {
                 </p>
 
                 {subscribeSuccess ? (
-                  <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-emerald-800 text-xs font-bold">
+                  <div className="bg-gray-100 p-4 rounded-xl border border-gray-300 text-gray-900 text-xs font-bold">
                     شكراً لاشتراككِ! تم تسجيل بريدكِ بنجاح. 🌸
                   </div>
                 ) : (
@@ -1069,12 +1035,12 @@ function AppContent() {
                       placeholder="أدخلي بريدكِ الإلكتروني..."
                       value={subscribeEmail}
                       onChange={(e) => setSubscribeEmail(e.target.value)}
-                      className="flex-1 text-xs border border-gray-300 rounded-xl px-4 py-3 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#A44C5C] text-right"
+                      className="flex-1 text-xs border border-gray-300 rounded-xl px-4 py-3 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-black text-right"
                       required
                     />
                     <button
                       type="submit"
-                      className="bg-[#111827] text-white hover:bg-[#A44C5C] font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-xs cursor-pointer shrink-0"
+                      className="bg-[#111827] text-white hover:bg-black font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-xs cursor-pointer shrink-0"
                     >
                       اشتراك
                     </button>
@@ -1087,7 +1053,7 @@ function AppContent() {
             <div className="bg-white border-y border-gray-200/80 py-6 px-4 sm:px-6 lg:px-8">
               <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-xs font-semibold text-gray-700">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-full bg-rose-50 text-[#A44C5C] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 text-black flex items-center justify-center shrink-0">
                     <Truck size={18} />
                   </div>
                   <div className="text-right">
@@ -1097,7 +1063,7 @@ function AppContent() {
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 text-black flex items-center justify-center shrink-0">
                     <ShieldCheck size={18} />
                   </div>
                   <div className="text-right">
@@ -1107,7 +1073,7 @@ function AppContent() {
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 text-black flex items-center justify-center shrink-0">
                     <RefreshCw size={18} />
                   </div>
                   <div className="text-right">
@@ -1117,7 +1083,7 @@ function AppContent() {
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 text-black flex items-center justify-center shrink-0">
                     <Phone size={18} />
                   </div>
                   <div className="text-right">
@@ -1126,7 +1092,7 @@ function AppContent() {
                       href={country === 'SA' ? "https://wa.me/966596894393" : "https://wa.me/201110095403"} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-[10px] sm:text-[11px] text-emerald-700 font-mono font-bold hover:underline"
+                      className="text-[10px] sm:text-[11px] text-gray-900 font-mono font-bold hover:underline"
                     >
                       {country === 'SA' ? '0596894393 🇸🇦' : '+20 111 009 5403 🇪🇬'}
                     </a>
@@ -1518,16 +1484,16 @@ function AppContent() {
                 href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 hover:bg-emerald-100 hover:border-emerald-300 transition-colors group shadow-2xs"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors group shadow-2xs"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-base">🇸🇦</span>
                   <div className="text-right">
-                    <span className="block font-bold text-emerald-950 text-[11px]">واتساب خدمة عملاء السعودية</span>
-                    <span className="text-[10px] text-emerald-700">متاح للمساعدة الفورية والطلبات</span>
+                    <span className="block font-bold text-gray-950 text-[11px]">واتساب خدمة عملاء السعودية</span>
+                    <span className="text-[10px] text-gray-500">متاح للمساعدة الفورية والطلبات</span>
                   </div>
                 </div>
-                <span className="font-mono text-emerald-900 font-black text-xs" dir="ltr">0596894393</span>
+                <span className="font-mono text-gray-900 font-black text-xs" dir="ltr">0596894393</span>
               </a>
 
               <a 
@@ -1551,8 +1517,8 @@ function AppContent() {
               <h5 className="font-bold text-[11px] text-gray-900 mb-2">وسائل الدفع المعتمدة</h5>
               <div className="flex flex-wrap gap-1.5 items-center">
                 <span className="bg-[#111827] text-white px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">Pay Apple Pay</span>
-                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
-                <span className="bg-amber-50 text-amber-900 border border-amber-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (بنك الجزيرة)</span>
+                <span className="bg-gray-100 text-black border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
+                <span className="bg-gray-100 text-black border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (بنك الجزيرة)</span>
               </div>
             </div>
           </div>
@@ -1567,7 +1533,7 @@ function AppContent() {
             <span>الرقم الضريبي الموحد مسجل ومعتمد</span>
           </div>
           <div className="flex items-center gap-3 text-[11px]">
-            <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
+            <span className="bg-gray-100 text-gray-900 border border-gray-250 px-2 py-0.5 rounded-md font-bold">
               ✓ موثق في المركز السعودي للأعمال
             </span>
           </div>
@@ -1624,7 +1590,7 @@ function AppContent() {
                       }`}
                     >
                       <span className="font-sans text-[11.5px]">{item.label}</span>
-                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-black" />}
                     </button>
                   );
                 })}
@@ -1655,11 +1621,11 @@ function AppContent() {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
-                    currentTab === 'dashboard' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'text-gray-655 bg-gray-50/30 hover:bg-pink-50/30'
+                    currentTab === 'dashboard' ? 'bg-[#0B0B0B] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
                   <span>لوحة تحكم الإدارة والطلبيات ⚙️</span>
-                  <span className="bg-[#F6E7A6] text-gray-000 px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
+                  <span className="bg-black text-white px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
                 </button>
               </div>
             </div>
@@ -1670,7 +1636,7 @@ function AppContent() {
                 href={country === 'SA' ? "https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8" : "https://wa.me/201110095403?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-[#25D366] text-white py-2.5 px-3.5 rounded-xl font-sans font-bold text-xs flex items-center justify-between shadow-sm hover:bg-[#20ba59] transition-all"
+                className="w-full bg-[#111827] text-white py-2.5 px-3.5 rounded-xl font-sans font-bold text-xs flex items-center justify-between shadow-sm hover:bg-black transition-all border border-gray-700"
               >
                 <span className="flex items-center gap-1.5">
                   <span className="text-sm">💬</span>
@@ -1687,7 +1653,7 @@ function AppContent() {
                   onClick={() => {
                     setCountry(country === 'SA' ? 'EG' : 'SA');
                   }}
-                  className="bg-white border border-gray-250 shadow-2xs text-[10.5px] px-2.5 py-1 rounded-full font-bold text-[#0B0B0B] hover:border-[#DF8A9D] transition-colors cursor-pointer"
+                  className="bg-white border border-gray-250 shadow-2xs text-[10.5px] px-2.5 py-1 rounded-full font-bold text-[#0B0B0B] hover:border-black transition-colors cursor-pointer"
                 >
                   {country === 'SA' ? '🇸🇦 SAR (السعودية)' : '🇪🇬 EGP (مصر)'}
                 </button>
@@ -1716,15 +1682,15 @@ function AppContent() {
       {/* FLOATING BOTTOM SEARCH MODAL */}
       {isBottomSearchOpen && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-[101] flex items-center justify-center p-4 transition-all" dir="rtl">
-          <div className="bg-white rounded-[2.5rem] p-6 sm:p-10 w-full max-w-lg border border-[#DF8A9D]/15 shadow-2xl relative text-right animate-scale-up">
+          <div className="bg-white rounded-[2.5rem] p-6 sm:p-10 w-full max-w-lg border border-gray-200 shadow-2xl relative text-right animate-scale-up">
             <button 
               onClick={() => setIsBottomSearchOpen(false)}
-              className="absolute top-6 left-6 text-gray-400 hover:text-[#A44C5C] p-2 hover:bg-neutral-100 rounded-full cursor-pointer transition-all border border-transparent"
+              className="absolute top-6 left-6 text-gray-400 hover:text-black p-2 hover:bg-neutral-100 rounded-full cursor-pointer transition-all border border-transparent"
             >
               <X size={18} />
             </button>
             <div className="space-y-4">
-              <div className="flex items-center gap-1.5 text-[#A44C5C] text-[10px] font-bold tracking-widest font-sans uppercase">
+              <div className="flex items-center gap-1.5 text-black text-[10px] font-bold tracking-widest font-sans uppercase">
                 <Search size={12} />
                 <span>البحث الذكي الملكي | SULTA SEARCH ENGINE</span>
               </div>
@@ -1742,11 +1708,11 @@ function AppContent() {
                   placeholder="ابحثي عن حرير، عرايس، شتوي..."
                   value={searchQuery}
                   onChange={(e) => handleSearchQueryChange(e.target.value)}
-                  className="w-full bg-[#FAF5F0] rounded-full border border-gray-200 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/15 focus:border-[#A44C5C] text-right shadow-2xs font-sans"
+                  className="w-full bg-gray-50 rounded-full border border-gray-300 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/15 focus:border-black text-right shadow-2xs font-sans"
                 />
                 <button 
                   type="submit"
-                  className="absolute left-3 top-2.5 bg-[#A44C5C] hover:bg-[#A44C5C]/90 text-white text-3xs font-bold px-4 py-2.5 rounded-full cursor-pointer transition-all shadow-2xs font-sans"
+                  className="absolute left-3 top-2.5 bg-black hover:bg-gray-800 text-white text-3xs font-bold px-4 py-2.5 rounded-full cursor-pointer transition-all shadow-2xs font-sans"
                 >
                   بحث
                 </button>
@@ -1757,7 +1723,7 @@ function AppContent() {
                 <div className="mt-4 border-t border-gray-150 pt-4 space-y-3" dir="rtl">
                   <div className="text-[10px] text-gray-400 font-bold tracking-wider uppercase font-sans flex items-center justify-between">
                     <span>اقتراحات فورية ملكية</span>
-                    <span className="bg-amber-50 text-[#c5a059] px-2 py-0.5 rounded-full text-[9px]">
+                    <span className="bg-gray-100 text-black px-2 py-0.5 rounded-full text-[9px] font-bold">
                       {products.filter(p => {
                         const q = searchQuery.toLowerCase().trim();
                         return p.nameAr.toLowerCase().includes(q) || p.categoryAr?.toLowerCase().includes(q) || p.colors?.some(c => c.name.toLowerCase().includes(q));
@@ -1779,17 +1745,17 @@ function AppContent() {
                             setIsBottomSearchOpen(false);
                             setTab('store');
                           }}
-                          className="flex items-center gap-3 p-2 bg-[#FAF5F0]/50 hover:bg-[#FAF5F0] rounded-xl border border-gray-150/40 cursor-pointer transition-all duration-300 group hover:border-[#A44C5C]/30"
+                          className="flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 cursor-pointer transition-all duration-300 group hover:border-black"
                         >
                           <div className="w-10 h-12 rounded-lg overflow-hidden bg-white shrink-0 border border-gray-100">
                             <SultaImage src={p.images?.[0]} alt={p.nameAr} className="w-full h-full" imgClassName="object-cover" />
                           </div>
                           <div className="text-right flex-1 min-w-0">
-                            <h4 className="text-xs font-serif font-medium text-gray-900 group-hover:text-[#A44C5C] transition-colors truncate">{p.nameAr}</h4>
+                            <h4 className="text-xs font-serif font-medium text-gray-900 group-hover:text-black transition-colors truncate">{p.nameAr}</h4>
                             <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-gray-400 font-sans">
                               <span>{p.categoryAr}</span>
                               <span>•</span>
-                              <span className="text-[#A44C5C] font-semibold">{country === 'EG' ? p.priceEG : p.priceSA} {country === 'EG' ? 'EGP' : 'SAR'}</span>
+                              <span className="text-black font-semibold">{country === 'EG' ? p.priceEG : p.priceSA} {country === 'EG' ? 'EGP' : 'SAR'}</span>
                             </div>
                           </div>
                         </div>

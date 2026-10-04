@@ -190,14 +190,10 @@ export default function StoreView({
 
       {/* 1. Salla / Nalah Style Clean White Promotional Hero Banner */}
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-2">
-        <div className="relative rounded-2xl bg-gradient-to-l from-[#FFF1F2] via-white to-[#FDF2F8] border border-pink-150 p-3.5 sm:p-6 md:p-8 shadow-xs overflow-hidden">
-          {/* Subtle Decorative Background Circles */}
-          <div className="absolute top-0 right-0 w-72 h-72 bg-rose-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-pink-100/40 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-
+        <div className="relative rounded-2xl bg-gray-50 border border-gray-200 p-3.5 sm:p-6 md:p-8 shadow-xs overflow-hidden">
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
             <div className="text-right space-y-1.5 sm:space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#A44C5C]/10 border border-[#A44C5C]/20 text-[#A44C5C] font-bold text-[10.5px] sm:text-xs">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black text-white font-bold text-[10.5px] sm:text-xs">
                 <Sparkles size={11} />
                 <span>{selectedCategory === 'offers' ? 'تخفيضات وعروض حصرية 🏷️' : 'عروض موسم SULTA الحصرية 🏷️'}</span>
               </div>
@@ -212,7 +208,7 @@ export default function StoreView({
 
               {/* Mobile Quick Promo Code Pill */}
               <div className="sm:hidden pt-1 flex items-center gap-2">
-                <span className="text-[10px] bg-white border border-pink-200 text-[#A44C5C] font-bold px-2 py-0.5 rounded-lg shadow-2xs">
+                <span className="text-[10px] bg-white border border-gray-300 text-black font-bold px-2 py-0.5 rounded-lg shadow-2xs">
                   كود الخصم: <strong className="font-mono text-black">SULTA20</strong> (خصم 20%)
                 </span>
               </div>
@@ -220,17 +216,17 @@ export default function StoreView({
               {/* Trust badges row */}
               <div className="hidden sm:flex flex-wrap items-center gap-4 pt-2 text-[11px] font-semibold text-gray-500">
                 <span className="flex items-center gap-1.5 text-gray-700">
-                  <Truck size={14} className="text-[#A44C5C]" />
+                  <Truck size={14} className="text-black" />
                   <span>شحن سريع ومجاني للطلبات المؤهلة</span>
                 </span>
                 <span className="text-gray-300">·</span>
                 <span className="flex items-center gap-1.5 text-gray-700">
-                  <ShieldCheck size={14} className="text-emerald-600" />
+                  <ShieldCheck size={14} className="text-black" />
                   <span>ضمان الجودة والاستبدال السهل</span>
                 </span>
                 <span className="text-gray-300">·</span>
                 <span className="flex items-center gap-1.5 text-gray-700">
-                  <Tag size={14} className="text-amber-600" />
+                  <Tag size={14} className="text-black" />
                   <span>شامل الضريبة وبدون رسوم خفية</span>
                 </span>
               </div>
@@ -240,8 +236,8 @@ export default function StoreView({
             <div className="hidden sm:block shrink-0 bg-white border border-gray-200 p-4 sm:p-5 rounded-2xl shadow-xs text-center space-y-2.5 w-full md:w-72">
               <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">كود خصم ترحيبي إضافي</span>
               <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl py-2 px-3 flex items-center justify-between">
-                <span className="font-mono text-sm font-black text-[#A44C5C] tracking-wider" dir="ltr">SULTA20</span>
-                <span className="text-[10px] bg-[#A44C5C] text-white px-2 py-0.5 rounded-md font-bold">خصم 20%</span>
+                <span className="font-mono text-sm font-black text-black tracking-wider" dir="ltr">SULTA20</span>
+                <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-md font-bold">خصم 20%</span>
               </div>
               <p className="text-[10px] text-gray-500 leading-normal">
                 يُطبق تلقائياً في السلة للطلبيات الأولى! 🌸
@@ -582,8 +578,8 @@ export default function StoreView({
                         product.stock === 0
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                           : isAdded
-                            ? 'bg-emerald-600 text-white shadow-emerald-500/20'
-                            : 'bg-[#111827] hover:bg-[#A44C5C] text-white hover:shadow-md'
+                            ? 'bg-black text-white shadow-sm'
+                            : 'bg-[#111827] hover:bg-black text-white hover:shadow-md'
                       }`}
                     >
                       {product.stock === 0 ? (
@@ -668,7 +664,7 @@ export default function StoreView({
                 <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between space-y-6">
                   
                   <div className="space-y-4">
-                    <span className="text-[10px] text-[#A44C5C] font-bold uppercase inline-block">
+                    <span className="text-[10px] text-black font-bold uppercase inline-block">
                       {quickViewProduct.collection || 'المجموعة الرسمية'}
                     </span>
                     
@@ -679,7 +675,7 @@ export default function StoreView({
                     {/* Price tag */}
                     <div className="flex items-baseline gap-4">
                       <ProductPrice product={quickViewProduct} country={country} size="md" showBadge={true} />
-                      <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-bold rounded-md">
+                      <span className="text-[10px] text-black bg-gray-100 border border-gray-300 px-2 py-0.5 font-bold rounded-md">
                         متوفر للشحن الفوري ⚡
                       </span>
                     </div>
@@ -753,7 +749,7 @@ export default function StoreView({
                         onAddToCart(quickViewProduct, finalColor, finalSize);
                         setQuickViewProduct(null);
                       }}
-                      className="w-full bg-[#111827] text-white py-3 rounded-xl text-xs font-bold hover:bg-[#A44C5C] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                      className="w-full bg-[#111827] text-white py-3 rounded-xl text-xs font-bold hover:bg-black transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
                     >
                       <ShoppingBag size={14} /> إضافة سريعة للسلة
                     </button>

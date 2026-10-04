@@ -20,7 +20,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
 
   const fallbackBanners = [
     {
-      mediaUrl: '/img/sulta_sleepwear_1_1781140797178.png',
+      mediaUrl: '/img/sulta_silk_luxury_banner.jpg',
       title: 'أزياء النوم الفاخرة',
       subtitle: 'بيجامات وأرواب الحرير الفاخر المبرد',
       ctaText: 'تسوقي التشكيلة الآن',

@@ -249,7 +249,7 @@ function mapCollection(data: any): Collection {
 function mapSettings(data: any): Settings {
   const rawHero = Array.isArray(data.hero_images) ? data.hero_images : (data.hero_images ? JSON.parse(data.hero_images) : []);
   const checkedHero = (rawHero && rawHero.length > 0) ? rawHero : [
-    '/img/sulta_sleepwear_1_1781140797178.png',
+    '/img/sulta_silk_luxury_banner.jpg',
     '/img/sulta_collections_1_1781140831329.png',
     '/img/sulta_loungewear_1_1781140813379.png'
   ];
@@ -276,7 +276,7 @@ function mapSettings(data: any): Settings {
 
   return {
     siteName: mappedSiteName,
-    logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_luxury_pajama_hero_2_1780682794821.png',
+    logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_silk_luxury_banner.jpg',
     promoBannerAr: cleanText(data.promo_banner_ar),
     promoEndTime: data.promo_end_time,
     heroMiniAlertAr: cleanText(data.hero_mini_alert_ar),

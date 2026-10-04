@@ -513,7 +513,7 @@ export default function ProductDetailModal({
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full p-6">
                       <span className="text-4xl mb-4">🎥</span>
-                      <span className="font-serif italic text-lg text-[#F6E7A6]">SULTA Haute-Couture Showcase</span>
+                      <span className="font-serif italic text-lg text-[#FFFFFF]">SULTA Haute-Couture Showcase</span>
                       <div className="w-16 h-1 rounded bg-[#F4B6C2] my-3 animate-pulse" />
                       <p className="text-xs text-gray-400 max-w-xs mb-6 leading-relaxed">
                         فيديو حركي قصير يوضح انسيابية ونعومة الدانتيل الفاخر والحرير الفاخر على العارضة عند الحركة الطبيعية.
@@ -536,12 +536,12 @@ export default function ProductDetailModal({
               <div className="absolute inset-0 bg-neutral-950 text-white flex flex-col justify-between p-5 text-right font-sans">
                 {/* Visual Ambient Grid */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:16px_20px] pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#F6E7A6]/5 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#FFFFFF]/5 to-transparent pointer-events-none" />
                 
                 {/* Interactive 3D Turntable Scene */}
                 <div className="flex-1 flex flex-col justify-center items-center relative overflow-hidden select-none">
                   {/* Glowing Spotlights background */}
-                  <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#F6E7A6]/10 rounded-full filter blur-[50px] pointer-events-none" />
+                  <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#FFFFFF]/10 rounded-full filter blur-[50px] pointer-events-none" />
                   
                   {/* Main Rotating Card Frame */}
                   {(() => {
@@ -559,14 +559,14 @@ export default function ProductDetailModal({
                         
                         {/* 3D Floor Marble Rotating Pedestal */}
                         <div 
-                          className="absolute bottom-1 w-44 h-16 rounded-full border border-[#F6E7A6]/20 bg-gradient-to-t from-neutral-900 to-zinc-800 shadow-[0_15px_30px_rgba(0,0,0,0.8)] flex items-center justify-center transition-transform duration-100 ease-out"
+                          className="absolute bottom-1 w-44 h-16 rounded-full border border-[#FFFFFF]/20 bg-gradient-to-t from-neutral-900 to-zinc-800 shadow-[0_15px_30px_rgba(0,0,0,0.8)] flex items-center justify-center transition-transform duration-100 ease-out"
                           style={{
                             transform: `perspective(600px) rotateX(72deg) rotateZ(${-rotationAngle}deg) scale(1.15)`,
                             boxShadow: '0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(246,231,166,0.1)'
                           }}
                         >
                           {/* Compass/dial increments lines around pedestal */}
-                          <div className="absolute inset-0 rounded-full border-4 border-dashed border-[#F6E7A6]/10 animate-spin-slow opacity-60" />
+                          <div className="absolute inset-0 rounded-full border-4 border-dashed border-[#FFFFFF]/10 animate-spin-slow opacity-60" />
                           <div className="w-16 h-16 rounded-full border border-yellow-500/10" />
                         </div>
 
@@ -606,7 +606,7 @@ export default function ProductDetailModal({
 
                         {/* Visual 360 Degrees floating HUD feedback */}
                         <div className="absolute top-2 inset-x-4 flex justify-between items-center pointer-events-none select-none opacity-90">
-                          <span className="bg-black/80 border border-[#F6E7A6]/30 text-[#F6E7A6] text-[8.5px] font-sans font-bold px-2.5 py-1 rounded-full shrink-0">
+                          <span className="bg-black/80 border border-[#FFFFFF]/30 text-[#FFFFFF] text-[8.5px] font-sans font-bold px-2.5 py-1 rounded-full shrink-0">
                             محاكاة كوتور ثلاثية الأبعاد 🏷️
                           </span>
                           <span className="bg-[#FAF4F5]/10 text-white text-[9px] font-mono px-2 py-0.5 rounded-sm">
@@ -622,7 +622,7 @@ export default function ProductDetailModal({
                 <div className="bg-neutral-900/90 border border-white/10 p-3 rounded-2xl space-y-2.5 backdrop-blur-xs">
                   {/* Title of trackbar controller */}
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="font-sans font-bold text-[#F6E7A6] flex items-center gap-1">
+                    <span className="font-sans font-bold text-[#FFFFFF] flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-ping inline-block" />
                       <span>محاكاة السطح ثلاثي الأبعاد 360°</span>
                     </span>
@@ -639,7 +639,7 @@ export default function ProductDetailModal({
                         max="11" 
                         value={rotationFrameIndex}
                         onChange={(e) => setRotationFrameIndex(Number(e.target.value))}
-                        className="w-full accent-[#F6E7A6] h-1.5 bg-white/15 rounded-full cursor-ew-resize hover:bg-white/20 transition-all"
+                        className="w-full accent-[#FFFFFF] h-1.5 bg-white/15 rounded-full cursor-ew-resize hover:bg-white/20 transition-all"
                       />
                     </div>
                     <span className="text-[10px] font-mono text-gray-500">الفحص الخلفي</span>
@@ -647,7 +647,7 @@ export default function ProductDetailModal({
 
                   {/* Bottom triggers/meta within widget */}
                   <div className="flex justify-between items-center text-[10.5px] border-t border-white/5 pt-2 flex-row-reverse">
-                    <span className="text-[9.5px] text-[#F6E7A6]/80 font-serif flex items-center gap-1">
+                    <span className="text-[9.5px] text-[#FFFFFF]/80 font-serif flex items-center gap-1">
                       <span>✦ تم الترسيم بنسبة 100% واقعي</span>
                     </span>
                     <button
@@ -706,7 +706,7 @@ export default function ProductDetailModal({
                       <div className="flex flex-col items-center space-y-3.5 w-full">
                         
                         {/* High precision Microscope Circular Lens Frame */}
-                        <div className="relative w-44 h-44 sm:w-48 sm:h-48 rounded-full border-4 border-[#F6E7A6] shadow-[0_0_40px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(0,0,0,0.8)] overflow-hidden flex items-center justify-center bg-black/60 z-10 select-none">
+                        <div className="relative w-44 h-44 sm:w-48 sm:h-48 rounded-full border-4 border-[#FFFFFF] shadow-[0_0_40px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(0,0,0,0.8)] overflow-hidden flex items-center justify-center bg-black/60 z-10 select-none">
                           
                           {/* Inner grid fibers display */}
                           <div 
@@ -762,7 +762,7 @@ export default function ProductDetailModal({
 
                           {/* Optical Magnifier Glass Gloss Ring */}
                           <div className="absolute inset-0 border border-white/20 rounded-full bg-gradient-to-tr from-white/10 via-transparent to-white/20 mix-blend-screen pointer-events-none" />
-                          <div className="absolute inset-2 border border-dashed border-[#F6E7A6]/20 rounded-full animate-spin-slow pointer-events-none" />
+                          <div className="absolute inset-2 border border-dashed border-[#FFFFFF]/20 rounded-full animate-spin-slow pointer-events-none" />
 
                           {/* Microscope Crosshair & Scale Ruler Overlay */}
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-45">
@@ -785,14 +785,14 @@ export default function ProductDetailModal({
                           />
 
                           {/* Lens Floating Multiplier Tag */}
-                          <span className="absolute bottom-3 bg-black/85 border border-[#F6E7A6]/30 px-3 py-1 rounded-full text-[10px] font-mono font-bold text-[#F6E7A6] shadow-md z-20 select-none">
+                          <span className="absolute bottom-3 bg-black/85 border border-[#FFFFFF]/30 px-3 py-1 rounded-full text-[10px] font-mono font-bold text-[#FFFFFF] shadow-md z-20 select-none">
                             مستوى الزوم: {macroMagnification}x
                           </span>
                         </div>
 
                         {/* Microscope metadata indicators card */}
                         <div className="text-center space-y-1.5 p-3 rounded-xl bg-white/5 border border-white/5 max-w-[280px] xs:max-w-xs self-center">
-                          <h6 className="text-[#F6E7A6] text-xs font-bold font-serif flex items-center justify-center gap-1">
+                          <h6 className="text-[#FFFFFF] text-xs font-bold font-serif flex items-center justify-center gap-1">
                             <Sparkles size={11} className="text-[#DF8A9C]" />
                             <span>ميكروسكوب الأنسجة العضوية 🔬</span>
                           </h6>
@@ -803,7 +803,7 @@ export default function ProductDetailModal({
                             <p className="text-[9.5px] text-gray-300 leading-snug">
                               📐 <span className="text-gray-400">التفاصيل:</span> {fabricThreadInfoAr}
                             </p>
-                            <p className="text-[9.5px] text-[#F6E7A6] leading-snug">
+                            <p className="text-[9.5px] text-[#FFFFFF] leading-snug">
                               💎 <span className="text-gray-400">الميزة الفاخرة:</span> {fabricSourceAr}
                             </p>
                           </div>
@@ -950,15 +950,15 @@ export default function ProductDetailModal({
                     setIsMacroZoomActive(false);
                     setIs360Active(false);
                   }}
-                  className={`w-10 h-13 rounded-lg overflow-hidden border-2 shrink-0 transition-all flex flex-col items-center justify-center bg-[#111111] text-white hover:border-[#F6E7A6] ${
-                    videoPlaying ? 'border-[#F6E7A6] scale-103 shadow-md' : 'border-gray-200 opacity-85'
+                  className={`w-10 h-13 rounded-lg overflow-hidden border-2 shrink-0 transition-all flex flex-col items-center justify-center bg-[#111111] text-white hover:border-[#FFFFFF] ${
+                    videoPlaying ? 'border-[#FFFFFF] scale-103 shadow-md' : 'border-gray-200 opacity-85'
                   }`}
                 >
                   <div className="relative">
                     <span className="text-sm">🎬</span>
                     {product.video && <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />}
                   </div>
-                  <span className="text-[7px] font-sans text-gray-400 group-hover:text-[#F6E7A6]">فيديو</span>
+                  <span className="text-[7px] font-sans text-gray-400 group-hover:text-[#FFFFFF]">فيديو</span>
                 </button>
               )}
             </div>
@@ -975,7 +975,7 @@ export default function ProductDetailModal({
                 }}
                 className={`px-1.5 py-1.5 rounded-lg text-[8.5px] font-bold font-sans transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                   is360Active 
-                    ? 'bg-[#F6E7A6] text-[#0B0B0B]' 
+                    ? 'bg-[#FFFFFF] text-[#0B0B0B]' 
                     : 'bg-zinc-800 text-white hover:bg-zinc-700'
                 }`}
               >
@@ -993,7 +993,7 @@ export default function ProductDetailModal({
                 className={`px-1.5 py-1.5 rounded-lg text-[8.5px] font-bold font-sans transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                   isMacroZoomActive 
                     ? 'bg-[#DF8A9C] text-white' 
-                    : 'bg-[#0B0B0B] text-[#F6E7A6] hover:bg-zinc-800'
+                    : 'bg-[#0B0B0B] text-[#FFFFFF] hover:bg-zinc-800'
                 }`}
               >
                 <span>تفاصيل الخامة x50 🔬</span>
@@ -1010,7 +1010,7 @@ export default function ProductDetailModal({
           <div>
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] uppercase bg-[#0B0B0B] text-[#F6E7A6] font-sans px-2.5 py-1 rounded-full border border-yellow-200">
+                <span className="text-[10px] uppercase bg-[#0B0B0B] text-[#FFFFFF] font-sans px-2.5 py-1 rounded-full border border-yellow-200">
                   {product.categoryAr}
                 </span>
                 <div className="flex items-center gap-0.5">
@@ -1088,7 +1088,7 @@ export default function ProductDetailModal({
                     title={col.name}
                   >
                     {selectedCol.name === col.name && (
-                      <span className={`w-1.5 h-1.5 rounded-full ${col.hex === '#FAFAF7' || col.hex === '#F6E7A6' ? 'bg-[#0B0B0B]' : 'bg-white'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${col.hex === '#FAFAF7' || col.hex === '#FFFFFF' ? 'bg-[#0B0B0B]' : 'bg-white'}`} />
                     )}
                   </button>
                 ))}
@@ -1117,7 +1117,7 @@ export default function ProductDetailModal({
                           selectedSz === sz
                             ? isSzOutOfStock
                               ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold scale-103'
-                              : 'bg-[#0B0B0B] text-[#F6E7A6] border-black shadow-md font-bold scale-103'
+                              : 'bg-[#0B0B0B] text-[#FFFFFF] border-black shadow-md font-bold scale-103'
                             : isSzOutOfStock
                               ? 'bg-gray-50 text-gray-300 border-gray-150 line-through decoration-red-400 decoration-1'
                               : 'bg-white text-gray-700 border-gray-200 hover:bg-[#FAF4F5]'
@@ -1201,7 +1201,7 @@ export default function ProductDetailModal({
                       <button
                         type="submit"
                         disabled={alertSubmitting}
-                        className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#DF8A9C] hover:text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 shadow-sm"
+                        className="bg-[#0B0B0B] text-[#FFFFFF] hover:bg-[#DF8A9C] hover:text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 shadow-sm"
                       >
                         {alertSubmitting ? 'جاري التسجيل...' : 'أبلغني بالتوفر 🔔'}
                       </button>
@@ -1241,12 +1241,7 @@ export default function ProductDetailModal({
               >
                 دليل القياس
               </button>
-              <button
-                onClick={() => setActiveTab('ship')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'ship' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
-              >
-                التوصيل والتبديل
-              </button>
+
               <button
                 onClick={() => setActiveTab('reviews')}
                 className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'reviews' ? 'border-b-2 border-[#F4B6C2] text-[#0B0B0B] font-bold' : 'text-gray-450'}`}
@@ -1385,7 +1380,7 @@ export default function ProductDetailModal({
                         <button
                           type="button"
                           onClick={runFitCalculation}
-                          className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#DF8A9C] hover:text-white py-1.5 rounded-lg text-[11px] font-sans font-bold tracking-wide transition-all cursor-pointer"
+                          className="w-full bg-[#0B0B0B] text-[#FFFFFF] hover:bg-[#DF8A9C] hover:text-white py-1.5 rounded-lg text-[11px] font-sans font-bold tracking-wide transition-all cursor-pointer"
                         >
                           درسي قياسات جسدي واحسبي المقاس 📐✨
                         </button>
@@ -1539,13 +1534,7 @@ export default function ProductDetailModal({
                   )}
                 </div>
               )}
-              {activeTab === 'ship' && (
-                <div className="space-y-1 text-right">
-                  <p>توصيل سريع للقاهرة والإسكندرية في ٤٨ ساعة، بقية المحافظات خلال ٣-٤ أيام.</p>
-                  <p>شحن ملكي لجميع مناطق الرياض، جدة، الشرقية خلال ٣ أيام عمل عبر أرامكس وسمسا.</p>
-                  <p className="text-[9px] text-[#DF8A9C] font-semibold">ضمانة Sulta: تبديل مقاسات مجاني ١٠٠% في حال عدم ملائمة مقاس البيجامة الموصى به.</p>
-                </div>
-              )}
+
               {activeTab === 'reviews' && (
                 <div className="space-y-4 text-right">
                   {/* Reviews Summary Section */}
@@ -1782,7 +1771,7 @@ export default function ProductDetailModal({
                           setSubmitBtnLoading(false);
                         }
                       }}
-                      className="bg-[#0B0B0B] text-[#F6E7A6] px-3.5 py-1 rounded-lg text-[10px] font-bold transition-all hover:bg-[#DF8A9C] hover:text-white cursor-pointer"
+                      className="bg-[#0B0B0B] text-[#FFFFFF] px-3.5 py-1 rounded-lg text-[10px] font-bold transition-all hover:bg-[#DF8A9C] hover:text-white cursor-pointer"
                       disabled={submitBtnLoading}
                     >
                       {submitBtnLoading ? 'يجري الإرسال...' : 'اسألي المصفف'}
@@ -1791,49 +1780,6 @@ export default function ProductDetailModal({
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Salla Video Inspired: "كفل طلبك" Bundle Upsell with Checkboxes */}
-          <div className="bg-[#FAF9F6] border border-amber-200/60 p-3.5 rounded-2xl space-y-3 text-right font-sans my-2">
-            <div className="flex items-center justify-between border-b border-amber-200/40 pb-2">
-              <span className="text-xs font-serif font-black text-gray-900 flex items-center gap-1.5">
-                <span>🎁 كفل طلبك</span>
-                <span className="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-sans">اكتشفي ما يشتريه العُملاء مع هذا المنتج</span>
-              </span>
-              <span className="text-[10px] text-amber-900 font-bold font-mono">
-                إجمالي البكج: {bundleTotal.toLocaleString()} {currencyLabel}
-              </span>
-            </div>
-
-            <div className="space-y-2">
-              {bundleItems.map((item, idx) => (
-                <div key={item.id} className="flex items-center justify-between bg-white p-2 rounded-xl border border-gray-150 hover:border-amber-300 transition-all">
-                  <div className="flex items-center gap-2.5">
-                    <input 
-                      type="checkbox" 
-                      checked={item.checked}
-                      onChange={() => toggleBundleItem(idx)}
-                      className="accent-[#0B0B0B] w-4 h-4 rounded cursor-pointer"
-                    />
-                    <div className="w-10 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-gray-150">
-                      <SultaImage src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-900 line-clamp-1">{item.name}</p>
-                      <p className="text-[10px] font-mono text-[#A44C5C] font-semibold">{item.price} {currencyLabel}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={handleAddBundleToCart}
-              className="w-full bg-[#111827] text-[#F6E7A6] hover:bg-black py-2.5 rounded-xl text-xs font-bold font-sans transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-            >
-              <span>🛒 اشتريها معاً بـ {bundleTotal.toLocaleString()} {currencyLabel}</span>
-            </button>
           </div>
 
           {/* Salla Video Inspired: Care Instructions */}
@@ -1850,15 +1796,6 @@ export default function ProductDetailModal({
 
           {/* Section C: Ultimate Add-to-cart & Actions drawer */}
           <div className="flex flex-col gap-2 mt-auto">
-            
-            {/* Visual Promotes Banner: Guarantee */}
-            <div className="bg-emerald-50 border border-green-200 p-2.5 rounded-xl text-right flex items-start gap-2 text-[10px] text-green-800 font-sans">
-              <Shield size={14} className="text-green-600 shrink-0 mt-0.5 animate-pulse" />
-              <div>
-                <strong>🛡️ ضمان المقاس والملاءمة التامة:</strong>
-                <p className="mt-0.5 text-gray-600">إذا لم يكن المقاس مثالياً لكِ بعد التجربة، فالاستبدال مجاني ١٠٠% مع مندوبنا بالمنزل دون تسديد أي رسوم شحن إضافية!</p>
-              </div>
-            </div>
 
             <div className="flex gap-2">
               
@@ -1870,7 +1807,7 @@ export default function ProductDetailModal({
                     const el = document.getElementById('stock-alert-section');
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="flex-1 bg-amber-550/90 text-white hover:bg-amber-600 py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer animate-pulse"
+                  className="flex-1 bg-gray-800 text-white hover:bg-black py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer animate-pulse"
                 >
                   <Zap size={14} />
                   <span>انضمي إلى قائمة الانتظار للتوفر 🔔</span>
@@ -1883,7 +1820,7 @@ export default function ProductDetailModal({
                     luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
                     giftMessage: selectedWrap !== 'none' && giftCardMessage.trim() ? giftCardMessage : undefined
                   })}
-                  className="flex-1 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-luxury flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 bg-[#0B0B0B] text-white hover:bg-gray-800 py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer"
                   id="add-to-cart-action"
                 >
                   <ShoppingBag size={14} />
@@ -1907,8 +1844,8 @@ export default function ProductDetailModal({
                 onClick={handleShareClick}
                 className={`p-3 rounded-xl transition-all border cursor-pointer flex items-center justify-center gap-1.5 ${
                   isSharePanelOpen 
-                    ? "bg-[#DF8A9C] text-white border-[#DF8A9C] font-semibold" 
-                    : "bg-[#FAFAF7] hover:bg-white text-gray-800 border-gray-200 hover:text-[#DF8A9C] hover:scale-103"
+                    ? "bg-black text-white border-black font-semibold" 
+                    : "bg-[#FAFAF7] hover:bg-white text-gray-800 border-gray-200 hover:text-black hover:scale-103"
                 }`}
                 title="مشاركة القطعة الفاخرة"
               >
@@ -2023,78 +1960,7 @@ ${shareUrl}`;
               </div>
             )}
 
-            {/* Dynamic AI Outfit Complete-Look Suggestion Strip */}
-            {matchedPairProduct && (
-              <div className="bg-[#FAFAF7] border border-gray-150 rounded-2xl p-3 mb-2 text-right">
-                <span className="text-[9px] bg-[#0B0B0B] text-[#F6E7A6] px-2 py-0.5 rounded-full font-serif block w-fit mb-2">
-                  ✦ اقتران منسّق بالذكاء من Sulta
-                </span>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-15 rounded-lg overflow-hidden border border-gray-150 bg-gray-100 shrink-0">
-                    <SultaImage referrerPolicy="no-referrer" src={cleanImgUrl(matchedPairProduct.images[0], matchedPairProduct.category)} alt="Pairing Match" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-bold text-gray-900 truncate">{matchedPairProduct.nameAr}</p>
-                    <p className="text-[9px] text-[#DF8A9C] font-semibold mt-0.5">يكمل إطلالتكِ الملكية الحالية بامتياز ✨</p>
-                    <p className="text-[9px] text-gray-500 font-sans mt-0.5">السعر: {matchedPrice.toLocaleString()} {currencyLabel}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAddToCart(matchedPairProduct, matchedPairProduct.colors?.[0] || { name: 'Default', hex: '#000000', images: [] }, matchedPairProduct.sizes?.[0] || 'S', 1);
-                      toast('تمت إضافة التنسيق المكمل (الكيمونو/البيجامة) إلى سلتكِ بنجاح! 🌸', 'success');
-                    }}
-                    className="bg-[#0B0B0B] text-white hover:bg-[#DF8A9C] p-2 rounded-xl transition-all cursor-pointer shrink-0"
-                    title="إضافة التنسيق المقترح لتكملة المظهر"
-                  >
-                    <ShoppingBag size={12} />
-                  </button>
-                </div>
-              </div>
-            )}
 
-            {/* Quick buy and WhatsApp layout buttons */}
-            <div className="grid grid-cols-2 gap-2">
-              {isCurrentConfigOutOfStock ? (
-                <div className="bg-amber-100 hover:bg-amber-150 text-amber-900 border border-amber-300 py-2.5 rounded-xl text-[10px] font-sans font-bold transition-all text-center flex items-center justify-center gap-1 select-none">
-                  <span>⚠️ حجز مسبق تحت الحياكة ✦</span>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => onBuyNow(product, selectedCol, selectedSz, quantity)}
-                  className="bg-[#F4B6C2] text-white hover:bg-white hover:text-gray-950 border border-transparent hover:border-gray-200 py-2.5 rounded-xl text-xs font-sans font-bold transition-all text-center cursor-pointer"
-                >
-                  شراء مباشر الآن
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (isCurrentConfigOutOfStock) {
-                    const phoneNumber = country === 'SA' ? '966596894393' : (settings?.whatsapp || '201110095403');
-                    const text = `مرحباً براند Sulta الفاخر 🌸، أريد حجز مقاس مسبق (تحت الحياكة اليدوية):
-• المنتج: ${product.nameAr}
-• اللون المطلوب: ${selectedCol.name}
-• المقاس المطلوب: ${selectedSz}
-• الكمية: ${quantity}
-• حالة القطعة: حياكة بالطلب (غير متوفرة للتسليم الفوري)
-• السعر الإجمالي: ${(price * quantity).toLocaleString()} ${currencyLabel}
-• الدولة: ${country === 'EG' ? 'مصر 🇪🇬' : 'السعودية 🇸🇦'}
-
-أود التواصل لحين جهوزيتها ويسعدني الحجز المسبق معكم ✨`;
-                    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
-                  } else {
-                    handleOrderWhatsApp();
-                  }
-                }}
-                className="bg-[#25D366] text-white hover:bg-[#20ba59] py-2.5 rounded-xl text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Send size={12} className="rotate-220" />
-                <span>الطلب عبر واتساب</span>
-              </button>
-            </div>
 
             {/* Credential Badge */}
             <p className="text-center text-[9px] text-gray-400 font-serif flex justify-center items-center gap-1 mt-1">

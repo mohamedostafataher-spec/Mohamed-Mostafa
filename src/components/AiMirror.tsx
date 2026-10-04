@@ -692,7 +692,7 @@ export default function AiMirror({
                         <div className="flex justify-center gap-1.5 flex-wrap">
                           {[
                             { name: 'جسم دقيق (Petite)', url: '/img/sulta_collections_1_1781140831329.png' },
-                            { name: 'جسم طويل (Tall)', url: '/img/sulta_sleepwear_1_1781140797178.png' },
+                            { name: 'جسم طويل (Tall)', url: '/img/sulta_loungewear_1_1781140813379.png' },
                             { name: 'جسم كلاسيكي (Hourglass)', url: '/img/sulta_homewear_1_1781140849645.png' }
                           ].map((model, i) => (
                             <button

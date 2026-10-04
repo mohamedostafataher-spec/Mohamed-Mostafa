@@ -80,9 +80,7 @@ export default function MobileBottomNav({
               className={`flex flex-col items-center justify-center h-full py-1 transition-all relative cursor-pointer active:scale-95 ${
                 isActive
                   ? 'text-[#111827] font-bold'
-                  : tab.highlight
-                    ? 'text-[#A44C5C] font-semibold'
-                    : 'text-gray-500 hover:text-gray-900 font-medium'
+                  : 'text-gray-600 hover:text-black font-medium'
               }`}
             >
               <div className="relative">
@@ -91,20 +89,18 @@ export default function MobileBottomNav({
                   className={
                     isActive 
                       ? 'stroke-[2.5] text-[#111827]' 
-                      : tab.highlight 
-                        ? 'text-[#A44C5C]' 
-                        : ''
+                      : 'text-gray-600'
                   } 
                 />
                 
                 {/* Active Indicator Dot */}
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#A44C5C]" />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black" />
                 )}
 
                 {/* Badge for Favorites or Cart */}
                 {tab.badge > 0 && (
-                  <span className="absolute -top-1.5 -left-2 bg-[#E11D48] text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-xs border-2 border-white">
+                  <span className="absolute -top-1.5 -left-2 bg-black text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-xs border-2 border-white">
                     {tab.badge > 99 ? '99+' : tab.badge}
                   </span>
                 )}
@@ -113,9 +109,7 @@ export default function MobileBottomNav({
               <span className={`text-[10px] mt-0.5 leading-none ${
                 isActive 
                   ? 'font-bold text-[#111827]' 
-                  : tab.highlight 
-                    ? 'font-bold text-[#A44C5C]' 
-                    : 'text-gray-500'
+                  : 'text-gray-600 font-medium'
               }`}>
                 {tab.label}
               </span>
