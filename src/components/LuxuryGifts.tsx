@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SultaImage from './SultaImage';
 import { Gift, Sparkles, Check, Heart, ShoppingBag, Eye, Star } from 'lucide-react';
 import { Product } from '../types';
 import { cleanImgUrl } from '../services/db';
@@ -81,11 +82,11 @@ export default function LuxuryGifts({
         {/* Left column: Box visualization & Card message Preview */}
         <div className="space-y-6 flex flex-col justify-center">
           <div className="relative aspect-[4/3] rounded-[1.8rem] overflow-hidden bg-neutral-50 border border-gray-100">
-            <img 
-              src={cleanImgUrl(PACKAGING[selectedBox].img)} 
+            <SultaImage 
+              src={PACKAGING[selectedBox].img} 
               alt="Luxury Packaging" 
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
+              className="w-full h-full"
+              imgClassName="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-6 right-6 text-white">
@@ -214,13 +215,13 @@ export default function LuxuryGifts({
                 </div>
 
                 <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">
-                  <img
+                  <SultaImage
                     src={imgToUse}
                     alt={prod.nameAr}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
-                    referrerPolicy="no-referrer"
+                    className="w-full h-full"
+                    imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms]"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-400 flex items-center justify-center gap-3">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-400 flex items-center justify-center gap-3 z-10">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

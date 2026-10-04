@@ -110,8 +110,7 @@ export default function Header({
     { id: 'home', label: 'الرئيسية 🏠' },
     { id: 'store', label: 'المتجر 🛍️' },
     { id: 'best-sellers', label: 'الأكثر طلباً 🔥' },
-    { id: 'offers', label: 'العروض 🏷️' },
-    { id: 'contact', label: 'تواصل معنا 💬' }
+    { id: 'offers', label: 'العروض 🏷️' }
   ];
 
   const activeWhatsApp = country === 'SA' 

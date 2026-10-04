@@ -191,39 +191,38 @@ export function cleanText(text: any): any {
 }
 
 export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
-  if (!url || typeof url !== 'string' || url.trim() === '' || url.includes('placeholder') || url.includes('or_url.png')) {
+  if (!url || typeof url !== 'string' || url.trim() === '' || url.trim() === 'null' || url.trim() === 'undefined') {
     return '/img/sulta_default_1_1781140865386.png';
   }
 
   const cleaned = url.trim();
 
-  // If it is a full web URL or data URL (Supabase Storage CDN, external image host, etc.), return directly
-  if (cleaned.startsWith('https://') || cleaned.startsWith('http://') || cleaned.startsWith('data:')) {
-    return cleaned;
+  // If it's already a full absolute URL, return it
+  if (cleaned.startsWith('http')) {
+    // Ensure no triple slashes or other common mangling
+    return cleaned.replace(/([^:])\/+/g, '$1/');
   }
 
-  // Pre-configured mappings so local asset paths load our valid SULTA imagery
-  if (cleaned.startsWith('/src/assets/')) {
-    return cleaned.replace(/^\/src\/assets\//, '/img/');
+  if (cleaned.startsWith('data:')) return cleaned;
+
+  // Handle local assets
+  if (cleaned.startsWith('/img/') || cleaned.startsWith('img/')) {
+    return cleaned.startsWith('/') ? cleaned : '/' + cleaned;
   }
-  if (cleaned.startsWith('src/assets/')) {
-    return cleaned.replace(/^src\/assets\//, '/img/');
-  }
-  if (cleaned.startsWith('/assets/images/')) {
-    return cleaned.replace(/^\/assets\/images\//, '/img/');
+  
+  if (cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
+    return cleaned.replace(/^(\/)?src\/assets\//, '/img/');
   }
 
-  if (cleaned.startsWith('/img/')) {
-    return cleaned;
-  }
-  if (cleaned.startsWith('img/')) {
-    return '/' + cleaned;
-  }
-
-  // Fallback for raw filenames or relative storage paths (e.g. "1781023864996_t416qh97.png")
+  // Fallback: Assume it's a filename in the Supabase 'products' bucket
   const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
-  return `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
+  if (cleanPath.includes('.')) {
+    return `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
+  }
+
+  return '/img/sulta_default_1_1781140865386.png';
 }
+
 
 function mapCategory(data: any): Category {
   return {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SultaImage from './SultaImage';
 import { 
   Sparkles, 
   MapPin, 
@@ -559,7 +560,7 @@ export default function AtelierAudioAtmosphere({
 
                         <div className="flex gap-3 items-start flex-row-reverse" onClick={() => onSelectProduct && onSelectProduct(spotlightProduct)}>
                           <div className="w-16 h-22 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0 cursor-pointer">
-                            <img src={spotlightProduct.images[0]} alt="" className="w-full h-full object-cover" />
+                            <SultaImage src={spotlightProduct.images[0]} alt="" className="w-full h-full" imgClassName="object-cover" />
                           </div>
                           
                           <div className="flex-1 min-w-0 pr-1 text-right space-y-1 flex flex-col justify-between">
@@ -628,7 +629,7 @@ export default function AtelierAudioAtmosphere({
                               className="group cursor-pointer bg-neutral-50 hover:bg-pink-50/20 p-2 rounded-xl border border-neutral-100 transition-all text-center space-y-1.5"
                             >
                               <div className="aspect-[3/4] w-full rounded-lg overflow-hidden bg-gray-50">
-                                <img src={p.images[0]} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                                <SultaImage src={p.images[0]} alt="" className="w-full h-full" imgClassName="object-cover transition-transform duration-300 group-hover:scale-105" />
                               </div>
                               <h6 className="text-[9.5px] font-bold text-gray-900 line-clamp-1">{p.nameAr}</h6>
                               <span className="text-[9px] text-[#A44C5C] font-mono font-bold block">

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SultaImage from "./SultaImage";
 import {
   Package,
   MapPin,
@@ -1251,10 +1252,11 @@ export default function AccountView({
                               key={idx}
                               className="flex gap-3 justify-end items-center flex-row-reverse text-right border-b border-gray-100 pb-3 last:border-0 last:pb-0"
                             >
-                              <img
+                              <SultaImage
                                 src={itemImage}
                                 alt={item.productName}
-                                className="w-10 h-13 rounded-lg object-cover"
+                                className="w-10 h-13 rounded-lg"
+                                imgClassName="object-cover"
                               />
                               <div className="flex-1">
                                 <h5 className="font-bold text-gray-800">
@@ -1419,10 +1421,11 @@ export default function AccountView({
                       >
                         <div className="flex gap-4 items-start flex-row-reverse">
                           <div className="relative shrink-0 overflow-hidden rounded-xl border border-gray-50 aspect-[3/4] w-20 sm:w-24 bg-gray-50 cursor-pointer" onClick={() => onSelectProduct(p)}>
-                            <img
+                            <SultaImage
                               src={p.images[0]}
                               alt={p.nameAr}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              className="w-full h-full"
+                              imgClassName="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                               <span className="text-[10px] text-white bg-black/60 px-2 py-1 rounded-full font-serif">عرض التفاصيل</span>
@@ -1592,7 +1595,7 @@ export default function AccountView({
                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {recentlyViewed.map(p => (
                                <div key={p.id} className="border border-gray-150 rounded-2xl p-3 cursor-pointer hover:border-gray-300 group" onClick={() => onSelectProduct(p)}>
-                                  <img src={p.images[0]} alt={p.nameAr} className="w-full aspect-[3/4] object-cover rounded-xl mb-2 group-hover:scale-[1.02] transition-transform" />
+                                  <SultaImage src={p.images[0]} alt={p.nameAr} className="w-full aspect-[3/4] rounded-xl mb-2" imgClassName="object-cover group-hover:scale-[1.02] transition-transform" />
                                   <p className="text-xs font-bold font-sans line-clamp-1">{p.nameAr}</p>
                                   <p className="text-3xs text-gray-500 mt-1">{country === 'EG' ? p.priceEG : p.priceSA} {country === 'EG' ? 'EGP' : 'SAR'}</p>
                                </div>
@@ -2212,10 +2215,11 @@ export default function AccountView({
                             className="p-4 flex gap-4 items-center justify-between flex-row-reverse text-right"
                           >
                             <div className="flex gap-3 items-center flex-row-reverse text-right">
-                              <img
+                              <SultaImage
                                 src={itemImage}
                                 alt={item.productName}
-                                className="w-11 h-14 rounded-lg object-cover border border-gray-100"
+                                className="w-11 h-14 rounded-lg border border-gray-100"
+                                imgClassName="object-cover"
                               />
                               <div className="text-right">
                                 <h5 className="font-bold text-gray-900 text-right">

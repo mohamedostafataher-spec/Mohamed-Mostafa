@@ -32,7 +32,18 @@ export default function SupabaseConnectionChecker() {
           const { data: publicUrlData } = supabase.storage.from('products').getPublicUrl(fileName || 'test.png');
           
           console.log('[SupabaseConnectionChecker] Storage bucket test publicUrl:', publicUrlData?.publicUrl);
-          setStorageTestResult(publicUrlData?.publicUrl ? 'OK' : 'Failed');
+          
+          // Test if we can actually reach it (HEAD request)
+          if (publicUrlData?.publicUrl) {
+             try {
+               const res = await fetch(publicUrlData.publicUrl, { method: 'HEAD', mode: 'no-cors' });
+               setStorageTestResult('Active ✅');
+             } catch {
+               setStorageTestResult('Blocked (CORS/Policy) ⚠️');
+             }
+          } else {
+            setStorageTestResult('Failed ❌');
+          }
         } catch (storageErr: any) {
           console.warn('[SupabaseConnectionChecker] Storage test warning:', storageErr?.message);
           setStorageTestResult('Warning: ' + (storageErr?.message || 'Storage policy check'));

@@ -337,7 +337,12 @@ function AppContent() {
         
         // 1. Live Sync Products
         unsubProducts = dbService.subscribeProducts(
-          (list) => setProducts(list),
+          (list) => {
+            setProducts(list);
+            if (list.length > 0) {
+              console.log("[SULTA DEBUG] First 3 product images:", list.slice(0, 3).map(p => p.images?.[0]));
+            }
+          },
           (error) => console.error("Products error:", error)
         );
 
@@ -695,12 +700,8 @@ function AppContent() {
     // We can simulate an active selection by leaving it to StoreView filter
   };
 
-  // Dynamic live homepage filtering systems - Excluding lingerie & sleep dresses per user request
+  // Dynamic live homepage filtering systems
   const filteredProducts = products.filter(p => {
-    const text = (p.nameAr + ' ' + p.nameEn + ' ' + (p.categoryAr || '') + ' ' + (p.category || '')).toLowerCase();
-    if (text.includes('لانجيري') || text.includes('lingerie') || text.includes('فساتين نوم') || text.includes('فستان نوم') || text.includes('فساتين') || p.category === 'dresses') {
-      return false;
-    }
     if (country === 'EG') {
       if (settings?.saExclusiveProductIds && Array.isArray(settings.saExclusiveProductIds) && settings.saExclusiveProductIds.includes(p.id)) {
         return false;
@@ -1570,21 +1571,9 @@ function AppContent() {
                 
                 {[
                   { id: 'home', label: 'الرئيسية 🏠' },
-                  { id: 'offers', label: 'العروض والتخفيضات 🏷️' },
                   { id: 'store', label: 'المتجر والكتالوج 🛍️' },
                   { id: 'best-sellers', label: 'الأكثر مبيعاً 🏆' },
-                  { id: 'new-arrivals', label: 'أحدث الإصدارات 🆕' },
-                  { id: 'collections', label: 'SULTA Collections ✨' },
-                  
-                  { id: 'trending', label: 'الأكثر رواجاً 🔥' },
-                  { id: 'luxury-gifts', label: 'هدايا SULTA 🎁' },
-                  { id: 'limited-pieces', label: 'القطع المحدودة 💎' },
-                  { id: 'sleep-experience', label: 'Sleep Experience 💤' },
-                  { id: 'magazine', label: 'SULTA Magazine 📰' },
-                  { id: 'concierge', label: 'SULTA Concierge 👑' },
-                  { id: 'faq', label: 'مركز المساعدة ❓' },
-                  { id: 'returns', label: 'سياسة الشحن والاسترجاع 📦' },
-                  { id: 'about', label: 'عالم SULTA 🏛️' },
+                  { id: 'offers', label: 'العروض والتخفيضات 🏷️' },
                 ].map((item) => {
                   const isActive = currentTab === item.id;
                   return (

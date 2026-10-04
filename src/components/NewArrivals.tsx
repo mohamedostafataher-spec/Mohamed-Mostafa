@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SultaImage from './SultaImage';
 import { Star, Heart, Calendar, Sparkles, Inbox } from 'lucide-react';
 import { Product } from '../types';
 import { cleanImgUrl } from '../services/db';
@@ -104,11 +105,11 @@ export default function NewArrivals({
 
                 {/* Main Photo */}
                 <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">
-                  <img
+                  <SultaImage
                     src={imgToUse}
                     alt={prod.nameAr}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms] opacity-95"
-                    referrerPolicy="no-referrer"
+                    className="w-full h-full"
+                    imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms]"
                   />
                 </div>
 

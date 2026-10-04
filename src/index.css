@@ -27,12 +27,6 @@ body {
 img {
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
-img[loading] {
-  opacity: 0;
-}
-img.loaded {
-  opacity: 1;
-}
 
 /* Global override to shift muddy beige to clean, pure white Salla style */
 .bg-\[\#FAFAF7\], .bg-\[\#FAFAF8\], .bg-\[\#FAF5F0\] {

@@ -79,7 +79,6 @@ export default function StoreView({
       { id: 'new', nameAr: 'وصل حديثاً ✨', icon: '✨' },
       { id: 'bestseller', nameAr: 'الأكثر مبيعاً 🔥', icon: '👑' },
       ...categories
-        .filter(c => !c.name?.includes('فساتين') && !c.nameAr?.includes('فساتين') && c.slug !== 'dresses')
         .map(c => ({ id: c.id, nameAr: c.nameAr || c.name, icon: '🌸' }))
     ];
   }, [categories]);
@@ -99,10 +98,8 @@ export default function StoreView({
   const filteredProducts = useMemo(() => {
     let result = products.filter(p => {
       if (p.status === 'archived') return false;
-      const text = (p.nameAr + ' ' + p.nameEn + ' ' + (p.categoryAr || '') + ' ' + (p.category || '')).toLowerCase();
-      if (text.includes('لانجيري') || text.includes('lingerie') || text.includes('فساتين نوم') || text.includes('فستان نوم') || text.includes('فساتين') || p.category === 'dresses') {
-        return false;
-      }
+      // Filter out broken products that don't have a name
+      if (!p.nameAr && !p.nameEn) return false;
       return true;
     });
     
@@ -408,8 +405,8 @@ export default function StoreView({
         ) : (
           <div className={`grid ${
             mobileLayout === 'single'
-              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5'
-              : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5'
+              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5'
+              : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5'
           }`}>
             
             {filteredProducts.map((product, index) => {
@@ -418,8 +415,10 @@ export default function StoreView({
               const activeImgIdx = activeThumbIndices[product.id] || 0;
               const isAdded = !!addedItemIds[product.id];
               
-              // Select active image
-              const currentImg = cleanImgUrl(product.images?.[activeImgIdx], product.category);
+              // Select active image - Ensure we fallback to the first available image if activeImgIdx is invalid
+              const productImgs = product.images || [];
+              const safeIdx = (activeImgIdx >= 0 && activeImgIdx < productImgs.length) ? activeImgIdx : 0;
+              const currentImg = cleanImgUrl(productImgs[safeIdx], product.category);
 
               // Calculate price & discount for Salla badge
               const currentPrice = country === 'EG' ? product.priceEG : product.priceSA;
@@ -799,6 +798,7 @@ export default function StoreView({
                       src={item.images?.[0]} 
                       alt={item.nameAr} 
                       className="w-full h-full group-hover:scale-105"
+                      imgClassName="object-cover"
                     />
                   </div>
                   <h4 className="text-xs font-bold text-gray-900 truncate text-right">{item.nameAr}</h4>

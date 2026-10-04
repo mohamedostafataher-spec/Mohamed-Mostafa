@@ -1,4 +1,5 @@
 import React from 'react';
+import SultaImage from './SultaImage';
 import { ShieldCheck, Heart, Sparkles, Star, Zap } from 'lucide-react';
 import { Product } from '../types';
 import { cleanImgUrl } from '../services/db';
@@ -76,11 +77,11 @@ export default function LimitedPieces({
                 </div>
 
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF5F0] rounded-[1.5rem] mb-4">
-                  <img
+                  <SultaImage
                     src={imgToUse}
                     alt={prod.nameAr}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[1000ms] opacity-95"
-                    referrerPolicy="no-referrer"
+                    className="w-full h-full"
+                    imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[1000ms]"
                   />
                 </div>
 
