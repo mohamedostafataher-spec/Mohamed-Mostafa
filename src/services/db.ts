@@ -772,7 +772,7 @@ export const dbService = {
         defaultShippingFee: 45,
         instagram: 'https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==',
         facebook: '',
-        tiktok: ''
+        tiktok: 'https://www.tiktok.com/@sulta.brand'
       };
     }
 

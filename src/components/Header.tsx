@@ -131,8 +131,8 @@ export default function Header({
             <span className="hidden sm:inline">
               شحن مجاني لكافة طلبات {country === 'SA' ? 'المملكة العربية السعودية فوق 800 ريال 🇸🇦' : 'محافظات مصر فوق 1500 ج.م 🇪🇬'} | كود الخصم: <strong className="font-mono text-[#A44C5C]">SULTA20</strong>
             </span>
-            <span className="sm:hidden font-semibold truncate text-[10px]">
-              {country === 'SA' ? 'شحن مجاني فوق 800 ر.س 🇸🇦' : 'شحن مجاني فوق 1500 ج.م 🇪🇬'} • كود: <strong className="text-[#A44C5C]">SULTA20</strong>
+            <span className="sm:hidden font-semibold truncate text-[9px]">
+              شحن مجاني فوق {country === 'SA' ? '800 ر.س' : '1500 ج.م'} • كود: <strong className="text-[#A44C5C]">SULTA20</strong>
             </span>
           </div>
 
@@ -145,8 +145,8 @@ export default function Header({
             </span>
           </div>
 
-          {/* Right Controls: Instagram & Country Switcher */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Right Controls: Instagram, TikTok & Country Switcher */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Desktop WhatsApp Link */}
             <a
               href={`https://wa.me/${activeWhatsAppClean}?text=${encodeURIComponent('مرحباً SULTA، أحتاج للمساعدة بخصوص الطلب 🌸')}`}
@@ -172,6 +172,19 @@ export default function Header({
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                 <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </a>
+
+            {/* TikTok Icon Link */}
+            <a
+              href="https://www.tiktok.com/@sulta.brand"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition-all shadow-2xs"
+              title="تابعونا على تيك توك"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
               </svg>
             </a>
 

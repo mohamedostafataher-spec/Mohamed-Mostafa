@@ -26,9 +26,7 @@ export default function SocialLinksView({ className = "flex gap-3", settings }: 
   const instagramUrl = 'https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==';
   activeSocials.push({ id: 'instagram', platform: 'instagram', url: instagramUrl, label: 'Instagram' });
   
-  const tiktokUrl = settings?.tiktok && settings.tiktok.trim() !== ''
-    ? (settings.tiktok.startsWith('http') ? settings.tiktok : `https://tiktok.com/@${settings.tiktok}`)
-    : 'https://tiktok.com/@sultabrand';
+  const tiktokUrl = 'https://www.tiktok.com/@sulta.brand';
   activeSocials.push({ id: 'tiktok', platform: 'tiktok', url: tiktokUrl, label: 'TikTok' });
 
   // Add dummy placeholder if empty, but user thinks it's fake. So we just show empty or a fallback if there's none.
