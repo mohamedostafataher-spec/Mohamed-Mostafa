@@ -11,46 +11,15 @@ export default function BrandReputationDashboard({
   reviews = [],
   totalOrdersCount = 0,
 }: BrandReputationDashboardProps) {
-  // Local simulated luxury customer complaints & ideas to guarantee realistic interaction
   const [suggestionText, setSuggestionText] = useState('');
-  const [simulatedSuggestions, setSimulatedSuggestions] = useState([
-    {
-      id: 's-1',
-      username: 'الهنوف آل سعود',
-      tier: 'diamond',
-      type: 'اقتراح',
-      subject: 'طلب توفير علب مخملية للهدايا الكبرى',
-      content: 'أتمنى توفير خيار صناديق هدايا رويال مكسوة بالقطيفة الكرتونية العميقة للقطع الطويلة لتناسب ليلة الزفاف.',
-      status: 'مستجاب',
-      date: 'منذ يومين',
-    },
-    {
-      id: 's-2',
-      username: 'مريم الشريف',
-      tier: 'platinum',
-      type: 'ملاحظة',
-      subject: 'سرعة رد خدمة العملاء الملكية',
-      content: 'أود الإشادة بالرد السريع لخدمة الكونسيرج ومساعدتي بتفصيل المقاس عبر الواتساب في أقل من 5 دقائق.',
-      status: 'قيد التقدير',
-      date: 'منذ ٣ أيام',
-    },
-    {
-      id: 's-3',
-      username: 'ليلى الهاشم',
-      tier: 'gold',
-      type: 'اقتراح',
-      subject: 'توسعة تشكيلة الكيمونو الحريري',
-      content: 'نرجو توفير ألوان صيفية مبهجة كالعاجي واللؤلؤي المذهب في التشكيلة القادمة.',
-      status: 'معتمد للتنفيذ',
-      date: 'منذ أسبوع',
-    }
-  ]);
+  // Local state for internal quality notes/suggestions
+  const [suggestions, setSuggestions] = useState<any[]>([]); 
 
   const stats = useMemo(() => {
     const totalReviews = reviews.length;
     const avgRating = totalReviews > 0 
       ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1)) 
-      : 4.8; // Default high-morale brand premium indicator fallback
+      : 5.0; 
 
     // Star Distribution mapping
     const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -63,14 +32,7 @@ export default function BrandReputationDashboard({
       }
     });
 
-    // Make sure fallback has representative design distribution
-    if (totalReviews === 0) {
-      distribution[5] = 18;
-      distribution[4] = 3;
-      distribution[3] = 1;
-    }
-
-    const calculatedTotal = totalReviews || 22; // Represent fallback gracefully
+    const calculatedTotal = totalReviews || 1; 
     const fiveStarPercent = Math.round((distribution[5] / calculatedTotal) * 100);
     const fourStarPercent = Math.round((distribution[4] / calculatedTotal) * 100);
     const threeStarPercent = Math.round((distribution[3] / calculatedTotal) * 100);
@@ -78,7 +40,7 @@ export default function BrandReputationDashboard({
     // CSAT calculation (Customer Satisfaction Score)
     const csat = totalReviews > 0
       ? Math.round((reviews.filter((r) => r.rating >= 4).length / totalReviews) * 100)
-      : 96;
+      : 100;
 
     // NPS score
     const nps = totalReviews > 0
@@ -87,7 +49,7 @@ export default function BrandReputationDashboard({
             totalReviews) *
             100
         )
-      : 88;
+      : 100;
 
     return {
       totalReviews,
@@ -105,7 +67,7 @@ export default function BrandReputationDashboard({
     e.preventDefault();
     if (!suggestionText.trim()) return;
 
-    setSimulatedSuggestions((prev) => [
+    setSuggestions((prev) => [
       {
         id: `s-${Date.now()}`,
         username: 'مشرف الجودة (ملاحظة داخلية)',
@@ -236,7 +198,7 @@ export default function BrandReputationDashboard({
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-gray-900">{rev.username}</span>
                         <span className="text-[9px] bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-sans font-semibold">
-                          {rev.country === 'SA' ? 'المملكة العربية السعودية 🇸🇦' : 'جمهورية مصر العربية 🇪🇬'}
+                          المملكة العربية السعودية 🇸🇦
                         </span>
                       </div>
                       <div className="flex gap-0.5 text-amber-500">
@@ -298,7 +260,7 @@ export default function BrandReputationDashboard({
 
           {/* Suggestions List */}
           <div className="lg:col-span-2 space-y-3 max-h-[300px] overflow-y-auto">
-            {simulatedSuggestions.map((sug) => (
+            {suggestions.map((sug) => (
               <div key={sug.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex justify-between items-start gap-4 hover:border-gray-200 transition-all text-xs">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap mb-1">

@@ -61,114 +61,32 @@ function AppContent() {
   const [authLoading, setAuthLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  const [country, setCountry] = useState<Country>(() => {
-    try {
-      const savedCountry = localStorage.getItem('sulta_user_country_preference');
-      if (savedCountry === 'EG' || savedCountry === 'SA') {
-        return savedCountry as Country;
-      }
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (tz === 'Africa/Cairo' || tz.includes('Cairo') || tz.includes('Egypt')) {
-        return 'EG';
-      }
-      if (tz.includes('Riyadh') || tz.includes('Saudi') || tz.includes('Asia/Qatar') || tz.includes('Asia/Kuwait') || tz.includes('Asia/Bahrain') || tz.includes('Asia/Muscat') || tz.includes('Asia/Aden')) {
-        return 'SA';
-      }
-      return 'EG'; // Default fallback
-    } catch {
-      return 'EG';
-    }
-  });
+  const [country, setCountry] = useState<Country>('SA');
 
   // Synchronise manually chosen country changes to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('sulta_user_country_preference', country);
-    } catch (e) {
-      console.warn('LocalStorage country write failed', e);
-    }
-  }, [country]);
+      localStorage.setItem('sulta_user_country_preference', 'SA');
+    } catch (e) {}
+  }, []);
 
-  // High-precision geographic country detector (IP Geo-resolve -> Language resolution -> GMT/Timezone fallback)
+  // High-precision geographic country detector (Forced to Saudi identity)
   useEffect(() => {
-    const detectGeographicCountry = async () => {
-      // If user has an explicit saved preference in localStorage, respect it and do not overwrite or alert
-      const savedPref = localStorage.getItem('sulta_user_country_preference');
-      if (savedPref === 'EG' || savedPref === 'SA') {
-        return;
-      }
+    // Force Saudi Arabia as the only brand territory
+    if (country !== 'SA') {
+      setCountry('SA');
+    }
 
-      let detected: 'EG' | 'SA' | null = null;
-
-      // Tier 1: Check browser language strings for hints
-      try {
-        const lang = (navigator.language || '').toLowerCase();
-        const langs = (navigator.languages || []).map(l => l.toLowerCase());
-        const hasEgyptHint = [lang, ...langs].some(l => l.includes('eg') || l.includes('cairo'));
-        const hasSaudiHint = [lang, ...langs].some(l => l.includes('sa') || l.includes('riyadh') || l.includes('gcc') || l.includes('arabia'));
-        
-        if (hasEgyptHint) {
-          detected = 'EG';
-        } else if (hasSaudiHint) {
-          detected = 'SA';
-        }
-      } catch (err) {
-        console.warn('Browser language analysis failed:', err);
-      }
-
-      // Tier 2: Real-time Geo-IP Resolution (Concurrent fast fallback)
-      if (!detected) {
-        try {
-          const res = await fetch('https://ipapi.co/json/');
-          if (res.ok) {
-            const data = await res.json();
-            const code = String(data.country_code || '').toUpperCase();
-            if (code === 'EG') {
-              detected = 'EG';
-            } else if (['SA', 'QA', 'KW', 'BH', 'OM', 'AE'].includes(code)) {
-              detected = 'SA';
-            }
-          }
-        } catch (err) {
-          console.warn('Primary ipapi.co lookup failed. Querying backup...', err);
-          
-          try {
-            const res = await fetch('https://ip-api.com/json/');
-            if (res.ok) {
-              const data = await res.json();
-              const code = String(data.countryCode || '').toUpperCase();
-              if (code === 'EG') {
-                detected = 'EG';
-              } else if (['SA', 'QA', 'KW', 'BH', 'OM', 'AE'].includes(code)) {
-                detected = 'SA';
-              }
-            }
-          } catch (backupErr) {
-            console.warn('Backup ip-api lookup failed.', backupErr);
-          }
-        }
-      }
-
-      // Brand is strictly Saudi Arabia
-      detected = 'SA';
-
-      if (country !== 'SA') {
-        setCountry('SA');
-      }
-
-      // Beautiful Luxe notification to make sure the customer feels welcomed and in control
-      const sessionAlerted = sessionStorage.getItem('sulta_country_alerted');
-      if (!sessionAlerted) {
-        sessionStorage.setItem('sulta_country_alerted', 'true');
-        const welcomeMessage = `أهلاً بكِ في سُـلـطَـة 🇸🇦 متجر أزياء النوم والبيجامات الحريرية الفاخرة بالمملكة العربية السعودية.`;
-        
-        setTimeout(() => {
-          toast(welcomeMessage, 'success');
-        }, 1500);
-      }
-    };
-
-    detectGeographicCountry();
+    // Beautiful Luxe notification to make sure the customer feels welcomed
+    const sessionAlerted = sessionStorage.getItem('sulta_country_alerted');
+    if (!sessionAlerted) {
+      sessionStorage.setItem('sulta_country_alerted', 'true');
+      const welcomeMessage = `أهلاً بكِ في سُـلـطَـة 🇸🇦 متجر أزياء النوم والبيجامات الحريرية الفاخرة بالمملكة العربية السعودية.`;
+      
+      setTimeout(() => {
+        toast(welcomeMessage, 'success');
+      }, 1500);
+    }
   }, [country, toast]);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -1035,12 +953,12 @@ function AppContent() {
                   <div className="text-right">
                     <span className="block font-bold text-gray-950 text-xs sm:text-sm">خدمة عملاء واتساب</span>
                     <a 
-                      href={country === 'SA' ? "https://wa.me/966596894393" : "https://wa.me/201110095403"} 
+                      href="https://wa.me/966596894393" 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="text-[10px] sm:text-[11px] text-gray-900 font-mono font-bold hover:underline"
                     >
-                      {country === 'SA' ? '0596894393 🇸🇦' : '+20 111 009 5403 🇪🇬'}
+                      0596894393 🇸🇦
                     </a>
                   </div>
                 </div>
@@ -1694,8 +1612,8 @@ function AppContent() {
       )}
 
       <WhatsAppFloat 
-        number={settings?.whatsapp || '201110095403'} 
-        saudiNumber={settings?.whatsappSaudi || '966596894393'} 
+        number={settings?.whatsappSaudi || settings?.whatsapp || '966596894393'} 
+        saudiNumber="966596894393" 
         country={country} 
       />
     </div>

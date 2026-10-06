@@ -1,49 +1,99 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import { Heart, AlertTriangle, ShieldAlert, CheckCircle2, TrendingUp, Users, Target } from 'lucide-react';
 import { dbService } from '../services/db';
+import { Review } from '../types';
 
 export default function CustomerExperienceDashboard() {
   const [metrics, setMetrics] = useState({
-    csat: 94,
-    nps: 72,
+    csat: 100,
+    nps: 0,
     openTickets: 0,
-    avgResolutionTime: 2.4, // hours
+    avgResolutionTime: 0, 
     failedOrders: 0,
     repeatedIssues: 0,
     fraudAttempts: 0
   });
 
-  const [ticketsData, setTicketsData] = useState([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [tickets, setTickets] = useState<any[]>([]);
   
   useEffect(() => {
-    // Ideally this comes from real DB aggregations
-    const unsub = dbService.subscribeTickets((tickets) => {
-      const open = tickets.filter(t => t.status !== 'closed' && t.status !== 'resolved').length;
-      const issues = tickets.filter(t => t.type === 'complaint').length;
+    const unsubTickets = dbService.subscribeTickets((tList) => {
+      setTickets(tList);
+      const open = tList.filter(t => t.status !== 'closed' && t.status !== 'resolved').length;
+      const issues = tList.filter(t => t.type === 'complaint').length;
       
       setMetrics(prev => ({
         ...prev,
         openTickets: open,
-        repeatedIssues: issues > 5 ? 5 : issues
+        repeatedIssues: issues
       }));
     }, () => {});
-    return unsub;
+
+    const unsubReviews = dbService.subscribeReviews((rList) => {
+      setReviews(rList);
+      if (rList.length > 0) {
+        const avg = rList.reduce((sum, r) => sum + r.rating, 0) / rList.length;
+        const csatScore = Math.round((avg / 5) * 100);
+        
+        const promoters = rList.filter(r => r.rating === 5).length;
+        const detractors = rList.filter(r => r.rating <= 3).length;
+        const npsScore = Math.round(((promoters - detractors) / rList.length) * 100);
+
+        setMetrics(prev => ({
+          ...prev,
+          csat: csatScore,
+          nps: npsScore
+        }));
+      }
+    }, () => {});
+
+    return () => {
+      unsubTickets();
+      unsubReviews();
+    };
   }, []);
 
-  const csatTrend = [
-    { name: 'يناير', value: 88 },
-    { name: 'فبراير', value: 90 },
-    { name: 'مارس', value: 92 },
-    { name: 'أبريل', value: 94 },
-  ];
+  const csatTrend = useMemo(() => {
+    // Group reviews by month for trend
+    if (reviews.length === 0) return [{ name: 'انتظار البيانات', value: 0 }];
+    
+    const monthsAr = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    const groups: Record<string, { sum: number, count: number }> = {};
+    
+    reviews.forEach(r => {
+      const d = new Date(r.date);
+      const month = monthsAr[d.getMonth()];
+      if (!groups[month]) groups[month] = { sum: 0, count: 0 };
+      groups[month].sum += r.rating;
+      groups[month].count += 1;
+    });
 
-  const issuesDistribution = [
-    { name: 'تأخير شحن', value: 35 },
-    { name: 'استفسار مقاسات', value: 40 },
-    { name: 'عيوب تغليف', value: 15 },
-    { name: 'مشاكل دفع', value: 10 },
-  ];
+    return Object.entries(groups).map(([name, g]) => ({
+      name,
+      value: Math.round((g.sum / (g.count * 5)) * 100)
+    }));
+  }, [reviews]);
+
+  const issuesDistribution = useMemo(() => {
+    if (tickets.length === 0) return [{ name: 'لا توجد تذاكر', value: 100 }];
+    
+    const dist: Record<string, number> = {};
+    const typeLabels: any = {
+      'inquiry': 'استفسارات',
+      'complaint': 'شكاوى',
+      'return': 'استرجاع',
+      'other': 'أخرى'
+    };
+
+    tickets.forEach(t => {
+      const label = typeLabels[t.type] || t.type;
+      dist[label] = (dist[label] || 0) + 1;
+    });
+
+    return Object.entries(dist).map(([name, value]) => ({ name, value }));
+  }, [tickets]);
   const COLORS = ['#A44C5C', '#DF8A9C', '#F6E7A6', '#0B0B0B'];
 
   return (

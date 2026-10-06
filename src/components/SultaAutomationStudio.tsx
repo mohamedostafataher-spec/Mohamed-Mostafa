@@ -454,20 +454,20 @@ export default function SultaAutomationStudio({
     if (activeProduct) {
       setBoxBrandTitle(`SULTA ATELIER`);
       setBoxTagline(`Zero Calories [${activeProduct.nameAr || 'Sleepwear'}] 🎀`);
-      setBoxSideStamp(`علامة مصرية فاخرة تليق بأميرتنا ⚜️`);
+      setBoxSideStamp(`علامة سعودية ملكية تليق بأميرتنا ⚜️`);
 
-      setThankYouTitle(`شكراً لاختياركِ فخامة سولا`);
-      setThankYouMsg(`صُنعت هذه القطعة الفاخرة [${activeProduct.nameAr}] خصيصاً لتمنحكِ تجربة نوم ملكية دافئة وهادئة.`);
-      setThankYouGreeting(`فريق سولا كوتور مع كامل الحب 💗`);
+      setThankYouTitle(`شكراً لاختياركِ فخامة سُلطة`);
+      setThankYouMsg(`صُنعت هذه القطعة الفاخرة [${activeProduct.nameAr}] خصيصاً لتمنحكِ تجربة نوم ملكية دافئة وهادئة بالمملكة.`);
+      setThankYouGreeting(`فريق سُلطة كوتور الملكي ❤️`);
       
-      setStickerSub(`SULTA SLEEPWEAR COUTURE`);
+      setStickerSub(`SULTA SAUDI SLEEPWEAR COUTURE`);
       setStickerMono(activeProduct.nameAr ? activeProduct.nameAr.charAt(0) : 'S');
-      setStickerFoot(`صنع بعناية فائقة لأميرات سولا ★ مصر`);
+      setStickerFoot(`صنع بعناية فائقة لأميرات سُلطة ★ المملكة العربية السعودية`);
       
       setTagSku(activeProduct.sku || `SLT-${activeProduct.id ? activeProduct.id.slice(0, 5).toUpperCase() : 'COUT'}`);
       setTagSize(activeProduct.sizes && activeProduct.sizes.length > 0 ? activeProduct.sizes.join(' / ') : 'M / L');
       setTagFabric(activeProduct.fabricAr || 'حرير عضوي ملكي معالج');
-      setTagPrice(`${activeProduct.priceEG ? activeProduct.priceEG.toLocaleString() : '3,900'} ج.م`);
+      setTagPrice(`${activeProduct.priceSA ? activeProduct.priceSA.toLocaleString() : '450'} ر.س`);
       
       setCareWashing(activeProduct.washInstructionsAr || 'يغسل يدوياً بماء بارد (تحت 30 درجة) مع تجنب المحاليل المبيضة للحفاظ على مرونة النسيج اللطيف.');
       setCareDrying(`يجفف بالتعليق في مكان ظليل بعيداً عن أشعة الشمس المباشرة لمنع بهتان الألياف وبقاء رونقها.`);
@@ -484,7 +484,7 @@ export default function SultaAutomationStudio({
       setInsertScent(`طرد معطر برائحة الساتين والحرير المعتق بعبير: اللافندر والمسك الأبيض الخلاب`);
       
       setQrSupport(`دعم كونسيرج ومبيعات سولا`);
-      setQrSocial(`كتالوج المجموعات الجديد بمصر والسعودية`);
+      setQrSocial(`كتالوج المجموعات الجديد بالمملكة والخليج`);
     }
   }, [selectedProductId, products]);
 
@@ -1233,7 +1233,7 @@ export default function SultaAutomationStudio({
                   <div className="bg-[#FAF3F5] p-3 rounded-2xl border border-[#A44C5C]/15">
                     <span className="text-[12px] font-black text-[#A44C5C] block">🎨 تخصيص نوع وهيكل كرتونة التغليف (Packaging)</span>
                     <p className="text-[10px] text-stone-500 leading-normal mt-0.5">
-                      اختر شكل الصندوق وهيكل الطباعة المناسب لمنتجات سولا الفاخرة لتصديرها ومشاركتها مع مصانع الكرتون بمصر.
+                      اختر شكل الصندوق وهيكل الطباعة المناسب لمنتجات سُلطة الفاخرة لتصديرها ومشاركتها مع مصانع الكرتون المحلية بالمملكة.
                     </p>
                   </div>
 

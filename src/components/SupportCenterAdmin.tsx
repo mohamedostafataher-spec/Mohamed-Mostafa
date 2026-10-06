@@ -131,7 +131,7 @@ export default function SupportCenterAdmin() {
               <div className="flex items-center gap-2 mb-2 text-xs text-gray-500">
                 <span className="font-bold text-gray-900">{selectedTicket.customerName}</span>
                 <span>•</span>
-                <span>{new Date(selectedTicket.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span>{new Date(selectedTicket.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
               <p className="text-sm font-medium leading-relaxed">فتح العميل تذكرة دعم نوع: {typeLabels[selectedTicket.type]}</p>
             </div>
@@ -144,7 +144,7 @@ export default function SupportCenterAdmin() {
                   <div className="flex items-center gap-2 mb-2 opacity-80 text-xs text-gray-400">
                     <span className={`font-bold ${isMe ? 'text-white' : 'text-gray-900'}`}>{msg.senderName}</span>
                     <span>•</span>
-                    <span className={isMe ? 'text-white/60' : 'text-gray-500'}>{new Date(msg.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className={isMe ? 'text-white/60' : 'text-gray-500'}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                 </div>

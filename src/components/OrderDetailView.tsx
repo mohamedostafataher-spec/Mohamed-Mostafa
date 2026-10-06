@@ -404,7 +404,7 @@ export default function OrderDetailView({
         rating: satisfactionRating,
         comment: satisfactionComment + (satisfactionPhoto ? ` [صورة مرفقة مضافة من العميل]` : ''),
         date: new Date().toISOString().split('T')[0],
-        country: order.country === 'EG' ? 'EG' : 'SA',
+        country: 'SA',
         productName: order.items[0]?.productName || 'تصميم كوتور فاخر'
       };
 
@@ -444,9 +444,7 @@ export default function OrderDetailView({
       `الحالة الحالية: ${getStatusTitle(order.status)}\n` +
       `يرجى موافاتي بالتفاصيل الملكية الإضافية. شكراً لكم 🌸`
     );
-    const targetWhatsapp = order.country === 'SA'
-      ? (settings?.whatsappSaudi || '966596894393')
-      : (settings?.whatsapp || '201110095403');
+    const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393');
     const cleanWhatsapp = targetWhatsapp.replace(/\D/g, '');
     window.open(`https://wa.me/${cleanWhatsapp}?text=${msg}`, '_blank');
   };

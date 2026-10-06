@@ -9,18 +9,18 @@ interface SalesByRegionChartProps {
 const SalesByRegionChart: React.FC<SalesByRegionChartProps> = ({ orders }) => {
   const data = useMemo(() => {
     const regionalData: Record<string, { region: string; sales: number }> = {
-      'Egypt': { region: 'Egypt (EGP)', sales: 0 },
-      'Saudi Arabia': { region: 'Saudi (SAR)', sales: 0 }
+      'Riyadh': { region: 'الرياض', sales: 0 },
+      'Jeddah': { region: 'جدة', sales: 0 },
+      'Dammam': { region: 'الدمام', sales: 0 },
+      'Other': { region: 'مدن أخرى', sales: 0 }
     };
 
     orders.forEach(order => {
-      // Assuming 'region' or 'country' is in order data or we can infer it
-      // Based on the prompt "السعودية مقابل مصر", I will look for SAR vs EGP currencies or shipping info
-      if (order.currency === 'SAR') {
-        regionalData['Saudi Arabia'].sales += order.totalPrice;
-      } else if (order.currency === 'EGP') {
-        regionalData['Egypt'].sales += order.totalPrice;
-      }
+      const city = (order.city || '').toLowerCase();
+      if (city.includes('رياض') || city.includes('riyadh')) regionalData['Riyadh'].sales += order.totalPrice;
+      else if (city.includes('جده') || city.includes('jeddah')) regionalData['Jeddah'].sales += order.totalPrice;
+      else if (city.includes('دمام') || city.includes('dammam')) regionalData['Dammam'].sales += order.totalPrice;
+      else regionalData['Other'].sales += order.totalPrice;
     });
 
     return Object.values(regionalData);

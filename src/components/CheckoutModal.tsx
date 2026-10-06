@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   CreditCard, 
@@ -19,6 +19,7 @@ import {
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { dbService } from '../services/db';
 import { agentSystem } from '../services/agentSystem';
+import { trackInitiateCheckout, trackPurchase } from '../utils/analytics';
 import SultaImage from './SultaImage';
 
 interface CheckoutModalProps {
@@ -47,8 +48,8 @@ export default function CheckoutModal({
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
 
-  // Selected payment method (default: apple for SA, cod for EG)
-  const [selectedPayment, setSelectedPayment] = useState<string>(country === 'SA' ? 'apple' : 'cod');
+  // Selected payment method (default: apple for SA)
+  const [selectedPayment, setSelectedPayment] = useState<string>('apple');
   
   // Submission & copy states
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,18 +57,52 @@ export default function CheckoutModal({
   const [successOrder, setSuccessOrder] = useState<Order | null>(null);
   const [confirmViaWhatsapp, setConfirmViaWhatsapp] = useState(true);
   const [copiedBank, setCopiedBank] = useState(false);
+  const [copiedInvoice, setCopiedInvoice] = useState(false);
 
-  const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
+  // Auto-redirect effect for WhatsApp on success (mobile optimized)
+  useEffect(() => {
+    if (successOrder && confirmViaWhatsapp) {
+      const itemsList = successOrder.items.map(i => `• ${i.productName} (${i.color} - ${i.size}) × ${i.quantity}`).join('\n');
+      const invoiceText = `🌸 مرحباً متجر SULTA للأزياء الملكية الفاخرة، قمت بإتمام حجز طلبيتي:\n\n` +
+                   `📋 رقم الطلب: ${successOrder.id.slice(0, 18)}\n` +
+                   `👤 الاسم: ${successOrder.customerName}\n` +
+                   `📱 الجوال: ${successOrder.phone}\n` +
+                   `📍 العنوان: ${successOrder.city} - ${successOrder.address}\n` +
+                   `💳 وسيلة الدفع: ${successOrder.paymentMethod}\n` +
+                   `💰 الإجمالي: ${successOrder.totalPrice.toLocaleString()} ${successOrder.currency}\n\n` +
+                   `📦 تفاصيل المنتجات:\n${itemsList}\n\n` +
+                   `✨ يرجى تأكيد استلام الطلب وتجهيز التغليف الملكي للشحن السريع ❤️`;
+      
+      const encodedText = encodeURIComponent(invoiceText);
+      const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393').replace(/\D/g, '');
+      const cleanWhatsapp = targetWhatsapp.startsWith('05') ? ('966' + targetWhatsapp.slice(1)) : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966596894393');
+      const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodedText}`;
+
+      // Only auto-trigger on mount of success screen
+      const timer = setTimeout(() => {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = whatsappUrl;
+        } else {
+          window.open(whatsappUrl, '_blank');
+        }
+      }, 1500); // Small delay for user to see the success checkmark
+
+      return () => clearTimeout(timer);
+    }
+  }, [successOrder, confirmViaWhatsapp, settings]);
+
+  const currencyLabel = 'ر.س';
 
   // Subtotal and Calculations
   const subtotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
+    const itemPrice = item.product.priceSA;
     return sum + itemPrice * item.quantity;
   }, 0);
 
   // Dynamic Shipping calculation
   const getDynamicShippingCost = () => {
-    if (!settings) return country === 'EG' ? 80 : 30;
+    if (!settings) return 30;
     const userCity = city.trim().toLowerCase();
     
     if (userCity && settings.shippingRates && settings.shippingRates.length > 0) {
@@ -84,7 +119,7 @@ export default function CheckoutModal({
       return settings.defaultShippingFee;
     }
     
-    return country === 'EG' ? 80 : 30;
+    return 30;
   };
 
   const shippingCost = getDynamicShippingCost();
@@ -141,6 +176,13 @@ export default function CheckoutModal({
     if (!phone.trim()) return setErrorMsg('الرجاء كتابة رقم الجوال للتواصل والواتساب.');
     if (!city.trim()) return setErrorMsg('الرجاء كتابة اسم المدينة (مثال: الرياض، جدة، الدمام).');
     if (!address.trim()) return setErrorMsg('الرجاء كتابة الحي والشارع لتسهيل وصول المندوب.');
+
+    try {
+      trackInitiateCheckout(cart, totalAmount, country === 'EG' ? 'EGP' : 'SAR');
+    } catch (e) {
+      console.warn("InitiateCheckout pixel tracking error:", e);
+    }
+
     setStep(2);
   };
 
@@ -189,6 +231,13 @@ export default function CheckoutModal({
       };
 
       await dbService.saveOrder(newOrder);
+
+      // Trigger Pixel Purchase Tracking immediately for all connected ad networks
+      try {
+        trackPurchase(newOrder);
+      } catch (err) {
+        console.warn("Purchase pixel tracking error:", err);
+      }
       
       // Trigger SULTA Agent System automation
       try {
@@ -208,24 +257,29 @@ export default function CheckoutModal({
 
   // SUCCESS SCREEN
   if (successOrder) {
+    const itemsList = successOrder.items.map(i => `• ${i.productName} (${i.color} - ${i.size}) × ${i.quantity}`).join('\n');
+    const invoiceText = `🌸 مرحباً متجر SULTA للأزياء الملكية الفاخرة، قمت بإتمام حجز طلبيتي:\n\n` +
+                 `📋 رقم الطلب: ${successOrder.id.slice(0, 18)}\n` +
+                 `👤 الاسم: ${successOrder.customerName}\n` +
+                 `📱 الجوال: ${successOrder.phone}\n` +
+                 `📍 العنوان: ${successOrder.city} - ${successOrder.address}\n` +
+                 `💳 وسيلة الدفع: ${successOrder.paymentMethod}\n` +
+                 `💰 الإجمالي: ${successOrder.totalPrice.toLocaleString()} ${successOrder.currency}\n\n` +
+                 `📦 تفاصيل المنتجات:\n${itemsList}\n\n` +
+                 `✨ يرجى تأكيد استلام الطلب وتجهيز التغليف الملكي للشحن السريع ❤️`;
+    
+    const encodedText = encodeURIComponent(invoiceText);
+    const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393').replace(/\D/g, '');
+    const cleanWhatsapp = targetWhatsapp.startsWith('05') ? ('966' + targetWhatsapp.slice(1)) : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966596894393');
+    const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodedText}`;
+
     const handleSendWhatsApp = () => {
-      const itemsList = successOrder.items.map(i => `• ${i.productName} (${i.color} - ${i.size}) × ${i.quantity}`).join('\n');
-      const text = `🌸 مرحباً متجر SULTA، قمت بإتمام حجز طلبيتي الملكية:\n\n` +
-                   `📋 رقم الطلب: ${successOrder.id}\n` +
-                   `👤 الاسم: ${successOrder.customerName}\n` +
-                   `📍 العنوان: ${successOrder.city} - ${successOrder.address}\n` +
-                   `💳 طريقة الدفع: ${successOrder.paymentMethod}\n` +
-                   `💰 الإجمالي: ${successOrder.totalPrice.toLocaleString()} ${successOrder.currency}\n\n` +
-                   `📦 المنتجات:\n${itemsList}\n\n` +
-                   `يرجى تأكيد تجهيز الشحنة وتزويدي برقم البوليصة فوراً ❤️`;
-      
-      const encodedText = encodeURIComponent(text);
-      const targetWhatsapp = successOrder.country === 'SA'
-        ? (settings?.whatsappSaudi || '966596894393')
-        : (settings?.whatsapp || '201110095403');
-      const cleanWhatsapp = targetWhatsapp.replace(/\D/g, '');
-      const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodedText}`;
-      window.open(whatsappUrl, '_blank');
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = whatsappUrl;
+      } else {
+        window.open(whatsappUrl, '_blank');
+      }
     };
 
     return (
@@ -274,6 +328,25 @@ export default function CheckoutModal({
             </div>
           </div>
 
+          {/* WhatsApp Action & Notification Banner */}
+          <div className="mb-4 text-right">
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs sm:text-sm font-black py-3.5 sm:py-4 px-4 rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2.5 transition-all transform hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+            >
+              <Send size={18} />
+              <span>📱 إرسال الفاتورة وتأكيد الطلب فوراً عبر واتساب المتجر الملكي</span>
+            </a>
+            <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-gray-500">
+              <span className="font-mono" dir="ltr">WhatsApp: +{cleanWhatsapp}</span>
+              <span className="text-emerald-700 font-bold">
+                {confirmViaWhatsapp ? '✓ خيار الواتساب مفعل' : 'تأكيد فوري متاح'}
+              </span>
+            </div>
+          </div>
+
           {/* Bank Transfer Notification Card (if bank transfer chosen) */}
           {successOrder.paymentMethod.includes('بنك الجزيرة') && (
             <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 mb-5 text-right text-xs space-y-2">
@@ -295,14 +368,26 @@ export default function CheckoutModal({
           <div className="flex flex-col sm:flex-row gap-2.5 items-center justify-center">
             <button
               onClick={handleSendWhatsApp}
-              className="w-full sm:flex-1 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full sm:flex-1 bg-gray-900 hover:bg-black text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-sm flex items-center justify-center gap-2"
             >
-              <Send size={15} />
-              <span>متابعة الطلب عبر واتساب خدمة العملاء 💬</span>
+              <Send size={14} />
+              <span>فتح المحادثة مجدداً 💬</span>
+            </button>
+            <button
+              onClick={() => {
+                const invoiceSummary = `رقم الطلب: ${successOrder.id}\nالاسم: ${successOrder.customerName}\nالعنوان: ${successOrder.city} - ${successOrder.address}\nالإجمالي: ${successOrder.totalPrice} ر.س`;
+                navigator.clipboard.writeText(invoiceSummary);
+                setCopiedInvoice(true);
+                setTimeout(() => setCopiedInvoice(false), 3000);
+              }}
+              className="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5"
+            >
+              {copiedInvoice ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+              <span>{copiedInvoice ? 'تم النسخ ✓' : 'نسخ الفاتورة'}</span>
             </button>
             <button
               onClick={() => onOrderSuccess(successOrder)}
-              className="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-3.5 px-6 rounded-xl cursor-pointer transition-all"
+              className="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-3.5 px-5 rounded-xl cursor-pointer transition-all"
             >
               العودة للمتجر
             </button>

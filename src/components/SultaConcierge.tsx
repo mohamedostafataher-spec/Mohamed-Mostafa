@@ -162,8 +162,8 @@ function QuickSizerProducts({ products, country, onSelectProduct }: { products: 
           <span className="text-[11px] font-bold text-stone-500 block">روائع الأطقم الداعمة والمتاحة بمقاسكِ {size}:</span>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {matches.map((p) => {
-              const price = country === 'EG' ? p.priceEG : p.priceSA;
-              const cur = country === 'EG' ? 'ج.م' : 'ر.س';
+              const price = p.priceSA;
+              const cur = 'ر.س';
               return (
                 <div 
                   key={p.id}

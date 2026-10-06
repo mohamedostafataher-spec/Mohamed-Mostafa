@@ -324,12 +324,12 @@ export default function ProductDetailModal({
   };
 
   const isFav = favorites.includes(product.id);
-  const price = country === 'EG' ? product.priceEG : product.priceSA;
-  const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
+  const price = product.priceSA;
+  const currencyLabel = 'SAR';
 
   // Dynamic outfit pairing matcher
   const matchedPairProduct = products.find(p => p.id !== product.id) || products[0];
-  const matchedPrice = matchedPairProduct ? (country === 'EG' ? matchedPairProduct.priceEG : matchedPairProduct.priceSA) : 0;
+  const matchedPrice = matchedPairProduct ? matchedPairProduct.priceSA : 0;
 
   // Incrementor/Decrementor
   const handleQtyChange = (val: number) => {
@@ -340,16 +340,17 @@ export default function ProductDetailModal({
 
   // Prefilled WhatsApp order text builder
   const handleOrderWhatsApp = () => {
-    const phoneNumber = country === 'SA' ? '966596894393' : (settings?.whatsapp || '201110095403');
-    const text = `مرحباً براند Sulta الفاخر 🌸، أريد طلب القطعة التالية:
+    const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393').replace(/\D/g, '');
+    const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : targetPhone;
+    const text = `مرحباً براند SULTA للأزياء الملكية 🌸، أود حجز القطعة التالية:
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}
 • المقاس المطلوب: ${selectedSz}
 • الكمية: ${quantity}
 • السعر الإجمالي: ${(price * quantity).toLocaleString()} ${currencyLabel}
-• الدولة: ${country === 'EG' ? 'مصر 🇪🇬' : 'السعودية 🇸🇦'}
+• الدولة: المملكة العربية السعودية 🇸🇦
 
-الرجاء تأكيد الطلب وتوضيح تفاصيل الشحن الملكي. شكراً لكم ✨`;
+الرجاء تأكيد الحجز وتجهيز التغليف الملكي والشحن السريع. شكراً لكم ✨`;
     
     const encodedText = encodeURIComponent(text);
     const url = `https://wa.me/${phoneNumber}?text=${encodedText}`;
@@ -1688,7 +1689,7 @@ export default function ProductDetailModal({
                             </div>
                             <div className="flex flex-col items-end">
                                <span className="text-amber-400 text-xs">{'⭐'.repeat(r.rating || 5)}{'☆'.repeat(5 - (r.rating || 5))}</span>
-                               <span className="text-gray-400 text-[9px]">{new Date(r.date).toLocaleDateString('ar-EG')} • {r.country === 'EG' ? 'مصر 🇪🇬' : 'السعودية 🇸🇦'}</span>
+                               <span className="text-gray-400 text-[9px]">{new Date(r.date).toLocaleDateString('ar-SA')} • المملكة العربية السعودية 🇸🇦</span>
                             </div>
                           </div>
                           <p className="text-[11px] text-gray-700 leading-relaxed font-medium">{r.comment}</p>
@@ -1885,7 +1886,7 @@ export default function ProductDetailModal({
 💎 المقاسات المتوافرة: ${product.sizes.join(', ')}
 💰 السعر: ${price.toLocaleString()} ${currencyLabel}
 
-القطعة منسوجة بقمة الفخامة والنعومة ومتاحة للتوصيل الفوري بالرياض ومصر ومختلف الدول العربيّة!
+القطعة منسوجة بقمة الفخامة والنعومة ومتاحة للتوصيل الفوري لكافة مدن المملكة ودول الخليج العربيّة!
 رابط القطعة الفاخرة للاستعراض والطلب:
 ${shareUrl}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');

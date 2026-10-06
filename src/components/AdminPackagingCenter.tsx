@@ -1468,10 +1468,10 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                     <span>👤 <b>مستلمة الدلال:</b> {customClientName || 'صاحبة السمو أميرة تاجر'}</span>
                   </div>
                   <div className="bg-stone-50 p-2 rounded border border-stone-200 space-y-0.5">
-                    <span>📍 <b>العنوان المفوّد:</b> القاهرة، مصر / المعادى أو الفجالة</span>
+                    <span>📍 <b>العنوان المفوّد:</b> الرياض، المملكة العربية السعودية / حي النرجس</span>
                   </div>
                   <div className="flex justify-between gap-2 bg-stone-50 p-2 rounded border border-stone-200">
-                    <span>💵 COD: 3,500 ج.م</span>
+                    <span>💵 COD: 350 ر.س</span>
                     <span><b>الوزن:</b> 0.8 كجم</span>
                   </div>
                 </div>

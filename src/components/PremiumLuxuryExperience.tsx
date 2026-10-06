@@ -826,7 +826,7 @@ export default function PremiumLuxuryExperience({
                       ✨ حرير ملكي ناعم بارد وخفيف كالحلم
                     </button>
                     <button onClick={() => handleSelectQuizAnswer('fabric', 'cotton')} className="p-4 border rounded-2xl border-gray-100 hover:border-[#DF8A9C] text-xs font-bold transition-all hover:bg-[#DF8A9C]/5">
-                      🧶 قطن مصري عضوي طبيعي يتنفس معكِ
+                      🧶 قطن سُلطة الملكي العضوي يتنفس معكِ
                     </button>
                     <button onClick={() => handleSelectQuizAnswer('fabric', 'velvet')} className="p-4 border rounded-2xl border-gray-100 hover:border-[#DF8A9C] text-xs font-bold transition-all hover:bg-[#DF8A9C]/5">
                       🍁 مخمل ونقوش بارزة من الحنان والدفء

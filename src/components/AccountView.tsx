@@ -488,11 +488,11 @@ export default function AccountView({
         id: query.startsWith("SUL-") ? query.toUpperCase() : `SUL-${query.toUpperCase()}`,
         customerName: session?.user?.email ? session.user.email.split('@')[0] : "سيدة الأناقة الموقرة",
         phone: "+966 50 123 4567",
-        country: country || "EG",
-        city: country === "EG" ? "القاهرة، مصر الجديدة" : "الرياض، حي السليمانية",
+        country: "SA",
+        city: "الرياض، حي السليمانية",
         address: "شارع الفخامة الملكية، فيلا 12",
         status: "shipped", // default interactive view defaults to shipped to show off live driver chat & map countdown
-        currency: country === "EG" ? "EGP" : "SAR",
+        currency: "SAR",
         totalPrice: 1850,
         paymentMethod: "بطاقة دفع مدى الائتمانية",
         date: new Date().toISOString().split('T')[0],
@@ -1101,7 +1101,7 @@ export default function AccountView({
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                         <RechartsTooltip 
                           contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
-                          formatter={(value) => [`\u200E${value} ${country === 'EG' ? 'EGP' : 'SAR'}`, 'المصروفات']}
+                          formatter={(value) => [`\u200E${value} SAR`, 'المصروفات']}
                         />
                         <Area type="monotone" dataKey="المصروفات" stroke="#DF8A9C" fillOpacity={1} fill="url(#colorSpend)" activeDot={{ r: 6, fill: '#0B0B0B', stroke: '#F6E7A6', strokeWidth: 2 }} />
                       </AreaChart>
@@ -2161,9 +2161,7 @@ export default function AccountView({
                         </p>
                         <p>
                           <strong>الدولة المحددة:</strong>{" "}
-                          {trackedOrder.country === "EG"
-                            ? "جمهورية مصر العربية 🇪🇬"
-                            : "المملكة العربية السعودية 🇸🇦"}
+                          المملكة العربية السعودية 🇸🇦
                         </p>
                       </div>
                     </div>

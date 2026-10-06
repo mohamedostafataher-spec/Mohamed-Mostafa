@@ -581,7 +581,7 @@ export default function RoyalSensesSalon({
                         <img src={p.images[0]} alt="" className="w-8 h-10 object-cover rounded-md shrink-0" />
                         <div className="flex-1 min-w-0 font-sans text-xs">
                           <h6 className="font-bold truncate text-gray-900">{p.nameAr}</h6>
-                          <span className="text-[9.5px] text-gray-400 block">{p.categoryAr} • {country === 'EG' ? p.priceEG : p.priceSA} {country === 'EG' ? 'EGP' : 'SAR'}</span>
+                          <span className="text-[9.5px] text-gray-400 block">{p.categoryAr} • {p.priceSA} SAR</span>
                         </div>
                       </button>
                     ))}

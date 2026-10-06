@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country } from '../types';
 import { createClient } from '@supabase/supabase-js';
 
 // --- ROBUST CONFIGURATION ---
@@ -205,13 +205,21 @@ export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
 
   if (cleaned.startsWith('data:')) return cleaned;
 
-  // Handle local assets
+  // Handle local assets (automatically route to high-speed WebP version if available)
   if (cleaned.startsWith('/img/') || cleaned.startsWith('img/')) {
-    return cleaned.startsWith('/') ? cleaned : '/' + cleaned;
+    const formatted = cleaned.startsWith('/') ? cleaned : '/' + cleaned;
+    if (formatted.endsWith('.png') || formatted.endsWith('.jpg')) {
+      return formatted.replace(/\.(png|jpg)$/, '.webp');
+    }
+    return formatted;
   }
   
   if (cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
-    return cleaned.replace(/^(\/)?src\/assets\//, '/img/');
+    const replaced = cleaned.replace(/^(\/)?src\/assets\//, '/img/');
+    if (replaced.endsWith('.png') || replaced.endsWith('.jpg')) {
+      return replaced.replace(/\.(png|jpg)$/, '.webp');
+    }
+    return replaced;
   }
 
   // Fallback: Assume it's a filename in the Supabase 'products' bucket
@@ -220,7 +228,7 @@ export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
     return `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
   }
 
-  return '/img/sulta_default_1_1781140865386.png';
+  return '/img/sulta_default_1_1781140865386.webp';
 }
 
 
@@ -257,22 +265,22 @@ function mapSettings(data: any): Settings {
   let mappedSiteName = cleanText(data.site_name || 'SULTA');
 
   let mappedWhatsapp = data.whatsapp;
-  if (!mappedWhatsapp || mappedWhatsapp === '966500000000' || mappedWhatsapp.includes('966530454045')) {
-    mappedWhatsapp = '201110095403';
+  if (!mappedWhatsapp || mappedWhatsapp === '966500000000' || mappedWhatsapp.includes('966530454045') || mappedWhatsapp === '201110095403' || mappedWhatsapp.includes('20111')) {
+    mappedWhatsapp = '966596894393';
   }
 
   let mappedContactPhone = data.contact_phone;
-  if (!mappedContactPhone || mappedContactPhone === '+966500000000' || mappedContactPhone.includes('966530454045')) {
-    mappedContactPhone = '+20 111 009 5403';
+  if (!mappedContactPhone || mappedContactPhone === '+966500000000' || mappedContactPhone.includes('966530454045') || mappedContactPhone.includes('+20')) {
+    mappedContactPhone = '+966 59 689 4393';
   }
 
   let mappedContactEmail = data.contact_email;
-  if (!mappedContactEmail || mappedContactEmail.includes('brightgirlksa') || mappedContactEmail === 'royal@sultawear.com') {
-    mappedContactEmail = 'support@sulta-atelier.com';
+  if (!mappedContactEmail || mappedContactEmail.includes('brightgirlksa') || mappedContactEmail.includes('zoria') || mappedContactEmail === 'royal@sultawear.com') {
+    mappedContactEmail = 'concierge@sulta.sa';
   }
 
-  let mappedWhatsappSaudi = data.whatsapp_saudi || data.whatsappSaudi || '966596894393';
-  let mappedContactPhoneSaudi = data.contact_phone_saudi || data.contactPhoneSaudi || '+966 59 689 4393';
+  let mappedWhatsappSaudi = '966596894393';
+  let mappedContactPhoneSaudi = '+966 59 689 4393';
 
   return {
     siteName: mappedSiteName,
@@ -501,24 +509,36 @@ function mapCoupon(data: any): DiscountCoupon {
 }
 
 function mapOrder(data: any): Order {
+  const parsedPrice = Number(data.totalPrice ?? data.total_price ?? data.total_amount ?? 0);
+  let parsedItems = [];
+  if (Array.isArray(data.items)) {
+    parsedItems = data.items;
+  } else if (typeof data.items === 'string' && data.items.trim()) {
+    try {
+      parsedItems = JSON.parse(data.items);
+    } catch {
+      parsedItems = [];
+    }
+  }
+
   return {
     id: data.id,
-    customerName: data.customer_name || '',
+    customerName: data.customerName || data.customer_name || 'عميلة سُلطة الكريمة',
     phone: data.phone || '',
-    country: data.country || 'SA',
-    city: data.city || '',
+    country: (data.country === 'EG' ? 'EG' : 'SA') as Country,
+    city: data.city || 'الرياض',
     address: data.address || '',
     notes: data.notes || undefined,
-    giftMessage: data.gift_message || undefined,
-    giftCardTheme: data.gift_card_theme || undefined,
-    items: Array.isArray(data.items) ? data.items : (data.items ? JSON.parse(data.items) : []),
-    totalPrice: Number(data.total_price ?? 0),
+    giftMessage: data.giftMessage || data.gift_message || undefined,
+    giftCardTheme: data.giftCardTheme || data.gift_card_theme || undefined,
+    items: parsedItems,
+    totalPrice: parsedPrice,
     currency: data.currency || 'SAR',
-    paymentMethod: data.payment_method || '',
+    paymentMethod: data.paymentMethod || data.payment_method || 'الدفع عند الاستلام',
     status: data.status || 'pending',
-    date: data.date || '',
-    trackingNumber: data.tracking_number || undefined,
-    trackingUrl: data.tracking_url || `https://sulta.store/track-order/${data.id}`
+    date: data.date || (data.created_at ? data.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+    trackingNumber: data.trackingNumber || data.tracking_number || undefined,
+    trackingUrl: data.trackingUrl || data.tracking_url || `https://sulta.store/track-order/${data.id}`
   };
 }
 
@@ -738,9 +758,9 @@ export const dbService = {
           needsUpdate = true;
         }
 
-        if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500')) {
-          const fixedWhatsapp = '201110095403';
-          const fixedPhone = '+201110095403';
+        if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500') || data.whatsapp === '201110095403' || data.whatsapp.includes('20111')) {
+          const fixedWhatsapp = '966596894393';
+          const fixedPhone = '+966 59 689 4393';
           updatePayload.whatsapp = fixedWhatsapp;
           updatePayload.contact_phone = fixedPhone;
           data.whatsapp = fixedWhatsapp;
@@ -760,17 +780,17 @@ export const dbService = {
     if (!settingsObj) {
       settingsObj = {
         siteName: 'SULTA',
-        contactPhone: '+20 111 009 5403',
+        contactPhone: '+966 59 689 4393',
         contactPhoneSaudi: '+966 59 689 4393',
-        whatsapp: '201110095403',
+        whatsapp: '966596894393',
         whatsappSaudi: '966596894393',
-        contactEmail: 'support@sulta-atelier.com',
+        contactEmail: 'concierge@sulta.sa',
         shippingRates: [
-          { regionAr: 'شحن موحد لجميع محافظات مصر 🇪🇬', regionEn: 'Egypt Flat Shipping Rate', fee: 100 },
-          { regionAr: 'شحن موحد لجميع مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Flat Shipping Rate', fee: 50 }
+          { regionAr: 'شحن سريع ومجاني لكافة مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Express Shipping', fee: 0 },
+          { regionAr: 'توصيل فاخر بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 35 }
         ],
-        defaultShippingFee: 45,
-        instagram: 'https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==',
+        defaultShippingFee: 35,
+        instagram: 'https://www.instagram.com/sultabrand',
         facebook: '',
         tiktok: 'https://www.tiktok.com/@sulta.brand'
       };
@@ -1208,7 +1228,7 @@ export const dbService = {
     onSuccess: (orders: Order[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    const loadAndMerge = (dbOrders: any[]) => {
+    const loadAndMerge = (dbOrders: any[], ticketOrders: any[]) => {
       let localOrders: any[] = [];
       try {
         localOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
@@ -1216,36 +1236,76 @@ export const dbService = {
         console.warn("Failed to read sulta_offline_orders from localStorage", e);
       }
       
-      const mappedDb = dbOrders.map(mapOrder);
-      const dbIds = new Set(mappedDb.map(o => o.id));
-      
-      const merged = [...mappedDb];
-      for (const lo of localOrders) {
-        if (!dbIds.has(lo.id)) {
-          merged.push(lo);
+      const ordersMap = new Map<string, Order>();
+
+      // 1. Process cloud tickets containing full JSON order metadata
+      if (Array.isArray(ticketOrders)) {
+        for (const t of ticketOrders) {
+          try {
+            const raw = typeof t.message === 'string' ? JSON.parse(t.message) : t.message;
+            if (raw && raw.id) {
+              const mapped = mapOrder(raw);
+              ordersMap.set(mapped.id, mapped);
+            }
+          } catch {}
         }
       }
+
+      // 2. Process orders from official 'orders' table
+      if (Array.isArray(dbOrders)) {
+        for (const o of dbOrders) {
+          if (!ordersMap.has(o.id)) {
+            ordersMap.set(o.id, mapOrder(o));
+          } else {
+            // Update status if orders table has newer status
+            const existing = ordersMap.get(o.id)!;
+            if (o.status && o.status !== existing.status) {
+              existing.status = o.status;
+            }
+          }
+        }
+      }
+
+      // 3. Process local offline orders fallback
+      for (const lo of localOrders) {
+        if (!ordersMap.has(lo.id)) {
+          ordersMap.set(lo.id, mapOrder(lo));
+        }
+      }
+
+      const merged = Array.from(ordersMap.values()).sort((a, b) => {
+        const da = new Date(a.date || 0).getTime();
+        const db = new Date(b.date || 0).getTime();
+        return db - da;
+      });
+
       onSuccess(merged);
     };
 
-    supabase.from('orders').select('*').order('created_at', { ascending: false }).then(({ data, error }) => { 
-      if (error) {
-        console.warn('Supabase fetch failed for orders, using local storage fallback', error);
-        loadAndMerge([]);
-      } else if (data) {
-        loadAndMerge(data);
-      } 
-    }).catch((err) => { 
-      console.warn('Supabase fetch failed for orders', err); 
-      loadAndMerge([]);
-    });
+    const fetchAll = async () => {
+      try {
+        const [ordersRes, ticketsRes] = await Promise.all([
+          supabase.from('orders').select('*').order('created_at', { ascending: false }),
+          supabase.from('support_tickets').select('*').like('subject', 'ORDER:%').order('created_at', { ascending: false })
+        ]);
 
-    const channelName = 'public:orders:' + Math.random().toString(36).substring(2, 15);
+        loadAndMerge(ordersRes.data || [], ticketsRes.data || []);
+      } catch (err) {
+        console.warn('Orders dual-cloud fetch fallback:', err);
+        loadAndMerge([], []);
+      }
+    };
+
+    fetchAll();
+
+    const channelName = 'public:orders_sync:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, async () => {
-        const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-        if (data) loadAndMerge(data);
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        fetchAll();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, () => {
+        fetchAll();
       })
       .subscribe();
 
@@ -1255,115 +1315,74 @@ export const dbService = {
   },
 
   saveOrder: async (order: Order): Promise<void> => {
-    // Phase 4: Automatically generate and store official tracking URL
     order.trackingUrl = order.trackingUrl || `https://sulta.store/track-order/${order.id}`;
 
-    // 1. Dual-write to localStorage for 100% transaction resilience
+    // 1. Dual-write to localStorage for 100% offline resilience
     try {
       const offlineOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
       if (!offlineOrders.some((o: any) => o.id === order.id)) {
-        offlineOrders.push(order);
+        offlineOrders.unshift(order);
         localStorage.setItem('sulta_offline_orders', JSON.stringify(offlineOrders));
-        console.log("[SULTA DB] Saved order physically into localStorage for fallback resilience.", order.id);
+        console.log("[SULTA DB] Saved order physically into localStorage for resilience.", order.id);
       }
     } catch (e) {
       console.warn("[SULTA DB] Non-fatal localStorage dual-write failed:", e);
     }
 
-    const safeCountry = (order.country && (order.country.toUpperCase() === 'EG' || order.country.toUpperCase() === 'SA')) 
-      ? order.country.toUpperCase() 
-      : 'SA';
-    const safeCurrency = (order.currency && (order.currency.toUpperCase() === 'EGP' || order.currency.toUpperCase() === 'SAR')) 
-      ? order.currency.toUpperCase() 
-      : (safeCountry === 'EG' ? 'EGP' : 'SAR');
-    const safeStatus = (order.status && ['pending', 'processing', 'shipped', 'delivered'].includes(order.status))
+    const safeCountry = 'SA';
+    const safeCurrency = 'SAR';
+    const safeStatus = (order.status && ['pending', 'processing', 'shipped', 'delivered', 'confirmed'].includes(order.status))
       ? order.status
       : 'pending';
 
-    const payload: any = {
-      id: order.id,
-      customer_name: order.customerName,
-      phone: order.phone,
-      country: safeCountry,
-      city: order.city,
-      address: order.address,
-      notes: order.giftMessage 
-        ? `${order.notes || ''} [بطاقة إهداء ثيم ${order.giftCardTheme || 'عام'}: ${order.giftMessage}]`
-        : order.notes,
-      items: order.items,
-      total_price: order.totalPrice,
-      currency: safeCurrency,
-      payment_method: order.paymentMethod,
-      status: safeStatus,
-      date: order.date,
-      tracking_number: order.trackingNumber || null,
-      tracking_url: order.trackingUrl,
-      subtotal: Number(order.totalPrice ?? 0) - Number(order.shippingFee ?? 0),
-      shipping_cost: Number(order.shippingFee ?? 0),
-      discount: 0,
-      total: Number(order.totalPrice ?? 0)
-    };
+    // 1. Ensure order.id is a valid UUID, generate one if not
+    let finalId = order.id;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(finalId);
+    if (!isUuid) {
+      finalId = crypto.randomUUID();
+      console.log(`[SULTA DB] Non-UUID detected (${order.id}), generated new UUID: ${finalId}`);
+    }
 
-    console.log("[SULTA DB] Attempting insert into 'orders' with payload:", payload);
-    
+    // 2. Persist directly to Supabase cloud:
+    // A. Insert into 'orders' table (satisfies database constraints)
     try {
-      let { error } = await supabase.from('orders').insert([payload]);
-
-      let retries = 20;
-      while (error && error.message && retries > 0) {
-        const errMsg = error.message;
-        console.warn(`[SULTA DB] saveOrder failed on Supabase: "${errMsg}". Retries left: ${retries}`);
-
-        // 1. Column doesn't exist
-        let colName: string | null = null;
-        const missingMatch = errMsg.match(/Could not find the '([^']+)' column/i);
-        const pgNotExistMatch = errMsg.match(/column "([^"]+)" of relation "orders" does not exist/i) || errMsg.match(/column "([^"]+)" does not exist/i);
-        
-        if (missingMatch && missingMatch[1]) {
-          colName = missingMatch[1];
-        } else if (pgNotExistMatch && pgNotExistMatch[1]) {
-          colName = pgNotExistMatch[1];
-        }
-
-        if (colName) {
-          console.warn(`[SULTA DB] Automatically removing column '${colName}' to satisfy database schema.`);
-          delete payload[colName];
-          
-          const retryRes = await supabase.from('orders').insert([payload]);
-          error = retryRes.error;
-          retries--;
-          continue;
-        }
-
-        // 2. CHECK constraint violation override
-        if (errMsg.toLowerCase().includes("check constraint") || errMsg.toLowerCase().includes("violates check")) {
-          if (errMsg.toLowerCase().includes("country")) {
-            payload.country = 'SA';
-            payload.currency = 'SAR';
-          }
-          if (errMsg.toLowerCase().includes("status")) {
-            payload.status = 'pending';
-          }
-          if (errMsg.toLowerCase().includes("currency")) {
-            payload.currency = 'SAR';
-          }
-
-          const retryRes = await supabase.from('orders').insert([payload]);
-          error = retryRes.error;
-          retries--;
-          continue;
-        }
-
-        break;
-      }
-
-      if (error) {
-        console.error("[SULTA DB] Failed to save order on Supabase cloud. Defaulting to local offline storage successfully. Error:", error);
+      const baseRow: any = {
+        id: finalId,
+        total_amount: Number(order.totalPrice || 0),
+        status: safeStatus
+      };
+      
+      const { error: oErr } = await supabase.from('orders').upsert([baseRow]);
+      if (oErr) {
+        console.warn("[SULTA DB] orders table upsert:", oErr.message);
       } else {
-        console.log("[SULTA DB] Order successfully inserted into Supabase cloud!");
+        console.log("[SULTA DB] Successfully inserted order row into Supabase 'orders'!");
       }
-    } catch (e: any) {
-      console.error("[SULTA DB] Unexpected exception when writing to orders table, fallback to offline local orders:", e.message || e);
+    } catch (err: any) {
+      console.warn("[SULTA DB] orders table exception:", err.message || err);
+    }
+
+    // B. Insert complete order payload into 'support_tickets' with ORDER prefix for cross-device visibility
+    try {
+      const ticketPayload = {
+        subject: `ORDER:${finalId}`,
+        message: JSON.stringify({
+          ...order,
+          id: finalId, // Use the same finalId
+          country: safeCountry,
+          currency: safeCurrency,
+          status: safeStatus
+        }),
+        status: safeStatus
+      };
+      const { error: tErr } = await supabase.from('support_tickets').insert([ticketPayload]);
+      if (tErr) {
+        console.warn("[SULTA DB] support_tickets order payload insert:", tErr.message);
+      } else {
+        console.log("[SULTA DB] Successfully inserted full order payload into cloud for cross-device admin view!");
+      }
+    } catch (err: any) {
+      console.warn("[SULTA DB] support_tickets exception:", err.message || err);
     }
   },
 
@@ -1708,9 +1727,16 @@ export const dbService = {
     if (order.trackingNumber) updatePayload.tracking_number = order.trackingNumber;
     if (order.trackingUrl) updatePayload.tracking_url = order.trackingUrl;
 
-    const { error } = await supabase.from('orders').update(updatePayload).eq('id', order.id);
-    if (error) {
-      console.error("Non-blocking warning: Supabase cloud updateOrder status sync skipped:", error);
+    try {
+      await Promise.all([
+        supabase.from('orders').update(updatePayload).eq('id', order.id),
+        supabase.from('support_tickets').update({
+          message: JSON.stringify(order),
+          status: order.status
+        }).eq('subject', `ORDER:${order.id}`)
+      ]);
+    } catch (error) {
+      console.warn("Non-blocking warning: Supabase cloud updateOrder status sync skipped:", error);
     }
   },
 

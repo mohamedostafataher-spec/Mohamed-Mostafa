@@ -13,7 +13,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
   // Elegantly localized premium default fabric sections
   const sections = {
     cottonTitleAr: savedSection?.cottonTitleAr || 'تشكيلة القطن الفاخرة (Cotton Collection)',
-    cottonDescAr: savedSection?.cottonDescAr || 'مصنوعة من ألياف القطن المصري طويل التيلة الفائق النعومة بنسبة 100%. يتميز بقدرته الفائقة على تنفس البشرة وامتصاص الرطوبة، مما يجعله مثالياً لليالي هادئة مريحة خالية من التعرق.',
+    cottonDescAr: savedSection?.cottonDescAr || 'مصنوعة من ألياف القطن الملكي طويل التيلة الفائق النعومة بنسبة 100%. يتميز بقدرته الفائقة على تنفس البشرة وامتصاص الرطوبة، مما يجعله مثالياً لليالي هادئة مريحة خالية من التعرق.',
     
     cottonLycraTitleAr: savedSection?.cottonLycraTitleAr || 'تشكيلة قطن ليكرا الإنشائية (Cotton Lycra Collection)',
     cottonLycraDescAr: savedSection?.cottonLycraDescAr || 'مزيج فريد يجمع بين نقاء القطن العضوي المتين ومرونة الليكرا الفائقة لمرونة انسيابية تناسب الحركة والنشاطات المنزلية بامتياز مع الحفاظ على الشكل الأنيق.',
@@ -50,7 +50,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
         </h2>
         <div className="w-16 h-[1.5px] bg-[#A44C5C]/50 mx-auto" />
         <p className="text-gray-500 text-xs md:text-sm pt-2 leading-relaxed font-serif italic">
-          ننتقي خيوط الدار من أرقى معالم الأنسجة الفاخرة والمصرية لنحيك لكِ تجربة نوم ملكية تلامس الروح قبل الجسد.
+          ننتقي خيوط الدار من أرقى معالم الأنسجة الفاخرة العالمية لنحيك لكِ تجربة نوم ملكية تلامس الروح قبل الجسد.
         </p>
       </div>
 

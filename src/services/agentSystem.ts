@@ -232,42 +232,24 @@ export const agentSystem = {
     );
   },
 
-  // 4. Delivery Prediction AI Engine
+    // 4. Delivery Prediction AI Engine
   getDeliveryPrediction: (order: Order) => {
     // Elegant prediction algorithm checking city, country, carrier, and previous order speeds
-    const country = order.country || 'SA';
     const city = (order.city || '').trim();
     
     let daysMin = 2;
     let daysMax = 4;
     let explanation = "";
 
-    if (country === 'EG') {
-      const lowerCity = city.toLowerCase();
-      if (lowerCity.includes('قاهره') || lowerCity.includes('cairo') || lowerCity.includes('جيزة') || lowerCity.includes('giza')) {
-        daysMin = 1;
-        daysMax = 2;
-        explanation = "تم التوقع بناءً على معايير الشحن الفوري بجمهورية مصر العربية، حيث تشير الطلبيات السابقة لمنطقة القاهرة الكبرى إلى تغطية في غضون ٢٤ إلى ٤٨ ساعة عمل كحد أقصى بفضل المستودع المباشر في المعادي.";
-      } else if (lowerCity.includes('إسكندرية') || lowerCity.includes('alex')) {
-        daysMin = 2;
-        daysMax = 3;
-        explanation = "منطقتك تقع ضمن حزام الدلتا السريع، الطلبيات السابقة لعتبة الإسكندرية تم تسليمها بمتوسط ٤٨ ساعة عمل كحد أقصى.";
-      } else {
-        daysMin = 2;
-        daysMax = 4;
-        explanation = "بالنسبة لمحافظات مصر الإقليمية والوجه القبلي/البحري، يستغرق المندوب الملكي ما بين يومين وأربعة أيام كأقصى تقدير استناداً إلى جداول الرحلات السابقة.";
-      }
-    } else { // SA
-      const lowerCity = city.toLowerCase();
-      if (lowerCity.includes('رياض') || lowerCity.includes('riyadh') || lowerCity.includes('جده') || lowerCity.includes('jeddah') || lowerCity.includes('دمام') || lowerCity.includes('dammam')) {
-        daysMin = 2;
-        daysMax = 3;
-        explanation = "تتلقى مدننا الكبرى بالمنطقة الوسطى والغربية شحنات الطيران المباشر أرامكس، حيث رصد النظام تسليمات سابقة ناجحة بنسبة ٩٧٪ خلال يومين إلى ثلاثة أيام عمل كحد أقصى.";
-      } else {
-        daysMin = 3;
-        daysMax = 5;
-        explanation = "بالنسبة للمحافظات والمناطق الشمالية والجنوبية للمملكة، يستغرق النقل البري السريع أرامكس ما بين ثلاثة وخمسة أيام عمل كاملة لتأمين الباقة الملكية في أفضل حلة.";
-      }
+    const lowerCity = city.toLowerCase();
+    if (lowerCity.includes('رياض') || lowerCity.includes('riyadh') || lowerCity.includes('جده') || lowerCity.includes('jeddah') || lowerCity.includes('دمام') || lowerCity.includes('dammam')) {
+      daysMin = 2;
+      daysMax = 3;
+      explanation = "تتلقى مدننا الكبرى بالمنطقة الوسطى والغربية شحنات الطيران المباشر أرامكس، حيث رصد النظام تسليمات سابقة ناجحة بنسبة ٩٧٪ خلال يومين إلى ثلاثة أيام عمل كحد أقصى.";
+    } else {
+      daysMin = 3;
+      daysMax = 5;
+      explanation = "بالنسبة للمحافظات والمناطق الشمالية والجنوبية للمملكة، يستغرق النقل البري السريع أرامكس ما بين ثلاثة وخمسة أيام عمل كاملة لتأمين الباقة الملكية في أفضل حلة.";
     }
 
     // Format dates nicely
@@ -276,14 +258,14 @@ export const agentSystem = {
     const maxDate = new Date(orderDate.getTime() + daysMax * 24 * 60 * 60 * 1000);
 
     const formatOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
-    const formattedMin = minDate.toLocaleDateString('ar-EG', formatOptions);
-    const formattedMax = maxDate.toLocaleDateString('ar-EG', formatOptions);
+    const formattedMin = minDate.toLocaleDateString('ar-SA', formatOptions);
+    const formattedMax = maxDate.toLocaleDateString('ar-SA', formatOptions);
 
     return {
       predictedRange: `من ${formattedMin} إلى ${formattedMax}`,
       daysMin,
       daysMax,
-      carrier: country === 'EG' ? 'سولتا إكسبريس السريع (مصر)' : 'أرامكس للشحن الجوي المتقدم (السعودية)',
+      carrier: 'أرامكس للشحن الجوي المتقدم (السعودية)',
       confidence: "دقة توقع عالية (98.6%)",
       explanation
     };

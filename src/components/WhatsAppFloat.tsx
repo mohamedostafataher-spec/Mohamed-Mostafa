@@ -10,23 +10,18 @@ interface WhatsAppFloatProps {
 }
 
 export default function WhatsAppFloat({
-  number = '201110095403',
+  number = '966596894393',
   saudiNumber = '966596894393',
   country = 'SA',
-  message = 'مرحباً SULTA، أود الاستفسار بخصوص الموديلات وتأكيد الطلب 🌸'
+  message = 'مرحباً SULTA، أود الاستفسار بخصوص الموديلات الملكية وتأكيد طلبي 🌸'
 }: WhatsAppFloatProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const cleanSaudi = (saudiNumber || '966596894393').replace(/\D/g, '');
-  const cleanEgypt = (number || '201110095403').replace(/\D/g, '');
-
+  const cleanSaudi = (saudiNumber || number || '966596894393').replace(/\D/g, '');
   const saudiUrl = `https://wa.me/${cleanSaudi}?text=${encodeURIComponent(message)}`;
-  const egyptUrl = `https://wa.me/${cleanEgypt}?text=${encodeURIComponent(message)}`;
 
-  // Default target based on selected country
-  const defaultUrl = country === 'SA' ? saudiUrl : egyptUrl;
-  const activeCountryLabel = country === 'SA' ? 'السعودية 🇸🇦' : 'مصر 🇪🇬';
-  const activePhoneDisplay = country === 'SA' ? '0596894393 (+966)' : '+20 111 009 5403';
+  const activeCountryLabel = 'المملكة العربية السعودية 🇸🇦';
+  const activePhoneDisplay = '0596894393 (+966)';
 
   return (
     <div className="fixed bottom-20 right-4 md:bottom-7 md:right-7 z-50 select-none font-sans" dir="rtl">
@@ -44,7 +39,7 @@ export default function WhatsAppFloat({
                   <span>كونسيرج SULTA الملكي</span>
                   <span className="text-xs">👑</span>
                 </h4>
-                <p className="text-[10px] text-gray-400 font-sans">متواجدون دائماً لخدمتكِ واستقبال طلباتكِ</p>
+                <p className="text-[10px] text-gray-400 font-sans">خدمة عميلات المملكة على مدار الساعة</p>
               </div>
             </div>
             <button
@@ -58,30 +53,24 @@ export default function WhatsAppFloat({
 
           {/* Body Options */}
           <div className="p-3.5 space-y-2.5 text-right font-sans">
-            {/* Saudi Arabia Option */}
+            {/* Saudi Arabia Primary Channel */}
             <a
               href={saudiUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`block p-3 rounded-xl border transition-all duration-200 group ${
-                country === 'SA'
-                  ? 'bg-white/10 border-white/40 shadow-sm'
-                  : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
-              }`}
+              className="block p-3 rounded-xl border transition-all duration-200 group bg-white/10 border-white/40 shadow-sm hover:border-white/60 hover:bg-white/15"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">🇸🇦</span>
+                  <span className="text-xl">🇸🇦</span>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-white group-hover:text-gray-200 transition-colors">
-                        واتساب فرع السعودية
+                        واتساب كونسيرج المملكة
                       </span>
-                      {country === 'SA' && (
-                        <span className="bg-white text-black text-[9px] font-black px-1.5 py-0.2 rounded-full">
-                          مفعل لكِ
-                        </span>
-                      )}
+                      <span className="bg-[#25D366] text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">
+                        رد فوري
+                      </span>
                     </div>
                     <span className="font-mono text-xs text-white font-bold block mt-0.5" dir="ltr">
                       0596894393
@@ -92,47 +81,8 @@ export default function WhatsAppFloat({
                   <Send size={13} className="rotate-220" />
                 </div>
               </div>
-              <p className="text-[10px] text-gray-400 mt-1 mr-7">
-                للطلبات داخل كافة مدن المملكة، استفسار المقاسات والشحن السريع
-              </p>
-            </a>
-
-            {/* Egypt Option */}
-            <a
-              href={egyptUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`block p-3 rounded-xl border transition-all duration-200 group ${
-                country === 'EG'
-                  ? 'bg-white/10 border-white/40 shadow-sm'
-                  : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🇪🇬</span>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white group-hover:text-gray-200 transition-colors">
-                        واتساب فرع مصر
-                      </span>
-                      {country === 'EG' && (
-                        <span className="bg-white text-black text-[9px] font-black px-1.5 py-0.2 rounded-full">
-                          مفعل لكِ
-                        </span>
-                      )}
-                    </div>
-                    <span className="font-mono text-xs text-white block mt-0.5" dir="ltr">
-                      +20 111 009 5403
-                    </span>
-                  </div>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
-                  <Send size={13} className="rotate-220" />
-                </div>
-              </div>
-              <p className="text-[10px] text-gray-400 mt-1 mr-7">
-                للطلبات داخل كافة محافظات مصر، الحجز والتفصيل الخاص
+              <p className="text-[10px] text-gray-300 mt-1.5">
+                تأكيد الحجوزات، تفصيل المقاسات، والتوصيل السريع لكافة مدن المملكة
               </p>
             </a>
           </div>
@@ -151,7 +101,7 @@ export default function WhatsAppFloat({
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="hidden sm:flex items-center gap-1 bg-white text-gray-900 text-[11px] font-bold px-3 py-2 rounded-full shadow-lg border border-gray-300 hover:border-black transition-all cursor-pointer"
-          title="اختر فرع السعودية أو مصر"
+          title="واتساب كونسيرج المملكة 🇸🇦"
         >
           <Sparkles size={12} className="text-black" />
           <span>واتساب {activeCountryLabel}</span>

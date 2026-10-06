@@ -56,14 +56,15 @@ export default function ExecutiveCommandCenter({
 
   // Aggregated analytics values
   const report = useMemo(() => {
-    // A. Revenue
-    const totalSAR = orders.filter((o) => o.currency === 'SAR' && o.status !== 'cancelled').reduce((sum, o) => sum + o.totalPrice, 0);
-    const totalEGP = orders.filter((o) => o.currency === 'EGP' && o.status !== 'cancelled').reduce((sum, o) => sum + o.totalPrice, 0);
+    // A. Revenue strictly in SAR
+    const totalSAR = orders.filter((o) => o.status !== 'cancelled').reduce((sum, o) => {
+      return sum + o.totalPrice;
+    }, 0);
 
     // B. Total orders
     const completedOrdersCount = orders.filter((o) => o.status === 'delivered').length;
 
-    // C. Daily Sales Chart construction
+    // C. Daily Sales Chart construction in SAR
     const daysOfWeekAr = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     const chartData = Array.from({ length: 7 })
       .map((_, idx) => {
@@ -73,14 +74,13 @@ export default function ExecutiveCommandCenter({
         const dayName = daysOfWeekAr[d.getDay()];
 
         const dayOrders = orders.filter((o) => o.date === dateStr && o.status !== 'cancelled');
-        // Combined value using exchange multiplier of 13.0 for EGP unified representation
-        const egpEquivalent = dayOrders.reduce((sum, o) => {
-          return sum + (o.currency === 'SAR' ? o.totalPrice * 13 : o.totalPrice);
+        const sarSales = dayOrders.reduce((sum, o) => {
+          return sum + o.totalPrice;
         }, 0);
 
         return {
           name: dayName,
-          sales: egpEquivalent,
+          sales: sarSales,
         };
       })
       .reverse();
@@ -95,7 +95,6 @@ export default function ExecutiveCommandCenter({
 
     return {
       totalSAR,
-      totalEGP,
       completedOrdersCount,
       chartData,
       healthIssues,
@@ -114,9 +113,9 @@ export default function ExecutiveCommandCenter({
                 <div>
                   <h4 className="font-serif text-sm font-bold text-gray-900 flex items-center gap-2">
                     <TrendingUp size={16} className="text-[#A44C5C]" />
-                    مؤشر التدفق المالي الموحد (مصر والسعودية)
+                    مؤشر التدفق المالي والمبيعات بالريال السعودي (SAR 🇸🇦)
                   </h4>
-                  <p className="text-[10px] text-gray-400 font-sans mt-0.5">يعرض الإيرادات الإجمالية المحتسبة بالجنيه المصري (بافتراض معامل صرف تيسيري) عن الـ 7 أيام الأخيرة.</p>
+                  <p className="text-[10px] text-gray-400 font-sans mt-0.5">يعرض المبيعات الفعلية المحققة بالريال السعودي عن الـ 7 أيام الأخيرة.</p>
                 </div>
 
                 <div className="flex items-center gap-4 text-xs">
@@ -278,7 +277,7 @@ export default function ExecutiveCommandCenter({
       </div>
 
       {/* Grid Quick Figures */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="bg-white border border-gray-150 p-6 rounded-2.5xl flex items-center justify-between shadow-xs">
           <div>
             <span className="text-gray-400 text-[10px] uppercase font-bold block mb-1">المبيعات الإجمالية بالمملكة 🇸🇦</span>
@@ -286,16 +285,6 @@ export default function ExecutiveCommandCenter({
           </div>
           <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
             <Globe size={18} />
-          </div>
-        </div>
-
-        <div className="bg-white border border-gray-150 p-6 rounded-2.5xl flex items-center justify-between shadow-xs">
-          <div>
-            <span className="text-gray-400 text-[10px] uppercase font-bold block mb-1">المبيعات الإجمالية بمصر 🇪🇬</span>
-            <span className="text-2xl font-black text-gray-900 font-sans">{report.totalEGP.toLocaleString()} EGP</span>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-[#FAF5F0] border border-[#DF8A9D]/20 flex items-center justify-center text-[#A44C5C]">
-            <Crown size={18} />
           </div>
         </div>
 

@@ -215,15 +215,9 @@ export default function AtelierAudioAtmosphere({
 
   // Set country specific greeting text (Phase 6)
   const getCountryGreeting = () => {
-    if (country === 'EG') {
-      return {
-        flag: "🇪🇬",
-        text: "أهلاً ومرحباً بجميلاتنا العزيزات في جمهورية مصر العربية 🖤 يسعدنا تواصلك مع بوتيك SULTA الفاخر."
-      };
-    }
     return {
       flag: "🇸🇦",
-      text: "أهلاً وسهلاً بعميلاتنا الراقيات في المملكة العربية السعودية 🤍 ركن كوتور SULTA يرحب بحضورك الفخم."
+      text: "أهلاً وسهلاً بعميلاتنا الراقيات في المملكة العربية السعودية 🤍 ركن كوتور SULTA الملكي يرحب بحضورك الفخم."
     };
   };
 
@@ -264,7 +258,7 @@ export default function AtelierAudioAtmosphere({
     setTimeout(() => setCopiedCoupon(null), 2500);
   };
 
-  const currentPriceLabel = country === 'EG' ? 'EGP' : 'SAR';
+  const currentPriceLabel = 'ر.س';
 
   // Quick Action Triggers (Phase 13)
   const triggerQuickAction = (action: string) => {
@@ -572,7 +566,7 @@ export default function AtelierAudioAtmosphere({
                             </div>
                             
                             <strong className="text-xs text-[#A44C5C] block font-mono font-black mt-1">
-                              {(country === 'EG' ? spotlightProduct.priceEG : spotlightProduct.priceSA).toLocaleString()} {currentPriceLabel}
+                              {spotlightProduct.priceSA.toLocaleString()} {currentPriceLabel}
                             </strong>
                           </div>
                         </div>
@@ -633,7 +627,7 @@ export default function AtelierAudioAtmosphere({
                               </div>
                               <h6 className="text-[9.5px] font-bold text-gray-900 line-clamp-1">{p.nameAr}</h6>
                               <span className="text-[9px] text-[#A44C5C] font-mono font-bold block">
-                                {(country === 'EG' ? p.priceEG : p.priceSA).toLocaleString()} {currentPriceLabel}
+                                {p.priceSA.toLocaleString()} {currentPriceLabel}
                               </span>
                             </div>
                           ))}

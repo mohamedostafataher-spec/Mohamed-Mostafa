@@ -27,7 +27,7 @@ export default function SultaCollections({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
 
-  const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
+  const currencyLabel = 'ر.س';
 
   // Extract count of items per category and collection
   const getProductsByCategory = (catSlug: string) => {
@@ -210,7 +210,7 @@ export default function SultaCollections({
         {displayedProducts.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             {displayedProducts.map((prod) => {
-              const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
+              const priceVal = prod.priceSA;
               const imgToUse = cleanImgUrl(prod.images[0], prod.category);
 
               return (
@@ -247,7 +247,7 @@ export default function SultaCollections({
                       {prod.isBestSeller ? 'الأكثر مبيعاً' : 'كوتور'}
                     </span>
                     <h4 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
-                      {country === 'EG' ? prod.nameAr : prod.nameEn}
+                      {prod.nameAr}
                     </h4>
                     <span className="font-sans font-semibold text-3xs sm:text-2xs md:text-xs text-[#A44C5C]">
                       {priceVal.toLocaleString()} {currencyLabel}

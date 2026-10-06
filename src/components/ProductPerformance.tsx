@@ -17,20 +17,11 @@ export default function ProductPerformance({
     const metrics = getProductAnalytics(products, orders);
 
     // Make sure we seed a realistic view and additions count if telemetry is completely empty (first run fallback)
-    const totalViews = metrics.reduce((sum, m) => sum + m.views, 0);
     const enrichedMetrics = metrics.map((m) => {
-      // If views are 0, we can seed deterministic but realistic aesthetic seeds based on reviewsCount
       const match = products.find((p) => p.id === m.id);
-      let views = m.views;
-      let cartAdditions = m.cartAdditions;
+      const views = m.views;
+      const cartAdditions = m.cartAdditions;
       const ordersCount = m.ordersCount;
-
-      if (totalViews === 0 && match) {
-        // Aesthetic seeds corresponding to ratings and real orders
-        const seedMultiplier = match.isBestSeller ? 24 : 12;
-        views = Math.max(3, (match.reviewsCount || 0) * seedMultiplier + 8);
-        cartAdditions = Math.max(1, Math.round(views * 0.15) + (ordersCount * 2));
-      }
 
       // Re-sum dynamic conversion rate safely
       const conversionRate = views > 0 ? Number(((ordersCount / views) * 100).toFixed(1)) : 0;
@@ -42,7 +33,6 @@ export default function ProductPerformance({
         ordersCount,
         conversionRate,
         sku: match?.sku || 'N/A',
-        priceEG: match?.priceEG || 0,
         priceSA: match?.priceSA || 0,
         images: match?.images || [],
         rating: match?.rating || 4.5,
@@ -104,7 +94,7 @@ export default function ProductPerformance({
             <span>نظام مراقبة أداء وتفاعلية معروضات SULTA ⚜️</span>
           </h3>
           <p className="text-[11px] text-gray-500 mt-1 max-w-2xl leading-relaxed">
-            تتم مزامنة إثباتات المظهر والمشاهدات فورياً عبر البوتيك. يمكنك معرفة الفستان الأكثر جاذبية وما الذي يثير اهتمام السيدات بالخليج العربي ومصر.
+            تتم مزامنة إثباتات المظهر والمشاهدات فورياً عبر البوتيك. يمكنك معرفة الفستان الأكثر جاذبية وما الذي يثير اهتمام السيدات في المملكة العربية السعودية والخليج.
           </p>
         </div>
 

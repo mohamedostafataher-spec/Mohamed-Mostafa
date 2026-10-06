@@ -135,7 +135,7 @@ export default function AdminCoupons() {
                 <tr key={c.id} className="border-b hover:bg-gray-50">
                   <td className="p-3 font-mono font-bold text-sm tracking-wider">{c.code}</td>
                   <td className="p-3 text-xs text-gray-600">
-                    {c.type === 'percentage' ? `${c.value}%` : c.type === 'fixed' ? `${c.value} SAR/EGP` : 'شحن مجاني'}
+                    {c.type === 'percentage' ? `${c.value}%` : c.type === 'fixed' ? `${c.value} SAR` : 'شحن مجاني'}
                   </td>
                   <td className="p-3 text-xs text-gray-500">
                     {c.timesUsed} {c.usageLimit ? `/ ${c.usageLimit}` : 'استخدام'}

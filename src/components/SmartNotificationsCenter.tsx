@@ -50,7 +50,7 @@ export default function SmartNotificationsCenter({
       list.push({
         id: 'new-orders-alert',
         title: `لديك ${pendingOrders.length} طلبات جديدة بحاجة للتجهيز 📥`,
-        desc: `عملاء من المملكة العربية السعودية ومصر ينتظرون تأكيد شحناتهم حالاً.`,
+        desc: `عميلات النخبة من كافة مدن المملكة العربية السعودية ينتظرن تأكيد شحناتهن حالاً.`,
         type: 'order',
         time: 'الآن',
         actionLabel: 'شاشاة الطلبات',
@@ -91,7 +91,7 @@ export default function SmartNotificationsCenter({
     if (completedOrders.length > 0) {
       const totalRevenue = orders
         .filter((o) => o.status === 'delivered')
-        .reduce((sum, o) => sum + (o.currency === 'SAR' ? o.totalPrice * 13 : o.totalPrice), 0);
+        .reduce((sum, o) => sum + o.totalPrice, 0);
       list.push({
         id: 'milestone-revenue',
         title: `إنجاز ملكي: الطلبات المكتملة تحقق نجاحاً قياسياً ✨`,
@@ -107,7 +107,7 @@ export default function SmartNotificationsCenter({
     list.push({
       id: 'general-motd',
       title: 'بوتيك SULTA مستعد لتوسعات الخليج العربي 🌍',
-      desc: 'بوابة الدفع وبنية الشحن ومحولات العملات مهيأة بالكامل لكلا الدولتين الشقيقتين (مصر والسعودية).',
+      desc: 'بوابة الدفع وبنية الشحن الموحدة مهيأة بالكامل لخدمة عميلاتنا في المملكة العربية السعودية.',
       type: 'info',
       time: 'مستمر',
     });

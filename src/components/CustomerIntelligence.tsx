@@ -161,7 +161,7 @@ export default function CustomerIntelligence({
                     </div>
                   </div>
                   <div className="text-left font-sans">
-                    <div className="font-black text-gray-900">{c.totalSpent.toLocaleString()} EGP</div>
+                    <div className="font-black text-gray-900">{c.totalSpent.toLocaleString()} SAR</div>
                     <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase ${
                       c.loyaltyTier === 'diamond' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
                     }`}>
@@ -197,7 +197,7 @@ export default function CustomerIntelligence({
                   </div>
                   <div className="text-left font-sans">
                     <div className="font-black text-[#A44C5C]">{c.orderCount} طلبيات مكتملة</div>
-                    <span className="text-[9px] text-gray-400">إجمالي {c.totalSpent.toLocaleString()} EGP</span>
+                    <span className="text-[9px] text-gray-400">إجمالي {c.totalSpent.toLocaleString()} SAR</span>
                   </div>
                 </div>
               ))

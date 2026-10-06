@@ -36,13 +36,7 @@ export default function SultaAiIntelligence({
   const aiStats = useMemo(() => {
     // A. Revenue calculations
     const sarOrders = orders.filter(o => o.currency === 'SAR' && o.status !== 'cancelled');
-    const egpOrders = orders.filter(o => o.currency === 'EGP' && o.status !== 'cancelled');
-    
     const totalRevenueSAR = sarOrders.reduce((sum, o) => sum + o.totalPrice, 0);
-    const totalRevenueEGP = egpOrders.reduce((sum, o) => sum + o.totalPrice, 0);
-
-    // Standard swap base for unified display
-    const unifiedRevenueEGP = totalRevenueEGP + (totalRevenueSAR * 13.0);
 
     // B. Under-the-hood real-time order insight calculations (Module 14)
     const ordersByCity: Record<string, number> = {};
@@ -86,7 +80,7 @@ export default function SultaAiIntelligence({
     }
 
     // C. Module 03: AI Customer Analytics (VIP, Repeat, New, Inactive)
-    const VIPThreshold = 8000; // in EGP equivalent
+    const VIPThreshold = 5000; // in SAR
     const vipList: any[] = [];
     const repeatList: any[] = [];
     const newList: any[] = [];
@@ -98,7 +92,7 @@ export default function SultaAiIntelligence({
     // Grouping by phone or email
     orders.forEach(o => {
       const key = o.email || o.phone || 'guest';
-      const orderSpentEGP = o.currency === 'SAR' ? o.totalPrice * 13.0 : o.totalPrice;
+      const orderSpentSAR = o.totalPrice;
 
       if (!customerMap[key]) {
         customerMap[key] = {
@@ -117,7 +111,7 @@ export default function SultaAiIntelligence({
           lastOrderDate: o.createdAt || o.date || new Date().toISOString()
         };
       }
-      customerMap[key].totalSpent += orderSpentEGP;
+      customerMap[key].totalSpent += orderSpentSAR;
       customerMap[key].ordersCount += 1;
     });
 
@@ -129,7 +123,7 @@ export default function SultaAiIntelligence({
       const updatedProfile = { 
         ...cust.profile, 
         totalSpent: cust.totalSpent,
-        points: Math.floor(cust.totalSpent / 15) 
+        points: Math.floor(cust.totalSpent / 5) 
       };
 
       if (isVIP) {
@@ -154,10 +148,10 @@ export default function SultaAiIntelligence({
     // D. Module 04: AI Sales Forecasting & Stock depletion
     // Simple robust mathematical projection based on order trend
     const recentOrders = orders.filter(o => o.status !== 'cancelled');
-    const weeklySalesBaseEGP = recentOrders.length > 0 ? unifiedRevenueEGP / 4 : 50000;
+    const weeklySalesBaseSAR = recentOrders.length > 0 ? totalRevenueSAR / 4 : 5000;
     
-    const weekForecast = weeklySalesBaseEGP * 1.08; // factoring in positive 8% AI-pessimistic growth
-    const monthForecast = weeklySalesBaseEGP * 4.3 * 1.15; // factoring in 15% seasonal/organic surge
+    const weekForecast = weeklySalesBaseSAR * 1.08; // factoring in positive 8% AI-pessimistic growth
+    const monthForecast = weeklySalesBaseSAR * 4.3 * 1.15; // factoring in 15% seasonal/organic surge
 
     // E. Module 05: Product Health Score rating index (max 100)
     const productHealthMatrix = products.map(p => {
@@ -237,23 +231,11 @@ export default function SultaAiIntelligence({
         if (text.includes('مقاس') || text.includes('صغير') || text.includes('ضيق')) keywords['يحتاج مقاسات أكبر']++;
       });
 
-      // Default counters check for mock data placeholder escape
-      if (reviews.length === 0) {
-        keywords['حرير رائع'] = 14;
-        keywords['تغليف ملكي'] = 11;
-        keywords['مريح للنوم'] = 9;
-        keywords['حياكة فاخرة'] = 18;
-        keywords['تأخير شحن طفيف'] = 1;
-        keywords['يحتاج مقاسات أكبر'] = 2;
-      }
-
       return keywords;
     };
 
     return {
       totalRevenueSAR,
-      totalRevenueEGP,
-      unifiedRevenueEGP,
       topCities,
       peakHourStr,
       vipCount: vipList.length,
@@ -294,7 +276,7 @@ export default function SultaAiIntelligence({
 رداء وملابس نوم *${targetProd.nameAr}* الفاخرة مصممة من أرقى كوتور الحرير الملكي المبرد لتطويق لياليكِ بالراحة المطلقة والنعومة الحانية.
 
 🌸 صناعة يدوية خاصة بختم شمعي مميز وشريط حريري فاخر.
-🛍️ متاح للتسليم الفوري الآن في الرياض ومصر!
+🛍️ متاح للتسليم الفوري الآن في الرياض وجدة وكافة مدن المملكة!
 📦 استبدال مجاني مجنّد لباب دارك تيسيراً لأناقتك.
 
 تألقي كإمبراطورة الحسن والدلال وميزي إطلالتك اليوم. دعي الحرير يتلمس وجدانكِ... 👑✨
@@ -630,16 +612,16 @@ export default function SultaAiIntelligence({
               <div className="bg-gradient-to-tr from-[#FAF5F0] to-white border border-stone-200 p-6 rounded-3xl space-y-4 text-right">
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-serif font-black tracking-widest block w-fit">WEEKLY PREDICTION MACHINE</span>
                 <h4 className="font-serif text-lg font-black text-stone-900">مبيعات الأسبوع القادم المتوقعة 🔮</h4>
-                <p className="text-3xl font-black text-emerald-700 font-mono">~ {Math.floor(aiStats.weekForecast).toLocaleString()} EGP</p>
+                <p className="text-3xl font-black text-emerald-700 font-mono">~ {Math.floor(aiStats.weekForecast / 13).toLocaleString()} SAR</p>
                 <p className="text-[10px] text-gray-500 leading-relaxed font-sans">
-                  نحن نحسب السحب المتكرر للموسم الحالي، وسعة الشحن بالرياض ومصر، ونتنبأ بنسبة ثقة 92% بمبيعات هادئة جيدة.
+                  نحن نحسب السحب المتكرر للموسم الحالي، وسعة الشحن بكافة مدن المملكة، ونتنبأ بنسبة ثقة 92% بمبيعات هادئة جيدة.
                 </p>
               </div>
 
               <div className="bg-gradient-to-tr from-[#FAF5F0] to-white border border-stone-200 p-6 rounded-3xl space-y-4 text-right">
                 <span className="text-[9px] bg-[#A44C5C]/10 text-[#A44C5C] px-2 py-0.5 rounded-full font-serif font-black tracking-widest block w-fit">MONTHLY SEASONAL ALGORITHM</span>
                 <h4 className="font-serif text-lg font-black text-stone-900">مبيعات الشهر القادم المتوقعة 👑</h4>
-                <p className="text-3xl font-black text-[#A44C5C] font-mono">~ {Math.floor(aiStats.monthForecast).toLocaleString()} EGP</p>
+                <p className="text-3xl font-black text-[#A44C5C] font-mono">~ {Math.floor(aiStats.monthForecast / 13).toLocaleString()} SAR</p>
                 <p className="text-[10px] text-gray-500 leading-relaxed font-sans">
                   يعكس هذا النمو العضوي للعلامة، مع الأخذ بالاعتبار الحملات الإعلانية ومعدلات إبداء الإعجاب بالقطع الجديدة.
                 </p>
@@ -794,7 +776,7 @@ export default function SultaAiIntelligence({
                   <ul className="list-disc pr-4 space-y-1 text-[10.5px] text-rose-900 font-sans">
                     <li>مطالب عاجلة بزيادة درجات الحرير الوردي الباستيل والوان النخل التدرجية.</li>
                     <li>طلبات بتوفير مقاسات تكرارية واسعة إضافية من نوع Kimono (XXL).</li>
-                    <li>تأخر شحن طفيف في محافظات وبعض مناطق صعيد مصر.</li>
+                    <li>تأخر شحن طفيف في بعض المناطق النائية بالمملكة.</li>
                   </ul>
                 </div>
               </div>
@@ -1324,7 +1306,7 @@ export default function SultaAiIntelligence({
             {/* 4. Action Plan & Places list Map (Sulta Arabic Suppliers Registry) */}
             <div className="bg-stone-900 text-stone-100 p-6 rounded-3xl space-y-4">
               <h4 className="text-sm font-bold text-[#F6E7A6] flex items-center gap-2">
-                <span>📍 دليل وخطوات الشراء الفورية ببلدك (مصر والخليج العربي):</span>
+                <span>📍 دليل وخطوات الشراء الفورية بالمملكة والخليج العربي:</span>
               </h4>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] leading-relaxed">
@@ -1334,9 +1316,7 @@ export default function SultaAiIntelligence({
                     شراء كرتون البيتزا السادة بالجملة
                   </h5>
                   <p className="text-stone-300">
-                    • <b>في مصر:</b> انزلي منطقة <b>العتبة - خلف جراج العتبة (شارع الرويعي ومحيطه)</b> أو <b>ممر الفجالة للورق والكرتون</b>. هتلاقي أكشاك ومحلات جملة بيبيعوا كراتين البيتزا بجميع المقاسات (مثلاً مقاس 32x32 سم السادة أبيض أو بني كرافت) ومربعات الساح كرتون قوي بسعر يبدأ من 9 لـ 12 جنيه شامل الخصومات والكمية ممكن تبدأ من 50 علبة فقط!
-                    <br />
-                    • <b>في السعودية:</b> اطلبي من موزعي <b>شارع المعبر أو سوق المعيقلية بالرياض</b>، أو منصات بيع الكرتون السادة عبر الإنترنت بعلب تغليف مرنة.
+                    • <b>بالمملكة:</b> اطلبي من موزعي <b>شارع المعبر أو سوق المعيقلية بالرياض</b>، أو منصات بيع الكرتون السادة عبر الإنترنت بعلب تغليف مرنة. يتوفر الشحن الفوري لكافة المدن.
                   </p>
                 </div>
 
@@ -1348,9 +1328,9 @@ export default function SultaAiIntelligence({
                   <p className="text-stone-300">
                     • خذي لوجو SULTA والرسومات اللطيفة التي قمنا بتصميمها لكِ مجاناً في Sulta Brand باللون الأسود بالكامل (قالب مفرغ Silhoutte).
                     <br />
-                    • ابحثي في منطقتكِ عن ورش <b>الحفر بالليزر والزنكغراف</b> (مثلاً في <b>شارع محمد علي بوسط البلد بالقاهرة</b> أو عبر متجر طباعة أونلاين بالرياض). اطلبي ختم خشبي جامبو مقاس 15x15 سم أو 20x15 سم بمقبض عريض.
+                    • ابحثي في منطقتكِ عن ورش <b>الحفر بالليزر والزنكغراف</b> (مثلاً عبر منصات الطباعة أونلاين أو المطابع المختصة بالرياض وجدة). اطلبي ختم خشبي جامبو مقاس 15x15 سم أو 20x15 سم بمقبض عريض.
                     <br />
-                    • اشتري وسادة حبر (Ink Pad) باللون الوردي الغامق أو الأسود الملكي بمبلغ 45 ج.م.
+                    • اشتري وسادة حبر (Ink Pad) باللون الوردي الغامق أو الأسود الملكي بمبلغ رمزي من أي مكتبة قرطاسية.
                   </p>
                 </div>
 

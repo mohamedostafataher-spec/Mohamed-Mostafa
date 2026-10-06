@@ -20,7 +20,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
       options: [
         { key: 'silk', titleAr: 'حرير التوت الطبيعي الفاخر (Pure Mulberry Silk)', descAr: 'لمسة غنية دافئة، بروتينية لطيفة وحماية كاملة للجلد.' },
         { key: 'satin', titleAr: 'حرير كوتور المرن الممتاز (Luxury Stretch Silk)', descAr: 'لمعان متلالئ براق، انسيابية ارتدادية ومثالية للحركة.' },
-        { key: 'cotton', titleAr: 'الكتان والقطن المصري العضوي (Egyptian Cotton)', descAr: 'نعومة قطنية دافئة هادئة تمتص الرطوبة ومريحة جداً غسيل متكرر.' }
+        { key: 'cotton', titleAr: 'الكتان والقطن الملكي العضوي (Royal Luxury Cotton)', descAr: 'نعومة قطنية دافئة هادئة تمتص الرطوبة ومريحة جداً غسيل متكرر.' }
       ]
     },
     {
@@ -264,7 +264,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
 
                         <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between flex-row-reverse">
                           <span className="text-xs font-serif font-bold text-[#A44C5C]">
-                            {matchedP.priceSA || matchedP.priceEG} {matchedP.priceSA ? 'ر.س' : 'ج.م'}
+                            {matchedP.priceSA} ر.س
                           </span>
                           {onSelectProduct && (
                             <button
