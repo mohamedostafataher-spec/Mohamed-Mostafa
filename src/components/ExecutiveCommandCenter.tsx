@@ -314,7 +314,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('kpis')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'kpis' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'kpis' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           لوحة الإدارة التنفيذية
@@ -335,7 +335,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('customers_intel')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'customers_intel' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'customers_intel' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           مركز ذكاء العملاء 👥
@@ -344,7 +344,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('products_performance')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'products_performance' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'products_performance' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           أداء المنتجات ومعدلات الاستجابة 📈
@@ -353,7 +353,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('inventory_insights')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'inventory_insights' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'inventory_insights' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           تحليل المخزون والأصول 📦
@@ -362,7 +362,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('reviews_center')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'reviews_center' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'reviews_center' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           إدارة التقييمات والمراجعات ⭐
@@ -371,7 +371,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('brand_reputation')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'brand_reputation' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'brand_reputation' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           متابعة سمعة الأتيليه والمراجعات ⭐
@@ -380,7 +380,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('store_health')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'store_health' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'store_health' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           فحص المتجر ومؤشر الفخامة 🛠️
@@ -389,7 +389,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('merchandising')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'merchandising' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'merchandising' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           تثبيت المعروض والتشكيلات ✦
@@ -398,7 +398,7 @@ export default function ExecutiveCommandCenter({
         <button
           onClick={() => setActiveTab('global_ready')}
           className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-            activeTab === 'global_ready' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
+            activeTab === 'global_ready' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'hover:bg-gray-150 text-gray-750'
           }`}
         >
           الإعدادات الثنائية (مصر/السعودية) 🇸🇦 🇪🇬

@@ -646,21 +646,21 @@ export default function AdminExperienceCenter({
             <span className="text-[10px] font-bold text-gray-400 tracking-wider block mb-2 px-1 uppercase">🥇 لوحة القيادة والتنفيذ (Executive Suite)</span>
             <button 
               onClick={() => setActiveSystem('executive_dash')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'executive_dash' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'executive_dash' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Landmark size={14} className={activeSystem === 'executive_dash' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>09. اللوحة التنفيذية الشاملة</span>
             </button>
             <button 
               onClick={() => setActiveSystem('ai_audit')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'ai_audit' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'ai_audit' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Sparkles size={14} className={activeSystem === 'ai_audit' ? 'text-amber-400 animate-pulse' : 'text-gray-400'} />
               <span>10. مساعد التدقيق الذكي AI</span>
             </button>
             <button 
               onClick={() => setActiveSystem('smart_command')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'smart_command' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'smart_command' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Terminal size={14} className={activeSystem === 'smart_command' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>04. مركز الأوامر السريع الذكي</span>
@@ -672,28 +672,28 @@ export default function AdminExperienceCenter({
             <span className="text-[10px] font-bold text-gray-400 tracking-wider block mb-2 px-1 uppercase">🛡️ معايير الجودة والتحليل (Data Integrity)</span>
             <button 
               onClick={() => setActiveSystem('product_quality')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'product_quality' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'product_quality' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Award size={14} className={activeSystem === 'product_quality' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>02. مقياس جودة المنتجات</span>
             </button>
             <button 
               onClick={() => setActiveSystem('store_health')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'store_health' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'store_health' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <ShieldAlert size={14} className={activeSystem === 'store_health' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>01. رادار صحة وتكامل البيانات</span>
             </button>
             <button 
               onClick={() => setActiveSystem('brand_consistent')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'brand_consistent' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'brand_consistent' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Compass size={14} className={activeSystem === 'brand_consistent' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>06. مطابقة الهوية البصرية الملكية</span>
             </button>
             <button 
               onClick={() => setActiveSystem('broken_detector')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'broken_detector' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'broken_detector' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <AlertTriangle size={14} className={activeSystem === 'broken_detector' ? 'text-red-500' : 'text-gray-400'} />
               <span>08. كاشف المكونات المعطلة</span>
@@ -705,28 +705,28 @@ export default function AdminExperienceCenter({
             <span className="text-[10px] font-bold text-gray-400 tracking-wider block mb-2 px-1 uppercase">🏎️ جاهزية الإطلاق والرحلات (Readiness)</span>
             <button 
               onClick={() => setActiveSystem('launch_readiness')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'launch_readiness' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'launch_readiness' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <CheckCircle size={14} className={activeSystem === 'launch_readiness' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>03. مركز جاهزية التدشين الفعلي</span>
             </button>
             <button 
               onClick={() => setActiveSystem('customer_journey')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'customer_journey' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'customer_journey' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Activity size={14} className={activeSystem === 'customer_journey' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>07. تتبع رحلة المتسوقين</span>
             </button>
             <button 
               onClick={() => setActiveSystem('conversion_opt')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'conversion_opt' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'conversion_opt' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <TrendingUp size={14} className={activeSystem === 'conversion_opt' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>12. محلل نسب تحويل المبيعات</span>
             </button>
             <button 
               onClick={() => setActiveSystem('mobile_audit')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'mobile_audit' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'mobile_audit' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Smartphone size={14} className={activeSystem === 'mobile_audit' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>13. رادار فحص الهواتف الذكية</span>
@@ -738,28 +738,28 @@ export default function AdminExperienceCenter({
             <span className="text-[10px] font-bold text-gray-400 tracking-wider block mb-2 px-1 uppercase">👑 إدارة البراند والوسائط (Media CMS)</span>
             <button 
               onClick={() => setActiveSystem('brand_control')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'brand_control' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'brand_control' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Sliders size={14} className={activeSystem === 'brand_control' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>11. مركز تشغيل الحملات والمواسم</span>
             </button>
             <button 
               onClick={() => setActiveSystem('image_intelligence')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'image_intelligence' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'image_intelligence' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <ImageIcon size={14} className={activeSystem === 'image_intelligence' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>14. ذكاء معالجة وضغط الصور</span>
             </button>
             <button 
               onClick={() => setActiveSystem('visual_sitemap')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'visual_sitemap' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'visual_sitemap' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Globe size={14} className={activeSystem === 'visual_sitemap' ? 'text-[#F6E7A6]' : 'text-gray-400'} />
               <span>05. خارطة المتجر التفاعلية</span>
             </button>
             <button 
               onClick={() => setActiveSystem('sensory_control')} 
-              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'sensory_control' ? 'bg-[#0B0B0B] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`w-full text-right p-2.5 rounded-xl text-xs flex items-center gap-3 transition-colors ${activeSystem === 'sensory_control' ? 'bg-[#A44C5C] text-white font-bold shadow-xs' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               <Sparkles size={14} className={activeSystem === 'sensory_control' ? 'text-pink-500 animate-pulse' : 'text-gray-400'} />
               <span>15. لوحة التحكم وجناح الحواس كوتور 👑</span>
@@ -999,7 +999,7 @@ export default function AdminExperienceCenter({
                         <div 
                           key={p.id}
                           onClick={() => setSelectedQualityProduct(p)}
-                          className={`p-2.5 rounded-xl border text-xs cursor-pointer text-right transition-colors ${selectedQualityProduct?.id === p.id ? 'bg-[#0B0B0B] text-[#F6E7A6] border-black' : 'bg-white hover:bg-neutral-50 text-gray-800'}`}
+                          className={`p-2.5 rounded-xl border text-xs cursor-pointer text-right transition-colors ${selectedQualityProduct?.id === p.id ? 'bg-[#A44C5C] text-[#F6E7A6] border-black' : 'bg-white hover:bg-neutral-50 text-gray-800'}`}
                         >
                           <div className="font-bold truncate">{p.nameAr}</div>
                           <div className="flex justify-between items-center mt-1 text-[10px]">
@@ -1175,13 +1175,13 @@ export default function AdminExperienceCenter({
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setQuickStockChange(10)} 
-                      className={`flex-1 p-2 rounded-xl border text-3xs font-bold ${quickStockChange === 10 ? 'bg-[#0B0B0B] text-white' : 'bg-white text-gray-700'}`}
+                      className={`flex-1 p-2 rounded-xl border text-3xs font-bold ${quickStockChange === 10 ? 'bg-[#A44C5C] text-white' : 'bg-white text-gray-700'}`}
                     >
                       إضافة (+10 قطع)
                     </button>
                     <button 
                       onClick={() => setQuickStockChange(-5)} 
-                      className={`flex-1 p-2 rounded-xl border text-3xs font-bold ${quickStockChange === -5 ? 'bg-[#0B0B0B] text-white' : 'bg-white text-gray-700'}`}
+                      className={`flex-1 p-2 rounded-xl border text-3xs font-bold ${quickStockChange === -5 ? 'bg-[#A44C5C] text-white' : 'bg-white text-gray-700'}`}
                     >
                       صرف خصم (-5 قطع)
                     </button>
@@ -1595,7 +1595,7 @@ export default function AdminExperienceCenter({
                     {/* Inside iOS viewport */}
                     <div className="flex-1 bg-white rounded-[26px] overflow-hidden flex flex-col text-[8px] text-right p-2 select-none relative">
                         {/* Header banner */}
-                        <div className="bg-[#0B0B0B] text-[#F6E7A6] p-1 text-center font-serif flex justify-between items-center px-2 mt-2">
+                        <div className="bg-[#A44C5C] text-[#F6E7A6] p-1 text-center font-serif flex justify-between items-center px-2 mt-2">
                           <span>SULTA CAST</span>
                           <span>🕌 العرض الرمضاني</span>
                         </div>
@@ -1795,7 +1795,7 @@ export default function AdminExperienceCenter({
                           setNewWaxName('');
                           toast('👑 تم حفظ وإضافة لون الشمع المنصهر بنجاح!', 'success');
                         }}
-                        className="w-full bg-[#0B0B0B] text-white hover:bg-amber-600/90 font-bold py-1.5 rounded-lg text-[10.5px] cursor-pointer"
+                        className="w-full bg-[#A44C5C] text-white hover:bg-amber-600/90 font-bold py-1.5 rounded-lg text-[10.5px] cursor-pointer"
                       >
                         + تسجيل لون الشمع للحقائب والصناديق
                       </button>
@@ -1867,7 +1867,7 @@ export default function AdminExperienceCenter({
                           setNewRibbonName('');
                           toast('🎗️ تم حفظ وإضافة الشريط لصناديق التعبئة بنجاح!', 'success');
                         }}
-                        className="w-full bg-[#0B0B0B] text-white hover:bg-pink-600 font-bold py-1.5 rounded-lg text-[10.5px] cursor-pointer"
+                        className="w-full bg-[#A44C5C] text-white hover:bg-pink-600 font-bold py-1.5 rounded-lg text-[10.5px] cursor-pointer"
                       >
                         + تسجيل التغليف بالصالون
                       </button>

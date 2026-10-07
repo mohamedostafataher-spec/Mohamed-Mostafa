@@ -67,7 +67,7 @@ export default function BlogView({ onReadPost }: BlogViewProps) {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`uppercase tracking-widest text-[10px] font-bold px-4 py-2 rounded-full whitespace-nowrap transition-colors border ${
                   activeCategory === cat.id 
-                  ? 'bg-[#0B0B0B] text-[#F6E7A6] border-[#0B0B0B]' 
+                  ? 'bg-[#A44C5C] text-[#F6E7A6] border-[#0B0B0B]' 
                   : 'bg-transparent text-gray-500 border-gray-300 hover:border-[#A44C5C] hover:text-[#A44C5C]'
                 }`}
               >

@@ -143,7 +143,7 @@ export default function ContactUs({ settings }: ContactUsProps) {
           </div>
 
           {/* Column 2: Digital correspondence form */}
-          <div className="bg-[#0B0B0B] text-[#FAF5F0] rounded-sm p-10 px-8 shadow-xl text-right">
+          <div className="bg-[#A44C5C] text-[#FAF5F0] rounded-sm p-10 px-8 shadow-xl text-right">
             <h3 className="font-serif text-2xl font-light mb-2 tracking-wider">اتركي رسالة</h3>
             <p className="text-xs text-gray-400 mb-8 font-sans font-light">
               نتطلع لسماع رأيكِ. يرجى ملء النموذج أدناه.

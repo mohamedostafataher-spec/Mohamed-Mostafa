@@ -291,7 +291,7 @@ export default function RoyalSensesSalon({
         <button
           onClick={() => { setActiveSuite('fabric'); playLuxuryTone(329.63, 392.00, 0.3, 'sine'); }}
           className={`flex-1 py-3 px-4 rounded-xl text-center transition-all cursor-pointer ${
-            activeSuite === 'fabric' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-md font-bold' : 'hover:bg-white hover:text-gray-900'
+            activeSuite === 'fabric' ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-md font-bold' : 'hover:bg-white hover:text-gray-900'
           }`}
         >
           ✨ بريق وهج الحرير
@@ -299,7 +299,7 @@ export default function RoyalSensesSalon({
         <button
           onClick={() => { setActiveSuite('wax'); playLuxuryTone(392.00, 493.88, 0.3, 'sine'); }}
           className={`flex-1 py-3 px-4 rounded-xl text-center transition-all cursor-pointer ${
-            activeSuite === 'wax' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-md font-bold' : 'hover:bg-white hover:text-gray-900'
+            activeSuite === 'wax' ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-md font-bold' : 'hover:bg-white hover:text-gray-900'
           }`}
         >
           👑 صندوق الأختام الملكية
@@ -307,7 +307,7 @@ export default function RoyalSensesSalon({
         <button
           onClick={() => { setActiveSuite('outfit'); playLuxuryTone(523.25, 659.25, 0.3, 'sine'); }}
           className={`flex-1 py-3 px-4 rounded-xl text-center transition-all cursor-pointer hover:bg-white hover:text-gray-900 ${
-            activeSuite === 'outfit' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-md font-bold' : ''
+            activeSuite === 'outfit' ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-md font-bold' : ''
           }`}
         >
           👗 منسق الأطقم
@@ -653,7 +653,7 @@ export default function RoyalSensesSalon({
                 <div className="pt-4 border-t border-gray-150">
                   <button
                     onClick={() => selectedProductFabric && handleAddCustomizedToCart(selectedProductFabric, 'fabric')}
-                    className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
+                    className="w-full bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
                   >
                     <ShoppingBag size={14} />
                     <span>إرسال القطعة المعاينة للحقيبة 🛍️</span>
@@ -734,7 +734,7 @@ export default function RoyalSensesSalon({
                   <button
                     onClick={handleStamp}
                     disabled={isStamping || !customInitial.trim()}
-                    className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm disabled:opacity-60 h-12"
+                    className="w-full bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm disabled:opacity-60 h-12"
                   >
                     <span>{isStamping ? "جاري مهر الصندوق بالشمع الشديد الحرارة..." : "مهر الختم الملكي للشحنة ✉️"}</span>
                   </button>
@@ -797,7 +797,7 @@ export default function RoyalSensesSalon({
                   <button
                     onClick={handleAddBundleToCart}
                     disabled={!outfitTop || !outfitBottom}
-                    className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
+                    className="w-full bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white py-3.5 rounded-xl text-xs font-sans font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
                   >
                     {addedBundleToCart ? (
                       <>

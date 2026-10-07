@@ -581,29 +581,29 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
       
       {/* Toast Alert */}
       {toast && (
-        <div className={`fixed bottom-5 right-5 z-50 p-4 rounded-2xl shadow-xl flex items-center gap-3 transition-all animate-bounce max-w-sm ${
-          toast.type === 'success' ? 'bg-[#A44C5C] text-white border border-[#DF8A9D]/30' :
-          toast.type === 'error' ? 'bg-red-900 text-white border border-red-500' :
-          'bg-stone-900 text-[#F6E7A6] border border-stone-800'
+        <div className={`fixed bottom-10 right-10 z-50 p-5 rounded-2xl shadow-2xl flex items-center gap-3 transition-all animate-bounce max-w-sm border backdrop-blur-md ${
+          toast.type === 'success' ? 'bg-[#FCF5F6]/95 text-[#A44C5C] border-[#DF8A9D]/40' :
+          toast.type === 'error' ? 'bg-red-50/95 text-red-900 border-red-200' :
+          'bg-white/95 text-stone-800 border-stone-200'
         }`}>
-          {toast.type === 'success' ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
-          <span className="text-xs font-bold">{toast.message}</span>
+          {toast.type === 'success' ? <CheckCircle2 size={20} className="text-[#A44C5C]" /> : <AlertTriangle size={20} className="text-red-500" />}
+          <span className="text-sm font-bold leading-relaxed">{toast.message}</span>
         </div>
       )}
 
       {/* Header Profile Brand */}
-      <div className="bg-[#0B0B0B] text-white rounded-3.5xl p-6 sm:p-8 border border-stone-800 shadow-md relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#A44C5C]/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-white rounded-3.5xl p-6 sm:p-8 border border-stone-200 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#A44C5C]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
         
-        <div className="space-y-2 relative z-10">
-          <span className="text-3xs font-black bg-[#A44C5C] text-white px-3 py-1 rounded-full uppercase tracking-widest inline-flex items-center gap-1">
+        <div className="space-y-2 relative z-10 text-right">
+          <span className="text-3xs font-black bg-[#FCF5F6] text-[#A44C5C] px-3 py-1 rounded-full uppercase tracking-widest inline-flex items-center gap-1 border border-[#DF8A9D]/20">
             <Zap size={10} className="animate-pulse" /> SULTA HYPER-TECH ENGINE
           </span>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#F6E7A6] tracking-wide flex items-center gap-3 justify-start">
-            <Cpu className="text-[#A44C5C] animate-spin" size={28} />
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-wide flex items-center gap-3 justify-start">
+            <Cpu className="text-[#A44C5C]" size={28} />
             أكاديمية الذكاء الاصطناعي — AI CENTER
           </h2>
-          <p className="text-gray-400 text-xs max-w-2xl leading-relaxed">
+          <p className="text-gray-500 text-xs max-w-2xl leading-relaxed">
             المنظومة التنفيذية الفاخرة للوكلاء الأذكياء. رصد تلقائي بالكامل، أتمتة ليلية، تفاعل مباشر مع قاعدة البيانات الموحدة لـ Supabase دون خوادم تجريبية أو بيانات وهمية.
           </p>
         </div>
@@ -1018,7 +1018,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                     <h4 className="text-xs font-black text-[#A44C5C] flex items-center gap-1">
                       <Sparkles size={13} /> استجابة ومخرجات الوكيل الذكي:
                     </h4>
-                    <div className="p-4 bg-stone-900 text-white font-mono rounded-2xl border border-stone-800 text-xs text-right whitespace-pre-wrap leading-relaxed max-h-72 overflow-y-auto">
+                    <div className="p-4 bg-white text-stone-800 font-mono rounded-2xl border border-stone-200 shadow-sm text-xs text-right whitespace-pre-wrap leading-relaxed max-h-72 overflow-y-auto">
                       {agentResponseResult}
                     </div>
                   </div>
@@ -1266,7 +1266,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
             </button>
           </div>
 
-          <div className="bg-stone-900 border border-stone-850 rounded-3.5xl p-5 text-right font-mono overflow-hidden">
+          <div className="bg-[#FAF9F6] border border-[#DF8A9D]/10 rounded-3.5xl p-5 text-right font-mono overflow-hidden shadow-sm">
             <div className="flex items-center gap-2 border-b border-stone-800 pb-3 mb-4 text-xs text-[#F6E7A6]">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
               <span>SULTA SECURE AI AGENTS SHELL TERMINAL - REAL TIME UPDATES</span>

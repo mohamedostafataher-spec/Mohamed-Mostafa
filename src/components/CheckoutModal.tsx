@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, 
-  CreditCard, 
   ShieldCheck, 
   CheckCircle, 
-  Smartphone, 
   Truck, 
   ArrowRight, 
   ArrowLeft, 
@@ -13,14 +11,24 @@ import {
   Send, 
   Copy, 
   Check, 
-  Building2,
-  Lock
+  Lock,
+  AlertCircle,
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
-import { dbService } from '../services/db';
+import { WhatsAppService } from '../services/whatsappService';
 import { agentSystem } from '../services/agentSystem';
 import { trackInitiateCheckout, trackPurchase } from '../utils/analytics';
 import SultaImage from './SultaImage';
+import { 
+  paymentService, 
+  PaymentMethodType, 
+  PaymentGatewayStatus,
+  checkApplePaySupport,
+  ApplePayAvailability,
+  isPaymobConfigured
+} from '../payment';
 
 interface CheckoutModalProps {
   country: Country;
@@ -39,60 +47,40 @@ export default function CheckoutModal({
   onOrderSuccess,
   settings,
 }: CheckoutModalProps) {
-  // Simplified 2-Step Salla-style Checkout: Step 1 = Shipping Info, Step 2 = Payment & Confirm
+  // Step 1: Shipping and Contact Details, Step 2: Payment Selection and Processing
   const [step, setStep] = useState<1 | 2>(1);
 
-  // Form Fields State
+  // Form Fields State (Saudi Specific)
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
 
-  // Selected payment method (default: apple for SA)
-  const [selectedPayment, setSelectedPayment] = useState<string>('apple');
-  
-  // Submission & copy states
+  // Selected Payment Method: 'apple_pay' | 'card' | 'cod'
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('apple_pay');
+
+  // Apple Pay device capability state
+  const [applePaySupport, setApplePaySupport] = useState<ApplePayAvailability>({ isAvailable: false });
+
+  // Processing & Verification States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [successOrder, setSuccessOrder] = useState<Order | null>(null);
-  const [confirmViaWhatsapp, setConfirmViaWhatsapp] = useState(true);
-  const [copiedBank, setCopiedBank] = useState(false);
+  const [activeOrder, setActiveOrder] = useState<Order | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<PaymentGatewayStatus | null>(null);
   const [copiedInvoice, setCopiedInvoice] = useState(false);
-
-  // Auto-redirect effect for WhatsApp on success (mobile optimized)
-  useEffect(() => {
-    if (successOrder && confirmViaWhatsapp) {
-      const itemsList = successOrder.items.map(i => `• ${i.productName} (${i.color} - ${i.size}) × ${i.quantity}`).join('\n');
-      const invoiceText = `🌸 مرحباً متجر SULTA للأزياء الملكية الفاخرة، قمت بإتمام حجز طلبيتي:\n\n` +
-                   `📋 رقم الطلب: ${successOrder.id.slice(0, 18)}\n` +
-                   `👤 الاسم: ${successOrder.customerName}\n` +
-                   `📱 الجوال: ${successOrder.phone}\n` +
-                   `📍 العنوان: ${successOrder.city} - ${successOrder.address}\n` +
-                   `💳 وسيلة الدفع: ${successOrder.paymentMethod}\n` +
-                   `💰 الإجمالي: ${successOrder.totalPrice.toLocaleString()} ${successOrder.currency}\n\n` +
-                   `📦 تفاصيل المنتجات:\n${itemsList}\n\n` +
-                   `✨ يرجى تأكيد استلام الطلب وتجهيز التغليف الملكي للشحن السريع ❤️`;
-      
-      const encodedText = encodeURIComponent(invoiceText);
-      const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393').replace(/\D/g, '');
-      const cleanWhatsapp = targetWhatsapp.startsWith('05') ? ('966' + targetWhatsapp.slice(1)) : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966596894393');
-      const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodedText}`;
-
-      // Only auto-trigger on mount of success screen
-      const timer = setTimeout(() => {
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (isMobile) {
-          window.location.href = whatsappUrl;
-        } else {
-          window.open(whatsappUrl, '_blank');
-        }
-      }, 1500); // Small delay for user to see the success checkmark
-
-      return () => clearTimeout(timer);
-    }
-  }, [successOrder, confirmViaWhatsapp, settings]);
+  const [iframePaymentUrl, setIframePaymentUrl] = useState<string | null>(null);
 
   const currencyLabel = 'ر.س';
+
+  // Check Apple Pay device capabilities on mount
+  useEffect(() => {
+    const support = checkApplePaySupport();
+    setApplePaySupport(support);
+    if (!support.isAvailable) {
+      // Default to card if Apple Pay is not physically supported on current device
+      setSelectedPayment('card');
+    }
+  }, []);
 
   // Subtotal and Calculations
   const subtotal = cart.reduce((sum, item) => {
@@ -100,7 +88,7 @@ export default function CheckoutModal({
     return sum + itemPrice * item.quantity;
   }, 0);
 
-  // Dynamic Shipping calculation
+  // Dynamic Shipping calculation for Saudi Arabia
   const getDynamicShippingCost = () => {
     if (!settings) return 30;
     const userCity = city.trim().toLowerCase();
@@ -126,268 +114,222 @@ export default function CheckoutModal({
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
   const totalAmount = Math.max(0, subtotal - discountAmount + shippingCost);
 
-  // Official Saudi Bank Account Details (Enjaz / Bank AlJazira)
-  const saudiBankAccount = {
-    bankName: 'بنك الجزيرة / إنجاز (Bank AlJazira - Enjaz)',
-    accountNumber: '4550 1704 0413 3727',
-    accountName: 'متجر سُلطة للأزياء الفاخرة (SULTA Boutique)',
-    country: 'المملكة العربية السعودية 🇸🇦'
+  // Saudi Mobile Phone Validator: accepts 05xxxxxxxx or +9665xxxxxxxx
+  const validateSaudiPhone = (inputPhone: string): boolean => {
+    const cleanPhone = inputPhone.replace(/[\s-]/g, '');
+    const saudiRegex = /^(?:\+?966|0)?5[0-9]{8}$/;
+    return saudiRegex.test(cleanPhone);
   };
 
-  // Country specific payment gateways restricted strictly to Apple Pay, COD, and Bank Transfer
-  const activePayments = [
-    { 
-      id: 'apple', 
-      name: 'Apple Pay (أبل باي)', 
-      subtitle: 'الدفع الفوري السريع بنقرة واحدة عبر بطاقتك البنكية المعتمدة',
-      badge: 'الأسرع ⚡',
-      icon: <span className="font-sans font-bold text-sm">Pay</span> 
-    },
-    { 
-      id: 'cod', 
-      name: 'الدفع عند الاستلام (Cash on Delivery)', 
-      subtitle: 'السداد نقداً لمندوب التوصيل فور استلام ومعاينة طلبيتكِ الفاخرة',
-      badge: 'معاينة قبل الدفع 📦',
-      icon: <Truck size={18} className="text-emerald-700" /> 
-    },
-    { 
-      id: 'bank_transfer', 
-      name: 'تحويل بنكي مباشر (بنك الجزيرة / إنجاز)', 
-      subtitle: 'التحويل المباشر لحساب المتجر الرسمي المعتمد برقم البطاقة',
-      badge: 'حساب موثق 🏛️',
-      icon: <Building2 size={18} className="text-[#A44C5C]" /> 
-    },
-  ];
-
-  const handleCopyBank = () => {
-    try {
-      navigator.clipboard.writeText(saudiBankAccount.accountNumber.replace(/\s/g, ''));
-      setCopiedBank(true);
-      setTimeout(() => setCopiedBank(false), 3000);
-    } catch {
-      setCopiedBank(true);
-    }
+  // Formats phone to normalized Saudi standard (+9665XXXXXXXX)
+  const formatSaudiPhone = (inputPhone: string): string => {
+    const digits = inputPhone.replace(/\D/g, '');
+    if (digits.startsWith('9665') && digits.length === 12) return `+${digits}`;
+    if (digits.startsWith('05') && digits.length === 10) return `+966${digits.slice(1)}`;
+    if (digits.startsWith('5') && digits.length === 9) return `+966${digits}`;
+    return inputPhone.trim();
   };
 
-  // Validation handlers per step
+  // Step 1 Validation Handler
   const handleProceedToPayment = () => {
     setErrorMsg('');
-    if (!name.trim()) return setErrorMsg('الرجاء إدخال اسم المستلمة بالكامل.');
-    if (!phone.trim()) return setErrorMsg('الرجاء كتابة رقم الجوال للتواصل والواتساب.');
-    if (!city.trim()) return setErrorMsg('الرجاء كتابة اسم المدينة (مثال: الرياض، جدة، الدمام).');
-    if (!address.trim()) return setErrorMsg('الرجاء كتابة الحي والشارع لتسهيل وصول المندوب.');
+    if (!name.trim()) {
+      return setErrorMsg('الرجاء إدخال اسم المستلمة بالكامل.');
+    }
+    if (!phone.trim()) {
+      return setErrorMsg('الرجاء إدخال رقم الجوال السعودي للتواصل والشحن.');
+    }
+    if (!validateSaudiPhone(phone)) {
+      return setErrorMsg('الرجاء كتابة رقم جوال سعودي صحيح يبدأ بـ 05 أو 9665+ (مثال: 0596894393).');
+    }
+    if (!city.trim()) {
+      return setErrorMsg('الرجاء تحديد المدينة في المملكة العربية السعودية (مثال: الرياض، جدة، الدمام).');
+    }
+    if (!address.trim()) {
+      return setErrorMsg('الرجاء كتابة الحي واسم الشارع لتسهيل وصول المندوب لباب منزلك.');
+    }
 
     try {
-      trackInitiateCheckout(cart, totalAmount, country === 'EG' ? 'EGP' : 'SAR');
+      trackInitiateCheckout(cart, totalAmount, 'SAR');
     } catch (e) {
-      console.warn("InitiateCheckout pixel tracking error:", e);
+      console.warn("InitiateCheckout tracking notice:", e);
     }
 
     setStep(2);
   };
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Step 2 Submission Handler
+  const handleSubmitOrder = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setErrorMsg('');
     setIsSubmitting(true);
 
+    const normalizedPhone = formatSaudiPhone(phone);
+    const orderParams = {
+      customer: {
+        name: name.trim(),
+        phone: normalizedPhone,
+        city: city.trim(),
+        address: address.trim(),
+        email: `${normalizedPhone.replace(/\D/g, '')}@sulta.sa`
+      },
+      country: 'SA' as Country,
+      cart,
+      shippingFee: shippingCost,
+      totalPrice: totalAmount,
+      paymentMethodType: selectedPayment,
+      couponCode: appliedCoupon?.code
+    };
+
     try {
-      if (selectedPayment === 'apple') {
-        // Biometric/token simulation delay for Apple Pay
-        await new Promise(r => setTimeout(r, 1000));
+      // 1. CASH ON DELIVERY (COD)
+      if (selectedPayment === 'cod') {
+        const { order } = await paymentService.processCashOnDelivery(orderParams);
+        setActiveOrder(order);
+        setPaymentStatus('cod');
+
+        // Analytics tracking
+        try { trackPurchase(order); } catch (e) {}
+        try { await agentSystem.onOrderCreated(order); } catch (e) {}
+
+        // WhatsApp invoice notification
+        try {
+          WhatsAppService.sendInvoice(order, order.phone);
+        } catch (e) {}
+
+        return;
       }
 
-      const generatedCode = `SULTA-${Math.floor(100000 + Math.random() * 900000)}`;
-      const newUuid = crypto.randomUUID();
-      
-      const newOrder: Order = {
-        id: newUuid,
-        trackingNumber: generatedCode,
-        customerName: name,
-        phone: phone,
-        country: country,
-        city: city,
-        address: address,
-        notes: selectedPayment === 'bank_transfer' ? 'طلب تحويل بنكي على حساب بنك الجزيرة / إنجاز 4550 1704 0413 3727' : undefined,
-        shippingFee: shippingCost,
-        items: cart.map(item => {
-          const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
-          return {
-            productId: item.product.id,
-            productName: item.product.nameAr,
-            color: item.selectedColor?.name || 'افتراضي',
-            size: item.selectedSize,
-            quantity: item.quantity,
-            price: itemPrice
-          };
-        }),
-        totalPrice: totalAmount,
-        currency: country === 'EG' ? 'EGP' : 'SAR',
-        paymentMethod: selectedPayment === 'apple'
-          ? 'Apple Pay (مدفوع إلكترونياً Pay)'
-          : (activePayments.find(p => p.id === selectedPayment)?.name || 'الدفع عند الاستلام'),
-        status: selectedPayment === 'apple' ? 'confirmed' : 'pending',
-        date: new Date().toISOString().split('T')[0]
-      };
+      // 2. ELECTRONIC PAYMENT (Apple Pay or Visa/Mastercard/Mada)
+      const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
+        orderParams,
+        selectedPayment
+      );
 
-      await dbService.saveOrder(newOrder);
+      setActiveOrder(order);
 
-      // Trigger Pixel Purchase Tracking immediately for all connected ad networks
-      try {
-        trackPurchase(newOrder);
-      } catch (err) {
-        console.warn("Purchase pixel tracking error:", err);
-      }
-      
-      // Trigger SULTA Agent System automation
-      try {
-        await agentSystem.onOrderCreated(newOrder);
-      } catch (err) {
-        console.warn("Agent automation background error:", err);
+      if (!paymentIntent.success) {
+        setPaymentStatus('failed');
+        setErrorMsg(paymentIntent.errorMessage || 'لم تكتمل عملية الدفع. حاول مرة أخرى أو اختر طريقة دفع أخرى.');
+        return;
       }
 
-      setSuccessOrder(newOrder);
-    } catch (err) {
-      console.error("Order submission critical error:", err);
-      setErrorMsg('تعذر تسجيل الطلب، يرجى التحقق من الاتصال والمحاولة مجدداً.');
+      // If gateway returns Hosted Iframe or Redirection URL
+      if (paymentIntent.redirectionUrl || paymentIntent.iframeUrl) {
+        if (paymentIntent.iframeUrl) {
+          setIframePaymentUrl(paymentIntent.iframeUrl);
+        } else if (paymentIntent.redirectionUrl) {
+          window.location.href = paymentIntent.redirectionUrl;
+        }
+        setPaymentStatus('pending');
+      } else {
+        // If credentials are not set on server, fail gracefully with clear explanation
+        setPaymentStatus('failed');
+        setErrorMsg('لم تكتمل عملية الدفع الإلكتروني نظراً لأن بوابة Paymob تتطلب تعيين مفاتيح الربط الحقيقية في الخادم. يمكنك اختيار "الدفع عند الاستلام" لإتمام حجز طلبك فوراً.');
+      }
+
+    } catch (err: any) {
+      console.error("Order processing error:", err);
+      setPaymentStatus('failed');
+      setErrorMsg('لم تكتمل عملية الدفع. حاول مرة أخرى أو اختر طريقة دفع أخرى.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // SUCCESS SCREEN
-  if (successOrder) {
-    const itemsList = successOrder.items.map(i => `• ${i.productName} (${i.color} - ${i.size}) × ${i.quantity}`).join('\n');
-    const invoiceText = `🌸 مرحباً متجر SULTA للأزياء الملكية الفاخرة، قمت بإتمام حجز طلبيتي:\n\n` +
-                 `📋 رقم الطلب: ${successOrder.id.slice(0, 18)}\n` +
-                 `👤 الاسم: ${successOrder.customerName}\n` +
-                 `📱 الجوال: ${successOrder.phone}\n` +
-                 `📍 العنوان: ${successOrder.city} - ${successOrder.address}\n` +
-                 `💳 وسيلة الدفع: ${successOrder.paymentMethod}\n` +
-                 `💰 الإجمالي: ${successOrder.totalPrice.toLocaleString()} ${successOrder.currency}\n\n` +
-                 `📦 تفاصيل المنتجات:\n${itemsList}\n\n` +
-                 `✨ يرجى تأكيد استلام الطلب وتجهيز التغليف الملكي للشحن السريع ❤️`;
-    
-    const encodedText = encodeURIComponent(invoiceText);
+  // SUCCESS / CONFIRMATION SCREEN
+  if (activeOrder && (paymentStatus === 'cod' || paymentStatus === 'paid')) {
+    const isCod = paymentStatus === 'cod';
     const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393').replace(/\D/g, '');
-    const cleanWhatsapp = targetWhatsapp.startsWith('05') ? ('966' + targetWhatsapp.slice(1)) : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966596894393');
-    const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodedText}`;
+    const cleanWhatsapp = targetWhatsapp.startsWith('05') 
+      ? ('966' + targetWhatsapp.slice(1)) 
+      : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966596894393');
 
-    const handleSendWhatsApp = () => {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        window.location.href = whatsappUrl;
-      } else {
-        window.open(whatsappUrl, '_blank');
-      }
+    const handleCopyInvoice = () => {
+      const summary = `رقم الطلب: ${activeOrder.trackingNumber || activeOrder.id}\nالاسم: ${activeOrder.customerName}\nالجوال: ${activeOrder.phone}\nالمدينة: ${activeOrder.city}\nالإجمالي: ${activeOrder.totalPrice.toLocaleString()} ر.س\nوسيلة الدفع: ${activeOrder.paymentMethod}`;
+      navigator.clipboard.writeText(summary);
+      setCopiedInvoice(true);
+      setTimeout(() => setCopiedInvoice(false), 3000);
     };
 
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4" dir="rtl">
-        <div className="fixed inset-0 bg-[#0B0B0B]/75 backdrop-blur-xs transition-opacity" onClick={() => onOrderSuccess(successOrder)} />
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4" dir="rtl">
+        <div className="fixed inset-0 bg-[#A44C5C]/80 backdrop-blur-xs transition-opacity" onClick={() => onOrderSuccess(activeOrder)} />
 
-        <div className="relative bg-white w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl p-6 sm:p-8 z-35 animate-scale-up border border-gray-200 text-center select-none font-sans">
+        <div className="relative bg-white w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl p-6 sm:p-8 z-30 border border-gray-200 text-center select-none font-sans animate-scale-up">
           
+          {/* Header Icon */}
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-emerald-50">
             <CheckCircle size={36} />
           </div>
 
-          <span className="text-[10px] font-bold text-[#A44C5C] tracking-widest uppercase block mb-1">
-            SULTA ATELIER • تم حجز طلبكِ بنجاح
+          <span className="text-[11px] font-bold text-[#A44C5C] tracking-widest uppercase block mb-1">
+            SULTA ATELIER 🇸🇦 المملكة العربية السعودية
           </span>
           
           <h3 className="text-xl sm:text-2xl font-black text-gray-950 mb-2">
-            تهانينا! تم تسجيل طلبكِ بنجاح 👑
+            {isCod ? 'تم استلام طلبكِ بنجاح 📦' : 'تم تأكيد الدفع والطلب بنجاح 👑'}
           </h3>
           
-          <p className="text-gray-600 text-xs max-w-md mx-auto leading-relaxed mb-5">
-            شكراً لثقتكِ بـ SULTA. يتم الآن تجهيز طلبيتكِ بعناية وتغليفها الفاخر للشحن السريع.
+          <p className="text-gray-600 text-xs sm:text-sm max-w-md mx-auto leading-relaxed mb-6 font-medium">
+            {isCod 
+              ? 'تم استلام طلبك بنجاح وسيتم التواصل معك لتأكيد الطلب وشحنه لباب منزلك مع ميزة الدفع عند الاستلام.'
+              : 'تم استلام دفعتكِ الإلكترونية المؤكدة بنجاح، ويتم الآن تجهيز وتغليف طلبكِ الملكي للشحن السريع.'}
           </p>
 
           {/* Invoice Summary Box */}
-          <div className="bg-[#F8F9FA] border border-gray-200 rounded-2xl p-4 mb-5 text-right text-xs space-y-2.5">
+          <div className="bg-[#F8F9FA] border border-gray-200 rounded-2xl p-4 sm:p-5 mb-6 text-right text-xs space-y-2.5">
             <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-500">رقم الطلب:</span>
-              <span className="font-bold text-gray-950 font-mono">{successOrder.id.slice(0, 18)}</span>
+              <span className="text-gray-500 font-medium">رقم التتبع والطلب:</span>
+              <span className="font-bold text-gray-950 font-mono text-sm">{activeOrder.trackingNumber || activeOrder.id.slice(0, 16)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">المستلمة:</span>
-              <span className="font-bold text-gray-950">{successOrder.customerName}</span>
+              <span className="text-gray-500">اسم المستلمة:</span>
+              <span className="font-bold text-gray-950">{activeOrder.customerName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">الجوال:</span>
+              <span className="font-bold text-gray-950 font-mono" dir="ltr">{activeOrder.phone}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">العنوان:</span>
-              <span className="font-bold text-gray-950">{successOrder.city} - {successOrder.address}</span>
+              <span className="font-bold text-gray-950">{activeOrder.city} - {activeOrder.address}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">وسيلة الدفع:</span>
-              <span className="font-bold text-emerald-800">{successOrder.paymentMethod}</span>
+              <span className="text-gray-500">طريقة الدفع:</span>
+              <span className="font-bold text-emerald-800">{activeOrder.paymentMethod}</span>
             </div>
-            <div className="flex justify-between border-t border-gray-200 pt-2 text-sm font-black text-gray-950">
-              <span>الإجمالي النهائي:</span>
-              <span>{successOrder.totalPrice.toLocaleString()} {successOrder.currency}</span>
-            </div>
-          </div>
-
-          {/* WhatsApp Action & Notification Banner */}
-          <div className="mb-4 text-right">
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs sm:text-sm font-black py-3.5 sm:py-4 px-4 rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2.5 transition-all transform hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-            >
-              <Send size={18} />
-              <span>📱 إرسال الفاتورة وتأكيد الطلب فوراً عبر واتساب المتجر الملكي</span>
-            </a>
-            <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-gray-500">
-              <span className="font-mono" dir="ltr">WhatsApp: +{cleanWhatsapp}</span>
-              <span className="text-emerald-700 font-bold">
-                {confirmViaWhatsapp ? '✓ خيار الواتساب مفعل' : 'تأكيد فوري متاح'}
+            <div className="flex justify-between">
+              <span className="text-gray-500">حالة الطلب:</span>
+              <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${isCod ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-900'}`}>
+                {isCod ? 'بانتظار المعاينة والتأكيد (COD)' : 'مدفوع ومؤكد (Paid)'}
               </span>
             </div>
+            <div className="flex justify-between border-t border-gray-200 pt-2 text-sm font-black text-gray-950">
+              <span>الإجمالي النهائي المطلوب:</span>
+              <span className="font-mono text-base">{activeOrder.totalPrice.toLocaleString()} {currencyLabel}</span>
+            </div>
           </div>
 
-          {/* Bank Transfer Notification Card (if bank transfer chosen) */}
-          {successOrder.paymentMethod.includes('بنك الجزيرة') && (
-            <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 mb-5 text-right text-xs space-y-2">
-              <div className="flex items-center gap-1.5 text-amber-900 font-bold">
-                <Building2 size={16} />
-                <span>بيانات التحويل البنكي المباشر:</span>
-              </div>
-              <p className="text-[11px] text-amber-800 leading-relaxed">
-                يرجى تحويل مبلغ <strong className="font-bold font-mono">{successOrder.totalPrice.toLocaleString()} ر.س</strong> إلى حساب بنك الجزيرة:
-              </p>
-              <div className="bg-white p-2.5 rounded-xl border border-amber-200 flex items-center justify-between font-mono font-bold text-sm">
-                <span>{saudiBankAccount.accountNumber}</span>
-                <span className="text-[10px] text-gray-500 font-sans">بنك الجزيرة 🇸🇦</span>
-              </div>
-              <p className="text-[10px] text-amber-700">ثم إرسال إشعار أو لقطة شاشة التحويل للواتساب لتأكيد الشحن فوراً.</p>
-            </div>
-          )}
-
+          {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-2.5 items-center justify-center">
             <button
-              onClick={handleSendWhatsApp}
-              className="w-full sm:flex-1 bg-gray-900 hover:bg-black text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-sm flex items-center justify-center gap-2"
+              onClick={() => WhatsAppService.sendInvoice(activeOrder, activeOrder.phone)}
+              className="w-full sm:flex-1 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-sm flex items-center justify-center gap-2"
             >
-              <Send size={14} />
-              <span>فتح المحادثة مجدداً 💬</span>
+              <Send size={15} />
+              <span>متابعة الطلب عبر واتساب المتجر</span>
             </button>
             <button
-              onClick={() => {
-                const invoiceSummary = `رقم الطلب: ${successOrder.id}\nالاسم: ${successOrder.customerName}\nالعنوان: ${successOrder.city} - ${successOrder.address}\nالإجمالي: ${successOrder.totalPrice} ر.س`;
-                navigator.clipboard.writeText(invoiceSummary);
-                setCopiedInvoice(true);
-                setTimeout(() => setCopiedInvoice(false), 3000);
-              }}
+              onClick={handleCopyInvoice}
               className="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5"
             >
               {copiedInvoice ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
               <span>{copiedInvoice ? 'تم النسخ ✓' : 'نسخ الفاتورة'}</span>
             </button>
             <button
-              onClick={() => onOrderSuccess(successOrder)}
-              className="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-3.5 px-5 rounded-xl cursor-pointer transition-all"
+              onClick={() => onOrderSuccess(activeOrder)}
+              className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white text-xs font-bold py-3.5 px-5 rounded-xl cursor-pointer transition-all"
             >
               العودة للمتجر
             </button>
@@ -420,7 +362,7 @@ export default function CheckoutModal({
           <div>
             {/* Header Stage Tracker */}
             <div className="mb-5 pb-3 border-b border-gray-150">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[11px] font-bold text-[#A44C5C] uppercase tracking-wider">
                   إتمام الطلب السريع • الخطوة {step} من 2
                 </span>
@@ -429,11 +371,11 @@ export default function CheckoutModal({
                 </span>
               </div>
               <h3 className="text-lg sm:text-xl font-black text-gray-950">
-                {step === 1 ? 'بيانات التوصيل والشحن 🚚' : 'طريقة الدفع وتأكيد الحجز 💳'}
+                {step === 1 ? 'بيانات التوصيل والشحن 🚚' : 'اختر طريقة الدفع 💳'}
               </h3>
               
               {/* Progress Bar */}
-              <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mt-2">
+              <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mt-2.5">
                 <div 
                   className="bg-[#111827] h-full transition-all duration-300 rounded-full" 
                   style={{ width: step === 1 ? '50%' : '100%' }}
@@ -441,13 +383,18 @@ export default function CheckoutModal({
               </div>
             </div>
 
+            {/* Error Message Box */}
             {errorMsg && (
-              <div className="bg-red-50 text-red-700 text-xs p-3 rounded-xl border border-red-200 mb-4 text-right">
-                ⚠️ {errorMsg}
+              <div className="bg-red-50 text-red-700 text-xs p-3.5 rounded-xl border border-red-200 mb-4 text-right flex items-start gap-2 animate-fade-in">
+                <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-600" />
+                <div className="flex-1">
+                  <p className="font-bold mb-0.5">تنبيه:</p>
+                  <p className="leading-relaxed">{errorMsg}</p>
+                </div>
               </div>
             )}
 
-            {/* STEP 1: SHIPPING & CONTACT INFO */}
+            {/* STEP 1: SHIPPING & CONTACT INFO (SAUDI CLIENTS) */}
             {step === 1 && (
               <div className="space-y-3.5 text-right">
                 <div>
@@ -465,28 +412,36 @@ export default function CheckoutModal({
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-bold text-gray-700 block mb-1">
-                    رقم الجوال للتوصيل والواتساب *
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder={country === 'SA' ? '05xxxxxxxx' : '01xxxxxxxxx'}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all font-mono text-left"
-                    dir="ltr"
-                    required
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[11px] font-bold text-gray-700">
+                      رقم الجوال للتوصيل والواتساب *
+                    </label>
+                    <span className="text-[10px] text-gray-400 font-mono">05xxxxxxxx أو +9665xxxxxxxx</span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      placeholder="0596894393"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all font-mono text-left pl-14"
+                      dir="ltr"
+                      required
+                    />
+                    <div className="absolute left-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] text-gray-500 font-mono border-r border-gray-200 pr-2 pointer-events-none">
+                      <span>🇸🇦</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-[11px] font-bold text-gray-700 block mb-1">
-                      المدينة *
+                      المدينة بالمملكة *
                     </label>
                     <input
                       type="text"
-                      placeholder="مثال: الرياض، جدة، الدمام"
+                      placeholder="مثال: الرياض، جدة، مكة، الدمام..."
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all"
@@ -508,146 +463,213 @@ export default function CheckoutModal({
                   </div>
                 </div>
 
-                {/* Salla Trust Note */}
+                {/* Saudi Fast Shipping Banner */}
                 <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 mt-2 flex items-center gap-2">
                   <ShieldCheck size={16} className="text-emerald-700 shrink-0" />
                   <p className="text-[11px] text-emerald-900 leading-snug">
-                    تغليف فاخر مجاني مع كل طلب + شحن سريع وتوصيل آمن لباب بيتك.
+                    تغليف فاخر مجاني مع كل طلب + شحن سريع وتوصيل آمن لكافة مناطق المملكة.
                   </p>
                 </div>
               </div>
             )}
 
-            {/* STEP 2: PAYMENT METHOD & REVIEW */}
+            {/* STEP 2: CHOOSE PAYMENT METHOD */}
             {step === 2 && (
               <div className="space-y-4 text-right animate-fade-in">
-                <p className="text-xs text-gray-600 mb-2">
-                  اختاري وسيلة الدفع المفضلة لديكِ:
+                
+                <p className="text-xs text-gray-600 mb-2 font-medium">
+                  اختر طريقة الدفع المناسبة لكِ:
                 </p>
 
-                <div className="space-y-2.5">
-                  {activePayments.map((p: any) => {
-                    const active = selectedPayment === p.id;
-                    return (
-                      <div
-                        key={p.id}
-                        onClick={() => setSelectedPayment(p.id)}
-                        className={`w-full text-right p-3 rounded-2xl transition-all border cursor-pointer ${
-                          active
-                            ? 'border-gray-950 bg-gray-50/80 shadow-xs ring-1 ring-gray-950'
-                            : 'border-gray-200 bg-white hover:bg-gray-50/50'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <span className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center text-gray-800 shrink-0">
-                              {p.icon}
+                <div className="space-y-3">
+                  
+                  {/* OPTION 1: APPLE PAY (PROMINENT FIRST OPTION) */}
+                  <div
+                    onClick={() => setSelectedPayment('apple_pay')}
+                    className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer relative overflow-hidden ${
+                      selectedPayment === 'apple_pay'
+                        ? 'border-black bg-neutral-50 shadow-xs ring-1 ring-black'
+                        : 'border-gray-200 bg-white hover:bg-gray-50/60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shrink-0 font-bold font-sans text-sm">
+                          Pay
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-xs text-gray-950">Apple Pay</span>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                              الأسرع بنقرة واحدة ⚡
                             </span>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-xs text-gray-950">{p.name}</span>
-                                {p.badge && (
-                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                                    {p.badge}
-                                  </span>
-                                )}
-                              </div>
-                              {p.subtitle && (
-                                <p className="text-[10px] text-gray-500 mt-0.5">{p.subtitle}</p>
-                              )}
+                          </div>
+                          <p className="text-[10px] text-gray-500 mt-0.5">
+                            سداد فوري وآمن عبر المحفظة الرسمية لجهاز Apple
+                          </p>
+                        </div>
+                      </div>
+
+                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        selectedPayment === 'apple_pay' ? 'border-black' : 'border-gray-300'
+                      }`}>
+                        {selectedPayment === 'apple_pay' && <span className="w-2 h-2 bg-black rounded-full" />}
+                      </span>
+                    </div>
+
+                    {/* Apple Pay Capability Warning if browser/device lacks Apple Pay */}
+                    {!applePaySupport.isAvailable && (
+                      <div className="mt-2.5 pt-2 border-t border-gray-150 text-[10px] text-amber-700 bg-amber-50/60 p-2 rounded-lg">
+                        ℹ️ {applePaySupport.reason || 'Apple Pay متاح على متصفح Safari وأجهزة Apple مع بطاقة مفعلة في المحفظة.'}
+                      </div>
+                    )}
+
+                    {/* Active Apple Pay Preview */}
+                    {selectedPayment === 'apple_pay' && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="bg-black text-white py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm font-sans">
+                          <span className="text-base"></span>
+                          <span>سداد فوري بنقرة واحدة عبر Apple Pay</span>
+                        </div>
+                        <span className="text-[9.5px] text-gray-400 block text-center mt-1">
+                          تكامل آمن ومباشر من خلال بوابة Paymob المعتمدة للتاجر السعودي
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* OPTION 2: CREDIT CARD & MADA (VISA / MASTERCARD / MADA) */}
+                  <div
+                    onClick={() => setSelectedPayment('card')}
+                    className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer ${
+                      selectedPayment === 'card'
+                        ? 'border-black bg-neutral-50 shadow-xs ring-1 ring-black'
+                        : 'border-gray-200 bg-white hover:bg-gray-50/60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-800 shrink-0 font-bold text-xs">
+                          💳
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-xs text-gray-950">
+                              بطاقة ائتمانية / مدى
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
+                                mada
+                              </span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-mono">
+                                Visa
+                              </span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-mono">
+                                MC
+                              </span>
                             </div>
                           </div>
-                          <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${active ? 'border-gray-950' : 'border-gray-300'}`}>
-                            {active && <span className="w-2 h-2 bg-gray-950 rounded-full" />}
+                          <p className="text-[10px] text-gray-500 mt-0.5">
+                            سداد مشفر وآمن عبر بطاقات مدى البنكية والفيزا وماستركارد
+                          </p>
+                        </div>
+                      </div>
+
+                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        selectedPayment === 'card' ? 'border-black' : 'border-gray-300'
+                      }`}>
+                        {selectedPayment === 'card' && <span className="w-2 h-2 bg-black rounded-full" />}
+                      </span>
+                    </div>
+
+                    {/* Active Card Security Notice */}
+                    {selectedPayment === 'card' && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="bg-gray-100/70 p-2.5 rounded-xl text-[10.5px] text-gray-700 flex items-center gap-2">
+                          <Lock size={14} className="text-emerald-700 shrink-0" />
+                          <span>
+                            تتم معالجة بيانات بطاقتك بأمان كامل عبر بوابة Paymob بتشفير 3D Secure دون حفظ أي بيانات بطاقة في موقعنا.
                           </span>
                         </div>
+                      </div>
+                    )}
+                  </div>
 
-                        {/* SPECIAL EXPANDED VIEW: APPLE PAY */}
-                        {active && p.id === 'apple' && (
-                          <div className="mt-3 pt-3 border-t border-gray-200 text-center">
-                            <div className="bg-black text-white py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
-                              <span className="text-base font-sans"></span>
-                              <span>الدفع السريع المعتمد بواسطة Apple Pay</span>
-                            </div>
-                            <span className="text-[10px] text-gray-500 block mt-1">
-                              مؤمن ومربوط مع بوابة الدفع للتاجر السعودي
+                  {/* OPTION 3: CASH ON DELIVERY (COD) */}
+                  <div
+                    onClick={() => setSelectedPayment('cod')}
+                    className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer ${
+                      selectedPayment === 'cod'
+                        ? 'border-emerald-600 bg-emerald-50/50 shadow-xs ring-1 ring-emerald-600'
+                        : 'border-gray-200 bg-white hover:bg-gray-50/60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                          <Truck size={18} />
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-xs text-gray-950">
+                              الدفع عند الاستلام (Cash on Delivery)
+                            </span>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                              معاينة قبل الدفع 📦
                             </span>
                           </div>
-                        )}
-
-                        {/* SPECIAL EXPANDED VIEW: CASH ON DELIVERY */}
-                        {active && p.id === "cod" && (
-                          <div className="mt-3 pt-3 border-t border-gray-200 text-right">
-                            <div className="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 text-xs space-y-1">
-                              <span className="font-bold text-emerald-950 block">✓ ميزة المعاينة قبل السداد:</span>
-                              <p className="text-[11px] text-emerald-900 leading-relaxed">
-                                استلمي طلبيتكِ مفحوصة ومغلفة بالكرتون الملكي، وقومي بسداد المبلغ ({totalAmount.toLocaleString()} {currencyLabel}) نقداً للمندوب عند باب المنزل.
-                              </p>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* SPECIAL EXPANDED VIEW: SAUDI BANK TRANSFER */}
-                        {active && p.id === 'bank_transfer' && (
-                          <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
-                            <div className="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200 space-y-2 text-xs">
-                              <div className="flex items-center justify-between text-emerald-950 font-bold">
-                                <span>حساب المتجر في بنك الجزيرة:</span>
-                                <span className="text-[10px] bg-white px-2 py-0.5 rounded border border-emerald-300 text-emerald-800">حساب سعودي رسمي</span>
-                              </div>
-                              
-                              <div className="bg-white p-2.5 rounded-xl border border-gray-200 flex items-center justify-between">
-                                <div className="text-right">
-                                  <span className="text-[10px] text-gray-400 block">رقم الحساب / البطاقة:</span>
-                                  <span className="font-mono font-bold text-xs text-gray-950" dir="ltr">
-                                    {saudiBankAccount.accountNumber}
-                                  </span>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCopyBank();
-                                  }}
-                                  className="bg-gray-100 hover:bg-emerald-100 text-gray-800 text-[11px] font-bold py-1.5 px-3 rounded-lg flex items-center gap-1 cursor-pointer transition-all border border-gray-200"
-                                >
-                                  {copiedBank ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                                  <span>{copiedBank ? 'تم النسخ ✓' : 'نسخ الرقم'}</span>
-                                </button>
-                              </div>
-
-                              <div className="text-[10px] text-gray-600 space-y-0.5 pt-1">
-                                <p><strong>اسم البنك:</strong> {saudiBankAccount.bankName}</p>
-                                <p><strong>اسم المستفيد:</strong> {saudiBankAccount.accountName}</p>
-                                <p className="text-emerald-800 font-semibold pt-1">
-                                  ✓ فور التحويل، يتم إرسال إشعار السداد لواتساب المتجر لتأكيد شحن طلبكِ مباشرة.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                          <p className="text-[10px] text-gray-500 mt-0.5">
+                            سداد قيمة الطلبية نقداً لمندوب الشحن فور وصولها لباب منزلك
+                          </p>
+                        </div>
                       </div>
-                    );
-                  })}
+
+                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        selectedPayment === 'cod' ? 'border-emerald-600' : 'border-gray-300'
+                      }`}>
+                        {selectedPayment === 'cod' && <span className="w-2 h-2 bg-emerald-600 rounded-full" />}
+                      </span>
+                    </div>
+
+                    {selectedPayment === 'cod' && (
+                      <div className="mt-3 pt-3 border-t border-emerald-200/60 text-right">
+                        <div className="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 text-xs space-y-1">
+                          <span className="font-bold text-emerald-950 block">✓ راحة وأمان:</span>
+                          <p className="text-[11px] text-emerald-900 leading-relaxed">
+                            استلمي طلبيتكِ الملكية مفحوصة ومغلفة بعناية، وسددي المبلغ ({totalAmount.toLocaleString()} {currencyLabel}) للمندوب بعد استلام الشحنة.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                 </div>
 
-                {/* Option to confirm order via WhatsApp */}
-                <div 
-                  onClick={() => setConfirmViaWhatsapp(!confirmViaWhatsapp)} 
-                  className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer select-none transition-all flex-row-reverse text-right text-xs ${
-                    confirmViaWhatsapp ? 'bg-emerald-50/50 border-emerald-300' : 'bg-gray-50 border-gray-200'
-                  }`}
-                >
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
-                    confirmViaWhatsapp ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-gray-300 bg-white'
-                  }`}>
-                    {confirmViaWhatsapp && <Check size={12} strokeWidth={3} />}
+                {/* Paymob Iframe Modal if triggered */}
+                {iframePaymentUrl && (
+                  <div className="fixed inset-0 z-60 bg-black/75 flex items-center justify-center p-3 sm:p-6 animate-fade-in" dir="rtl">
+                    <div className="bg-white rounded-3xl w-full max-w-2xl h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-gray-200">
+                      <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Lock size={16} className="text-emerald-600" />
+                          <span className="text-xs font-bold text-gray-900">نافذة الدفع الآمنة (Paymob 3D Secure)</span>
+                        </div>
+                        <button
+                          onClick={() => setIframePaymentUrl(null)}
+                          className="text-gray-500 hover:text-black p-1.5 rounded-full hover:bg-gray-200"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+                      <iframe 
+                        src={iframePaymentUrl} 
+                        className="w-full flex-1 border-0" 
+                        title="بوابة الدفع الآمنة"
+                      />
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <span className="font-bold text-gray-900 block">إرسال تفاصيل الفاتورة إلى واتساب مباشرة 📱</span>
-                    <span className="text-[10px] text-gray-500">لتسريع التوصيل ومتابعة الشحنة خطوة بخطوة</span>
-                  </div>
-                </div>
+                )}
+
               </div>
             )}
           </div>
@@ -658,7 +680,7 @@ export default function CheckoutModal({
               <button
                 type="button"
                 onClick={handleProceedToPayment}
-                className="w-full bg-[#111827] hover:bg-[#A44C5C] text-white py-3 px-6 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
+                className="w-full bg-[#111827] hover:bg-black text-white py-3.5 px-6 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm active:scale-98"
               >
                 <span>الانتقال لاختيار طريقة الدفع</span>
                 <ArrowLeft size={14} />
@@ -668,45 +690,77 @@ export default function CheckoutModal({
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="border border-gray-200 text-gray-700 hover:bg-gray-100 py-3 px-4 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-all shrink-0"
+                  className="border border-gray-200 text-gray-700 hover:bg-gray-100 py-3.5 px-4 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-all shrink-0"
                 >
                   <ArrowRight size={14} />
                   <span>تعديل العنوان</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSubmitOrder}
-                  disabled={isSubmitting}
-                  className={`flex-1 text-white py-3 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-98 ${
-                    selectedPayment === 'apple' 
-                      ? 'bg-black hover:bg-gray-900 ring-2 ring-black/10' 
-                      : 'bg-emerald-600 hover:bg-emerald-700'
-                  }`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>{selectedPayment === 'apple' ? 'جاري الدفع بـ Apple Pay...' : 'جاري تأكيد حجز الطلب...'}</span>
-                    </>
-                  ) : selectedPayment === 'apple' ? (
-                    <>
-                      <span className="text-base font-sans font-bold">Pay</span>
-                      <span>سداد فوري عبر Apple Pay ({totalAmount.toLocaleString()} {currencyLabel})</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles size={14} />
-                      <span>تأكيد الطلب الآن ({totalAmount.toLocaleString()} {currencyLabel})</span>
-                    </>
-                  )}
-                </button>
+                
+                {selectedPayment === 'apple_pay' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleSubmitOrder()}
+                    disabled={isSubmitting}
+                    className="flex-1 bg-black hover:bg-gray-900 active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md font-sans"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>جاري فتح محفظة Apple Pay...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-base font-bold">Pay</span>
+                        <span>إتمام الدفع عبر Apple Pay ({totalAmount.toLocaleString()} {currencyLabel})</span>
+                      </>
+                    )}
+                  </button>
+                ) : selectedPayment === 'card' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleSubmitOrder()}
+                    disabled={isSubmitting}
+                    className="flex-1 bg-gray-900 hover:bg-black active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>جاري تحويلك للبوابة الآمنة...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock size={14} />
+                        <span>الدفع بالبطاقة الائتمانية / مدى ({totalAmount.toLocaleString()} {currencyLabel})</span>
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleSubmitOrder()}
+                    disabled={isSubmitting}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>جاري تسجيل الطلب...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Truck size={15} />
+                        <span>تأكيد الطلب والدفع عند الاستلام ({totalAmount.toLocaleString()} {currencyLabel})</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             )}
           </div>
 
         </div>
 
-        {/* Left Section: Order Summary (Salla Clean White Style) */}
+        {/* Left Section: Order Summary (Saudi Sleek White Style) */}
         <div className="md:w-2/5 p-5 sm:p-7 bg-[#F8F9FA] border-t md:border-t-0 md:border-r border-gray-200 flex flex-col justify-between overflow-y-auto">
           
           <div>
@@ -718,9 +772,9 @@ export default function CheckoutModal({
             {/* Cart products list */}
             <div className="space-y-2.5 mb-5 max-h-48 overflow-y-auto text-xs text-right pr-1">
               {cart.map((item, idx) => {
-                const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
+                const itemPrice = item.product.priceSA;
                 return (
-                  <div key={idx} className="flex gap-2.5 items-center justify-between bg-white p-2 rounded-xl border border-gray-200">
+                  <div key={idx} className="flex gap-2.5 items-center justify-between bg-white p-2.5 rounded-xl border border-gray-200">
                     <div className="w-9 h-11 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                       <SultaImage 
                         src={item.product.images[0]} 
@@ -758,14 +812,14 @@ export default function CheckoutModal({
               )}
 
               <div className="flex justify-between items-center text-gray-600">
-                <span>الشحن والتوصيل:</span>
+                <span>الشحن والتوصيل بالمملكة:</span>
                 <span className="font-bold font-mono text-emerald-700">
                   {shippingCost === 0 ? 'مجاني 🇸🇦' : `${shippingCost.toLocaleString()} ${currencyLabel}`}
                 </span>
               </div>
 
               <div className="flex justify-between items-center text-gray-600">
-                <span>التغليف الفاخر الملوكي:</span>
+                <span>التغليف الملكي الفاخر:</span>
                 <span className="font-bold text-emerald-700">مجاناً 🎁</span>
               </div>
 
@@ -780,7 +834,7 @@ export default function CheckoutModal({
           <div className="pt-4 mt-4 border-t border-gray-200 text-center">
             <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-500">
               <Lock size={12} className="text-emerald-700" />
-              <span>دفع مشفر 100% وحماية كاملة لبيانات العميل</span>
+              <span>دفع آمن ومشفر 100% وحماية كاملة لبيانات العميل</span>
             </div>
           </div>
 

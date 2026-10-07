@@ -197,8 +197,9 @@ export default function AtelierAudioAtmosphere({
     };
   }, []);
 
-  // Auto-cycle brand messages periodically (Phase 3)
+  // Disabled periodic cycles to reduce UI distraction as per user feedback
   useEffect(() => {
+    /* 
     const messageInterval = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % LUXURY_BRAND_MESSAGES.length);
     }, 6000);
@@ -211,6 +212,7 @@ export default function AtelierAudioAtmosphere({
       clearInterval(messageInterval);
       clearInterval(tipInterval);
     };
+    */
   }, []);
 
   // Set country specific greeting text (Phase 6)
@@ -379,22 +381,22 @@ export default function AtelierAudioAtmosphere({
               <div className="relative z-10 max-h-[300px] xs:max-h-[340px] sm:max-h-[450px] overflow-y-auto custom-scrollbar p-5 space-y-4">
                 
                 {/* INTERACTIVE NAVIGATION TAB BUTTONS */}
-                <div className="grid grid-cols-3 gap-1 bg-[#0B0B0B]/5 p-1 rounded-xl border border-gray-100 font-semibold text-[10.5px] text-gray-600 mb-2">
+                <div className="grid grid-cols-3 gap-1 bg-[#A44C5C]/5 p-1 rounded-xl border border-gray-100 font-semibold text-[10.5px] text-gray-600 mb-2">
                   <button 
                     onClick={() => setActiveTab('welcome')}
-                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'welcome' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
+                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'welcome' ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
                   >
                     الصالون الملكي ✨
                   </button>
                   <button 
                     onClick={() => setActiveTab('spotlight')}
-                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'spotlight' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
+                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'spotlight' ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
                   >
                     أحدث الروائع 💎
                   </button>
                   <button 
                     onClick={() => setActiveTab('actions')}
-                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'actions' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
+                    className={`py-2 rounded-lg text-center transition-all cursor-pointer ${activeTab === 'actions' ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-xs' : 'hover:bg-gray-150'}`}
                   >
                     خيارات سريعة 🛍️
                   </button>
@@ -751,7 +753,7 @@ export default function AtelierAudioAtmosphere({
           <motion.button
             layoutId="atelier-radio-btn"
             onClick={() => setIsOpen(true)}
-            className="hidden md:flex items-center gap-2 bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#A44C5C] hover:text-white px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-[#F6E7A6]/20 ring-4 ring-neutral-500/10"
+            className="hidden md:flex items-center gap-2 bg-[#DF8A9D] text-white hover:bg-[#A44C5C] px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-white/20 ring-4 ring-neutral-500/10"
             title="افتح مرشد SULTA الملكي الفاخر 👑"
           >
             <div className="relative flex items-center justify-center">

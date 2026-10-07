@@ -283,7 +283,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                 {(() => {
                   const [activeFabric, setActiveFabric] = useState('silk');
                   const fabrics = [
-                    { id: 'silk', name: 'الحرير الفاخر', colorHex: '#DF8A9D', bg: 'bg-[#0B0B0B]', border: 'border-[#DF8A9D]/50', text: 'text-[#DF8A9D]', fontColor: '#FAF5F0', badge: 'وردية كوتور' },
+                    { id: 'silk', name: 'الحرير الفاخر', colorHex: '#DF8A9D', bg: 'bg-[#A44C5C]', border: 'border-[#DF8A9D]/50', text: 'text-[#DF8A9D]', fontColor: '#FAF5F0', badge: 'وردية كوتور' },
                     { id: 'satin', name: 'الحرير المبرد', colorHex: '#0B0B0B', bg: 'bg-[#FAF5F0]', border: 'border-[#DBC082]/50', text: 'text-[#0B0B0B]', fontColor: '#A44C5C', badge: 'تطريز ذهبي' },
                     { id: 'lace', name: 'الدانتيل الفرنسي', colorHex: '#FAF5F0', bg: 'bg-[#A44C5C]', border: 'border-white/40', text: 'text-[#FAF5F0]', fontColor: '#FAF5F0', badge: 'أبيض عاجي' }
                   ];

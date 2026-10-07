@@ -136,7 +136,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export type OrderStatus = 'pending' | 'new' | 'confirmed' | 'processing' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'returned';
+export type OrderStatus = 'pending' | 'paid' | 'failed' | 'cod' | 'new' | 'confirmed' | 'processing' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'returned';
 
 export interface InventoryLog {
   id: string;

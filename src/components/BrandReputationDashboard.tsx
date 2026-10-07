@@ -251,7 +251,7 @@ export default function BrandReputationDashboard({
             />
             <button
               type="submit"
-              className="w-full py-2.5 bg-[#0B0B0B] hover:bg-[#A44C5C] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+              className="w-full py-2.5 bg-[#A44C5C] hover:bg-[#A44C5C] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
             >
               <Send size={12} />
               <span>تسجيل الملحوظة للعمل مع فريق SULTA</span>

@@ -52,7 +52,7 @@ class ErrorBoundary extends React.Component<Props, State> {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => window.location.reload()}
-                className="w-full bg-[#0B0B0B] text-white py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors cursor-pointer"
+                className="w-full bg-[#A44C5C] text-white py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors cursor-pointer"
               >
                 <RefreshCw size={16} />
                 <span>إعادة تحميل الصفحة الآن</span>

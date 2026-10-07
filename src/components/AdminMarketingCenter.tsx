@@ -1436,7 +1436,7 @@ export default function AdminMarketingCenter() {
                 </div>
                 <button
                   onClick={dispatchNewsletterCampaign}
-                  className="w-full bg-[#0B0B0B] text-[#F6E7A6] py-3.5 rounded-xl font-bold hover:bg-black/90 transition flex items-center justify-center gap-2 text-sm"
+                  className="w-full bg-[#A44C5C] text-[#F6E7A6] py-3.5 rounded-xl font-bold hover:bg-black/90 transition flex items-center justify-center gap-2 text-sm"
                 >
                   <Mail size={16} />
                   <span>إطلاق وبث البريد لـ {subscribers.length} ملكة مسجلة 🚀</span>

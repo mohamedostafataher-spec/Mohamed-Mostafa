@@ -574,7 +574,7 @@ export default function AccountView({
 
           <button
             disabled={authLoading}
-            className="w-full bg-[#0B0B0B] text-[#F6E7A6] font-bold py-3 rounded-xl hover:bg-gray-800 transition-all text-xs disabled:opacity-50"
+            className="w-full bg-[#A44C5C] text-[#F6E7A6] font-bold py-3 rounded-xl hover:bg-gray-800 transition-all text-xs disabled:opacity-50"
           >
             {authLoading
               ? "جاري المعالجة..."
@@ -682,7 +682,7 @@ export default function AccountView({
           />
           <button
             type="submit"
-            className="bg-[#0B0B0B] text-[#F6E7A6] px-4 py-1.5 rounded-lg transition-colors hover:bg-gray-800 shrink-0 cursor-pointer"
+            className="bg-[#A44C5C] text-[#F6E7A6] px-4 py-1.5 rounded-lg transition-colors hover:bg-gray-800 shrink-0 cursor-pointer"
           >
             تتبع الشحنة
           </button>
@@ -700,7 +700,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center justify-between gap-3 shrink-0 cursor-pointer ${
                 activeTab === "loyalty"
-                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-[#F6E7A6] font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -720,7 +720,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center justify-between gap-3 shrink-0 cursor-pointer ${
                 activeTab === "orders"
-                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-[#F6E7A6] font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -740,7 +740,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
                 activeTab === "track"
-                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-[#F6E7A6] font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -755,7 +755,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
                 activeTab === "addresses"
-                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-[#F6E7A6] font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -770,7 +770,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
                 activeTab === "wishlist"
-                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-[#F6E7A6] font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -785,7 +785,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
                 activeTab === "settings"
-                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-[#F6E7A6] font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -800,7 +800,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
                 activeTab === "tickets"
-                  ? "bg-[#0B0B0B] text-emerald-400 font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-emerald-400 font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -815,7 +815,7 @@ export default function AccountView({
               }}
               className={`flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer ${
                 activeTab === "activity"
-                  ? "bg-[#0B0B0B] text-[#F6E7A6] font-bold shadow-sm"
+                  ? "bg-[#A44C5C] text-[#F6E7A6] font-bold shadow-sm"
                   : "hover:bg-gray-50 text-gray-700"
               }`}
             >
@@ -893,7 +893,7 @@ export default function AccountView({
                             setActiveTab("track");
                           }
                         }}
-                        className="bg-[#0B0B0B] text-[#F6E7A6] px-3 py-1 rounded-lg text-[9px] transition-all hover:bg-gray-850 cursor-pointer font-bold"
+                        className="bg-[#A44C5C] text-[#F6E7A6] px-3 py-1 rounded-lg text-[9px] transition-all hover:bg-gray-850 cursor-pointer font-bold"
                       >
                         عرض التحديث الملكي
                       </button>
@@ -1037,7 +1037,7 @@ export default function AccountView({
                 </h4>
                 <div className="border border-gray-150 rounded-xl overflow-hidden font-sans text-xs">
                   <table className="w-full text-right">
-                    <thead className="bg-[#0B0B0B] text-[#F6E7A6]">
+                    <thead className="bg-[#A44C5C] text-[#F6E7A6]">
                       <tr>
                         <th className="p-3 text-[10px] uppercase font-bold">
                           تاريخ الحركة
@@ -1171,13 +1171,13 @@ export default function AccountView({
                               setActiveStepTab(o.status);
                               setActiveTab("track");
                             }}
-                            className="bg-[#0B0B0B] text-white hover:bg-[#F4B6C2] px-3.5 py-1.5 rounded-lg text-[10px] transition-colors cursor-pointer"
+                            className="bg-[#A44C5C] text-white hover:bg-[#F4B6C2] px-3.5 py-1.5 rounded-lg text-[10px] transition-colors cursor-pointer"
                           >
                             تتبع الرحلة
                           </button>
                           <button
                             onClick={() => onReorder?.(o)}
-                            className="border border-[#0B0B0B] text-[#0B0B0B] hover:bg-[#0B0B0B] hover:text-[#F6E7A6] px-3.5 py-1.5 rounded-lg text-[10px] transition-colors cursor-pointer flex items-center gap-1 font-bold"
+                            className="border border-[#0B0B0B] text-[#0B0B0B] hover:bg-[#A44C5C] hover:text-[#F6E7A6] px-3.5 py-1.5 rounded-lg text-[10px] transition-colors cursor-pointer flex items-center gap-1 font-bold"
                           >
                             <ShoppingBag size={12} />
                             إعادة الطلب
@@ -1195,7 +1195,7 @@ export default function AccountView({
                             className={`flex flex-col items-center gap-1.5 z-10 w-1/4 ${["new", "processing", "shipped", "delivered"].includes(o.status) ? "text-[#0B0B0B]" : "text-gray-300"}`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["new", "processing", "shipped", "delivered"].includes(o.status) ? "bg-[#0B0B0B] border-[#0B0B0B] text-[#F6E7A6]" : "bg-white border-gray-200 text-gray-300"}`}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["new", "processing", "shipped", "delivered"].includes(o.status) ? "bg-[#A44C5C] border-[#0B0B0B] text-[#F6E7A6]" : "bg-white border-gray-200 text-gray-300"}`}
                             >
                               <Clock size={14} />
                             </div>
@@ -1207,7 +1207,7 @@ export default function AccountView({
                             className={`flex flex-col items-center gap-1.5 z-10 w-1/4 ${["processing", "shipped", "delivered"].includes(o.status) ? "text-[#0B0B0B]" : "text-gray-300"}`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["processing", "shipped", "delivered"].includes(o.status) ? "bg-[#0B0B0B] border-[#0B0B0B] text-[#F4B6C2]" : "bg-white border-gray-200 text-gray-300"}`}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["processing", "shipped", "delivered"].includes(o.status) ? "bg-[#A44C5C] border-[#0B0B0B] text-[#F4B6C2]" : "bg-white border-gray-200 text-gray-300"}`}
                             >
                               <Package size={14} />
                             </div>
@@ -1219,7 +1219,7 @@ export default function AccountView({
                             className={`flex flex-col items-center gap-1.5 z-10 w-1/4 ${["shipped", "delivered"].includes(o.status) ? "text-[#0B0B0B]" : "text-gray-300"}`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["shipped", "delivered"].includes(o.status) ? "bg-[#0B0B0B] border-[#0B0B0B] text-[#F6E7A6]" : "bg-white border-gray-200 text-gray-300"}`}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${["shipped", "delivered"].includes(o.status) ? "bg-[#A44C5C] border-[#0B0B0B] text-[#F6E7A6]" : "bg-white border-gray-200 text-gray-300"}`}
                             >
                               <Truck size={14} />
                             </div>
@@ -1318,7 +1318,7 @@ export default function AccountView({
                       "ميزة إضافة عنوان جديد بمكالمة هاتفية أو تحديد الخريطة متوفرة في الإصدار المحدث.",
                     )
                   }
-                  className="text-xs bg-[#0B0B0B] hover:bg-[#DF8A9C] text-white px-3.5 py-1.5 rounded-lg font-sans transition-colors cursor-pointer"
+                  className="text-xs bg-[#A44C5C] hover:bg-[#DF8A9C] text-white px-3.5 py-1.5 rounded-lg font-sans transition-colors cursor-pointer"
                 >
                   إضافة وجهة توصيل جديدة +
                 </button>
@@ -1564,7 +1564,7 @@ export default function AccountView({
                     onClick={() =>
                       alert("تم حفظ تفاصيل الإعدادات الشخصية بنجاح.")
                     }
-                    className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-6 py-2.5 rounded-lg transition-colors cursor-pointer"
+                    className="bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-6 py-2.5 rounded-lg transition-colors cursor-pointer"
                   >
                     حفظ التعديلات الحالية
                   </button>
@@ -1700,7 +1700,7 @@ export default function AccountView({
                         className={`z-10 flex flex-row sm:flex-col items-center sm:text-center gap-3 sm:gap-0 sm:flex-1 w-full justify-start select-none cursor-pointer group focus:outline-none`}
                       >
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold font-sans shadow-md ring-4 ring-white shrink-0 sm:mb-2 transition-all ${
-                          activeStepTab === "new" ? "bg-[#0B0B0B] text-[#F6E7A6] scale-110" : "bg-[#FAF4F5] text-[#DF8A9C]"
+                          activeStepTab === "new" ? "bg-[#A44C5C] text-[#F6E7A6] scale-110" : "bg-[#FAF4F5] text-[#DF8A9C]"
                         }`}>
                           <Clock size={15} />
                         </div>
@@ -1721,7 +1721,7 @@ export default function AccountView({
                       >
                         <div
                           className={`w-9 h-9 rounded-full flex items-center justify-center font-bold font-sans ring-4 ring-white shrink-0 sm:mb-2 transition-all ${
-                            activeStepTab === "processing" ? "bg-[#0B0B0B] text-[#F6E7A6] scale-110" :
+                            activeStepTab === "processing" ? "bg-[#A44C5C] text-[#F6E7A6] scale-110" :
                             (trackedOrder.status !== "new" ? "bg-[#FAF4F5] text-[#DF8A9C]" : "bg-gray-100 text-gray-400")
                           }`}
                         >
@@ -1746,7 +1746,7 @@ export default function AccountView({
                       >
                         <div
                           className={`w-9 h-9 rounded-full flex items-center justify-center font-bold font-sans ring-4 ring-white shrink-0 sm:mb-2 transition-all ${
-                            activeStepTab === "shipped" ? "bg-[#0B0B0B] text-[#F6E7A6] scale-110" :
+                            activeStepTab === "shipped" ? "bg-[#A44C5C] text-[#F6E7A6] scale-110" :
                             (trackedOrder.status === "shipped" || trackedOrder.status === "delivered" ? "bg-[#FAF4F5] text-[#DF8A9C]" : "bg-gray-100 text-gray-400")
                           }`}
                         >
@@ -1773,7 +1773,7 @@ export default function AccountView({
                       >
                         <div
                           className={`w-9 h-9 rounded-full flex items-center justify-center font-bold font-sans ring-4 ring-white shrink-0 sm:mb-2 transition-all ${
-                            activeStepTab === "delivered" ? "bg-[#0B0B0B] text-[#F6E7A6] scale-110" :
+                            activeStepTab === "delivered" ? "bg-[#A44C5C] text-[#F6E7A6] scale-110" :
                             (trackedOrder.status === "delivered" ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-400")
                           }`}
                         >
@@ -1869,7 +1869,7 @@ export default function AccountView({
                             <div className="w-9 h-9 rounded-full bg-[#DF8A9C] border-2 border-white flex items-center justify-center text-white shadow-xl ring-4 ring-[#DF8A9C]/40 animate-pulse">
                               🚚
                             </div>
-                            <div className="bg-[#0B0B0B]/90 text-[8.5px] text-[#F6E7A6] px-1.5 py-0.5 rounded-full mt-1 border border-white/10 font-bold whitespace-nowrap">
+                            <div className="bg-[#A44C5C]/90 text-[8.5px] text-[#F6E7A6] px-1.5 py-0.5 rounded-full mt-1 border border-white/10 font-bold whitespace-nowrap">
                               في الطريق إليكِ
                             </div>
                           </div>
@@ -1966,7 +1966,7 @@ export default function AccountView({
 
                         <button
                           onClick={() => alert("📞 يجري الآن تأمين اتصال خصوصي مشفر بـ كابتن سفيان دون إظهار رقمكِ... يرجى الانتظار لحين رنين خط الهاتف الفخم.")}
-                          className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white text-xs font-bold font-sans py-2.5 rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                          className="w-full bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white text-xs font-bold font-sans py-2.5 rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                         >
                           <span>📞 اتصال هاتفي آمن بالمندوب</span>
                         </button>
@@ -2298,7 +2298,7 @@ export default function AccountView({
 
                       <button
                         type="submit"
-                        className="w-full bg-[#0B0B0B] text-[#F6E7A6] hover:bg-zinc-800 py-2.5 rounded-xl transition-colors cursor-pointer text-xs font-bold font-sans shadow-xs text-center"
+                        className="w-full bg-[#A44C5C] text-[#F6E7A6] hover:bg-zinc-800 py-2.5 rounded-xl transition-colors cursor-pointer text-xs font-bold font-sans shadow-xs text-center"
                       >
                         تتبع جودة وحالة التوصيل للطلبية الفاخرة
                       </button>
@@ -2351,7 +2351,7 @@ export default function AccountView({
                                 setTrackedOrder(o);
                                 setActiveStepTab(o.status);
                               }}
-                              className="text-xs bg-[#0B0B0B] text-white hover:bg-[#F4B6C2] px-4 py-2 rounded-xl scale-97 hover:scale-100 transition-all font-sans font-medium hover:text-white cursor-pointer w-full sm:w-auto text-center"
+                              className="text-xs bg-[#A44C5C] text-white hover:bg-[#F4B6C2] px-4 py-2 rounded-xl scale-97 hover:scale-100 transition-all font-sans font-medium hover:text-white cursor-pointer w-full sm:w-auto text-center"
                             >
                               تتبع حالة الشحن الملكي🌸
                             </button>
@@ -2370,7 +2370,7 @@ export default function AccountView({
       {/* Dynamic Review Submission Modal Overlay */}
       {selectedReviewItem && (
         <div
-          className="fixed inset-0 bg-[#0B0B0B]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in"
+          className="fixed inset-0 bg-[#A44C5C]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in"
           style={{ direction: "rtl" }}
         >
           <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full border border-gray-150 shadow-2xl relative animate-scale-up text-right">
@@ -2458,7 +2458,7 @@ export default function AccountView({
                 <button
                   type="submit"
                   disabled={submittingReview}
-                  className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-5 py-2 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer shadow-xs shrink-0 disabled:opacity-50"
+                  className="bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-5 py-2 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer shadow-xs shrink-0 disabled:opacity-50"
                 >
                   {submittingReview
                     ? "يجري إرسال التقييم..."

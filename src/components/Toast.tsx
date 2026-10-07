@@ -34,11 +34,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           <div
             key={t.id}
             className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl animate-fade-in border dir-rtl ${
-              t.type === 'success' ? 'bg-[#0B0B0B] text-[#F6E7A6] border-[#F6E7A6]/20' : 
-              t.type === 'error' ? 'bg-[#FAF5F0] text-red-600 border-red-200' : 'bg-white text-gray-800 border-gray-200'
+              t.type === 'success' ? 'bg-[#FCF5F6] text-[#A44C5C] border-[#DF8A9D]/30' : 
+              t.type === 'error' ? 'bg-[#FFF5F5] text-red-700 border-red-200' : 'bg-white text-gray-800 border-gray-200'
             }`}
           >
-            {t.type === 'success' ? <CheckCircle size={20} className="text-[#DF8A9D]" /> : t.type === 'error' ? <AlertCircle size={20} /> : <Info size={20} className="text-[#c5a059]" />}
+            {t.type === 'success' ? <CheckCircle size={20} className="text-[#DF8A9D]" /> : t.type === 'error' ? <AlertCircle size={20} className="text-red-500" /> : <Info size={20} className="text-[#A44C5C]" />}
             <p className="text-sm font-bold font-sans">{t.message}</p>
             <button onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))} className="opacity-70 hover:opacity-100">
                 <X size={16} />

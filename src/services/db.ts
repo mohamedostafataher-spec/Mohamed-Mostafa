@@ -538,7 +538,7 @@ function mapOrder(data: any): Order {
     status: data.status || 'pending',
     date: data.date || (data.created_at ? data.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
     trackingNumber: data.trackingNumber || data.tracking_number || undefined,
-    trackingUrl: data.trackingUrl || data.tracking_url || `https://sulta.store/track-order/${data.id}`
+    trackingUrl: data.trackingUrl || data.tracking_url || (typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/?tab=track-order&id=${data.id}` : `/?tab=track-order&id=${data.id}`)
   };
 }
 
@@ -1286,7 +1286,8 @@ export const dbService = {
       try {
         const [ordersRes, ticketsRes] = await Promise.all([
           supabase.from('orders').select('*').order('created_at', { ascending: false }),
-          supabase.from('support_tickets').select('*').like('subject', 'ORDER:%').order('created_at', { ascending: false })
+          // Fetch both ORDER: and ORDER- for historical compatibility
+          supabase.from('support_tickets').select('*').or('subject.like.ORDER:%,subject.like.ORDER-%').order('created_at', { ascending: false })
         ]);
 
         loadAndMerge(ordersRes.data || [], ticketsRes.data || []);
@@ -1315,7 +1316,14 @@ export const dbService = {
   },
 
   saveOrder: async (order: Order): Promise<void> => {
-    order.trackingUrl = order.trackingUrl || `https://sulta.store/track-order/${order.id}`;
+    const origin = typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost') 
+      ? window.location.origin 
+      : (typeof window !== 'undefined' ? window.location.origin : 'https://sulta.store');
+    
+    // Final check for track URL
+    if (!order.trackingUrl) {
+      order.trackingUrl = `${origin}/track-order/${order.id}`;
+    }
 
     // 1. Dual-write to localStorage for 100% offline resilience
     try {
@@ -1340,7 +1348,8 @@ export const dbService = {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(finalId);
     if (!isUuid) {
       finalId = crypto.randomUUID();
-      console.log(`[SULTA DB] Non-UUID detected (${order.id}), generated new UUID: ${finalId}`);
+      order.id = finalId; // UPDATE OBJECT BY REFERENCE TO PREVENT MISMATCHES
+      console.log(`[SULTA DB] Non-UUID detected, generated new UUID: ${finalId}`);
     }
 
     // 2. Persist directly to Supabase cloud:
@@ -1708,9 +1717,37 @@ export const dbService = {
     if (error) throw error;
   },
 
+  deleteOrder: async (orderId: string): Promise<void> => {
+    try {
+      const localOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
+      const filtered = localOrders.filter((o: any) => o.id !== orderId);
+      localStorage.setItem('sulta_offline_orders', JSON.stringify(filtered));
+    } catch (e) {
+      console.warn("Failed to delete order from localStorage:", e);
+    }
+
+    try {
+      // 1. Delete from orders table
+      const { error: oErr } = await supabase.from('orders').delete().eq('id', orderId);
+      if (oErr) console.warn("Supabase orders delete error:", oErr.message);
+
+      // 2. Delete from support_tickets table (where full payload resides)
+      // We check for both ORDER: prefix and ORDER- prefix just in case of historical data
+      const { error: tErr } = await supabase.from('support_tickets').delete().or(`subject.eq.ORDER:${orderId},subject.eq.ORDER-${orderId}`);
+      if (tErr) console.warn("Supabase support_tickets delete error:", tErr.message);
+      
+      if (oErr && tErr) throw new Error("Could not delete order from either table");
+    } catch (err) {
+      console.error("Critical error on cloud deleteOrder:", err);
+      throw err;
+    }
+  },
+
   updateOrder: async (order: Order): Promise<void> => {
-    // Phase 4: Automatically make sure trackingUrl is set
-    order.trackingUrl = order.trackingUrl || `https://sulta.store/track-order/${order.id}`;
+    const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://sulta.store';
+    if (!order.trackingUrl) {
+      order.trackingUrl = `${origin}/track-order/${order.id}`;
+    }
 
     try {
       const localOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
@@ -1726,17 +1763,28 @@ export const dbService = {
     const updatePayload: any = { status: order.status };
     if (order.trackingNumber) updatePayload.tracking_number = order.trackingNumber;
     if (order.trackingUrl) updatePayload.tracking_url = order.trackingUrl;
+    
+    // Add missing fields to keep orders table in sync if possible
+    if (order.customerName) updatePayload.customer_name = order.customerName;
+    if (order.phone) updatePayload.phone = order.phone;
 
     try {
-      await Promise.all([
-        supabase.from('orders').update(updatePayload).eq('id', order.id),
-        supabase.from('support_tickets').update({
-          message: JSON.stringify(order),
-          status: order.status
-        }).eq('subject', `ORDER:${order.id}`)
-      ]);
+      // Update the skeleton row
+      const { error: oErr } = await supabase.from('orders').update(updatePayload).eq('id', order.id);
+      if (oErr) console.warn("Supabase orders table update failed:", oErr.message);
+
+      // Sync the full payload in support_tickets
+      const { error: tErr } = await supabase.from('support_tickets').update({
+        message: JSON.stringify(order),
+        status: order.status
+      }).or(`subject.eq.ORDER:${order.id},subject.eq.ORDER-${order.id}`);
+      
+      if (tErr) console.warn("Supabase support_tickets table update failed:", tErr.message);
+      
+      if (oErr && tErr) throw new Error("Failed to update order in both cloud tables");
     } catch (error) {
-      console.warn("Non-blocking warning: Supabase cloud updateOrder status sync skipped:", error);
+      console.error("Supabase cloud updateOrder status failed:", error);
+      throw error;
     }
   },
 

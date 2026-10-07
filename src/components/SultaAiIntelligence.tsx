@@ -335,7 +335,7 @@ export default function SultaAiIntelligence({
       {/* Dashboard Subtab Navigation Header */}
       <div className="flex items-center justify-between border-b border-stone-250/60 pb-4 flex-wrap gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-rose-300">
+          <div className="w-10 h-10 rounded-full bg-[#FCF5F6] border border-[#DF8A9D]/20 flex items-center justify-center text-[#A44C5C]">
             <Brain size={18} />
           </div>
           <div>
@@ -363,50 +363,50 @@ export default function SultaAiIntelligence({
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 bg-stone-50 border border-stone-200/60 p-1.5 rounded-2.5xl text-center text-[10.5px]">
         <button
           onClick={() => setActiveSubTab('control_tower')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'control_tower' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'control_tower' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           🏰 برج المراقبة الذكي
         </button>
         <button
           onClick={() => setActiveSubTab('customer_analytics')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'customer_analytics' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'customer_analytics' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           👥 تحليل العملاء التلقائي
         </button>
         <button
           onClick={() => setActiveSubTab('sales_forecasting')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'sales_forecasting' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'sales_forecasting' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           📈 التنبؤ بالمبيعات الرقمية
         </button>
         <button
           onClick={() => setActiveSubTab('health_scores')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'health_scores' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'health_scores' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           🛡️ مؤشر كفاءة المنتجات
         </button>
         <button
           onClick={() => setActiveSubTab('reviews_analysis')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'reviews_analysis' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'reviews_analysis' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           ⭐ قراءة مشاعر التقييمات
         </button>
         <button
           onClick={() => setActiveSubTab('marketing_center')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'marketing_center' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'marketing_center' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           📢 مركز التسويق الإبداعي
         </button>
         <button
           onClick={() => setActiveSubTab('customer_recovery')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'customer_recovery' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'customer_recovery' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           🛒 استرداد السِلات المتروكة
         </button>
         <button
           id="subtab-packaging-planner"
           onClick={() => setActiveSubTab('packaging_planner')}
-          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'packaging_planner' ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-2xs' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
+          className={`py-2 rounded-xl font-bold cursor-pointer transition-all ${activeSubTab === 'packaging_planner' ? 'bg-[#A44C5C] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-stone-100'}`}
         >
           📦 مستشار التغليف الاقتصادي
         </button>
@@ -418,25 +418,24 @@ export default function SultaAiIntelligence({
         {/* VIEW 1: CONTROL TOWER (Module 11 & 14) */}
         {activeSubTab === 'control_tower' && (
           <div className="space-y-6 animate-fadeIn">
-            {/* Command Cockpit Alerts banner */}
-            <div className="bg-stone-900 text-[#F6E7A6] p-5 rounded-3xl border border-stone-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+            <div className="bg-[#FCF5F6] text-[#A44C5C] p-6 rounded-3xl border border-[#DF8A9D]/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden shadow-sm">
               <div className="absolute top-0 right-0 h-1 bg-[#A44C5C] w-full" />
-              <div className="space-y-1.5 max-w-xl">
+              <div className="space-y-1.5 max-w-xl text-right">
                 <span className="text-[9px] bg-[#A44C5C] text-white px-2 py-0.5 rounded-full font-serif font-black tracking-widest block w-fit">AI BUSINESS COMMAND SYSTEM ACTIVE</span>
-                <h4 className="font-serif text-lg font-bold text-white">رادار المراقبة الملكية الفوري لـ SULTA</h4>
-                <p className="text-stone-350 text-xs leading-relaxed font-sans mt-1">
+                <h4 className="font-serif text-lg font-bold text-stone-900">رادار المراقبة الملكية الفوري لـ SULTA</h4>
+                <p className="text-gray-500 text-xs leading-relaxed font-sans mt-1">
                   أهلاً بكِ في مركز القيادة والذكاء الشامل. تدمج هذه الشاشة بين تحليلات المبيعات اللحظية، وتنبؤات نفاد المخزون، وتنبيهات أداء القطع الحريرية لتحققي أقصى كفاءة تشغيل.
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-center shrink-0 w-full md:w-auto border-t md:border-t-0 border-stone-800 pt-3 md:pt-0">
-                <div className="bg-white/5 p-3 rounded-2xl border border-white/10">
+              <div className="grid grid-cols-2 gap-4 text-center shrink-0 w-full md:w-auto border-t md:border-t-0 border-[#DF8A9D]/10 pt-3 md:pt-0">
+                <div className="bg-white p-3 rounded-2xl border border-[#DF8A9D]/10 shadow-sm">
                   <span className="text-[10px] text-gray-400 block font-sans">توقعات مبيعات الشهر</span>
-                  <span className="text-sm font-black text-white font-mono">{Math.floor(aiStats.monthForecast).toLocaleString()} EGP</span>
+                  <span className="text-sm font-black text-[#A44C5C] font-mono">{Math.floor(aiStats.monthForecast).toLocaleString()} EGP</span>
                 </div>
-                <div className="bg-white/5 p-3 rounded-2xl border border-white/10">
+                <div className="bg-white p-3 rounded-2xl border border-[#DF8A9D]/10 shadow-sm">
                   <span className="text-[10px] text-gray-400 block font-sans">سرعة حركة دوران القطع</span>
-                  <span className="text-emerald-400 text-sm font-bold block font-sans">✓ ممتازة جداً 👑</span>
+                  <span className="text-emerald-600 text-sm font-bold block font-sans">✓ ممتازة جداً 👑</span>
                 </div>
               </div>
             </div>
@@ -722,7 +721,7 @@ export default function SultaAiIntelligence({
                         <span className="text-gray-500 leading-tight font-sans text-[9px]">{m.alertMsg}</span>
                       </div>
                       
-                      <div className="bg-stone-900 font-mono text-[#F6E7A6] text-xs font-black px-2.5 py-1 rounded-xl shadow-3xs flex items-center gap-1">
+                      <div className="bg-[#FCF5F6] font-mono text-[#A44C5C] text-xs font-black px-2.5 py-1 rounded-xl shadow-3xs flex items-center gap-1 border border-[#DF8A9D]/20">
                         <span>{m.score}</span>
                         <span className="text-[8px] text-gray-400 font-sans">/ 100</span>
                       </div>
@@ -836,7 +835,7 @@ export default function SultaAiIntelligence({
                   <button
                     onClick={handleGeneratePromo}
                     disabled={isGeneratingPromo}
-                    className="w-full bg-[#0B0B0B] hover:bg-[#A44C5C] text-[#F6E7A6] hover:text-white py-2.5 rounded-xl font-bold font-sans text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40"
+                    className="w-full bg-[#A44C5C] hover:bg-[#A44C5C] text-[#F6E7A6] hover:text-white py-2.5 rounded-xl font-bold font-sans text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40"
                   >
                     {isGeneratingPromo ? (
                       <>
@@ -1304,28 +1303,28 @@ export default function SultaAiIntelligence({
             </div>
 
             {/* 4. Action Plan & Places list Map (Sulta Arabic Suppliers Registry) */}
-            <div className="bg-stone-900 text-stone-100 p-6 rounded-3xl space-y-4">
+            <div className="bg-white text-stone-800 p-6 rounded-3xl space-y-4 border border-stone-200 shadow-sm">
               <h4 className="text-sm font-bold text-[#F6E7A6] flex items-center gap-2">
                 <span>📍 دليل وخطوات الشراء الفورية بالمملكة والخليج العربي:</span>
               </h4>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] leading-relaxed">
-                <div className="space-y-2 bg-stone-850 p-4 rounded-2xl border border-stone-800">
-                  <h5 className="font-black text-white text-xs flex items-center gap-1.5">
-                    <span className="bg-stone-700 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#F6E7A6]">1</span>
+                <div className="space-y-2 bg-[#FAF9F6] p-4 rounded-2xl border border-stone-200">
+                  <h5 className="font-black text-gray-900 text-xs flex items-center gap-1.5">
+                    <span className="bg-stone-200 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#A44C5C]">1</span>
                     شراء كرتون البيتزا السادة بالجملة
                   </h5>
-                  <p className="text-stone-300">
+                  <p className="text-stone-600">
                     • <b>بالمملكة:</b> اطلبي من موزعي <b>شارع المعبر أو سوق المعيقلية بالرياض</b>، أو منصات بيع الكرتون السادة عبر الإنترنت بعلب تغليف مرنة. يتوفر الشحن الفوري لكافة المدن.
                   </p>
                 </div>
 
-                <div className="space-y-2 bg-stone-850 p-4 rounded-2xl border border-stone-800">
-                  <h5 className="font-black text-white text-xs flex items-center gap-1.5">
-                    <span className="bg-stone-700 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#F6E7A6]">2</span>
+                <div className="space-y-2 bg-[#FAF9F6] p-4 rounded-2xl border border-stone-200">
+                  <h5 className="font-black text-gray-900 text-xs flex items-center gap-1.5">
+                    <span className="bg-stone-200 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#A44C5C]">2</span>
                     طلب الختم الخشبي المخصص
                   </h5>
-                  <p className="text-stone-300">
+                  <p className="text-stone-600">
                     • خذي لوجو SULTA والرسومات اللطيفة التي قمنا بتصميمها لكِ مجاناً في Sulta Brand باللون الأسود بالكامل (قالب مفرغ Silhoutte).
                     <br />
                     • ابحثي في منطقتكِ عن ورش <b>الحفر بالليزر والزنكغراف</b> (مثلاً عبر منصات الطباعة أونلاين أو المطابع المختصة بالرياض وجدة). اطلبي ختم خشبي جامبو مقاس 15x15 سم أو 20x15 سم بمقبض عريض.
@@ -1334,12 +1333,12 @@ export default function SultaAiIntelligence({
                   </p>
                 </div>
 
-                <div className="space-y-2 bg-stone-850 p-4 rounded-2xl border border-stone-800">
-                  <h5 className="font-black text-white text-xs flex items-center gap-1.5">
-                    <span className="bg-stone-700 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#F6E7A6]">3</span>
+                <div className="space-y-2 bg-[#FAF9F6] p-4 rounded-2xl border border-stone-200">
+                  <h5 className="font-black text-gray-900 text-xs flex items-center gap-1.5">
+                    <span className="bg-stone-200 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] text-[#A44C5C]">3</span>
                     اللمسة الملكية بالمنزل (The Elegant Touch)
                   </h5>
-                  <p className="text-stone-300">
+                  <p className="text-stone-600">
                     • قبل تغليف القطعة الكوتور، ضعي شيت مناديل ورق زبداني (ورق زبدة رقيق أبيض) داخل الصندوق، وضعي فيه بجامة الحرير الملكية بعد تعطيرها برذاذ الفانيليا المنعشة.
                     <br />
                     • اغلقي ورق الزبدة بملصق دائري وردي رقيق (استيكر الوش الصغير 3سم)، ثم ضعي شيت ملصقات بنترست والهدية اللطيفة كعلامة مظهر واهتمام لعمليتك.
@@ -1349,7 +1348,7 @@ export default function SultaAiIntelligence({
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-stone-800 text-center text-xs text-stone-400">
+              <div className="pt-3 border-t border-stone-200 text-center text-xs text-stone-500">
                 🔒 يمنحكِ هذا التخطيط المرن القدرة على بدء تجارة بجامات الفخامة بأقل مخاطر مالية وتوفير سيولة نقدية فورية لشحن وشراء الخامات النادرة. 👑
               </div>
             </div>

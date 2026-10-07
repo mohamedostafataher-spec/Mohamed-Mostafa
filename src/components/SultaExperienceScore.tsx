@@ -148,7 +148,7 @@ export default function SultaExperienceScore({
         <button
           onClick={handleRunAudit}
           disabled={runningAudit}
-          className="shrink-0 font-sans text-xs bg-[#0B0B0B] hover:bg-[#A44C5C] text-white px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+          className="shrink-0 font-sans text-xs bg-[#A44C5C] hover:bg-[#A44C5C] text-white px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
         >
           <RefreshCw size={14} className={runningAudit ? 'animate-spin' : ''} />
           <span>{runningAudit ? 'جاري الفحص الشامل...' : 'فحص المتجر والروابط تلقائياً'}</span>

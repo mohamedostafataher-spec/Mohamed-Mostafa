@@ -8,30 +8,49 @@ import { dbService } from '../services/db';
 import { Order } from '../types';
 import OrderDetailView from './OrderDetailView';
 
-export default function TrackOrder() {
+interface TrackOrderProps {
+  initialOrderId?: string | null;
+}
+
+export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
   const [method, setMethod] = useState<'id' | 'email' | 'phone'>('id');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialOrderId || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [foundOrders, setFoundOrders] = useState<Order[] | null>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialOrderId) {
+      setActiveOrderId(initialOrderId);
+      return;
+    }
+
     // 1. Check direct query parameters first
     const params = new URLSearchParams(window.location.search);
-    const trackingId = params.get('id') || params.get('track');
+    const trackingId = params.get('id') || params.get('track') || params.get('orderId') || params.get('order');
     if (trackingId) {
       setActiveOrderId(trackingId);
       return;
     }
 
-    // 2. Check router-transition path parameter fallback stored in localStorage
+    // 2. Check path parameter (/track-order/:id)
+    const pathMatch = window.location.pathname.match(/^\/(?:track-order|order-tracking)\/(.+)$/);
+    if (pathMatch) {
+      const idFromPath = decodeURIComponent(pathMatch[1]);
+      if (idFromPath && idFromPath !== 'track-order') {
+        setActiveOrderId(idFromPath);
+        return;
+      }
+    }
+
+    // 3. Check router-transition path parameter fallback stored in localStorage
     const savedId = window.localStorage.getItem('sulta_auto_track_order_id');
     if (savedId) {
       setActiveOrderId(savedId);
       window.localStorage.removeItem('sulta_auto_track_order_id');
     }
-  }, []);
+  }, [initialOrderId]);
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -256,7 +275,7 @@ export default function TrackOrder() {
             <button 
               type="submit" 
               disabled={loading || !query}
-              className="w-full bg-[#0B0B0B] text-white py-4.5 rounded-2.5xl font-sans text-xs font-bold tracking-widest uppercase hover:bg-[#A44C5C] hover:shadow-lg hover:shadow-[#A44C5C]/10 transition-all active:scale-[0.99] disabled:opacity-40 select-none mt-6 flex justify-center items-center gap-2 cursor-pointer shadow-md shadow-gray-950/5 border border-white/5"
+              className="w-full bg-[#A44C5C] text-white py-4.5 rounded-2.5xl font-sans text-xs font-bold tracking-widest uppercase hover:bg-[#A44C5C] hover:shadow-lg hover:shadow-[#A44C5C]/10 transition-all active:scale-[0.99] disabled:opacity-40 select-none mt-6 flex justify-center items-center gap-2 cursor-pointer shadow-md shadow-gray-950/5 border border-white/5"
             >
               {loading ? (
                 <>
@@ -321,7 +340,7 @@ export default function TrackOrder() {
 
                       <button
                         onClick={() => setActiveOrderId(order.id)}
-                        className="flex-1 sm:flex-none text-[10px] bg-[#0B0B0B] text-white hover:bg-[#A44C5C] px-4 py-2.5 rounded-xl transition-all font-sans font-bold flex items-center justify-center gap-1.5 hover:shadow-sm cursor-pointer select-none"
+                        className="flex-1 sm:flex-none text-[10px] bg-[#A44C5C] text-white hover:bg-[#A44C5C] px-4 py-2.5 rounded-xl transition-all font-sans font-bold flex items-center justify-center gap-1.5 hover:shadow-sm cursor-pointer select-none"
                       >
                         <Eye size={12} strokeWidth={2.5} />
                         <span>عرض لوحة التتبع</span>

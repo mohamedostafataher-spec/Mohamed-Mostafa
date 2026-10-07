@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import SultaImage from "./components/SultaImage";
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe, Search, Truck, RefreshCw, Tag } from 'lucide-react';
+import { WhatsAppService } from './services/whatsappService';
 import { ToastProvider, useToast } from './components/Toast';
 import Header from './components/Header';
 import Features from './components/Features';
@@ -62,6 +63,7 @@ function AppContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const [country, setCountry] = useState<Country>('SA');
+  const [autoTrackId, setAutoTrackId] = useState<string | null>(null);
 
   // Synchronise manually chosen country changes to localStorage
   useEffect(() => {
@@ -77,7 +79,8 @@ function AppContent() {
       setCountry('SA');
     }
 
-    // Beautiful Luxe notification to make sure the customer feels welcomed
+    // Beautiful Luxe notification removed as per user request to reduce popups
+    /*
     const sessionAlerted = sessionStorage.getItem('sulta_country_alerted');
     if (!sessionAlerted) {
       sessionStorage.setItem('sulta_country_alerted', 'true');
@@ -87,6 +90,7 @@ function AppContent() {
         toast(welcomeMessage, 'success');
       }, 1500);
     }
+    */
   }, [country, toast]);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -141,27 +145,32 @@ function AppContent() {
     }
   }, [products]);
 
-  // SULTA Order Tracking Center Deep-link Routing (Phase 1 & Phase 6 specs)
+  // SULTA Order Tracking Center Deep-link Routing
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const pathname = window.location.pathname;
     
-    // Check search queries
+    // Check search queries: ?tab=track-order or ?page=track-order or ?id=... or ?orderId=...
+    const tabParam = params.get('tab');
     const pageParam = params.get('page');
-    const trackParam = params.get('track') || params.get('id');
+    const trackParam = params.get('track') || params.get('id') || params.get('orderId');
     
     // Check pathname routing: /track-order/[order_number] or /order-tracking/[order_number]
-    const trackPathMatch = pathname.match(/^\/(track-order|order-tracking)\/(.+)$/);
+    const trackPathMatch = pathname.match(/^\/(?:track-order|order-tracking)\/(.+)$/);
     
-    if (pageParam === 'track-order' || trackParam) {
+    if (tabParam === 'track-order' || pageParam === 'track-order' || trackParam) {
       setTab('track-order');
       if (trackParam) {
+        setAutoTrackId(trackParam);
         window.localStorage.setItem('sulta_auto_track_order_id', trackParam);
       }
     } else if (trackPathMatch) {
       setTab('track-order');
-      const foundOrderId = decodeURIComponent(trackPathMatch[2]);
-      window.localStorage.setItem('sulta_auto_track_order_id', foundOrderId);
+      const foundOrderId = decodeURIComponent(trackPathMatch[1]);
+      if (foundOrderId && foundOrderId !== 'track-order') {
+        setAutoTrackId(foundOrderId);
+        window.localStorage.setItem('sulta_auto_track_order_id', foundOrderId);
+      }
     }
   }, []);
 
@@ -545,9 +554,12 @@ function AppContent() {
     setAppliedCoupon(null);
     setIsCheckoutOpen(false);
 
+    // Automatically send invoice to customer WhatsApp
+    WhatsAppService.sendInvoice(newOrder, newOrder.phone);
+
     // Switch view to customer cabinet to track orders instantly
     setTab('account');
-    toast(`تهانينا! 🎉 تم حجز طلبك الفاخر بنجاح برقم الاستعلام: ${newOrder.id}. يمكنك تتبعه الآن من حسابك الشخصي.`, 'success');
+    toast(`تهانينا! 🎉 تم حجز طلبك الفاخر بنجاح برقم الاستعلام: ${newOrder.id}. تم إرسال تفاصيل الفاتورة عبر واتساب.`, 'success');
   };
 
   // Select Product Handler (updates customer history)
@@ -1113,7 +1125,7 @@ function AppContent() {
 
         {/* TRACK ORDER */}
         {currentTab === 'track-order' && (
-          <TrackOrder />
+          <TrackOrder initialOrderId={autoTrackId} />
         )}
 
         {/* SYSTEM STATUS */}
@@ -1219,7 +1231,7 @@ function AppContent() {
               </p>
               <button
                 onClick={() => setTab('home')}
-                className="bg-[#0B0B0B] text-[#F6E7A6] px-8 py-3 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#DF8A9C] hover:text-white transition-all shadow-sm"
+                className="bg-[#A44C5C] text-white px-8 py-3 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#DF8A9C] transition-all shadow-sm"
               >
                 العودة للرئيسية
               </button>
@@ -1362,11 +1374,13 @@ function AppContent() {
             </div>
 
             <div className="pt-2">
-              <h5 className="font-bold text-[11px] text-gray-900 mb-2">وسائل الدفع المعتمدة</h5>
+              <h5 className="font-bold text-[11px] text-gray-900 mb-2">وسائل الدفع المعتمدة بالمملكة</h5>
               <div className="flex flex-wrap gap-1.5 items-center">
                 <span className="bg-[#111827] text-white px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">Pay Apple Pay</span>
-                <span className="bg-gray-100 text-black border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
-                <span className="bg-gray-100 text-black border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (بنك الجزيرة)</span>
+                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">mada مدى</span>
+                <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">Visa</span>
+                <span className="bg-orange-50 text-orange-850 border border-orange-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">Mastercard</span>
+                <span className="bg-gray-100 text-gray-900 border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
               </div>
             </div>
           </div>
@@ -1469,7 +1483,7 @@ function AppContent() {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
-                    currentTab === 'dashboard' ? 'bg-[#0B0B0B] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
+                    currentTab === 'dashboard' ? 'bg-[#A44C5C] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
                   <span>لوحة تحكم الإدارة والطلبيات ⚙️</span>

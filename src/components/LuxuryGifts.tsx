@@ -134,7 +134,7 @@ export default function LuxuryGifts({
                     onClick={() => setSelectedBox(key)}
                     className={`p-4 rounded-xl border text-right cursor-pointer transition-all flex justify-between items-center ${
                       isActive 
-                        ? 'bg-[#0B0B0B] text-white border-black shadow-md' 
+                        ? 'bg-[#A44C5C] text-white border-black shadow-md' 
                         : 'bg-white text-gray-700 hover:bg-neutral-50 border-gray-150'
                     }`}
                   >

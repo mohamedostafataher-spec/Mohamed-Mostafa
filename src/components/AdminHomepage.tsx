@@ -392,7 +392,7 @@ export default function AdminHomepage() {
           {/* Unboxing Manager */}
           <div className="space-y-6">
             <h3 className="text-sm font-bold text-gray-700 mb-4 tracking-wider underline underline-offset-8 decoration-[#DF8A9D]/30">محتوى تجربة فتح الصندوق (Unboxing)</h3>
-            <div className="p-6 bg-[#0B0B0B] text-[#FAF5F0] rounded-[2.5rem] space-y-6">
+            <div className="p-6 bg-[#A44C5C] text-[#FAF5F0] rounded-[2.5rem] space-y-6">
                <div>
                   <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">عنوان القسم</label>
                   <input 

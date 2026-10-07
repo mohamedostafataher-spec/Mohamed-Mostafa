@@ -140,7 +140,7 @@ export default function SupportCenterAdmin() {
             const isMe = msg.senderType === 'admin';
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[75%] rounded-2xl p-4 ${isMe ? 'bg-[#0B0B0B] text-white rounded-tl-sm' : 'bg-white border border-gray-150 rounded-tr-sm shadow-xs'}`}>
+                <div className={`max-w-[75%] rounded-2xl p-4 ${isMe ? 'bg-[#A44C5C] text-white rounded-tl-sm' : 'bg-white border border-gray-150 rounded-tr-sm shadow-xs'}`}>
                   <div className="flex items-center gap-2 mb-2 opacity-80 text-xs text-gray-400">
                     <span className={`font-bold ${isMe ? 'text-white' : 'text-gray-900'}`}>{msg.senderName}</span>
                     <span>•</span>
@@ -166,7 +166,7 @@ export default function SupportCenterAdmin() {
              <button
                type="submit"
                disabled={!newMessage.trim()}
-               className="bg-[#0B0B0B] text-[#F6E7A6] px-6 rounded-xl disabled:opacity-50 hover:bg-[#A44C5C] hover:text-white transition-colors flex items-center justify-center font-bold"
+               className="bg-[#A44C5C] text-[#F6E7A6] px-6 rounded-xl disabled:opacity-50 hover:bg-[#A44C5C] hover:text-white transition-colors flex items-center justify-center font-bold"
              >
                إرسال الرد
              </button>

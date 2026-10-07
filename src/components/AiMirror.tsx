@@ -509,7 +509,7 @@ export default function AiMirror({
             onClick={() => setActiveView('mirror')}
             className={`flex-1 py-2.5 px-6 rounded-full text-xs font-bold transition-all duration-350 flex items-center justify-center gap-1.5 cursor-pointer ${
               activeView === 'mirror' 
-                ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-sm font-semibold' 
+                ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-sm font-semibold' 
                 : 'text-gray-500 hover:text-black hover:bg-gray-50'
             }`}
           >
@@ -520,7 +520,7 @@ export default function AiMirror({
             onClick={() => setActiveView('boutique')}
             className={`flex-1 py-2.5 px-6 rounded-full text-xs font-bold transition-all duration-350 flex items-center justify-center gap-1.5 cursor-pointer ${
               activeView === 'boutique' 
-                ? 'bg-[#0B0B0B] text-[#F6E7A6] shadow-sm font-semibold' 
+                ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-sm font-semibold' 
                 : 'text-gray-500 hover:text-black hover:bg-gray-50'
             }`}
           >
@@ -747,7 +747,7 @@ export default function AiMirror({
                       
                       {/* Drag Hint Tooltip floating just above the dress when not active */}
                       {!isDragging && (
-                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0B0B0B] text-[#F6E7A6] text-[9px] font-sans font-semibold py-1 px-2.5 rounded-full shadow-lg border border-[#F6E7A6]/30 whitespace-nowrap animate-bounce flex items-center gap-1">
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#A44C5C] text-[#F6E7A6] text-[9px] font-sans font-semibold py-1 px-2.5 rounded-full shadow-lg border border-[#F6E7A6]/30 whitespace-nowrap animate-bounce flex items-center gap-1">
                           <span>اسحبي القطعة للتحريك 👆</span>
                         </div>
                       )}
@@ -1358,7 +1358,7 @@ export default function AiMirror({
                 <button
                   onClick={() => setSelectedCategory('all')}
                   className={`py-1.5 px-3 rounded-lg text-[10.5px] font-bold transition-colors cursor-pointer ${
-                    selectedCategory === 'all' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    selectedCategory === 'all' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   الكل ⚜️
@@ -1366,7 +1366,7 @@ export default function AiMirror({
                 <button
                   onClick={() => setSelectedCategory('best')}
                   className={`py-1.5 px-3 rounded-lg text-[10.5px] font-bold transition-colors cursor-pointer ${
-                    selectedCategory === 'best' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    selectedCategory === 'best' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   روائع مبيعاً ✨
@@ -1374,7 +1374,7 @@ export default function AiMirror({
                 <button
                   onClick={() => setSelectedCategory('sleepwear')}
                   className={`py-1.5 px-3 rounded-lg text-[10.5px] font-bold transition-colors cursor-pointer ${
-                    selectedCategory === 'sleepwear' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    selectedCategory === 'sleepwear' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   ملابس نوم
@@ -1382,7 +1382,7 @@ export default function AiMirror({
                 <button
                   onClick={() => setSelectedCategory('loungewear')}
                   className={`py-1.5 px-3 rounded-lg text-[10.5px] font-bold transition-colors cursor-pointer ${
-                    selectedCategory === 'loungewear' ? 'bg-[#0B0B0B] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    selectedCategory === 'loungewear' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   أطقم حريرية
@@ -1448,7 +1448,7 @@ export default function AiMirror({
         <div className="max-w-7xl mx-auto mt-4 animate-fade-in-rapid space-y-8">
           
           {/* Hero Banner for Boutique */}
-          <div className="relative rounded-3xl overflow-hidden py-16 px-6 md:px-12 text-center bg-[#0B0B0B] text-white border-2 border-[#D4AF37]/50 shadow-2xl">
+          <div className="relative rounded-3xl overflow-hidden py-16 px-6 md:px-12 text-center bg-[#A44C5C] text-white border-2 border-[#D4AF37]/50 shadow-2xl">
             {/* Overlay transparent picture */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900/60 via-black to-black pointer-events-none z-0" />
             
@@ -1570,7 +1570,7 @@ export default function AiMirror({
       )}
 
       {/* FOOTER AUDITING SUMMARY REPORT REQUIREMENT */}
-      <div className="max-w-7xl mx-auto mt-16 bg-[#0B0B0B] text-[#FAFAF7]/95 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl border border-[#FAF5F0]/10 text-right">
+      <div className="max-w-7xl mx-auto mt-16 bg-[#A44C5C] text-[#FAFAF7]/95 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl border border-[#FAF5F0]/10 text-right">
         <h4 className="font-serif text-md sm:text-lg font-bold text-[#F6E7A6] flex items-center gap-2">
           📑 تقرير الجاهزية التشغيلية | SULTA AI MIRROR REPORT
         </h4>

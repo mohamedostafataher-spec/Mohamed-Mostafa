@@ -87,7 +87,7 @@ export default function SleepExperience({
                   onClick={() => setActiveTip(idx)}
                   className={`p-5 rounded-2xl border transition-all duration-500 text-right cursor-pointer ${
                     isOpen 
-                      ? 'bg-[#0B0B0B] text-white border-black shadow-md' 
+                      ? 'bg-[#A44C5C] text-white border-black shadow-md' 
                       : 'bg-[#FAF4F5]/50 hover:bg-[#FAF4F5] border-transparent text-gray-700'
                   }`}
                 >

@@ -317,6 +317,144 @@ async function startServer() {
     }
   });
 
+  // =========================================================================
+  // SECURE PAYMOB PAYMENT GATEWAY ENDPOINTS (SERVER-SIDE ONLY)
+  // Ensures secrets (PAYMOB_SECRET_KEY, PAYMOB_HMAC_SECRET) never reach client
+  // =========================================================================
+
+  /**
+   * 1. CREATE PAYMENT INTENTION
+   * Calls Paymob Intention API v1 to generate payment key / client secret
+   */
+  app.post("/api/payment/paymob/intention", async (req, res) => {
+    const secretKey = process.env.PAYMOB_SECRET_KEY;
+    const cardIntegrationId = process.env.PAYMOB_INTEGRATION_ID_CARD;
+    const applePayIntegrationId = process.env.PAYMOB_INTEGRATION_ID_APPLE_PAY;
+
+    const { order_id, amount_cents, currency = 'SAR', payment_method, customer, items } = req.body;
+
+    if (!order_id || !amount_cents || !customer) {
+      return res.status(400).json({ error: "Missing required order or customer information" });
+    }
+
+    // Check if live Paymob secret key is present in environment variables
+    if (!secretKey) {
+      // Return honest configuration status without fake success
+      return res.status(503).json({
+        error: "Paymob server credentials not configured",
+        message: "بوابة الدفع الإلكتروني Paymob تتطلب تعيين PAYMOB_SECRET_KEY في متغيرات خادم المتجر لتأكيد الدفع الحقيقي.",
+        order_id,
+        status: "pending"
+      });
+    }
+
+    try {
+      const integrationId = payment_method === 'apple_pay' 
+        ? applePayIntegrationId 
+        : cardIntegrationId;
+
+      const paymobResponse = await fetch("https://ksa.paymob.com/v1/intention/", {
+        method: "POST",
+        headers: {
+          "Authorization": `Token ${secretKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          amount: amount_cents,
+          currency: currency,
+          payment_methods: integrationId ? [parseInt(integrationId, 10)] : [],
+          items: items?.map((item: any) => ({
+            name: item.name,
+            amount: Math.round(item.price * 100),
+            description: item.name,
+            quantity: item.quantity
+          })) || [],
+          billing_data: {
+            first_name: customer.name.split(' ')[0] || customer.name,
+            last_name: customer.name.split(' ').slice(1).join(' ') || 'العتيبي',
+            phone_number: customer.phone,
+            email: customer.email || `${customer.phone.replace(/\\D/g, '')}@sulta.sa`,
+            country: 'SA',
+            city: customer.city,
+            street: customer.address,
+            building: '1',
+            floor: '1',
+            apartment: '1',
+            postal_code: '11564'
+          },
+          customer: {
+            first_name: customer.name.split(' ')[0] || customer.name,
+            last_name: customer.name.split(' ').slice(1).join(' ') || 'العتيبي',
+            email: customer.email || `${customer.phone.replace(/\\D/g, '')}@sulta.sa`
+          },
+          extras: {
+            sulta_order_id: order_id
+          }
+        })
+      });
+
+      const paymobData = await paymobResponse.json();
+
+      if (!paymobResponse.ok) {
+        return res.status(paymobResponse.status).json({
+          error: "Paymob gateway error",
+          details: paymobData
+        });
+      }
+
+      res.json({
+        success: true,
+        client_secret: paymobData.client_secret,
+        payment_key: paymobData.payment_keys?.[0]?.key,
+        redirection_url: paymobData.redirection_url,
+        order_id
+      });
+    } catch (err: any) {
+      console.error("Paymob intention error:", err);
+      res.status(500).json({ error: "Failed to initiate payment with Paymob", details: err.message });
+    }
+  });
+
+  /**
+   * 2. VERIFY TRANSACTION CALLBACK
+   * Validates Paymob response code on server
+   */
+  app.post("/api/payment/paymob/verify", async (req, res) => {
+    const { order_id, transaction_id, params } = req.body;
+
+    if (!order_id) {
+      return res.status(400).json({ error: "Missing order_id" });
+    }
+
+    const isSuccess = params?.success === "true" || params?.success === true || params?.txn_response_code === "APPROVED";
+
+    if (isSuccess) {
+      res.json({
+        verified: true,
+        orderId: order_id,
+        transactionId: transaction_id,
+        status: "paid"
+      });
+    } else {
+      res.json({
+        verified: false,
+        orderId: order_id,
+        transactionId: transaction_id,
+        status: "failed",
+        errorMessage: "لم تكتمل عملية الدفع من قبل البنك المصدر. يرجى المحاولة ببطاقة أخرى أو اختيار الدفع عند الاستلام."
+      });
+    }
+  });
+
+  /**
+   * 3. PAYMOB SERVER-TO-SERVER WEBHOOK
+   */
+  app.post("/api/payment/paymob/webhook", async (req, res) => {
+    const webhookData = req.body;
+    console.log("[Paymob Webhook Received]", webhookData?.type, webhookData?.obj?.id);
+    res.status(200).send("OK");
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

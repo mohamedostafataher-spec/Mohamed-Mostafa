@@ -58,7 +58,7 @@ export default function SmartRecommendations({
           <SultaImage src={prod.images?.[0] || "/img/placeholder.png"} alt={prod.nameAr} className="w-full h-full" imgClassName="object-cover group-hover:scale-105 transition-transform duration-700" />
           {/* Tag */}
           {prod.tagAr && (
-            <span className="absolute top-2 right-2 bg-[#0B0B0B] text-[#F6E7A6] text-[8px] font-sans font-bold px-2 py-0.5 rounded-full z-10">
+            <span className="absolute top-2 right-2 bg-[#A44C5C] text-[#F6E7A6] text-[8px] font-sans font-bold px-2 py-0.5 rounded-full z-10">
               {prod.tagAr}
             </span>
           )}

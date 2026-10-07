@@ -136,7 +136,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
           animate={{ opacity: 1 }}
           className="text-center py-6 space-y-5"
         >
-          <div className="w-16 h-16 bg-[#0B0B0B] text-[#F6E7A6] rounded-full flex items-center justify-center mx-auto shadow-xl">
+          <div className="w-16 h-16 bg-[#A44C5C] text-[#F6E7A6] rounded-full flex items-center justify-center mx-auto shadow-xl">
             <Sparkles size={28} className="animate-pulse" />
           </div>
           <div>
@@ -149,7 +149,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
           <button
             onClick={() => setStep(1)}
             type="button"
-            className="bg-[#0B0B0B] hover:bg-[#A44C5C] hover:scale-103 active:scale-98 text-[#F6E7A6] text-xs font-sans font-bold px-8 py-3.5 rounded-2xl transition-all cursor-pointer shadow-md"
+            className="bg-[#A44C5C] hover:bg-[#A44C5C] hover:scale-103 active:scale-98 text-[#F6E7A6] text-xs font-sans font-bold px-8 py-3.5 rounded-2xl transition-all cursor-pointer shadow-md"
           >
             دعنا نبدأ الاستشارة الشخصية ✦
           </button>
@@ -251,7 +251,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
                               className="w-full h-full object-cover" 
                               referrerPolicy="no-referrer"
                             />
-                            <div className="absolute top-2.5 right-2.5 bg-[#0B0B0B] text-[#F6E7A6] px-2 py-0.5 rounded-lg text-[9.5px] font-sans font-bold shadow-xs">
+                            <div className="absolute top-2.5 right-2.5 bg-[#A44C5C] text-[#F6E7A6] px-2 py-0.5 rounded-lg text-[9.5px] font-sans font-bold shadow-xs">
                               🏆 مطابقة {prod.matchRate}%
                             </div>
                           </div>
@@ -269,7 +269,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
                           {onSelectProduct && (
                             <button
                               onClick={() => onSelectProduct(matchedP)}
-                              className="bg-[#0B0B0B] hover:bg-[#A44C5C] text-white text-[9.5px] font-sans font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer select-none leading-none"
+                              className="bg-[#A44C5C] hover:bg-[#A44C5C] text-white text-[9.5px] font-sans font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer select-none leading-none"
                             >
                               عرض كوتور
                             </button>

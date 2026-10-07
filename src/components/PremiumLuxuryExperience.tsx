@@ -393,7 +393,7 @@ export default function PremiumLuxuryExperience({
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 text-right font-sans" dir="rtl">
       
       {/* Experience Center Top Branding Header */}
-      <div className="bg-[#0B0B0B] text-white p-6 md:p-10 rounded-3xl relative overflow-hidden mb-10 shadow-xl border border-gray-800">
+      <div className="bg-[#A44C5C] text-white p-6 md:p-10 rounded-3xl relative overflow-hidden mb-10 shadow-xl border border-gray-800">
         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[#DF8A9C]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="space-y-2">
@@ -593,7 +593,7 @@ export default function PremiumLuxuryExperience({
 
                   <button 
                     onClick={handleAddOutfitToCart}
-                    className="w-full bg-[#0B0B0B] text-white hover:bg-black py-3.5 rounded-xl font-bold text-xs flex justify-center items-center gap-2"
+                    className="w-full bg-[#A44C5C] text-white hover:bg-black py-3.5 rounded-xl font-bold text-xs flex justify-center items-center gap-2"
                   >
                     <ShoppingBag size={15} /> إضافة الطقم بالكامل للسلة
                   </button>
@@ -763,7 +763,7 @@ export default function PremiumLuxuryExperience({
 
                   <button 
                     onClick={handleAddGiftBoxToCart}
-                    className="w-full bg-[#0B0B0B] text-white hover:bg-black py-4 rounded-xl font-bold text-xs flex justify-center items-center gap-2"
+                    className="w-full bg-[#A44C5C] text-white hover:bg-black py-4 rounded-xl font-bold text-xs flex justify-center items-center gap-2"
                   >
                     💝 تسليم الهدية الفاخرة للسلة
                   </button>
@@ -859,7 +859,7 @@ export default function PremiumLuxuryExperience({
                       setQuizStep(5);
                       handleGenerateQuizRecommendations();
                     }}
-                    className="px-8 py-4 bg-[#0B0B0B] text-white hover:bg-black rounded-full font-serif font-light text-sm tracking-widest uppercase"
+                    className="px-8 py-4 bg-[#A44C5C] text-white hover:bg-black rounded-full font-serif font-light text-sm tracking-widest uppercase"
                   >
                     كشف التوليفة واقتراح القطع الخاصة بي ✨
                   </button>
@@ -887,7 +887,7 @@ export default function PremiumLuxuryExperience({
                             onAddToCart(p, p.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' }, p.sizes?.[0] || 'M', 1);
                             toast('تم إضافة المنتج المقترح لنوم هادئ إلى سلتك!', 'success');
                           }}
-                          className="w-full mt-4 bg-[#0B0B0B] text-white py-2 rounded-xl text-[10px] font-bold"
+                          className="w-full mt-4 bg-[#A44C5C] text-white py-2 rounded-xl text-[10px] font-bold"
                         >
                           🛒 أضيفي الآن
                         </button>
@@ -1065,7 +1065,7 @@ export default function PremiumLuxuryExperience({
 
               {/* Interactive Lookbook Canvas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="relative group overflow-hidden rounded-3xl border border-gray-250 bg-[#0B0B0B]">
+                <div className="relative group overflow-hidden rounded-3xl border border-gray-250 bg-[#A44C5C]">
                   <SultaImage 
                     src={cleanImgUrl("/img/sulta_loungewear.png", "loungewear")} 
                     className="w-full h-[400px] object-cover opacity-80" 
@@ -1081,7 +1081,7 @@ export default function PremiumLuxuryExperience({
                   
                   <button 
                     onClick={() => setLookbookSelectedProd(products[1] || products[0])}
-                    className="absolute bottom-1/3 left-1/4 bg-[#0B0B0B] text-[#F3E5AB] px-3 py-1.5 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1.5 animate-pulse"
+                    className="absolute bottom-1/3 left-1/4 bg-[#A44C5C] text-[#F3E5AB] px-3 py-1.5 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1.5 animate-pulse"
                   >
                     🥛 حرير لؤلؤ العاج <span className="text-[#DF8A9C] font-sans">{formatPrice(2500, 310)}</span>
                   </button>

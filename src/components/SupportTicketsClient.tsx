@@ -124,7 +124,7 @@ export default function SupportTicketsClient({ session }: { session: any }) {
             const isMe = msg.senderType === 'customer';
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[75%] rounded-2xl p-4 ${isMe ? 'bg-[#0B0B0B] text-white rounded-tl-sm' : 'bg-white border border-gray-150 rounded-tr-sm shadow-xs'}`}>
+                <div className={`max-w-[75%] rounded-2xl p-4 ${isMe ? 'bg-[#A44C5C] text-white rounded-tl-sm' : 'bg-white border border-gray-150 rounded-tr-sm shadow-xs'}`}>
                   <div className="flex items-center gap-2 mb-2 opacity-80 text-xs">
                     <span className="font-bold">{msg.senderName}</span>
                     <span>•</span>
@@ -162,7 +162,7 @@ export default function SupportTicketsClient({ session }: { session: any }) {
               <button
                 type="submit"
                 disabled={!newMessage.trim()}
-                className="bg-[#0B0B0B] text-white px-5 rounded-xl disabled:opacity-50 hover:bg-[#A44C5C] transition-colors flex items-center justify-center"
+                className="bg-[#A44C5C] text-white px-5 rounded-xl disabled:opacity-50 hover:bg-[#A44C5C] transition-colors flex items-center justify-center"
               >
                 <Send size={18} className="rotate-180" />
               </button>
@@ -202,7 +202,7 @@ export default function SupportTicketsClient({ session }: { session: any }) {
             />
           </div>
           <div className="flex gap-4">
-            <button type="submit" className="bg-[#0B0B0B] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#A44C5C] transition-colors">
+            <button type="submit" className="bg-[#A44C5C] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#A44C5C] transition-colors">
               إنشاء التذكرة
             </button>
             <button type="button" onClick={() => setIsCreating(false)} className="bg-white text-gray-600 border border-gray-200 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition-colors">
@@ -223,7 +223,7 @@ export default function SupportTicketsClient({ session }: { session: any }) {
         </div>
         <button
           onClick={() => setIsCreating(true)}
-          className="bg-[#0B0B0B] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#A44C5C] transition-colors flex items-center gap-2"
+          className="bg-[#A44C5C] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#A44C5C] transition-colors flex items-center gap-2"
         >
           <Plus size={16} />
           تذكرة جديدة

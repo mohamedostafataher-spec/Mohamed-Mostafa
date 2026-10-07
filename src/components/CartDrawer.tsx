@@ -131,7 +131,7 @@ export default function CartDrawer({
                 </p>
                 <button
                   onClick={onClose}
-                  className="bg-[#0B0B0B] text-white hover:bg-[#F4B6C2] px-6 py-3 rounded-full text-xs font-sans transition-colors"
+                  className="bg-[#A44C5C] text-white hover:bg-[#F4B6C2] px-6 py-3 rounded-full text-xs font-sans transition-colors"
                 >
                   الذهاب للمتجر وتصفح القطع
                 </button>
@@ -297,7 +297,7 @@ export default function CartDrawer({
                 />
                 <button
                   type="submit"
-                  className="bg-[#0B0B0B] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-4 py-2 text-xs rounded-lg font-sans transition-colors shrink-0"
+                  className="bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-4 py-2 text-xs rounded-lg font-sans transition-colors shrink-0"
                 >
                   تطبيق
                 </button>

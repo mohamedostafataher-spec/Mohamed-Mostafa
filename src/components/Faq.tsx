@@ -85,7 +85,7 @@ export default function Faq() {
             في "سُلْطَة"، نحن مكرسون لتقديم تجربة تسوق متميزة. تصفحي الإجابات الموثقة من خبرائنا لمساعدتكِ، أو تواصلي مع فريق العناية بالعملاء مباشرة.
           </p>
           <div className="flex justify-center gap-4">
-            <button className="bg-[#0B0B0B] text-white px-8 py-3 text-xs tracking-widest uppercase font-serif hover:bg-[#A44C5C] transition-colors" onClick={() => window.scrollTo({top: 800, behavior: 'smooth'})}>
+            <button className="bg-[#A44C5C] text-white px-8 py-3 text-xs tracking-widest uppercase font-serif hover:bg-[#A44C5C] transition-colors" onClick={() => window.scrollTo({top: 800, behavior: 'smooth'})}>
               تصفح الأسئلة الشائعة
             </button>
             <button className="bg-transparent border border-[#0B0B0B] text-[#0B0B0B] px-8 py-3 text-xs tracking-widest uppercase font-serif hover:bg-white transition-colors" onClick={() => window.dispatchEvent(new CustomEvent('openAccountTab', { detail: 'tickets' }))}>
@@ -104,7 +104,7 @@ export default function Faq() {
               onClick={() => setActiveTab(cat.id)}
               className={`px-5 py-2.5 rounded-sm text-xs font-sans tracking-widest uppercase transition-all border ${
                 activeTab === cat.id
-                  ? 'bg-[#0B0B0B] text-[#FAF5F0] border-black font-semibold'
+                  ? 'bg-[#A44C5C] text-[#FAF5F0] border-black font-semibold'
                   : 'bg-transparent text-gray-600 border-gray-200 hover:border-[#DF8A9D]'
               }`}
             >

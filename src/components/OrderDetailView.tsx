@@ -113,11 +113,21 @@ export default function OrderDetailView({
       setLoading(true);
       setError(null);
       try {
-        const { data, error: dbErr } = await supabase
+        let { data, error: dbErr } = await supabase
           .from('orders')
           .select('*')
           .eq('id', orderId)
           .maybeSingle();
+
+        // If not found by id, try matching by tracking_number
+        if (!data) {
+          const { data: byTrack } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('tracking_number', orderId)
+            .maybeSingle();
+          if (byTrack) data = byTrack;
+        }
 
         if (dbErr) throw dbErr;
         
@@ -174,7 +184,12 @@ export default function OrderDetailView({
         } else {
           // Check localStorage as robust resilient duplicate fallback
           const offlineOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
-          const localO = offlineOrders.find((o: any) => o.id === orderId);
+          const cleanQ = orderId.trim().toUpperCase();
+          const localO = offlineOrders.find((o: any) => 
+            (o.id && o.id.toUpperCase() === cleanQ) ||
+            (o.trackingNumber && o.trackingNumber.toUpperCase() === cleanQ) ||
+            (o.id && (o.id.toUpperCase().startsWith(cleanQ) || cleanQ.startsWith(o.id.toUpperCase())))
+          );
           if (localO) {
             setOrder(localO);
           } else {
@@ -185,7 +200,12 @@ export default function OrderDetailView({
         console.error("Failed to read order from DB:", err);
         // Localstorage fallback
         const offlineOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
-        const localO = offlineOrders.find((o: any) => o.id === orderId);
+        const cleanQ = orderId.trim().toUpperCase();
+        const localO = offlineOrders.find((o: any) => 
+          (o.id && o.id.toUpperCase() === cleanQ) ||
+          (o.trackingNumber && o.trackingNumber.toUpperCase() === cleanQ) ||
+          (o.id && (o.id.toUpperCase().startsWith(cleanQ) || cleanQ.startsWith(o.id.toUpperCase())))
+        );
         if (localO) {
           setOrder(localO);
         } else {
@@ -730,7 +750,8 @@ export default function OrderDetailView({
       </div>
 
       {/* 2. Top Luxury Card Banner */}
-      <div className="bg-[#0B0B0B] text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden mb-8 border border-amber-900/10">
+      <div className="bg-white text-stone-900 p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden mb-8 border border-stone-200">
+        <div className="absolute top-0 right-0 w-full h-1 bg-[#A44C5C]" />
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
         <div className="absolute left-6 top-6 opacity-5 select-none text-8xl font-serif">S</div>
 
@@ -843,7 +864,7 @@ export default function OrderDetailView({
                 <div key={node.step} className="flex flex-row sm:flex-col items-center sm:items-center gap-4 sm:gap-2 text-right sm:text-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-700 shrink-0
                     ${isActive ? 'bg-[#DF8A9C] border-[#DF8A9C] text-white shadow-md scale-110 animate-pulse' : 
-                      isCompleted ? 'bg-[#0B0B0B] border-[#0B0B0B] text-[#F6E7A6]' : 'bg-white border-slate-200 text-slate-300'}`}
+                      isCompleted ? 'bg-[#A44C5C] border-[#A44C5C] text-white' : 'bg-white border-slate-200 text-slate-300'}`}
                   >
                     <IconComp size={16} />
                   </div>
@@ -883,7 +904,7 @@ export default function OrderDetailView({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 text-right" dir="rtl">
         
         {/* Left/Middle Column (span 2 on desktop): SULTA AI Chat Support */}
-        <div className="lg:col-span-2 bg-[#0B0B0B] text-white p-6 rounded-3xl border border-[#3A3326] shadow-xl flex flex-col min-h-[460px] relative overflow-hidden">
+        <div className="lg:col-span-2 bg-white text-stone-900 p-6 rounded-3xl border border-stone-200 shadow-xl flex flex-col min-h-[460px] relative overflow-hidden">
           {/* Subtle gold background glare effect */}
           <div className="absolute top-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none" />
           
@@ -1408,7 +1429,7 @@ export default function OrderDetailView({
                       <button 
                         type="button"
                         onClick={() => setSatisfactionPhoto(null)}
-                        className="absolute top-4 right-4 bg-[#0B0B0B]/80 text-white rounded-full p-1.5 hover:bg-rose-700 transition-colors cursor-pointer"
+                        className="absolute top-4 right-4 bg-white/80 text-stone-900 rounded-full p-1.5 hover:bg-rose-700 hover:text-white transition-colors cursor-pointer border border-stone-200 shadow-sm"
                       >
                         <X size={12} />
                       </button>
@@ -1451,7 +1472,7 @@ export default function OrderDetailView({
                 <button
                   onClick={handleSubmitSatisfactionForm}
                   disabled={satisfactionUploading}
-                  className="bg-[#0B0B0B] text-white hover:bg-[#A44C5C] px-8 py-3.5 rounded-2xl text-xs font-bold transition-all active:scale-[0.98] cursor-pointer flex items-center gap-2"
+                  className="bg-[#A44C5C] text-white hover:bg-[#8e3f4e] px-8 py-3.5 rounded-2xl text-xs font-bold transition-all active:scale-[0.98] cursor-pointer flex items-center gap-2 shadow-md"
                 >
                   {satisfactionUploading ? (
                     <>
@@ -1507,7 +1528,7 @@ export default function OrderDetailView({
           {/* Action 3: Contact support */}
           <button
             onClick={handleContactSupport}
-            className="flex-1 md:flex-none bg-[#0B0B0B] text-white hover:bg-[#DF8A9C] px-6 py-3 rounded-2xl text-xs font-sans font-bold flex justify-center items-center gap-1.5 transition-all shadow-md cursor-pointer select-none active:scale-97"
+            className="flex-1 md:flex-none bg-[#A44C5C] text-white hover:bg-[#DF8A9C] px-6 py-3 rounded-2xl text-xs font-sans font-bold flex justify-center items-center gap-1.5 transition-all shadow-md cursor-pointer select-none active:scale-97"
           >
             <MessageSquare size={14} className="text-[#F6E7A6]" />
             <span>اتصلي بخدمة النخبة 🌸</span>

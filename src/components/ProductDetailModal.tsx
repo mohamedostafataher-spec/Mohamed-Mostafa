@@ -398,25 +398,14 @@ export default function ProductDetailModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-10">
       
       {/* Blurred background overlay */}
-      <div className="fixed inset-0 bg-[#0B0B0B]/75 backdrop-blur-md transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-[#A44C5C]/75 backdrop-blur-md transition-opacity" onClick={onClose} />
 
       {/* Main Luxury Frame */}
       <div className="relative bg-[#FAFAF7] w-full h-full md:h-auto md:max-w-5xl rounded-none md:rounded-3xl shadow-2xl border border-gray-100 flex flex-col md:flex-row max-h-[100vh] md:max-h-[85vh] z-30 animate-scale-up overflow-y-auto md:overflow-visible overflow-x-hidden">
-          {/* Floating WhatsApp Action Button */}
-          <button
-            onClick={handleOrderWhatsApp}
-            className="fixed bottom-6 right-6 z-[60] bg-[#25D366] hover:bg-[#128C7E] text-white p-4 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center justify-center"
-            title="تواصل معنا عبر واتساب للمساعدة"
-          >
-            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.693.248-1.286.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.005 0C5.37 0 .002 5.368.002 12.006c0 2.09.544 4.134 1.574 5.922L0 24l6.198-1.626a11.79 11.79 0 0 0 5.808 1.528h.005c6.635 0 12.003-5.368 12.003-12.006 0-3.212-1.248-6.236-3.518-8.504" />
-            </svg>
-          </button>
-        
         {/* Close Button top-left */}
         <button
           onClick={onClose}
-          className="absolute top-5 left-5 z-40 bg-white/80 hover:bg-[#0B0B0B] text-[#0B0B0B] hover:text-white p-2.5 rounded-full transition-colors border border-gray-150 shadow-md cursor-pointer"
+          className="absolute top-5 left-5 z-40 bg-white/80 hover:bg-[#A44C5C] text-[#0B0B0B] hover:text-white p-2.5 rounded-full transition-colors border border-gray-150 shadow-md cursor-pointer"
           id="close-detail-modal"
         >
           <X size={18} />
@@ -459,7 +448,7 @@ export default function ProductDetailModal({
             )}
             
             {videoPlaying ? (
-              <div className="absolute inset-0 bg-[#0B0B0B] text-white flex flex-col items-center justify-center text-center">
+              <div className="absolute inset-0 bg-[#A44C5C] text-white flex flex-col items-center justify-center text-center">
                 <div className="relative w-full h-full">
                   {product.video ? (
                     (() => {
@@ -526,7 +515,7 @@ export default function ProductDetailModal({
                   <button
                     type="button"
                     onClick={() => setVideoPlaying(false)}
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 hover:bg-[#0B0B0B] border border-white/20 px-6 py-2 rounded-full text-[10px] text-white transition-all cursor-pointer backdrop-blur-sm z-10"
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 hover:bg-[#A44C5C] border border-white/20 px-6 py-2 rounded-full text-[10px] text-white transition-all cursor-pointer backdrop-blur-sm z-10"
                   >
                     العودة لصور القطعة ↩️
                   </button>
@@ -664,7 +653,7 @@ export default function ProductDetailModal({
             ) : isMacroZoomActive ? (
               // Stunning V3.0 Fabric Micro-Zoom 50x Microscope simulator
               <div className="absolute inset-0 bg-neutral-950 text-white flex flex-col justify-between p-5 text-right font-sans">
-                <div className="absolute inset-0 bg-[#0B0B0B]/80 pointer-events-none" />
+                <div className="absolute inset-0 bg-[#A44C5C]/80 pointer-events-none" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:12px_12px] opacity-40 pointer-events-none" />
                 
                 {/* Beautiful tactile textile microscope display */}
@@ -816,7 +805,7 @@ export default function ProductDetailModal({
                 </div>
 
                 {/* Tactile Control Unit inside microscope */}
-                <div className="space-y-3 bg-[#0B0B0B]/80 p-3.5 rounded-2xl border border-white/10 backdrop-blur-xs shadow-2xl">
+                <div className="space-y-3 bg-[#A44C5C]/80 p-3.5 rounded-2xl border border-white/10 backdrop-blur-xs shadow-2xl">
                   {/* Slider descriptions */}
                   <div className="flex justify-between items-center text-[10px]">
                     <span className="font-mono text-[#DF8A9C] font-semibold">بكرة الضبط البؤري الرقمية</span>
@@ -994,7 +983,7 @@ export default function ProductDetailModal({
                 className={`px-1.5 py-1.5 rounded-lg text-[8.5px] font-bold font-sans transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                   isMacroZoomActive 
                     ? 'bg-[#DF8A9C] text-white' 
-                    : 'bg-[#0B0B0B] text-[#FFFFFF] hover:bg-zinc-800'
+                    : 'bg-[#A44C5C] text-[#FFFFFF] hover:bg-zinc-800'
                 }`}
               >
                 <span>تفاصيل الخامة x50 🔬</span>
@@ -1011,7 +1000,7 @@ export default function ProductDetailModal({
           <div>
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] uppercase bg-[#0B0B0B] text-[#FFFFFF] font-sans px-2.5 py-1 rounded-full border border-yellow-200">
+                <span className="text-[10px] uppercase bg-[#A44C5C] text-[#FFFFFF] font-sans px-2.5 py-1 rounded-full border border-yellow-200">
                   {product.categoryAr}
                 </span>
                 <div className="flex items-center gap-0.5">
@@ -1089,7 +1078,7 @@ export default function ProductDetailModal({
                     title={col.name}
                   >
                     {selectedCol.name === col.name && (
-                      <span className={`w-1.5 h-1.5 rounded-full ${col.hex === '#FAFAF7' || col.hex === '#FFFFFF' ? 'bg-[#0B0B0B]' : 'bg-white'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${col.hex === '#FAFAF7' || col.hex === '#FFFFFF' ? 'bg-[#A44C5C]' : 'bg-white'}`} />
                     )}
                   </button>
                 ))}
@@ -1118,7 +1107,7 @@ export default function ProductDetailModal({
                           selectedSz === sz
                             ? isSzOutOfStock
                               ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold scale-103'
-                              : 'bg-[#0B0B0B] text-[#FFFFFF] border-black shadow-md font-bold scale-103'
+                              : 'bg-[#A44C5C] text-[#FFFFFF] border-black shadow-md font-bold scale-103'
                             : isSzOutOfStock
                               ? 'bg-gray-50 text-gray-300 border-gray-150 line-through decoration-red-400 decoration-1'
                               : 'bg-white text-gray-700 border-gray-200 hover:bg-[#FAF4F5]'
@@ -1202,7 +1191,7 @@ export default function ProductDetailModal({
                       <button
                         type="submit"
                         disabled={alertSubmitting}
-                        className="bg-[#0B0B0B] text-[#FFFFFF] hover:bg-[#DF8A9C] hover:text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 shadow-sm"
+                        className="bg-[#A44C5C] text-[#FFFFFF] hover:bg-[#DF8A9C] hover:text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 shadow-sm"
                       >
                         {alertSubmitting ? 'جاري التسجيل...' : 'أبلغني بالتوفر 🔔'}
                       </button>
@@ -1378,7 +1367,7 @@ export default function ProductDetailModal({
                         <button
                           type="button"
                           onClick={runFitCalculation}
-                          className="w-full bg-[#0B0B0B] text-[#FFFFFF] hover:bg-[#DF8A9C] hover:text-white py-1.5 rounded-lg text-[11px] font-sans font-bold tracking-wide transition-all cursor-pointer"
+                          className="w-full bg-[#A44C5C] text-[#FFFFFF] hover:bg-[#DF8A9C] hover:text-white py-1.5 rounded-lg text-[11px] font-sans font-bold tracking-wide transition-all cursor-pointer"
                         >
                           درسي قياسات جسدي واحسبي المقاس 📐✨
                         </button>
@@ -1420,7 +1409,7 @@ export default function ProductDetailModal({
                       <div className="space-y-1.5">
                         <span className="text-[10px] text-gray-400 font-bold block">📊 جدول مقاسات القطعة وملاءمتها:</span>
                         <table className="w-full text-center border-collapse border border-gray-150 text-[10px]">
-                          <thead className="bg-[#0B0B0B] text-white">
+                          <thead className="bg-[#A44C5C] text-white">
                             <tr>
                               <th className="p-1 border border-gray-150">المقاس</th>
                               <th className="p-1 border border-gray-150">الصدر (Inches)</th>
@@ -1769,7 +1758,7 @@ export default function ProductDetailModal({
                           setSubmitBtnLoading(false);
                         }
                       }}
-                      className="bg-[#0B0B0B] text-[#FFFFFF] px-3.5 py-1 rounded-lg text-[10px] font-bold transition-all hover:bg-[#DF8A9C] hover:text-white cursor-pointer"
+                      className="bg-[#A44C5C] text-[#FFFFFF] px-3.5 py-1 rounded-lg text-[10px] font-bold transition-all hover:bg-[#DF8A9C] hover:text-white cursor-pointer"
                       disabled={submitBtnLoading}
                     >
                       {submitBtnLoading ? 'يجري الإرسال...' : 'اسألي المصفف'}
@@ -1818,7 +1807,7 @@ export default function ProductDetailModal({
                     luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
                     giftMessage: selectedWrap !== 'none' && giftCardMessage.trim() ? giftCardMessage : undefined
                   })}
-                  className="flex-1 bg-[#0B0B0B] text-white hover:bg-gray-800 py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 bg-[#A44C5C] text-white hover:bg-gray-800 py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer"
                   id="add-to-cart-action"
                 >
                   <ShoppingBag size={14} />

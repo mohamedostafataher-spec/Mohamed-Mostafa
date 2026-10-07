@@ -64,7 +64,7 @@ export default function AdminPromotions() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-[#0B0B0B] text-[#F6E7A6] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
+          className="bg-[#A44C5C] text-[#F6E7A6] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
         >
           {showForm ? <X size={16} /> : <Plus size={16} />}
           {showForm ? 'إلغاء' : 'إطلاق حملة جديدة'}
@@ -107,7 +107,7 @@ export default function AdminPromotions() {
             </div>
           </div>
           <div className="mt-4 flex justify-end">
-            <button type="submit" className="bg-[#0B0B0B] text-white px-6 py-2 rounded-lg">حفظ وجدولة الحملة</button>
+            <button type="submit" className="bg-[#A44C5C] text-white px-6 py-2 rounded-lg">حفظ وجدولة الحملة</button>
           </div>
         </form>
       )}

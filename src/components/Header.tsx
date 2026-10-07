@@ -145,19 +145,6 @@ export default function Header({
 
           {/* Right Controls: Instagram, TikTok & Country Switcher */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Desktop WhatsApp Link */}
-            <a
-              href={`https://wa.me/${activeWhatsAppClean}?text=${encodeURIComponent('مرحباً SULTA، أحتاج للمساعدة بخصوص الطلب بالمملكة 🌸')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden lg:inline-flex items-center gap-1.5 text-black hover:text-black font-bold bg-gray-100 hover:bg-gray-200 border border-gray-300 px-2.5 py-0.5 rounded-full transition-all text-[10.5px]"
-              title="تواصل معنا عبر واتساب"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping" />
-              <span>واتساب:</span>
-              <span className="font-mono text-[10px]" dir="ltr">{activeWhatsAppDisplay}</span>
-            </a>
-
             {/* Instagram Icon Link */}
             <a
               href="https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ=="
