@@ -190,22 +190,39 @@ export default function ReturnsExchanges() {
           </div>
         </section>
 
-        {/* Exchange Policy */}
+        {/* Exchange and Return Terms */}
         <section className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-150">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-[#FAF5F0] rounded-xl flex items-center justify-center shadow-xs">
                <CornerUpLeft size={24} className="text-[#A44C5C]" />
             </div>
-            <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">سياسة الاستبدال 🔄</h2>
+            <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">شروط الاستبدال والاسترجاع (خلال 14 يوماً) 🔄</h2>
           </div>
           <p className="text-gray-600 mb-6 text-base leading-relaxed">
-            يمكن طلب الاستبدال في الحالات التالية:
+            نحرص في SULTA على تجربة تسوق راقية ومرنة ترضيكِ تماماً، وفق الضوابط التالية:
           </p>
           <ul className="grid grid-cols-1 gap-4">
-            {['وجود عيب مصنعي واضح.', 'استلام منتج مختلف عن الطلب.', 'وجود خطأ في المقاس أو اللون من جهة المتجر.'].map((item, idx) => (
-              <li key={idx} className="flex items-center gap-3 bg-emerald-50/70 border border-emerald-100 p-4 rounded-xl">
-                <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
-                <span className="text-emerald-900 font-bold">{item}</span>
+            {[
+              {
+                title: 'مهلة الاستبدال والاسترجاع ⏳',
+                desc: 'يحق للعميلة طلب الاستبدال أو الاسترجاع خلال 14 يوماً من تاريخ استلام الشحنة (مع التنويه بضرورة فحص الطرد وإبلاغنا عن أي كسر أو عيب مصنعي خلال أول 48 ساعة).'
+              },
+              {
+                title: 'شروط سلامة القطع والملابس 🏷️',
+                desc: 'يجب أن تكون القطعة بحالتها الأصلية غير ملبوسة، غير مغسولة، ببطاقات الأسعار وداخل كيس وتغليف SULTA الفاخر دون تلف.'
+              },
+              {
+                title: 'استثناءات الملابس الداخلية والقطع المفتوحة 🔒',
+                desc: 'حفاظاً على الصحة العامة والسلامة الشخصية، لا يمكن استرجاع أو استبدال القطع الداخلية (Lingerie) أو البيجامات التي فُتحت أو تم ارتداؤها مباشرة إلا في حال وجود عيب مصنعي مؤكد وموثق بالصور قبل الاستخدام.'
+              },
+              {
+                title: 'من يتحمل رسوم الشحن؟ 🚚',
+                desc: '• في حال وجود خطأ في المقاس أو اللون من قِبل المتجر، أو وجود عيب مصنعي: يتحمل المتجر كافة رسوم الشحن والاسترجاع 100% دون أي تكلفة على العميلة.\n• في حال الرغبة بالاستبدال أو الاسترجاع لأسباب شخصية (تغيير الرأي أو رغبة بموديل آخر): تتحمل العميلة رسوم شحن البوليصة بقيمة 40 ر.س ويُعاد باقي المبلغ لحسابها البنكي فور استلام الشحنة وفحصها.'
+              }
+            ].map((item, idx) => (
+              <li key={idx} className="bg-gray-50 border border-gray-200/80 p-5 rounded-2xl space-y-1.5">
+                <span className="font-bold text-gray-950 text-sm block">{item.title}</span>
+                <p className="text-gray-600 text-xs sm:text-sm leading-relaxed whitespace-pre-line">{item.desc}</p>
               </li>
             ))}
           </ul>
@@ -235,12 +252,14 @@ export default function ReturnsExchanges() {
             <div className="w-12 h-12 bg-[#FAF5F0] rounded-xl flex items-center justify-center shadow-xs">
                <Clock size={24} className="text-[#A44C5C]" />
             </div>
-            <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">مدة تقديم طلب الاستبدال ⏳</h2>
+            <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">المدة الزمنية لتقديم الطلب ⏳</h2>
           </div>
-          <div className="bg-[#FAF5F0]/50 p-6 rounded-2xl border border-[#A44C5C]/20 flex items-center gap-4 shadow-sm">
-            <div className="w-1.5 h-12 bg-[#A44C5C] rounded-full hidden sm:block"></div>
-            <p className="text-gray-900 text-lg font-bold leading-relaxed">
-              يجب تقديم الطلب خلال <span className="text-[#A44C5C] bg-white px-2 py-0.5 rounded-md border border-[#A44C5C]/20 mx-1">48 ساعة</span> من استلام الشحنة مع صور واضحة للحالة.
+          <div className="bg-[#FAF5F0]/50 p-6 rounded-2xl border border-[#A44C5C]/20 space-y-2 shadow-sm text-right">
+            <p className="text-gray-900 text-base sm:text-lg font-bold leading-relaxed">
+              • مهلة الاستبدال والاسترجاع العامة: <span className="text-[#A44C5C] bg-white px-2 py-0.5 rounded-md border border-[#A44C5C]/20 mx-1">14 يوماً</span> من تاريخ استلام الشحنة للقطع السليمة غير المفتوحة.
+            </p>
+            <p className="text-gray-600 text-xs sm:text-sm font-medium leading-relaxed">
+              • الإبلاغ عن تلف الشحن أو العيب المصنعي: يُشترط إخطارنا خلال أول <span className="font-bold text-gray-900">48 ساعة</span> من الاستلام لسرعة التعويض وشحن قطعة بديلة فوراً.
             </p>
           </div>
         </section>

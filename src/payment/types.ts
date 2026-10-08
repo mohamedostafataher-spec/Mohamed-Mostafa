@@ -4,7 +4,7 @@
  * Follows PCI-DSS: NEVER stores card numbers, CVVs, or secret tokens on frontend.
  */
 
-export type PaymentMethodType = 'apple_pay' | 'card' | 'cod';
+export type PaymentMethodType = 'card' | 'cod' | 'bank_transfer' | 'paypal';
 
 export type PaymentGatewayStatus = 'pending' | 'paid' | 'failed' | 'cancelled' | 'cod';
 
@@ -56,17 +56,11 @@ export interface PaymentVerificationResult {
   errorMessage?: string;
 }
 
-export interface ApplePayAvailability {
-  isAvailable: boolean;
-  reason?: string;
-}
-
 export interface PaymobPublicConfig {
   publicKey: string;
   paymentEndpoint: string;
   clientEndpoint: string;
   cardIntegrationId?: string;
-  applePayIntegrationId?: string;
   iframeId?: string;
   currency: 'SAR';
 }

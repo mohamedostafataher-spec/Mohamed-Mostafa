@@ -50,8 +50,8 @@ export default function RealPackagingPreview() {
         },
         {
           id: 'silk-wrap',
-          titleAr: 'لفات مناديل الحرير الفلورال',
-          descAr: 'لفائف مناديل حمائية حريرية ناعمة تحيط ببيجامتكِ الفاخرة بعبق عطر رويال مسك البولندي.',
+          titleAr: 'لفات المناديل الملوكية',
+          descAr: 'لفائف مناديل حمائية ناعمة تحيط ببيجامتكِ الفاخرة بعبق عطر رويال مسك البولندي.',
           url: 'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=1200&auto=format&fit=crop',
           tag: 'تكييف داخلي معبق 🏵️'
         }
@@ -66,7 +66,7 @@ export default function RealPackagingPreview() {
       boxColor: '#FDF2F4',
       hex: '#FDF2F4',
       nameAr: 'العيد والعروس: وردي الحواس المخملي كوتور',
-      descAr: 'علبة متينة فخمة بلون بودرة الوردي المخملي، بشريط حريري منسوج يدوياً ومبطنة بورق الخزامى الحريري.',
+      descAr: 'علبة متينة فخمة بلون بودرة الوردي المخملي، بشريط ملكي منسوج يدوياً ومبطنة بورق الخزامى المترف.',
       image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1200&auto=format&fit=crop'
     },
     black: {
@@ -213,14 +213,14 @@ export default function RealPackagingPreview() {
                     </div>
                     <div className="my-2.5">
                       <h5 className="font-serif text-sm font-bold text-[#F6E7A6]">ربطة شعر وعينات الحواس</h5>
-                      <p className="text-[9px] text-stone-300 mt-1">حرير طبيعي 100% بلون متناسق لحماية شعركِ أثناء النوم وجلسات الحمام.</p>
+                      <p className="text-[9px] text-stone-300 mt-1">نسيج ملوكي 100% بلون متناسق لحماية شعركِ أثناء النوم وجلسات الحمام.</p>
                     </div>
                     <div className="bg-white/10 px-2 py-1 rounded-lg text-[9px] text-zinc-300 text-center font-bold">
                       مشمول تلقائياً بدون تكلفة في طردكِ
                     </div>
                   </div>
                   <p className="text-[10px] text-gray-400 max-w-xs mx-auto leading-normal">
-                    تحصل كل عميلة على ربطة شعر (Scrunchie) من بقايا الحرير الفاخر لنظام الهدر الصفري، بالإضافة لبطاقة عينة عود للتجربة الاستحمامية.
+                    تحصل كل عميلة على ربطة شعر (Scrunchie) من بقايا النسيج الفاخر لنظام الهدر الصفري، بالإضافة لبطاقة عينة عود للتجربة الاستحمامية.
                   </p>
                 </motion.div>
               )}
@@ -373,12 +373,12 @@ export default function RealPackagingPreview() {
 
               {activeTab === 'gift' && (
                 <div className="space-y-2 font-sans">
-                  <span className="text-xs font-bold text-gray-850 block">✓ هدية مجانية مضافة من ريع الحرير الطبيعي (Eco-Couture Gift)</span>
+                  <span className="text-xs font-bold text-gray-850 block">✓ هدية مجانية مضافة من ريع النسيج الطبيعي (Eco-Couture Gift)</span>
                   <p className="text-[10.5px] text-gray-500 leading-normal">
-                    لنرمم بقايا الحرير الأصيل من مصانعنا ومشاغلنا، نجمعها لنرتقي بربطات حرير ناعمة تحمي بصيلات شعرك من التقصف والاحتكاك الليلي. إنها هدية من العائلة لك بدون سقف سعر إضافي.
+                    لنرمم بقايا النسيج الأصيل من مصانعنا ومشاغلنا، نجمعها لنرتقي بربطات ناعمة تحمي بصيلات شعرك من التقصف والاحتكاك الليلي. إنها هدية من العائلة لك بدون سقف سعر إضافي.
                   </p>
                   <div className="bg-white p-3 border border-stone-150 rounded-xl flex items-center justify-between font-sans text-[11px] text-emerald-800">
-                    <span className="font-bold">✓ تشمل: علبة سولا الحريرية + ربطة شعر + كرت الحروف</span>
+                    <span className="font-bold">✓ تشمل: علبة سولا الملكية + ربطة شعر + كرت الحروف</span>
                     <span className="bg-emerald-50 px-2 py-0.5 rounded text-[10px] font-bold">مشمول للكل 🌸</span>
                   </div>
                 </div>

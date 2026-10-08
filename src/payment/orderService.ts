@@ -25,6 +25,7 @@ export interface CreateOrderParams {
   paymentMethodType: PaymentMethodType;
   couponCode?: string;
   notes?: string;
+  whatsappOptIn?: boolean;
 }
 
 export const orderService = {
@@ -48,6 +49,14 @@ export const orderService = {
       readablePaymentMethod = 'Apple Pay (أبل باي)';
     } else if (params.paymentMethodType === 'card') {
       readablePaymentMethod = 'بطاقة ائتمانية / مدى (Visa / Mastercard / Mada)';
+    } else if (params.paymentMethodType === 'tabby') {
+      readablePaymentMethod = 'تابي (Tabby - قسمها على 4 دفعات)';
+    } else if (params.paymentMethodType === 'tamara') {
+      readablePaymentMethod = 'تمارا (Tamara - قسمها على 4 دفعات)';
+    } else if (params.paymentMethodType === 'bank_transfer') {
+      readablePaymentMethod = 'تحويل بنكي مباشر (حساب المتجر)';
+    } else if (params.paymentMethodType === 'paypal') {
+      readablePaymentMethod = 'PayPal (باي بال)';
     }
 
     const newOrder: Order = {
@@ -76,6 +85,8 @@ export const orderService = {
       currency: params.country === 'EG' ? 'EGP' : 'SAR',
       paymentMethod: readablePaymentMethod,
       status: initialStatus as any,
+      whatsappOptIn: params.whatsappOptIn || false,
+      whatsappOptInDate: params.whatsappOptIn ? new Date().toISOString() : undefined,
       date: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString()
     };

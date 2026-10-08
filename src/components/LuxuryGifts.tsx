@@ -34,19 +34,19 @@ export default function LuxuryGifts({
   const PACKAGING = {
     classic: {
       title: 'صندوق SULTA الكلاسيكي المطفي الأسود',
-      desc: 'صندوق كرتوني سميك فاخر باللون الأسود الملكي، مبطّن بورق مناديل الحرير الوردي الناعم ومحكم بشريط حرير ذهبي عريض.',
+      desc: 'صندوق كرتوني سميك فاخر باللون الأسود الملكي، مبطّن بورق مناديل وردي ناعم ومحكم بشريط ملوكي ذهبي عريض.',
       fee: country === 'EG' ? 100 : 15,
       img: '/img/sulta_product_2.png'
     },
     royal: {
       title: 'صندوق العرائس الملكي الفخم للزفاف',
       desc: 'صندوق جلدي أسود كبير مزخرف بحروف ذهبية بارزة مع طبقة واقية وحقيبة تسوق فخمة وبطاقة شكر مخملية.',
-      fee: country === 'EG' ? 250 : 35,
+      fee: country === 'EG' ? 250 : 40,
       img: '/img/sulta_product_1.png'
     },
     pouch: {
-      title: 'حقيبة كوتور الحريرية الفاخرة للرحلات',
-      desc: 'حقيبة قماشية من الحرير المصقول برباط مخملي لتخزين القطع الثمينة والمحافظة عليها أثناء التنقل والسفر.',
+      title: 'حقيبة كوتور الملوكية الفاخرة للرحلات',
+      desc: 'حقيبة قماشية من النسيج المصقول برباط مخملي لتخزين القطع الثمينة والمحافظة عليها أثناء التنقل والسفر.',
       fee: country === 'EG' ? 50 : 8,
       img: '/img/sulta_hero_banner.png'
     }
@@ -72,7 +72,7 @@ export default function LuxuryGifts({
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
-          امنحي من تحبين تجربة فتح بكج مذهلة لا غبار عليها. تغليف فاخر متوفر باللون الأسود المطفي مع شرائط الحرير الحريرية وبطاقات التهنئة المفتوحة يدوياً لتخليد أرق اللحظات.
+          امنحي من تحبين تجربة فتح بكج مذهلة لا غبار عليها. تغليف فاخر متوفر باللون الأسود المطفي مع شرائط ملكية وبطاقات التهنئة المفتوحة يدوياً لتخليد أرق اللحظات.
         </p>
       </div>
 
@@ -157,7 +157,7 @@ export default function LuxuryGifts({
             <textarea
               value={cardMessage}
               onChange={(e) => setCardMessage(e.target.value.slice(0, 150))}
-              placeholder="مثال: ألف مبروك الزواج يا أغلى صديقة، تمنياتي لكِ برغد كامل وحياة ناعمة كالحرير..."
+              placeholder="مثال: ألف مبروك الزواج يا أغلى صديقة، تمنياتي لكِ برغد كامل وحياة ناعمة..."
               rows={3}
               className="w-full text-xs p-3.5 bg-[#FAF4F5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/20 border border-transparent focus:border-[#A44C5C] text-right"
             />

@@ -145,11 +145,11 @@ export default function AiMirror({
     if (selectedProduct.categoryAr?.includes('نوم') || selectedProduct.category?.toLowerCase().includes('sleep')) {
       adviceText = `قصة الكوتور هذه مصممة لتتدلى بنعومة فائقة حول القوام بحرية تامة. نقترح مقاس ${suggestedSize} لمزيد من الدلال عند الاستلقاء.`;
     } else {
-      adviceText = `أطقم الحرير الفاخر الفاخر تأتي بقصة مستوحاة من صالونات فلورنسا الكلاسيكية. مقاس ${suggestedSize} يبرز تفاصيل الأكمام المترفة.`;
+      adviceText = `أطقم الكوتور الفاخر تأتي بقصة مستوحاة من صالونات فلورنسا الكلاسيكية. مقاس ${suggestedSize} يبرز تفاصيل الأكمام المترفة.`;
     }
 
     if (bodyType === 'hourglass') {
-      categoryNote = "قوام الساعة الرملية سيتكامل بروعة مع الحزام الحريري المرفق المزين بالدانتيل المنسوج.";
+      categoryNote = "قوام الساعة الرملية سيتكامل بروعة مع الحزام الملوكي المرفق المزين بالدانتيل المنسوج.";
     } else if (bodyType === 'tall') {
       categoryNote = "سلاسل الأرجل الطويلة ستجعل حافة هذا الموديل المفتوحة تبدو في قمة الجمال.";
     } else {
@@ -926,7 +926,7 @@ export default function AiMirror({
                   <div className="grid grid-cols-4 gap-1">
                     {[
                       { id: 'normal', name: 'عادي (مستقل)', desc: 'الألوان الأصلية كاملة' },
-                      { id: 'multiply', name: 'مدمج حريري', desc: 'تطابق مع ظلال صورتك' },
+                      { id: 'multiply', name: 'مدمج ملوكي', desc: 'تطابق مع ظلال صورتك' },
                       { id: 'overlay', name: 'مشع فاخر', desc: 'إضاءة مضاعفة ممتازة' },
                       { id: 'soft-light', name: 'ناعم جداً', desc: 'انعكاس خفيف للأقمشة' }
                     ].map((mode) => (
@@ -1194,7 +1194,7 @@ export default function AiMirror({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-gray-100 pt-4">
                   {/* Colors List */}
                   <div>
-                    <label className="block text-gray-500 text-xs font-bold mb-2">الألوان والموديلات الحريرية المتوفرة:</label>
+                    <label className="block text-gray-500 text-xs font-bold mb-2">الألوان والموديلات المتوفرة:</label>
                     {selectedProduct.colors && selectedProduct.colors.length > 0 ? (
                       <div className="flex flex-wrap gap-2.5">
                         {selectedProduct.colors.map((c, idx) => (
@@ -1385,7 +1385,7 @@ export default function AiMirror({
                     selectedCategory === 'loungewear' ? 'bg-[#A44C5C] text-[#F6E7A6]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
                 >
-                  أطقم حريرية
+                  أطقم كوتور ملكية
                 </button>
               </div>
 
@@ -1460,7 +1460,7 @@ export default function AiMirror({
                 🏬 بهو وبوتيك SULTA الافتراضي لملابس النوم
               </h2>
               <p className="text-gray-300 text-xs leading-relaxed max-w-lg mx-auto">
-                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع الحرير المنسدل من المشغل الفاخر، واجلسي مع مستشارة سلطة بلمسة واحدة.
+                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع المنسوجات المنسدلة من المشغل الفاخر، واجلسي مع مستشارة سلطة بلمسة واحدة.
               </p>
             </div>
           </div>

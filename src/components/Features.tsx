@@ -20,7 +20,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
     {
       icon: <ShieldCheck size={22} className="text-black" />,
       title: 'سداد مشفر آمن بالكامل',
-      desc: 'ندعم بوابات دفع Apple Pay وSTC Pay ومدى والفيزا وفوري بكل سلاسة.',
+      desc: 'ندعم بطاقات مدى والفيزا وماستركارد وباي بال بالإضافة للدفع عند الاستلام.',
     },
     {
       icon: <Sparkles size={22} className="text-black" />,

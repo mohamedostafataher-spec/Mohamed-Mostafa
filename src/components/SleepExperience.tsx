@@ -27,13 +27,13 @@ export default function SleepExperience({
 
   const tips = [
     {
-      title: '١. ميزة الحرير الدائري للبشرة والشعر',
-      desc: 'على عكس القطن والكتان الخشن، الحرير الطبيعي لا يمتص الرطوبة الطبيعية ومستحضرات تجميل الليل من بشرتك، بل يعمل كطبقة تزلج واقية تحول دون تجعدات الوجه الصباحية وتساقط خصلات الشعر الحساسة.',
+      title: '١. ميزة الكوتور الدائري للبشرة والشعر',
+      desc: 'على عكس القطن والكتان الخشن، نسيجنا الملوكي لا يمتص الرطوبة الطبيعية ومستحضرات تجميل الليل من بشرتك، بل يعمل كطبقة تزلج واقية تحول دون تجعدات الوجه الصباحية وتساقط خصلات الشعر الحساسة.',
       benefit: 'حماية مسامات البشرة الحساسة'
     },
     {
       title: '٢. التنفس ونقاء الجسد ليلاً',
-      desc: 'بيجامات سولتة مصممة بنسب فضفاضة ملكية لعدم تقييد الشرايين والأوعية اللمفاوية أثناء النوم، مما يؤمن تهوية فائقة بفضل مسامات الحرير الناعم المغسول بعناية فائقة.',
+      desc: 'بيجامات سولتة مصممة بنسب فضفاضة ملكية لعدم تقييد الشرايين والأوعية اللمفاوية أثناء النوم، مما يؤمن تهوية فائقة بفضل مسامات النسيج الناعم المغسول بعناية فائقة.',
       benefit: 'التهوية العميقة وتنقية العضلات'
     },
     {
@@ -56,7 +56,7 @@ export default function SleepExperience({
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
-          النوم ليس غياباً عن الوعي، بل هو مراسم راقية لإكرام النفس والجسد. صممنا بيجاماتنا خصيصاً بمقاييس الكوتور الحريرية لتوفير الرفاهية الكاملة لوجهكِ وبشرتكِ.
+          النوم ليس غياباً عن الوعي، بل هو مراسم راقية لإكرام النفس والجسد. صممنا بيجاماتنا خصيصاً بمقاييس الكوتور الملكية لتوفير الرفاهية الكاملة لوجهكِ وبشرتكِ.
         </p>
       </div>
 
@@ -70,7 +70,7 @@ export default function SleepExperience({
               HEALTH & BEAUTY DICTATE | صحتك وجمالك في الليل
             </span>
             <h3 className="font-serif text-2xl font-light text-[#0B0B0B]">
-              لماذا الحرير الفاخر من SULTA؟
+              لماذا الكوتور الفاخر من SULTA؟
             </h3>
             <p className="text-gray-500 text-xs leading-relaxed">
               تصفحي الدليل التفصيلي والطقوس الموصى بها من أطباء البشرية والجلدية وخبراء الأزياء الملكية بباريس لتحصلي على أقصى سُموّ واسترخاء.
@@ -114,13 +114,13 @@ export default function SleepExperience({
           <div className="space-y-2">
             <h4 className="font-serif text-sm font-semibold text-gray-900">هرمونية السكون الداخلي</h4>
             <p className="text-[10px] text-gray-400 max-w-xs font-sans leading-relaxed">
-              "الحرير يهمس بلطف لجسدكِ أنه قد حان الوقت لتوديع تعب العالم والشعور بالسكينة والنقاء."
+              "النسيج يهمس بلطف لجسدكِ أنه قد حان الوقت لتوديع تعب العالم والشعور بالسكينة والنقاء."
             </p>
           </div>
           <div className="flex justify-center gap-6 pt-2 text-[#A44C5C] text-xs font-sans">
             <div className="flex flex-col items-center gap-1">
               <span className="font-bold">١٠٠٪</span>
-              <span className="text-[9px] text-gray-500 text-3xs uppercase">حرير فاخر ناعم</span>
+              <span className="text-[9px] text-gray-500 text-3xs uppercase">نسيج فاخر ناعم</span>
             </div>
             <div className="h-8 w-[1px] bg-[#A44C5C]/20" />
             <div className="flex flex-col items-center gap-1">
@@ -151,7 +151,7 @@ export default function SleepExperience({
                   className="group flex flex-col h-full bg-white rounded-2xl p-3 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
                 >
                   <div className="absolute top-4 left-4 z-10 font-bold bg-white/95 text-[8.5px] px-2.5 py-0.5 rounded-full text-[#A44C5C] border border-[#DF8A9D]/12">
-                     حرير نوم ✦ SILK COMFORT
+                     راحة النوم ✦ COMFORT SLEEP
                   </div>
 
                   <div className="relative aspect-[3/4] overflow-hidden bg-[#FAF5F0] rounded-xl mb-3">

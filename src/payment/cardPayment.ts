@@ -66,6 +66,19 @@ export async function initiateCardPayment(
       };
     }
 
+    // Security check: Ensure we got JSON before parsing
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textPreview = await response.text().then(t => t.substring(0, 100)).catch(() => 'No body');
+      console.error('[CardPayment] Expected JSON but received:', contentType, textPreview);
+      return {
+        success: false,
+        orderId: params.orderId,
+        status: 'failed',
+        errorMessage: 'تلقى المتجر رداً غير متوقع من الخادم (HTML). يرجى المحاولة مرة أخرى أو التواصل مع الدعم.'
+      };
+    }
+
     const data = await response.json();
 
     // Construct secure Paymob Iframe or Redirection URL

@@ -18,14 +18,14 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
       id: 'touch',
       questionAr: '١. ما هو ملمس وثوب النوم المفضل لديكِ والأنسب لبشرتكِ؟',
       options: [
-        { key: 'silk', titleAr: 'حرير التوت الطبيعي الفاخر (Pure Mulberry Silk)', descAr: 'لمسة غنية دافئة، بروتينية لطيفة وحماية كاملة للجلد.' },
-        { key: 'satin', titleAr: 'حرير كوتور المرن الممتاز (Luxury Stretch Silk)', descAr: 'لمعان متلالئ براق، انسيابية ارتدادية ومثالية للحركة.' },
+        { key: 'cotton', titleAr: 'القطن الطبيعي الفاخر (Pure Cotton Luxury)', descAr: 'لمسة غنية دافئة، ولطيفة وحماية كاملة للجلد.' },
+        { key: 'jersey', titleAr: 'نسيج كوتور المرن الممتاز (Luxury Stretch Fabric)', descAr: 'لمعان متلالئ براق، انسيابية ارتدادية ومثالية للحركة.' },
         { key: 'cotton', titleAr: 'الكتان والقطن الملكي العضوي (Royal Luxury Cotton)', descAr: 'نعومة قطنية دافئة هادئة تمتص الرطوبة ومريحة جداً غسيل متكرر.' }
       ]
     },
     {
       id: 'fit',
-      questionAr: '٢. ما هي قصة pajamas أو فحرير النوم المفضلة لقوامكِ المترف؟',
+      questionAr: '٢. ما هي قصة pajamas أو نسيج النوم المفضل لقوامكِ المترف؟',
       options: [
         { key: 'classic', titleAr: 'البجامات الكلاسيكية ذات الأزرار والأطواق المفتوحة', descAr: 'رسمية، مريحة وأنيقة مستوحاة من البيوت الباريسية.' },
         { key: 'robe', titleAr: 'أرواب الكيمونو الفخمة المزينة بالدانتيل المفرغ كوتور', descAr: 'أنثوية بالغة الرقة والجاذبية مع شريط خصر مائل.' },
@@ -95,8 +95,8 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
       const nameLower = (p.nameAr + p.nameEn + p.descriptionAr + p.descriptionEn).toLowerCase();
 
       // Question 1 matching (fabric)
-      if (answers.touch === 'silk' && (nameLower.includes('حرير') || nameLower.includes('silk') || nameLower.includes('mulberry'))) score += 30;
-      if (answers.touch === 'satin' && (nameLower.includes('حرير') || nameLower.includes('شريط'))) score += 35;
+      if (answers.touch === 'cotton' && (nameLower.includes('قطن') || nameLower.includes('cotton'))) score += 30;
+      if (answers.touch === 'jersey' && (nameLower.includes('نسيج') || nameLower.includes('شريط'))) score += 35;
       if (answers.touch === 'cotton' && (nameLower.includes('قطن') || nameLower.includes('cotton') || nameLower.includes('كتان'))) score += 30;
 
       // Question 2 matching (silhouette)
@@ -284,7 +284,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
               <div className="bg-[#A44C5C]/5 border border-[#A44C5C]/10 p-4 rounded-2.5xl text-right">
                 <span className="text-xs font-bold text-[#A44C5C] block">💡 مستشاركِ يخبركِ بخصوص تغليف الهدية:</span>
                 <p className="text-[10px] text-gray-650 leading-relaxed mt-1 leading-relaxed">
-                  تمت مطابقة هذه القطع الموصى بها مع ثيم تغليف العلب الوردي والفريد لصالون هدايا Sulta وتقديم مهر الختم الشمعي مع شريط حرير كوتور متطابق لرفع درجة التأثير والانطباع الساحر.
+                  تمت مطابقة هذه القطع الموصى بها مع ثيم تغليف العلب الوردي والفريد لصالون هدايا Sulta وتقديم مهر الختم الشمعي مع شريط ملكي كوتور متطابق لرفع درجة التأثير والانطباع الساحر.
                 </p>
               </div>
             </motion.div>

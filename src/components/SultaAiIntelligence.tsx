@@ -26,7 +26,7 @@ export default function SultaAiIntelligence({
   
   // 📦 Brand Packaging & Cost Planner local states
   const [boxQty, setBoxQty] = useState<number>(100);
-  const [stampCost, setStampCost] = useState<number>(350);
+  const [stampCost, setStampCost] = useState<number>(800);
   const [plainBoxCost, setPlainBoxCost] = useState<number>(11);
   const [stickerCost, setStickerCost] = useState<number>(3.5);
   const [customWaxCost, setCustomWaxCost] = useState<number>(180);
@@ -217,13 +217,13 @@ export default function SultaAiIntelligence({
     // F. Module 07: AI Review Sentiment Keyword Extraction
     const reviewCompAndComplaints = () => {
       const keywords: Record<string, number> = {
-        'حرير رائع': 0, 'تغليف ملكي': 0, 'ناعم جداً': 0, 'مريح للنوم': 0, 'حياكة فاخرة': 0,
-        'يحتاج مقاسات أكبر': 0, 'زيادة درجات الوردي': 0, 'تأخير شحن طفيف': 0, 'عطر الحرير فواح': 0
+        'كوتور رائع': 0, 'تغليف ملكي': 0, 'ناعم جداً': 0, 'مريح للنوم': 0, 'حياكة فاخرة': 0,
+        'يحتاج مقاسات أكبر': 0, 'زيادة درجات الوردي': 0, 'تأخير شحن طفيف': 0, 'عطر البوتيك فواح': 0
       };
 
       reviews.forEach(r => {
         const text = r.comment.toLowerCase();
-        if (text.includes('حرير') || text.includes('ناعم') || text.includes('قماش')) keywords['حرير رائع']++;
+        if (text.includes('كوتور') || text.includes('ناعم') || text.includes('قماش')) keywords['كوتور رائع']++;
         if (text.includes('تغليف') || text.includes('بوكس') || text.includes('علبة')) keywords['تغليف ملكي']++;
         if (text.includes('مريح') || text.includes('استرخاء')) keywords['مريح للنوم']++;
         if (text.includes('جميل') || text.includes('فاخر') || text.includes('راق')) keywords['حياكة فاخرة']++;
@@ -272,17 +272,17 @@ export default function SultaAiIntelligence({
     setTimeout(() => {
       let copy = '';
       if (promoChannel === 'instagram') {
-        copy = `✨ المظهر الحريري الفريد الذي يسلب الألباب 👑
-رداء وملابس نوم *${targetProd.nameAr}* الفاخرة مصممة من أرقى كوتور الحرير الملكي المبرد لتطويق لياليكِ بالراحة المطلقة والنعومة الحانية.
+        copy = `✨ المظهر الملكي الفريد الذي يسلب الألباب 👑
+رداء وملابس نوم *${targetProd.nameAr}* الفاخرة مصممة من أرقى كوتور مبرد لتطويق لياليكِ بالراحة المطلقة والنعومة الحانية.
 
-🌸 صناعة يدوية خاصة بختم شمعي مميز وشريط حريري فاخر.
+🌸 صناعة يدوية خاصة بختم شمعي مميز وشريط فاخر.
 🛍️ متاح للتسليم الفوري الآن في الرياض وجدة وكافة مدن المملكة!
 📦 استبدال مجاني مجنّد لباب دارك تيسيراً لأناقتك.
 
-تألقي كإمبراطورة الحسن والدلال وميزي إطلالتك اليوم. دعي الحرير يتلمس وجدانكِ... 👑✨
+تألقي كإمبراطورة الحسن والدلال وميزي إطلالتك اليوم. دعي النعومة تتلمس وجدانكِ... 👑✨
 #سولتة #ملابس_نوم_فاخرة #لانجري_عروس #أناقة_ملكي #كوتور_سولتة`;
       } else if (promoChannel === 'facebook') {
-        copy = `👑 الأناقة تكمن في أرقى الحرير الطبيعي من SULTA 👑
+        copy = `👑 الأناقة تكمن في أرقى التصاميم الطبيعية من SULTA 👑
 لكل عروس تبحث عن الكمال والنعومة الدائمة في الصيف والاسترخاء اليومي العذب. نقدم لكِ بيجامة وباقة نوم *${targetProd.nameAr}* المصممة بنهج رويال خاص يليق ببشرتكِ ليتنفس جسدكِ بحرية وتنامين بعمق ملكي رغيد 💤.
 
 💎 متوفر بجميع المقاسات (XS وحتى XXL) مع إمكانية تحديد المقاس التلقائي الذكي عبر موقعنا.
@@ -291,11 +291,11 @@ export default function SultaAiIntelligence({
 اضغطي على الرابط التالي للشراء الفوري والطلب مع شحن رويال سريع وآمن:
 🔗 ${window.location.origin}?product=${targetProd.id}`;
       } else if (promoChannel === 'seo') {
-        copy = `عنوان الصفحة: ملابس نوم راقية للعرائس كوتور - بيجامة وباقة نوم ${targetProd.nameAr} الحريرية
-وصف الميتا (Meta Description): تسوقي بيجامة ${targetProd.nameAr} الفاخرة من الحرير الملكي الطبيعي المعالج والجاهزة للتسليم الفوري والهدية الملكية بضمان استبدال منزلي مجاني من SULTA.
+        copy = `عنوان الصفحة: ملابس نوم راقية للعرائس كوتور - بيجامة وباقة نوم ${targetProd.nameAr} الفاخرة
+وصف الميتا (Meta Description): تسوقي بيجامة ${targetProd.nameAr} الفاخرة من النسيج الملكي الطبيعي المعالج والجاهزة للتسليم الفوري والهدية الملكية بضمان استبدال منزلي مجاني من SULTA.
 
 نص المقالة الأساسية (SEO Optimized Article):
-تتربع ملابس النوم الفاخرة على عرش الاسترخاء المنزلي وأناقة العرائس في ليلة العمر. وتعتبر قطعة "${targetProd.nameAr}" المنسوجة يدوياً بكوتور سولتة نقلة نوعية في علم المنسوجات المترفة المصممة للتعامل اللطيف مع البشرة الحساسة لتقليل ذرات الحرارة المزعجة. تتميز هذه البيجامة بقصة فضفاضة وخياطة متينة ومقاومة للغسيل لضمان نعومة الملمس ولمعان الحرير الدائم.`;
+تتربع ملابس النوم الفاخرة على عرش الاسترخاء المنزلي وأناقة العرائس في ليلة العمر. وتعتبر قطعة "${targetProd.nameAr}" المنسوجة يدوياً بكوتور سولتة نقلة نوعية في علم المنسوجات المترفة المصممة للتعامل اللطيف مع البشرة الحساسة لتقليل ذرات الحرارة المزعجة. تتميز هذه البيجامة بقصة فضفاضة وخياطة متينة ومقاومة للغسيل لضمان نعومة الملمس ولمعان النسيج الدائم.`;
       } else {
         copy = `مرحباً بكِ في البوتيك الاستشاري الفاخر لبراند Sulta لملابس النوم الراقية 👑
 
@@ -314,9 +314,9 @@ export default function SultaAiIntelligence({
   // --- 03. MODULE 09: AI ABANDONED CARTS CUSTOMER RECOVERY ---
   const abandonedCarts = useMemo(() => {
     return [
-      { id: 'ab-101', name: 'أمل العتيبي', phone: '966503847291', item: 'رداء الكيمونو الحريري الساحر مع الدانتيل 🌸', total: 450, currency: 'SAR', addedTime: 'منذ ساعتين' },
-      { id: 'ab-102', name: 'شيرين عبدالهادي', phone: '201203847192', item: 'طقم كينج بيجامة العروسة الحريرية بالورد 🎀', total: 2400, currency: 'EGP', addedTime: 'منذ 5 ساعات' },
-      { id: 'ab-103', name: 'لولوة الدوسري', phone: '966548201947', item: 'روب الحرير الطويل والريش الكلاسيكي الملكي 👑', total: 680, currency: 'SAR', addedTime: 'منذ يوم واحد' }
+      { id: 'ab-101', name: 'أمل العتيبي', phone: '966503847291', item: 'رداء الكيمونو الملوكي الساحر مع الدانتيل 🌸', total: 450, currency: 'SAR', addedTime: 'منذ ساعتين' },
+      { id: 'ab-102', name: 'شيرين عبدالهادي', phone: '201203847192', item: 'طقم كينج بيجامة العروسة الملكية بالورد 🎀', total: 2400, currency: 'EGP', addedTime: 'منذ 5 ساعات' },
+      { id: 'ab-103', name: 'لولوة الدوسري', phone: '966548201947', item: 'روب الدانتيل الطويل والريش الكلاسيكي الملكي 👑', total: 680, currency: 'SAR', addedTime: 'منذ يوم واحد' }
     ];
   }, []);
 
@@ -424,7 +424,7 @@ export default function SultaAiIntelligence({
                 <span className="text-[9px] bg-[#A44C5C] text-white px-2 py-0.5 rounded-full font-serif font-black tracking-widest block w-fit">AI BUSINESS COMMAND SYSTEM ACTIVE</span>
                 <h4 className="font-serif text-lg font-bold text-stone-900">رادار المراقبة الملكية الفوري لـ SULTA</h4>
                 <p className="text-gray-500 text-xs leading-relaxed font-sans mt-1">
-                  أهلاً بكِ في مركز القيادة والذكاء الشامل. تدمج هذه الشاشة بين تحليلات المبيعات اللحظية، وتنبؤات نفاد المخزون، وتنبيهات أداء القطع الحريرية لتحققي أقصى كفاءة تشغيل.
+                  أهلاً بكِ في مركز القيادة والذكاء الشامل. تدمج هذه شاشة بين تحليلات المبيعات اللحظية، وتنبؤات نفاد المخزون، وتنبيهات أداء القطع الفاخرة لتحققي أقصى كفاءة تشغيل.
                 </p>
               </div>
 
@@ -457,7 +457,7 @@ export default function SultaAiIntelligence({
                     <span className="text-xs font-bold text-amber-900 font-sans">تنبؤات مستودعات المحزون</span>
                   </div>
                   <p className="text-[10.5px] text-amber-800 leading-relaxed font-sans">
-                    هنالك عدد <span className="font-bold text-amber-900">{aiStats.depletingSoon.length}</span> قطع كوتور حريرية مميزة بمعدل سحب مرتفع ومخزون المتبقي أقل من 3 وحدات. نوصي بالتزويد الطارئ.
+                    هنالك عدد <span className="font-bold text-amber-900">{aiStats.depletingSoon.length}</span> قطع كوتور فاخرة مميزة بمعدل سحب مرتفع ومخزون المتبقي أقل من 3 وحدات. نوصي بالتزويد الطارئ.
                   </p>
                 </div>
 
@@ -468,7 +468,7 @@ export default function SultaAiIntelligence({
                     <span className="text-xs font-bold text-emerald-900 font-sans">دروع التميز والأداء السلوكي</span>
                   </div>
                   <p className="text-[10.5px] text-emerald-800 leading-relaxed font-sans">
-                    يسجل طراز الحرير الطبيعي أعلى معدل شراء بنسبة تحويل تبلغ 12% من المشاهدات. يرجى تثبيت القطع في السلايدر العلوي.
+                    يسجل طراز الكوتور الطبيعي أعلى معدل شراء بنسبة تحويل تبلغ 12% من المشاهدات. يرجى تثبيت القطع في السلايدر العلوي.
                   </p>
                 </div>
 
@@ -638,7 +638,7 @@ export default function SultaAiIntelligence({
                 <table className="w-full text-right font-sans text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-gray-150 text-gray-400 text-[10px] font-bold">
-                      <th className="pb-2">اسم القطعة الحريرية</th>
+                      <th className="pb-2">اسم القطعة الكوتور</th>
                       <th className="pb-2">الرقم التعريفي SKU</th>
                       <th className="pb-2 text-center">المخزون الحالي</th>
                       <th className="pb-2 text-center">سرعة الاستهداف الشهري</th>
@@ -681,7 +681,7 @@ export default function SultaAiIntelligence({
               <div>
                 <h4 className="font-serif text-sm font-black text-gray-950">🏆 مؤشر كفاءة وجدارة القطع المترفة - Product Health Score Matrix</h4>
                 <p className="text-[10px] text-gray-400 font-sans mt-0.5 leading-relaxed">
-                  يتم ضبط ترتيب وعلامة نقاء القطعة الحريرية بدوال رياضية شاملة تقيس الاهتمام والتفضيل الفعلي للعميلات في المتجر.
+                  يتم ضبط ترتيب وعلامة نقاء القطعة الملكية بدوال رياضية شاملة تقيس الاهتمام والتفضيل الفعلي للعميلات في المتجر.
                 </p>
               </div>
 
@@ -764,16 +764,16 @@ export default function SultaAiIntelligence({
                 <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-2xl space-y-2">
                   <h5 className="font-serif text-xs font-bold text-emerald-900">👑 أكثر المزايا إشادة وتفضيلية:</h5>
                   <ul className="list-disc pr-4 space-y-1 text-[10.5px] text-emerald-800 font-sans">
-                    <li>ملمس الحرير الملكي الطبيعي الفائق والبارد في الصيف.</li>
-                    <li>التغليف الفاخر والشريط الحريري والختم الشمعي المرموق كخيار مثالي للهدايا واللانجري.</li>
-                    <li>رائحة وعطر الحرير الحكيم المصاحب للصندوق.</li>
+                    <li>ملمس القطن الملكي الطبيعي الفائق والبارد في الصيف.</li>
+                    <li>التغليف الفاخر والشريط المرموق والختم الشمعي المرموق كخيار مثالي للهدايا واللانجري.</li>
+                    <li>رائحة وعطر البوتيك الحكيم المصاحب للصندوق.</li>
                   </ul>
                 </div>
 
                 <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-2xl space-y-2">
                   <h5 className="font-serif text-xs font-bold text-rose-950">⚠️ أكثر الشكاوى والتطلعات التعديلية:</h5>
                   <ul className="list-disc pr-4 space-y-1 text-[10.5px] text-rose-900 font-sans">
-                    <li>مطالب عاجلة بزيادة درجات الحرير الوردي الباستيل والوان النخل التدرجية.</li>
+                    <li>مطالب عاجلة بزيادة درجات الكوتور الوردي الباستيل والوان النخل التدرجية.</li>
                     <li>طلبات بتوفير مقاسات تكرارية واسعة إضافية من نوع Kimono (XXL).</li>
                     <li>تأخر شحن طفيف في بعض المناطق النائية بالمملكة.</li>
                   </ul>
@@ -951,7 +951,7 @@ export default function SultaAiIntelligence({
                   <p className="text-xs text-stone-605 leading-relaxed">
                     ملكتنا الجميلة، نعلم أنك ترغبين في تجربة تغليف مبهرة تنافس علامات <span className="font-semibold text-[#A44C5C]">توليا ستوديو (Tulia Studio)</span> و <span className="font-semibold text-[#A44C5C]">ميثا ستايل (Maitha Style)</span> - كرتون بيتزا رائع، شيت ملصقات بنترست اللطيفة، وكارت شكر مخملي. 
                     <br />
-                    ولكن طلب مصنع خاص يفرض عليك <b>500 كرتونة كحد أدنى بمبلغ حوالي 8000 ج.م</b> هو قرار "يخطئ فيه 90% من رواد الأعمال المبتدئين"، لأنه يجمد السيولة النقدية التي يحتاجها القماش الفاخر والدانتيل الملكي لقطع الحرير الخاصة بك. إليك الحل البديل الروتاري بميزانية تبدأ من <b>300 إلى 500 ج.م فقط!</b>
+                    ولكن طلب مصنع خاص يفرض عليك <b>500 كرتونة كحد أدنى بمبلغ حوالي 8000 ج.م</b> هو قرار "يخطئ فيه 90% من رواد الأعمال المبتدئين"، لأنه يجمد السيولة النقدية التي يحتاجها القماش الفاخر والدانتيل الملكي لقطع الكوتور الخاصة بك. إليك الحل البديل الروتاري بميزانية تبدأ من <b>300 إلى 500 ج.م فقط!</b>
                   </p>
                 </div>
                 
@@ -1291,7 +1291,7 @@ export default function SultaAiIntelligence({
                       اختر المقاس الفاخر المطاطي (سمك كارت الفيزا العريض) ليكون ثابتاً ولا ينثني.
                     </li>
                     <li>
-                      <b>سلوفان بلمس قطيفة مخملي (Velvet Lamination):</b> اطلبي من المطبعة الفورية عمل طبقة "سلوفان قطيفة" على وزن ورقة 350 جرام. يعطي الكارت ملمس شامواه كالحرير تماماً.
+                      <b>سلوفان بلمس قطيفة مخملي (Velvet Lamination):</b> اطلبي من المطبعة الفورية عمل طبقة "سلوفان قطيفة" على وزن ورقة 350 جرام. يعطي الكارت ملمس شامواه مذهل.
                     </li>
                     <li>
                       <b>تطبيق حبر الـ Spot UV:</b> لجعل لوجو SULTA والفيونكة الوردية يلمعان ببريق بارز فوق الملمس الأسود المطفي، تكفي علبة من 100 كارت ديجيتال مطلي بسعر لا يتجاوز <b>180 إلى 250 ج.م</b> كبداية للمشروع بدلاً من حجز ألواح طباعة زنك غالية!
@@ -1339,11 +1339,11 @@ export default function SultaAiIntelligence({
                     اللمسة الملكية بالمنزل (The Elegant Touch)
                   </h5>
                   <p className="text-stone-600">
-                    • قبل تغليف القطعة الكوتور، ضعي شيت مناديل ورق زبداني (ورق زبدة رقيق أبيض) داخل الصندوق، وضعي فيه بجامة الحرير الملكية بعد تعطيرها برذاذ الفانيليا المنعشة.
+                    • قبل تغليف القطعة الكوتور، ضعي شيت مناديل ورق زبداني (ورق زبدة رقيق أبيض) داخل الصندوق، وضعي فيه بجامة الكوتور الملكية بعد تعطيرها برذاذ الفانيليا المنعشة.
                     <br />
                     • اغلقي ورق الزبدة بملصق دائري وردي رقيق (استيكر الوش الصغير 3سم)، ثم ضعي شيت ملصقات بنترست والهدية اللطيفة كعلامة مظهر واهتمام لعمليتك.
                     <br />
-                    • اربطي الصندوق من الخارج بشريط حريري عريض بلون البيبي روز (كرة الشريط بـ 15 جنيهاً تكفي 10 علب)، لتبدو فعلياً كأفخم علبة بيتزا دافئة ومميزة تسترخي الفتيات لأجلها!
+                    • اربطي الصندوق من الخارج بشريط ملكي عريض بلون البيبي روز (كرة الشريط بـ 15 جنيهاً تكفي 10 علب)، لتبدو فعلياً كأفخم علبة بيتزا دافئة ومميزة تسترخي الفتيات لأجلها!
                   </p>
                 </div>
               </div>

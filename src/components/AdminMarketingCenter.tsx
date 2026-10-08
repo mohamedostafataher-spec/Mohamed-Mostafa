@@ -127,7 +127,7 @@ export default function AdminMarketingCenter() {
         {
           id: 'sulta-m1',
           title: 'سلطانة في السرير، ملكة في الحياة 👑',
-          description: 'للسلطانات اللواتي يعشقن النوم العميق ببيجامات الحرير المطرزة يدوياً.',
+          description: 'للسلطانات اللواتي يعشقن النوم العميق ببيجامات الكوتور المطرزة يدوياً.',
           imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
           category: 'meme',
           sharesCount: 142
@@ -408,7 +408,7 @@ export default function AdminMarketingCenter() {
         } else {
           const defaults: SocialFeedPost[] = [
             { id: 'feed-1', platform: 'instagram', mediaUrl: '/img/sulta_product_1.png', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سلطة', likes: 1420, comments: 65, order: 1 },
-            { id: 'feed-2', platform: 'instagram', mediaUrl: '/img/sulta_loungewear.png', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة كالحرير ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
+            { id: 'feed-2', platform: 'instagram', mediaUrl: '/img/sulta_loungewear.png', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة ملوكية ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
             { id: 'feed-3', platform: 'instagram', mediaUrl: '/img/sulta_product_2.png', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
           ];
           setFeedPosts(defaults);
@@ -1524,7 +1524,7 @@ export default function AdminMarketingCenter() {
                 </h4>
                 <div className="space-y-2">
                   <p>• <strong>العلامة:</strong> SULTA | بيجامات وملابس نوم العرائس الفاخرة بالرياض ومصر</p>
-                  <p>• <strong>الوصف الملكي:</strong> تسوقي أرقى تصاميم البيجامات المصنوعة يدوياً من القطن البارد والحرير الفاخر مع فيونكات أنيقة لراحة تسكن أحلامكِ.</p>
+                  <p>• <strong>الوصف الملكي:</strong> تسوقي أرقى تصاميم البيجامات المصنوعة يدوياً من القطن البارد والنسيج الفاخر مع فيونكات أنيقة لراحة تسكن أحلامكِ.</p>
                   <p>• <strong>أكواد التتبع المدمجة:</strong> Snapchat Pixel, TikTok Pixel, Facebook CAPI</p>
                 </div>
                 <div className="pt-2 border-t border-gray-200 flex justify-between items-center">

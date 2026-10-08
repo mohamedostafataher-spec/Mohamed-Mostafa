@@ -45,7 +45,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
     { id: 'Couture', label: 'كوتور الملكي' },
     { id: 'editorial', label: 'الجلسات الافتتاحية' },
     { id: 'tips', label: 'إرشادات الاسترخاء' },
-    { id: 'Fabric', label: 'أسرار الحرير' },
+    { id: 'Fabric', label: 'أسرار الكوتور' },
   ];
 
   return (

@@ -499,7 +499,7 @@ export default function AccountView({
         items: [
           {
             productId: products[0]?.id || "demo-1",
-            productName: products[0]?.nameAr || "طقم نوم كوتور الحرير الخالص 🌸",
+            productName: products[0]?.nameAr || "طقم نوم كوتور ملكي فاخر 🌸",
             price: 1850,
             quantity: 1,
             color: products[0]?.colors?.[0]?.name || "وردي ملكي",
@@ -1805,7 +1805,7 @@ export default function AccountView({
                       </div>
                       <p className="text-right">
                         {activeStepTab === "new" && "تم استلام طلبيتكِ الفاخرة واعتمادها بنجاح في أنظمة SULTA المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
-                        {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الحرير الخالص لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط حريري كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
+                        {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الكوتور الفاخرة لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط ملكي كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
                         {activeStepTab === "shipped" && "بشرى سارة! تم تسليم باقتك لـ SULTA Fast Express وهي بصحبة سفير توصيل الأناقة كابتن سفيان الآن. تم تحسين مسار الرحلة ذكياً للوصول في دقة فائقة، الجوال متاح لتسهيل الاتصال والوصول المباشر."}
                         {activeStepTab === "delivered" && "تم تسليم الطرد الملكي في منتهى الرقي. نتمنى لك دوماً تجربة نوم هانئة تملؤها السكينة والأناقة المفرطة مع منسوجات SULTA. سعدنا بثقتِك ونتشرف بزيارة تقيمية تذكرين فيها رأيك في القطعة!"}
                       </p>
@@ -1899,7 +1899,7 @@ export default function AccountView({
                             توقيت حي ذكي ⚡
                           </span>
                           <h4 className="font-serif text-[15px] font-bold text-gray-900 mt-2.5">زمن الوصول التقديري المحسب</h4>
-                          <p className="text-[10.5px] text-gray-500 mt-1">يجرى تتبع دقات عقارب الساعة لوصول أناقة الحرير الخالصة.</p>
+                          <p className="text-[10.5px] text-gray-500 mt-1">يجرى تتبع دقات عقارب الساعة لوصول أناقة القطع الملكية.</p>
                         </div>
 
                         {/* Interactive Clock Timer UI */}
@@ -2021,7 +2021,7 @@ export default function AccountView({
                                 // Prevent multiple triggers during typing
                                 if (isDriverTyping) return;
                                 const userMsg = "أنا متواجدة بالمنزل حالياً وبانتظارك بشوق كامل لتسلم باقة الأناقة! 🌸";
-                                const replyText = "في منتهى السعادة لسماع ذلك يا سيدتي الموقرة! دقيقتين فقط وسأكون على باب منزلكِ لتسليمك أرقى تصاميم الحرير كوتور من SULTA. نتمنى لك دوماً فخامة مطلقة!";
+                                const replyText = "في منتهى السعادة لسماع ذلك يا سيدتي الموقرة! دقيقتين فقط وسأكون على باب منزلكِ لتسليمك أرقى تصاميم الكوتور من SULTA. نتمنى لك دوماً فخامة مطلقة!";
                                 
                                 setChatMessages(prev => [...prev, { sender: "user", text: userMsg, time: "الآن" }]);
                                 setIsDriverTyping(true);
@@ -2041,7 +2041,7 @@ export default function AccountView({
                               onClick={() => {
                                 if (isDriverTyping) return;
                                 const userMsg = "هل الطرد مغلف كهدية راقية وأنيقة تليق بـ SULTA؟ 🎁";
-                                const replyText = "نعم بكل تأكيد يا سيدتي الراقية! طردك موضوع داخل علبتنا الوردية البوتيك المحمية، مغلف بورق الحرير المعطر بالمسك الأبيض وبصحبة كرت الإهداء الأنيق كتحفة فنية متكاملة.";
+                                const replyText = "نعم بكل تأكيد يا سيدتي الراقية! طردك موضوع داخل علبتنا الوردية البوتيك المحمية، مغلف بورق ملوكي معطر بالمسك الأبيض وبصحبة كرت الإهداء الأنيق كتحفة فنية متكاملة.";
                                 
                                 setChatMessages(prev => [...prev, { sender: "user", text: userMsg, time: "الآن" }]);
                                 setIsDriverTyping(true);
@@ -2061,7 +2061,7 @@ export default function AccountView({
                               onClick={() => {
                                 if (isDriverTyping) return;
                                 const userMsg = "يرجى ترك الشحنة عند الباب الخلفي بأمان أو تسليمها للاستقبال 🔑";
-                                const replyText = "أمرك مطاع ومستجاب سيدتي الموقرة! سأقوم بوضع الصندوق الحريري بلطف في المكان المحدد وسأرسل لك صورة فورية على الجوال تأكيداً للتسليم السالم.";
+                                const replyText = "أمرك مطاع ومستجاب سيدتي الموقرة! سأقوم بوضع الصندوق الملكي بلطف في المكان المحدد وسأرسل لك صورة فورية على الجوال تأكيداً للتسليم السالم.";
                                 
                                 setChatMessages(prev => [...prev, { sender: "user", text: userMsg, time: "الآن" }]);
                                 setIsDriverTyping(true);
@@ -2132,7 +2132,7 @@ export default function AccountView({
 
                     {checkedlistItems.length === 4 && (
                       <div className="bg-[#FAF4F5] border border-[#DF8A9C]/30 text-[#DF8A9C] text-xs py-2.5 px-4 rounded-xl text-center font-bold animate-pulse font-sans">
-                        🎉 رائع للغاية! أنتِ الآن مستعدة بالملي لتلقي تجربة الأناقة الحريرية الملكية الأكثر دلالاً وجمالاً!
+                        🎉 رائع للغاية! أنتِ الآن مستعدة بالملي لتلقي تجربة الأناقة الملكية الأكثر دلالاً وجمالاً!
                       </div>
                     )}
                   </div>
@@ -2268,7 +2268,7 @@ export default function AccountView({
                       تتبع الأناقة ومسار شحنتكِ الملكية
                     </h3>
                     <p className="text-xs text-gray-400 font-sans max-w-md mx-auto leading-relaxed text-center">
-                      أدخلي كود تتبع طلبيتكِ الخاص (مثال: SUL-...) أو رقم الجوال المسجل لمتابعة حالة التغليف الحريري، الكي الفاخر، وموقع المندوب الجغرافي الفوري.
+                      أدخلي كود تتبع طلبيتكِ الخاص (مثال: SUL-...) أو رقم الجوال المسجل لمتابعة حالة التغليف، الكي الفاخر، وموقع المندوب الجغرافي الفوري.
                     </p>
                   </div>
 

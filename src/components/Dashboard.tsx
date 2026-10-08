@@ -254,8 +254,8 @@ export default function Dashboard({
         categoryAr: productForm.categoryAr || 'المجموعة الجديدة',
         descriptionAr: productForm.descriptionAr || '',
         descriptionEn: productForm.descriptionEn || '',
-        fabricAr: productForm.fabricAr || 'حرير وساتان كوتور معالج فائق النعومة',
-        fabricEn: productForm.fabricEn || 'Premium Silk & Satin blend',
+        fabricAr: productForm.fabricAr || 'كوتور معالج فائق النعومة',
+        fabricEn: productForm.fabricEn || 'Premium Couture blend',
         washInstructionsAr: productForm.washInstructionsAr || 'غسيل يدوي بماء بارد أو غسيل جاف لطيف',
         images: productForm.images && productForm.images.length > 0 ? productForm.images : ['/img/sulta_product_1.png'],
         colors: productForm.colors || [{ name: 'وردي كوتور', hex: '#E8A5B8' }],
@@ -416,7 +416,7 @@ export default function Dashboard({
                     stock: 15,
                     category: 'new',
                     categoryAr: 'المجموعة الجديدة',
-                    descriptionAr: 'طقم بيجامة نوم حريرية فاخرة بتصميم أنيق.',
+                    descriptionAr: 'طقم بيجامة نوم ملكية فاخرة بتصميم أنيق.',
                     images: ['/img/sulta_product_1.png']
                   });
                   setIsAddProductOpen(true);
@@ -1277,7 +1277,7 @@ export default function Dashboard({
                 <input
                   type="text"
                   required
-                  placeholder="مثال: بيجامة حريرية ناعمة مع دانتيل"
+                  placeholder="مثال: بيجامة ملكية ناعمة مع دانتيل"
                   value={productForm.nameAr || ''}
                   onChange={(e) => setProductForm(prev => ({ ...prev, nameAr: e.target.value }))}
                   className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black"
@@ -1319,7 +1319,7 @@ export default function Dashboard({
                     const val = e.target.value;
                     const catMap: Record<string, string> = {
                       new: 'المجموعة الجديدة',
-                      satin: 'حرير وساتان',
+                      satin: 'كوتور ناعم',
                       cotton: 'قطنيات فاخرة',
                       loungewear: 'ملابس استرخاء'
                     };
@@ -1328,7 +1328,7 @@ export default function Dashboard({
                   className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black cursor-pointer"
                 >
                   <option value="new">المجموعة الجديدة ✨</option>
-                  <option value="satin">حرير وساتان كوتور 👑</option>
+                  <option value="satin">كوتور ملكي 👑</option>
                   <option value="cotton">قطنيات فاخرة 🌸</option>
                   <option value="loungewear">ملابس استرخاء 🕊️</option>
                 </select>

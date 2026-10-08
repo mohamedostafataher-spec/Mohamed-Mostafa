@@ -7,7 +7,7 @@ export const BRAND_COLORS = [
   { name: 'Warm Gold (ذهب ملكي دافئ)', hex: '#F6E7A6', role: 'لون التمييز والأزرار الملكية ورموز الحسن' },
   { name: 'Pink Pearl (ورد حالم كوتور)', hex: '#DF8A9C', role: 'لون الأنسجة الرقيقة والأرواب الملكية المزركشة' },
   { name: 'Crimson Velvet (أحمر مخملي عتيق)', hex: '#A44C5C', role: 'لون اللمسات الرومانسية وحواف الدانتيل الفاخر' },
-  { name: 'Soft Alabaster (عاجي ناصع)', hex: '#FAF5F0', role: 'الخلفية المريحة للنظر المعززة لشفافية الحرير' },
+  { name: 'Soft Alabaster (عاجي ناصع)', hex: '#FAF5F0', role: 'الخلفية المريحة للنظر المعززة لشفافية النسيج' },
 ];
 
 export const BRAND_FONTS = [
@@ -21,7 +21,7 @@ export const CRITICAL_WORDS_RULES = [
   { banned: 'رخيص', premium: 'اقتصادي بذكاء / استثمار مريح', severity: 'HIGH' },
   { banned: 'رخيص جداً', premium: 'قيمة استثنائية استحقاقية', severity: 'HIGH' },
   { banned: 'تخفيضات شعبية', premium: 'أسبوع التكريم الملكي كوتور', severity: 'MEDIUM' },
-  { banned: 'أرخص نوع', premium: 'حرير كلاسيكي ذو نسيج معتدل', severity: 'HIGH' },
+  { banned: 'أرخص نوع', premium: 'نسيج كلاسيكي ذو نسيج معتدل', severity: 'HIGH' },
   { banned: 'للبيع السريع', premium: 'فرصة اقتناء حصرية لمجموعات الصالون', severity: 'LOW' },
   { banned: 'أوفر خصم', premium: 'مزايا السخاء الإمبراطوري', severity: 'MEDIUM' },
 ];
@@ -49,7 +49,7 @@ export const getCustomerJourneyData = (ordersCount: number): JourneyStep[] => {
       dropPercentage: 0,
       funnelStatus: 'excellent',
       reasonAr: 'الزوار ينعمون بأجواء الموسيقى والدانتيل الفاخر بمجرد الدخول للصالون.',
-      actionAr: 'الحفاظ على سرعة الاستجابة اللحظية لعرض الأرواب الحريرية.'
+      actionAr: 'الحفاظ على سرعة الاستجابة اللحظية لعرض الأرواب الملكية.'
     },
     {
       id: 2,
@@ -68,7 +68,7 @@ export const getCustomerJourneyData = (ordersCount: number): JourneyStep[] => {
       mockVisitors: Math.round(baseVisitors * 0.42),
       dropPercentage: 41,
       funnelStatus: 'normal',
-      reasonAr: 'العملاء يقرأون إرشادات الغسيل بالماء البارد ونوع الحرير الطبيعي المعالج.',
+      reasonAr: 'العملاء يقرأون إرشادات الغسيل بالماء البارد ونوع النسيج الطبيعي المعالج.',
       actionAr: 'إضافة مقطع فيديو بيع تفاعلي كوتور (Lookbook) يحسن رغبة الاقتناء بنسبة ٣٠٪.'
     },
     {
@@ -146,8 +146,8 @@ export const getSiteMapTree = (
         }))
       },
       {
-        nameAr: '✍️ منشورات مدونة الحرير والأقمشة',
-        nameEn: 'Silk & Atelier Blogs',
+        nameAr: '✍️ منشورات مدونة المنسوجات والأقمشة',
+        nameEn: 'Couture & Atelier Blogs',
         type: 'group',
         children: blogPosts.map(post => ({
           nameAr: post.title,
@@ -198,7 +198,7 @@ export const generateAiAuditReport = (
 ## 🚀 خطة تحسين معدلات التحويل وزيادة الأرباح (CRO Blueprint)
 * **المجموعة الفورية الحصرية:** تخصيص ماركي شريط ترويجي متحرك يعلن عن الشحن الإقليمي المجاني للطلبات فوق 600 SAR لتفادي انسحاب نسبة 64% من الزوار عند السلة.
 * **البناء البصري لقصة النسيج:** تفعيل تليفزيون سولتة (Video Lookbook) لربط الفيديوهات بشكل مباشر مع أزرار الشراء الفوري داخل الصالون لرفع متوسط قيمة الطلبية (AOV) بنسبة ٢٨٪.
-* **استراتيجية الحرير الوردي:** إدراج منتج "بيجامة الحرير والدانتيل السولتة" كمنتج رائد بحملة الصيف لدفع عمليات البيع المقترن بالهدايا الملكية العائلية.
+* **استراتيجية القطع الوردية:** إدراج منتج "بيجامة الدانتيل السولتة" كمنتج رائد بحملة الصيف لدفع عمليات البيع المقترن بالهدايا الملكية العائلية.
 
 ---
 

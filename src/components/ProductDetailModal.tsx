@@ -266,7 +266,7 @@ export default function ProductDetailModal({
     else if (fitWeight >= 92 || bmi >= 32) {
       size = 'XXL';
       conf = 88;
-      note = 'تم اختياره لتفادي أي احتكاك ولضمان تدفق حرير مريح ومثالي.';
+      note = 'تم اختياره لتفادي أي احتكاك ولضمان تدفق نسيج مريح ومثالي.';
     }
     
     // Rule 4: Age-based ergonomic drape adjustments for premium silk sleepwear
@@ -506,7 +506,7 @@ export default function ProductDetailModal({
                       <span className="font-serif italic text-lg text-[#FFFFFF]">SULTA Haute-Couture Showcase</span>
                       <div className="w-16 h-1 rounded bg-[#F4B6C2] my-3 animate-pulse" />
                       <p className="text-xs text-gray-400 max-w-xs mb-6 leading-relaxed">
-                        فيديو حركي قصير يوضح انسيابية ونعومة الدانتيل الفاخر والحرير الفاخر على العارضة عند الحركة الطبيعية.
+                        فيديو حركي قصير يوضح انسيابية ونعومة الدانتيل الفاخر والمنسوجات الفاخرة على العارضة عند الحركة الطبيعية.
                       </p>
                     </div>
                   )}
@@ -668,7 +668,7 @@ export default function ProductDetailModal({
                     const isCotton = product.nameAr?.includes('قطن') || product.nameEn?.toLowerCase().includes('cotton') || product.fabricAr?.includes('قطن');
                     const isVelvet = product.nameAr?.includes('مخمل') || product.fabricAr?.includes('مخمل');
                     
-                    let fabricLabelAr = "حرير فاخر ناعم معالج دقيق";
+                    let fabricLabelAr = "نسيج فاخر ناعم معالج دقيق";
                     let fabricThreadInfoAr = "ألياف فائقة النعومة بسماكة خيط كوتور تبلغ 0.08dtex";
                     let fabricSourceAr = "حياكة ناعمة لطيفة 100% مع غزل حراري واقي للبشرة";
                     
@@ -731,7 +731,7 @@ export default function ProductDetailModal({
                                 }}
                               />
                             ) : (
-                              /* Satin/Silk Liquid Flow with diagonal micro grain threading */
+                              /* Liquid Flow with diagonal micro grain threading */
                               <div className="absolute inset-0 w-full h-full">
                                 {/* Flowing satin soft drape curves */}
                                 <div className="absolute inset-0 bg-gradient-to-tr from-black/25 via-white/10 to-black/20 mix-blend-overlay" />
@@ -1248,8 +1248,31 @@ export default function ProductDetailModal({
 
             <div className="text-[11px] leading-relaxed text-gray-600 font-sans min-h-[4.2rem]">
               {activeTab === 'desc' && (
-                <div>
-                  <p className="leading-relaxed">{product.descriptionAr}</p>
+                <div className="space-y-3">
+                  <p className="leading-relaxed whitespace-pre-line text-gray-800">{product.descriptionAr}</p>
+                  
+                  {/* Structured Product Specifications Card */}
+                  <div className="bg-white rounded-xl p-3 border border-gray-200/80 space-y-2 text-[10.5px]">
+                    <span className="font-bold text-gray-950 block border-b border-gray-100 pb-1">تفاصيل ومواصفات القطعة الملكية:</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-right">
+                      <div>
+                        <span className="text-gray-400 block text-[9.5px]">تركيبة الخامة:</span>
+                        <span className="font-bold text-gray-900">{product.fabricAr || 'نسيج كوتور ملكي ناعم معالج'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 block text-[9.5px]">نوع القَصّة:</span>
+                        <span className="font-bold text-gray-900">انسيابية مريحة كوتور (Comfort Fit)</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 block text-[9.5px]">طريقة العناية:</span>
+                        <span className="font-bold text-gray-900">{product.washInstructionsAr || 'غسيل يدوي بماء بارد أو غسيل جاف'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 block text-[9.5px]">ما يشمله الطقم:</span>
+                        <span className="font-bold text-gray-900">طقم بيجامة كامل + تغليف SULTA الملكي الفاخر</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
               {activeTab === 'wash' && (

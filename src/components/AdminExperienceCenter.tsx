@@ -77,7 +77,7 @@ export default function AdminExperienceCenter({
     '📄 الصفحات التفاعلية بالواجهة': true,
     '🏷️ أقسام معروضات المتجر السحابية': true,
     '🖼️ تشكيلات الأجواء والمواسم كوتور': true,
-    '✍️ منشورات مدونة الحرير والأقمشة': true
+    '✍️ منشورات مدونة المنسوجات والأقمشة': true
   });
 
   // Brand compliance scanning states
@@ -109,7 +109,7 @@ export default function AdminExperienceCenter({
       const stored = localStorage.getItem('sulta_custom_scents');
       return stored ? JSON.parse(stored) : [
         { id: 'oud', nameAr: 'بخور العود الساطح (Elite Pure Oud)', descAr: 'نوتات عود كمبودي ملكي دافئة تمنح ثوبك هيبة وجاذبية تدوم لأسابيع.', color: '#78350F' },
-        { id: 'musk', nameAr: 'مسك الحرير الأبيض (Royal White Musk)', descAr: 'عبير البودرة الناعم مع المسك المنعش، يثير إحساساً بالنقاء والدلال المطلق.', color: '#D4D4D4' },
+        { id: 'musk', nameAr: 'مسك الأناقة الأبيض (Royal White Musk)', descAr: 'عبير البودرة الناعم مع المسك المنعش، يثير إحساساً بالنقاء والدلال المطلق.', color: '#D4D4D4' },
         { id: 'jasmine', nameAr: 'الياسمين الدمشقي والورد (Jasmine Rose)', descAr: 'رائحة قطرات الندى على بتلات الورد وصالونات كوتور فلورنسا المنعشة.', color: '#FCE7F3' },
         { id: 'cambodi', nameAr: 'خلطة سلطانة الخاصة (Sultana Elixir)', descAr: 'مزيج فاخر سري يجمع بين ترانيم العنبر الملكي وقشور البرغموت المبردة.', color: '#B45309' }
       ];
@@ -137,8 +137,8 @@ export default function AdminExperienceCenter({
       const stored = localStorage.getItem('sulta_custom_ribbons');
       return stored ? JSON.parse(stored) : [
         { id: 'champagne', nameAr: 'شريط شامبين ميتاليك فخم', hex: '#F6E7A6' },
-        { id: 'pink', nameAr: 'شريط حرير وردي كراميل ناعم', hex: '#F4B6C2' },
-        { id: 'black', nameAr: 'شريط حريري أسود فاحم دراماتيكي', hex: '#0B0B0B' }
+        { id: 'pink', nameAr: 'شريط ملوكي وردي كراميل ناعم', hex: '#F4B6C2' },
+        { id: 'black', nameAr: 'شريط ملوكي أسود فاحم دراماتيكي', hex: '#0B0B0B' }
       ];
     } catch {
       return [];
@@ -231,7 +231,7 @@ export default function AdminExperienceCenter({
 
   // Calculate distinct categories with items
   const activeCategoriesList = Array.from(new Set(products.map(p => p.categoryAr || p.category)));
-  const emptyCategories = ['بيجامات حرير الملكي', 'قمصان غرف الفنادق', 'أرواب العرس الفارهة', 'المجموعات الشتوية المخملية'].filter(cat => !activeCategoriesList.includes(cat));
+  const emptyCategories = ['بيجامات كوتور الملكي', 'قمصان غرف الفنادق', 'أرواب العرس الفارهة', 'المجموعات الشتوية المخملية'].filter(cat => !activeCategoriesList.includes(cat));
 
   // 1. Store Global Health percentage calculation
   let healthPenalties = 0;
@@ -307,7 +307,7 @@ export default function AdminExperienceCenter({
     let miniAlert = '';
 
     if (campaignName === 'Summer Campaign') {
-      bannerAr = 'قمة الانسياب والترطيب - انطلقت حملة الصيف الكلاسيكية للحرير المبرد المخصب بخصم ٢٠٪ ✨';
+      bannerAr = 'قمة الانسياب والترطيب - انطلقت حملة الصيف الكلاسيكية للنسيج المبرد المخصب بخصم ٢٠٪ ✨';
       subtitleAr = 'BREEZE COUTURE SUMMER';
       miniAlert = 'صيف ملكي مترف ونضر';
     } else if (campaignName === 'Winter Campaign') {
@@ -315,7 +315,7 @@ export default function AdminExperienceCenter({
       subtitleAr = 'COZY MIDNIGHT CHIEF';
       miniAlert = 'أرواب مخمل ثقيلة عازلة للبرد';
     } else if (campaignName === 'Ramadan Campaign') {
-      bannerAr = 'أناقة السحور والغبقة الفاخرة - خصم رمضان ٢٥٪ على فساتين العرائس الحريرية 🕌';
+      bannerAr = 'أناقة السحور والغبقة الفاخرة - خصم رمضان ٢٥٪ على فساتين العرائس الملكية 🕌';
       subtitleAr = 'RAMADAN COUTURE LUMINARY';
       miniAlert = 'تصاميم رمضانية فضفاضة صالحة للاستقبال';
     } else {
@@ -444,7 +444,7 @@ export default function AdminExperienceCenter({
 
         let desc = p.descriptionAr;
         if (!desc || desc.trim().length === 0) {
-          desc = `قطعة ملكية متفردة مصممة بعناية فائقة من نسيج الحرير الطبيعي الفاخر البارد بخصائص انسياب عالية ملائمة لصالون الاستقبالات.`;
+          desc = `قطعة ملكية متفردة مصممة بعناية فائقة من نسيج ملوكي طبيعي فاخر بارد بخصائص انسياب عالية ملائمة لصالون الاستقبالات.`;
           modified = true;
         }
 
@@ -604,7 +604,7 @@ export default function AdminExperienceCenter({
 
               {/* Blogs Match */}
               <div>
-                <span className="text-xs font-bold text-[#A44C5C] block mb-2">✍️ منشورات مدونة الحرير والأقمشة ({searchResults.blogs.length})</span>
+                <span className="text-xs font-bold text-[#A44C5C] block mb-2">✍️ منشورات مدونة المنسوجات والأقمشة ({searchResults.blogs.length})</span>
                 {searchResults.blogs.length > 0 ? (
                   <div className="space-y-2">
                     {searchResults.blogs.map(b => (
@@ -971,7 +971,7 @@ export default function AdminExperienceCenter({
               <div>
                 <span className="bg-amber-100 text-amber-700 text-[9px] font-bold px-3 py-1 rounded-full">🏆 مقاييس جودة المحتوى</span>
                 <h3 className="font-serif text-2xl text-gray-950 mt-2">02. نظام تقييم جودة وتكامل المنتجات (Product Quality Score)</h3>
-                <p className="text-gray-500 text-xs mt-1">حساب تلقائي لدرجة كل قطعة تلبيةً لمتطلبات العميل المترهف (الصور، مواءمة الفحرير، إتاحة الألوان والمقاسات اليدوية).</p>
+                <p className="text-gray-500 text-xs mt-1">حساب تلقائي لدرجة كل قطعة تلبيةً لمتطلبات العميل المترهف (الصور، مواءمة النسيج، إتاحة الألوان والمقاسات اليدوية).</p>
               </div>
 
               <div className="bg-[#FAF5F0] p-4 rounded-2xl flex justify-between items-center border">
@@ -1052,7 +1052,7 @@ export default function AdminExperienceCenter({
                         <strong className="text-amber-800 text-3xs font-extrabold uppercase">توصيات المنسق الفني كوتور:</strong>
                         <ul className="list-disc pr-4 space-y-1 text-gray-650 text-3xs leading-relaxed">
                           {(selectedQualityProduct.images?.length || 0) < 3 && <li>يوصى بجلب ٣ زوايا تصوير على المانيكان لتشجيع العرائس.</li>}
-                          {(selectedQualityProduct.descriptionAr?.length || 0) < 200 && <li>يرجى كتابة لمسة رومانسية عاطفية تصف راحة الحرير البارد.</li>}
+                          {(selectedQualityProduct.descriptionAr?.length || 0) < 200 && <li>يرجى كتابة لمسة رومانسية عاطفية تصف راحة النسيج البارد.</li>}
                           {(!selectedQualityProduct.sku) && <li>تأمين رقم SKU للتوليف وتفادي الخلط الإقليمي بالمستودع.</li>}
                           <li>أضيفي أبعاد الطول كجداول قياس مخصصة.</li>
                         </ul>
@@ -1201,7 +1201,7 @@ export default function AdminExperienceCenter({
                     <Send size={14} className="text-indigo-650" />
                     إرسال إشعار وعرض ترويجي لعملاء الولاء والبريد الحصري
                   </h4>
-                  <p className="text-gray-400 text-3xs">جدولة إرسال رسالة عيدية أو عروض حريرية لجميع المسجلين الحقيقيين في جدول newsletter_subs بقاعدة البيانات.</p>
+                  <p className="text-gray-400 text-3xs">جدولة إرسال رسالة عيدية أو عروض ملوكية لجميع المسجلين الحقيقيين في جدول newsletter_subs بقاعدة البيانات.</p>
                   
                   <div className="flex gap-2">
                     <input 
@@ -1280,7 +1280,7 @@ export default function AdminExperienceCenter({
                   };
 
                   const rootTree = getSiteMapTree([
-                    { nameAr: 'بيجامات الحرير', nameEn: 'Sleepwear', slug: 'sleepwear' },
+                    { nameAr: 'بيجامات كوتور', nameEn: 'Sleepwear', slug: 'sleepwear' },
                     { nameAr: 'أرواب العرس', nameEn: 'Robes', slug: 'robes' },
                     { nameAr: 'كوتور كلاسيك', nameEn: 'Couture', slug: 'couture' }
                   ], collections, products, blogPosts);
@@ -1466,7 +1466,7 @@ export default function AdminExperienceCenter({
               {/* Preserve existing campaign switches requested by earlier turns */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 text-right">
                 {[
-                  { id: 'Summer Campaign', name: 'حملة الصيف (Summer Luxury)', icon: '☀️', color: 'border-amber-200 bg-amber-50/30 text-amber-900', desc: 'لتنشيط خامات الحرير البارد والمجموعات المريحة.' },
+                  { id: 'Summer Campaign', name: 'حملة الصيف (Summer Luxury)', icon: '☀️', color: 'border-amber-200 bg-amber-50/30 text-amber-900', desc: 'لتنشيط خامات النسيج البارد والمجموعات المريحة.' },
                   { id: 'Winter Campaign', name: 'حملة الشتاء (Winter Cozy)', icon: '❄️', color: 'border-blue-200 bg-blue-50/30 text-blue-900', desc: 'حملات للأرواب القطيفة الكثيفة والدافئة.' },
                   { id: 'Ramadan Campaign', name: 'موسم رمضان الكريم', icon: '🕌', color: 'border-emerald-200 bg-emerald-50/30 text-emerald-900', desc: 'أجواء الحشمة والغبقات والاستقبالات الفاخرة.' },
                   { id: 'Eid Campaign', name: 'تجهيزات العرس وعيد الفطر', icon: '🌟', color: 'border-purple-200 bg-purple-50/30 text-purple-900', desc: 'أطقم هدايا معطرة ومجوهراتها المحددة.' },
@@ -1602,7 +1602,7 @@ export default function AdminExperienceCenter({
 
                         {/* Slide banner */}
                         <div className="bg-neutral-100 p-2 mt-1.5 text-center rounded border space-y-1">
-                          <span className="font-serif font-bold text-gray-800 block text-center">أرواب المخمل وحرير الدانتيل</span>
+                          <span className="font-serif font-bold text-gray-800 block text-center">أرواب المخمل والقطن الملكي</span>
                           <span className="text-3xs block text-[#A44C5C] text-center">مجموعات الصالون الفارهة</span>
                         </div>
 
@@ -1702,7 +1702,7 @@ export default function AdminExperienceCenter({
                 <span className="bg-pink-100 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">👑 الـتـغـلـيـف الـفـاخـر كـوتـور • SULTA Luxury Couture Wrapping Suite</span>
                 <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold">15. لوحة التحكم وجناح التعبئة كوتور (Couture Wrapping Control Panel)</h3>
                 <p className="text-gray-500 text-xs mt-1 leading-relaxed">
-                  تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش وأشرطة الحرير التي تختارها العرائس لتزيين الصناديق الفاخرة للبيجامات وأطقم المنسوجات.
+                  تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش والأشرطة الملوكية التي تختارها العرائس لتزيين الصناديق الفاخرة للبيجامات وأطقم المنسوجات.
                 </p>
               </div>
 
@@ -1717,10 +1717,10 @@ export default function AdminExperienceCenter({
                 </div>
 
                 <div className="bg-stone-50 p-4 border border-stone-150 rounded-2xl flex flex-col justify-between">
-                  <span className="text-gray-500 block">أشرطة حرير كوتور:</span>
+                  <span className="text-gray-500 block">أشرطة كوتور ملكية:</span>
                   <div className="flex justify-between items-baseline mt-2">
                     <span className="text-2xl font-serif font-bold text-gray-950">{ribbons.length} موديلات</span>
-                    <span className="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded">حرير منسوج حصرياً</span>
+                    <span className="text-[10px] text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded">نسيج منسوج حصرياً</span>
                   </div>
                 </div>
               </div>
@@ -1805,7 +1805,7 @@ export default function AdminExperienceCenter({
                   {/* RIBBONS */}
                   <div className="bg-neutral-50/50 p-5 rounded-2xl border border-gray-150 space-y-4 text-right">
                     <div className="border-b border-gray-200 pb-2 flex justify-between items-center font-sans">
-                      <h4 className="font-bold text-gray-900 border-r-2 border-[#A44C5C] pr-2 text-sm font-sans">ثالثاً: لفائف أشرطة الحرير كوتور (Satin Ribbons Collection)</h4>
+                      <h4 className="font-bold text-gray-900 border-r-2 border-[#A44C5C] pr-2 text-sm font-sans">ثالثاً: لفائف الأشرطة الملكية (Couture Ribbons Collection)</h4>
                       <span className="text-[10px] text-gray-400 font-sans">تغليف فساتين العرايس والمنسوجات</span>
                     </div>
 
@@ -1841,7 +1841,7 @@ export default function AdminExperienceCenter({
                           value={newRibbonName}
                           onChange={(e) => setNewRibbonName(e.target.value)}
                           className="flex-1 bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-900"
-                          placeholder="مثال: شريط حرير تيفاني سماوي"
+                          placeholder="مثال: شريط ملوكي تيفاني سماوي"
                         />
                         <input
                           type="color"
@@ -1884,7 +1884,7 @@ export default function AdminExperienceCenter({
                   <span>💡 نصيحة أخصائي تجارب الأوتيليه الملكي:</span>
                 </h4>
                 <div className="text-gray-650 leading-relaxed pr-6 list-disc space-y-1">
-                  <p>• يتم فحص وتجهيز البجامات والملابس الحريرية بالبخار لزيادة دقة فرد الخيوط ومنع التجعد قبل الطي والتثبيت داخل علبة الشحن الفاخرة.</p>
+                  <p>• يتم فحص وتجهيز البجامات والملابس الملوكية بالبخار لزيادة دقة فرد الخيوط ومنع التجعد قبل الطي والتثبيت داخل علبة الشحن الفاخرة.</p>
                   <p>• الشمع المستعمل هو شمع عسل طبيعي مصفى ١٠٠٪ وخالي من الإضافات الكيميائية لضمان تماسك مثالي ونقش ختم دقيق فخم عند صبه بالختم النحاسي المصبوب.</p>
                   <p>• يوصى بالنحت ومصادقة الطلب بختم الشمع في حضور فريق فحص الجودة المترأس لتأكيد الباركود وسريان رحلة شحن البوتيك بجدة والرياض وباقي عواصم الخليج.</p>
                 </div>

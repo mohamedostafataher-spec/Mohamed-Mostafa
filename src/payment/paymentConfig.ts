@@ -40,9 +40,6 @@ export const PAYMOB_CLIENT_ENDPOINT =
 export const PAYMOB_CARD_INTEGRATION_ID = 
   import.meta.env.VITE_PAYMOB_CARD_INTEGRATION_ID || '';
 
-export const PAYMOB_APPLE_PAY_INTEGRATION_ID = 
-  import.meta.env.VITE_PAYMOB_APPLE_PAY_INTEGRATION_ID || '';
-
 export const PAYMOB_IFRAME_ID = 
   import.meta.env.VITE_PAYMOB_IFRAME_ID || '';
 
@@ -51,7 +48,6 @@ export const paymentConfig: PaymobPublicConfig = {
   paymentEndpoint: PAYMOB_PAYMENT_ENDPOINT,
   clientEndpoint: PAYMOB_CLIENT_ENDPOINT,
   cardIntegrationId: PAYMOB_CARD_INTEGRATION_ID,
-  applePayIntegrationId: PAYMOB_APPLE_PAY_INTEGRATION_ID,
   iframeId: PAYMOB_IFRAME_ID,
   currency: 'SAR',
 };

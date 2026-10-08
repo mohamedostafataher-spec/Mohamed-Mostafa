@@ -23,7 +23,7 @@ interface BrandAsset {
 
 const BRAND_ASSETS_LIBRARY: BrandAsset[] = [
   { id: 'logo-vector', nameAr: 'شعار SULTA المذهب النواقل (SVG)', nameEn: 'Sultan Gold Master Logo Vector', type: 'Vector / SVG', dimensions: 'Resizable Scale-free', desc: 'الشعار الملكي عالي النقاوة المخصص للوحات الإعلانات الكبيرة والطباعة الحفر للأختام.' },
-  { id: 'pattern-bg', nameAr: 'خلفية الباترن الحريري الوردي', nameEn: 'Satin Rose Repeating Texture', type: 'Raster / Wallpaper', dimensions: '3000 x 3000 px', desc: 'زخرفة متكررة خفيفة مكونة من الفراشات والفيونكة الكوزي المميزة لغلق ورق الزبد.' },
+  { id: 'pattern-bg', nameAr: 'خلفية الباترن الملوكي الوردي', nameEn: 'Rose Repeating Texture', type: 'Raster / Wallpaper', dimensions: '3000 x 3000 px', desc: 'زخرفة متكررة خفيفة مكونة من الفراشات والفيونكة الكوزي المميزة لغلق ورق الزبد.' },
   { id: 'ribbon-deco', nameAr: 'فواصل خطية على شكل فيونكات خطية', nameEn: 'Feminine Bow Graphic Divider', type: 'Vector Layout', dimensions: '1200 x 300 px', desc: 'فاصل رقيق يوضع أسفل رسائل الشكر أو أعلى جدول دليل كي الملابس.' },
   { id: 'wax-seal-vector', nameAr: 'ختم الشمع الدائري المعياري', nameEn: 'Royal Sulta Wax Seal Stamp Mask', type: 'SVG Vector Mask', dimensions: '500 x 500 px', desc: 'الختم الدائري لتطبيق الورنيش البارز (Spot UV) على ملصقات إغلاق الكراتين.' }
 ];
@@ -90,8 +90,8 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
         },
         {
           id: 'silk-wrap',
-          titleAr: 'لفات مناديل الحرير الفلورال',
-          descAr: 'لفائف مناديل حمائية حريرية ناعمة تحيط ببيجامتكِ الفاخرة بعبق عطر رويال مسك البولندي.',
+          titleAr: 'لفات المناديل الملوكية',
+          descAr: 'لفائف مناديل حمائية ناعمة تحيط ببيجامتكِ الفاخرة بعبق عطر رويال مسك البولندي.',
           url: 'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=1200&auto=format&fit=crop',
           tag: 'تكييف داخلي معبق 🏵️'
         }
@@ -196,7 +196,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
   const [stickerShape, setStickerShape] = useState<'circle' | 'square' | 'rectangle' | 'transparent'>('circle');
   const [stickerIcon, setStickerIcon] = useState<'crown' | 'bow' | 'butterfly' | 'text'>('crown');
   const [monogramLetter, setMonogramLetter] = useState<string>('S');
-  const [productTagName, setProductTagName] = useState<string>('بجامة السيرة الحريرية الملكية');
+  const [productTagName, setProductTagName] = useState<string>('بجامة السيرة الملكية');
   const [productTagSize, setProductTagSize] = useState<'S' | 'M' | 'L' | 'XL' | 'XXL'>('M');
   const [productTagSKU, setProductTagSKU] = useState<string>('SLP-COUTURE-025');
   const [productPrice, setProductPrice] = useState<string>('4,200 ج.م');
@@ -420,7 +420,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
             </h1>
             
             <p className="text-xs md:text-sm text-zinc-300 leading-relaxed font-sans">
-              واجهة تفاعلية ريادية تمنح براند سولا الحرير الساحر تحكماً بيانياً كاملاً بـ <b>15 عنصراً</b> من عناصر الهوية الورقية والتعبئة. من تخصيص أختام الشمع، والملصقات الدائرية بأسلوب بنترست اللطيف، إلى غلاف الكرتونة المميز بفيونكات ناعمة، وصولاً لإصدار الكيت المتكامل بلمسة واحدة بجودة <b>300 DPI</b> بدون أي حروف مبعثرة!
+              واجهة تفاعلية ريادية تمنح براند سولا تحكماً بيانياً كاملاً بـ <b>15 عنصراً</b> من عناصر الهوية الورقية والتعبئة. من تخصيص أختام الشمع، والملصقات الدائرية بأسلوب بنترست اللطيف، إلى غلاف الكرتونة المميز بفيونكات ناعمة، وصولاً لإصدار الكيت المتكامل بلمسة واحدة بجودة <b>300 DPI</b> بدون أي حروف مبعثرة!
             </p>
           </div>
 
@@ -540,7 +540,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
           }`}
         >
           <Star size={14} className="text-[#F6E7A6] fill-[#F6E7A6] animate-pulse" />
-          <span>🏆 الحقيبة الحريرية الكاملة للمطبعة</span>
+          <span>🏆 الحقيبة الملوكية الكاملة للمطبعة</span>
         </button>
 
         <button
@@ -573,7 +573,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 معرض تجربة التغليف الملكي الفاخر (Luxury Unboxing Experience)
               </h3>
               <p className="text-gray-400 text-xs mt-1 leading-relaxed">
-                قم بإدارة وتحميل صور التغليف الفاخر مثل الكرتون الملكي، الحقائب الحريرية الناعمة، الفيونكات، وبطاقات الشمع لإلهام العميلات بمشهد فتح الصناديق الفاتن.
+                قم بإدارة وتحميل صور التغليف الفاخر مثل الكرتون الملكي، الحقائب الملوكية الناعمة، الفيونكات، وبطاقات الشمع لإلهام العميلات بمشهد فتح الصناديق الفاتن.
               </p>
             </div>
 
@@ -611,7 +611,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                     type="text"
                     value={newUnboxingDesc}
                     onChange={(e) => setNewUnboxingDesc(e.target.value)}
-                    placeholder="مثال: علبة قوية محاطة بورق الحرير المعطر مع رباط من الصوف والمخمل الأصلي..."
+                    placeholder="مثال: علبة قوية محاطة بورق النسيج المعطر مع رباط من الصوف والمخمل الأصلي..."
                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-right"
                   />
                 </div>
@@ -847,14 +847,14 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               <div className="space-y-3 bg-[#FCFAF6] border border-stone-200 p-4 rounded-2xl">
                 <h4 className="text-xs font-black text-stone-900 flex items-center gap-1.5">
                   <FileText className="text-[#A44C5C]" size={14} />
-                  SEC 04: دليل الغسيل الملكي (Satin Care Pro)
+                  SEC 04: دليل الغسيل الملكي (Couture Care Pro)
                 </h4>
                 <p className="text-[10px] text-stone-505 leading-relaxed">
-                  تم دمج صالون الحرير وغسل الدانتيل في 4 أركان ذكية تناسب الحرير المصرى الكوزى والحرير العضوى.
+                  تم دمج صالون الكوتور وغسل الدانتيل في 4 أركان ذكية تناسب القطنيات الكوزى والنسيج العضوى.
                 </p>
                 <div className="text-[10px] space-y-1 text-stone-600 bg-white p-2 rounded border border-stone-150">
                   <span className="font-bold text-[#A44C5C]">✓ نوصي بـ:</span>
-                  <div className="leading-normal">الغسيل اليدوي في ماء بارد (تحت 30 درجة) مع تجنب عصر الحرير العنيف للحفاظ على ملمس الألياف الملكية للأبد.</div>
+                  <div className="leading-normal">الغسيل اليدوي في ماء بارد (تحت 30 درجة) مع تجنب عصر النسيج العنيف للحفاظ على ملمس الألياف الملكية للأبد.</div>
                 </div>
               </div>
 
@@ -866,7 +866,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
 
                 <div className="space-y-2.5 text-xs">
                   <div className="space-y-1">
-                    <label className="text-stone-600 block">اسم بجامة الدانتيل الحرير:</label>
+                    <label className="text-stone-600 block">اسم بجامة الدانتيل الملكي:</label>
                     <input 
                       type="text" 
                       value={productTagName} 
@@ -993,7 +993,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               {/* SECTION 06: Luxury Packaging Box Designer */}
               <div className="space-y-3">
                 <h3 className="text-sm font-black text-stone-900 border-b border-stone-100 pb-2">
-                  📦 SEC 06: مصمم بوكس الحرير والملابس كوتور
+                  📦 SEC 06: مصمم بوكس الملابس كوتور
                 </h3>
 
                 <div className="space-y-2 text-xs">
@@ -1003,7 +1003,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                       { id: 'drawer_box', name: '📦 علبة السحاب المنزلق (Drawer Slide)', desc: 'قالب كرتون متداخل يعطي برستيج فوري عند سحبه.' },
                       { id: 'pizza_box', name: '🍕 علبة البيتزا المسطحة العصرية (Tulia Box)', desc: 'ستايل الفتيات اللطيف في بنترست من الكرتون المقوى البسيط.' },
                       { id: 'magnetic_clasp', name: '💎 البوكس المغناطيسي الـصّلب (Luxury Rigid Mag)', desc: 'أعلى معايير التغليف بالشرق الأوسط مع قفل مغناطيسي خفي.' },
-                      { id: 'shopping_bag', name: '🛍️ حقيبة الهدايا الحريرية (Atelier Shopping Bag)', desc: 'شنطة من الكرافت العاجي مع فيونكة حريرية عريضة ومذهلة.' }
+                      { id: 'shopping_bag', name: '🛍️ حقيبة الهدايا الملوكية (Atelier Shopping Bag)', desc: 'شنطة من الكرافت العاجي مع فيونكة ملوكية عريضة ومذهلة.' }
                     ].map((box) => (
                       <button
                         key={box.id}
@@ -1022,14 +1022,14 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </div>
               </div>
 
-              {/* SECTION 08: Premium Silk Tissue paper fragrance */}
+              {/* SECTION 08: Premium Couture Tissue paper fragrance */}
               <div className="space-y-3 bg-[#FAF8F5] border border-stone-200 p-4 rounded-2xl">
                 <h4 className="text-xs font-black text-stone-900 flex items-center gap-1.5">
                   <Box className="text-[#A44C5C]" size={14} />
-                  SEC 08: مناديل الحرير العطري المبروزة (Tissue Scent Preset)
+                  SEC 08: مناديل النسيج العطري المبروزة (Tissue Scent Preset)
                 </h4>
                 <p className="text-[10px] text-stone-505 leading-relaxed">
-                  اختاري لمستكِ المتبخرة لتعطير بوكس الحرير قبل الغلق بالاستيكر الفوري.
+                  اختاري لمستكِ المتبخرة لتعطير بوكس المنتج قبل الغلق بالاستيكر الفوري.
                 </p>
                 
                 <div className="grid grid-cols-2 gap-1.5 text-xs">
@@ -1057,7 +1057,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               {/* SECTION 07: SULTA Brand Premium Illustrative Art-work Info */}
               <div className="space-y-2 text-xs text-stone-600 leading-relaxed bg-[#FFF0F2]/30 p-3 rounded-xl border border-pink-100">
                 <span className="font-bold text-[#A44C5C] block">🎨 SEC 07: الرسم الفني الأنثوي الحصري لـ SULTA:</span>
-                تم دمج الفيونكات 🎀، والأقمار الفضية 🌙، وأكواب القهوة العطرة ☕، وحقائب السفر كوتور، وأيقونات الحرير لتعبر عن طيف وروح فتيات سولا الشغوفات بالجمال والأمسيات الهادئة، مستبدلين بذلك أي عناصر لعلامات تجارية غربية أخرى.
+                تم دمج الفيونكات 🎀، والأقمار الفضية 🌙، وأكواب القهوة العطرة ☕، وحقائب السفر كوتور، وأيقونات الأناقة لتعبر عن طيف وروح فتيات سولا الشغوفات بالجمال والأمسيات الهادئة، مستبدلين بذلك أي عناصر لعلامات تجارية غربية أخرى.
               </div>
 
             </div>
@@ -1091,7 +1091,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                     <textarea 
                       readOnly
                       className="w-full bg-stone-50 border border-stone-200 p-2.5 rounded-lg text-[10px] text-stone-600 focus:outline-none"
-                      value="يرجى ريادة الطرد بكل هدوء ودلال، الملكة تثق في مجهودك. حافظ على تغليف الحرير."
+                      value="يرجى ريادة الطرد بكل هدوء ودلال، الملكة تثق في مجهودك. حافظ على تغليف المنتج."
                     />
                   </div>
                 </div>
@@ -1162,7 +1162,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   </div>
                   <div className="flex items-center gap-1 bg-white p-1.5 rounded text-[9.5px]">
                     <CheckCircle2 size={11} className="text-emerald-500 shrink-0" />
-                    <span>شنطة هدايا الحرير المعاطف</span>
+                    <span>شنطة هدايا الأناقة</span>
                   </div>
                 </div>
               </div>
@@ -1294,7 +1294,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
 
                 <div className="my-auto space-y-1.5 py-2">
                   <p className="text-[10px] leading-relaxed text-zinc-200">
-                    أهلاً بكِ <b>{customClientName || 'صاحبة السمو'}</b> في عراب سولا الفني. ممتنون غاية الامتنان لثقتكِ بدارنا الفخمة. نرجو أن تمنحكِ هذه البجامة الحريرية نهاراً من الدلال وليلة تفيض بالراحة والسكينة والجمال.
+                    أهلاً بكِ <b>{customClientName || 'صاحبة السمو'}</b> في عراب سولا الفني. ممتنون غاية الامتنان لثقتكِ بدارنا الفخمة. نرجو أن تمنحكِ هذه البجامة نهاراً من الدلال وليلة تفيض بالراحة والسكينة والجمال.
                   </p>
                 </div>
 
@@ -1312,7 +1312,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 }`}
               >
                 <div className="text-center font-serif text-[10.5px] font-black border-b-2 border-stone-200 pb-2 w-full text-[#A44C5C]">
-                  👑 دليل العناية وحفظ حرير سولا كوتور
+                  👑 دليل العناية وحفظ منتجات سولا كوتور
                 </div>
 
                 <div className="my-auto space-y-2.5 text-[9.5px] text-stone-700">
@@ -1408,7 +1408,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                     THE SUITE OF COZY HOUR
                   </h5>
                   <p className="text-[9px] text-[#A44C5C] leading-normal font-sans italic">
-                    رسومات مدمجة تعبر عن رقة الحرير والأقمار الساهرة والبيجامات النسائية بالدار.
+                    رسومات مدمجة تعبر عن رقة التصاميم والأقمار الساهرة والبيجامات النسائية بالدار.
                   </p>
 
                   <div className="flex justify-center gap-2 text-lg">
@@ -1471,7 +1471,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                     <span>📍 <b>العنوان المفوّد:</b> الرياض، المملكة العربية السعودية / حي النرجس</span>
                   </div>
                   <div className="flex justify-between gap-2 bg-stone-50 p-2 rounded border border-stone-200">
-                    <span>💵 COD: 350 ر.س</span>
+                    <span>💵 COD: 800 ر.س</span>
                     <span><b>الوزن:</b> 0.8 كجم</span>
                   </div>
                 </div>

@@ -58,7 +58,7 @@ export default function SultaCollections({
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
-          تصفحي روائع الفخامة المصممة بعناية فائقة من نسيج الحرير الملكي الفاخر والمخمل الصافي. أطقم وتصاميم تليق بوقارك وتمنحك ليالٍ ناعمة لا تضاهى.
+          تصفحي روائع الفخامة المصممة بعناية فائقة من نسيج الكوتور الملكي الفاخر والمخمل الصافي. أطقم وتصاميم تليق بوقارك وتمنحك ليالٍ ناعمة لا تضاهى.
         </p>
       </div>
 
@@ -188,7 +188,7 @@ export default function SultaCollections({
         <div className="border-b border-gray-150 pb-4 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h3 className="font-serif text-xl font-medium text-[#0B0B0B]">
-              {selectedCollection ? `معروضات تشكيلة: ${selectedCollection}` : selectedCategory ? `معروضات قسم: ${selectedCategory}` : 'معروضات البوتيك والحرير المتوفرة'}
+              {selectedCollection ? `معروضات تشكيلة: ${selectedCollection}` : selectedCategory ? `معروضات قسم: ${selectedCategory}` : 'معروضات البوتيك والقطع المتوفرة'}
             </h3>
             <p className="text-gray-400 text-3xs sm:text-2xs mt-1">
               نعرض {displayedProducts.length} من أصل {products.length} قطعة كوتور أصلية.

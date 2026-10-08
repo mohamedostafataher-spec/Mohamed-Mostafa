@@ -19,6 +19,15 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Error handler for invalid JSON
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      console.error("[Server] JSON Parse Error:", err.message);
+      return res.status(400).json({ error: "Invalid JSON payload" });
+    }
+    next(err);
+  });
+
   // Middleware to disable caching during development/updates
   app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -90,6 +99,7 @@ async function startServer() {
 
   // API Route: Run SULTA AI Agents System
   app.post("/api/ai/run-agent", async (req, res) => {
+    console.log(`[API] Running agent: ${req.body?.agentId}`);
     if (!ai) {
       return res.status(500).json({ error: "Gemini API key not configured" });
     }
@@ -327,9 +337,9 @@ async function startServer() {
    * Calls Paymob Intention API v1 to generate payment key / client secret
    */
   app.post("/api/payment/paymob/intention", async (req, res) => {
+    console.log("[API] Payment Intention Request Received:", req.body?.order_id);
     const secretKey = process.env.PAYMOB_SECRET_KEY;
     const cardIntegrationId = process.env.PAYMOB_INTEGRATION_ID_CARD;
-    const applePayIntegrationId = process.env.PAYMOB_INTEGRATION_ID_APPLE_PAY;
 
     const { order_id, amount_cents, currency = 'SAR', payment_method, customer, items } = req.body;
 
@@ -349,10 +359,6 @@ async function startServer() {
     }
 
     try {
-      const integrationId = payment_method === 'apple_pay' 
-        ? applePayIntegrationId 
-        : cardIntegrationId;
-
       const paymobResponse = await fetch("https://ksa.paymob.com/v1/intention/", {
         method: "POST",
         headers: {
@@ -362,7 +368,7 @@ async function startServer() {
         body: JSON.stringify({
           amount: amount_cents,
           currency: currency,
-          payment_methods: integrationId ? [parseInt(integrationId, 10)] : [],
+          payment_methods: cardIntegrationId ? [parseInt(cardIntegrationId, 10)] : [],
           items: items?.map((item: any) => ({
             name: item.name,
             amount: Math.round(item.price * 100),
@@ -373,7 +379,7 @@ async function startServer() {
             first_name: customer.name.split(' ')[0] || customer.name,
             last_name: customer.name.split(' ').slice(1).join(' ') || 'العتيبي',
             phone_number: customer.phone,
-            email: customer.email || `${customer.phone.replace(/\\D/g, '')}@sulta.sa`,
+            email: customer.email || `${customer.phone.replace(/\D/g, '')}@sulta.sa`,
             country: 'SA',
             city: customer.city,
             street: customer.address,
@@ -385,7 +391,7 @@ async function startServer() {
           customer: {
             first_name: customer.name.split(' ')[0] || customer.name,
             last_name: customer.name.split(' ').slice(1).join(' ') || 'العتيبي',
-            email: customer.email || `${customer.phone.replace(/\\D/g, '')}@sulta.sa`
+            email: customer.email || `${customer.phone.replace(/\D/g, '')}@sulta.sa`
           },
           extras: {
             sulta_order_id: order_id
@@ -420,6 +426,7 @@ async function startServer() {
    * Validates Paymob response code on server
    */
   app.post("/api/payment/paymob/verify", async (req, res) => {
+    console.log("[API] Payment Verify Request Received:", req.body?.order_id);
     const { order_id, transaction_id, params } = req.body;
 
     if (!order_id) {
@@ -463,6 +470,15 @@ async function startServer() {
     });
     
     app.use(vite.middlewares);
+
+    // API 404 Handler (ensure API calls don't return HTML)
+    app.all("/api/*", (req, res) => {
+      res.status(404).json({ 
+        error: "API endpoint not found", 
+        path: req.originalUrl,
+        method: req.method 
+      });
+    });
 
     // Dynamic SEO middleware for development
     app.use("*", async (req, res, next) => {

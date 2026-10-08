@@ -105,7 +105,7 @@ export default function LimitedPieces({
                       {country === 'EG' ? prod.nameAr : prod.nameEn}
                     </h3>
                     <p className="text-[10px] text-gray-400 font-sans mt-0.5 line-clamp-1">
-                      {prod.descriptionAr || 'تصميم محكم التفاصيل بحرير دوج ناعم وأكمام مطوقة بالدانتيل'}
+                      {prod.descriptionAr || 'تصميم محكم التفاصيل بنسيج ناعم وأكمام مطوقة بالدانتيل'}
                     </p>
                     <div className="mt-2.5 flex flex-col items-center">
                       <ProductPrice product={prod} country={country} size="sm" showBadge={true} />

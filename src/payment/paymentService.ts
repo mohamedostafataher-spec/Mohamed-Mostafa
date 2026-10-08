@@ -58,22 +58,14 @@ import {
   CustomerBillingData, 
   PaymentIntentResponse, 
   PaymentMethodType, 
-  PaymentVerificationResult, 
-  ApplePayAvailability 
+  PaymentVerificationResult
 } from './types';
-import { checkApplePaySupport, initiateApplePayPayment } from './applePay';
 import { initiateCardPayment } from './cardPayment';
 import { orderService, CreateOrderParams } from './orderService';
 import { PAYMOB_VERIFY_ENDPOINT } from './paymentConfig';
 import { Order } from '../types';
 
 export const paymentService = {
-  /**
-   * Evaluates if Apple Pay is active and usable on the customer's current device
-   */
-  checkApplePay(): ApplePayAvailability {
-    return checkApplePaySupport();
-  },
 
   /**
    * Processes an order with Cash on Delivery (COD)
@@ -89,16 +81,37 @@ export const paymentService = {
   },
 
   /**
-   * Initiates electronic payment flow (Apple Pay or Visa/Mastercard/Mada)
+   * Initiates electronic payment flow (Card, PayPal, or Bank Transfer)
    */
   async initiateElectronicPayment(
     params: CreateOrderParams,
-    method: 'apple_pay' | 'card'
+    method: 'card' | 'bank_transfer' | 'paypal'
   ): Promise<{ order: Order; paymentIntent: PaymentIntentResponse }> {
     // 1. Create order in 'pending' status (never 'paid' upfront!)
     const order = await orderService.createOrder(params, 'pending');
 
-    // 2. Prepare payment intent parameters
+    // Handle Direct Bank Transfer or PayPal (which needs redirection)
+    if (method === 'bank_transfer' || method === 'paypal') {
+      // PayPal Business logic improvement
+      // Convert SAR to USD for PayPal compatibility if needed (approx 1 SAR = 0.27 USD)
+      const amountUSD = (order.totalPrice * 0.27).toFixed(2);
+      
+      return {
+        order,
+        paymentIntent: {
+          success: true,
+          orderId: order.id,
+          status: 'pending',
+          // Improved PayPal flow: Redirect to a standard payment request
+          // Note: PayPal standard buttons work best with USD/EUR for international business accounts
+          redirectionUrl: method === 'paypal' 
+            ? `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=concierge@sulta.sa&amount=${amountUSD}&currency_code=USD&item_name=SULTA_Order_${order.id}&return=${window.location.origin}/order-success&cancel_return=${window.location.origin}` 
+            : undefined
+        }
+      };
+    }
+
+    // Handle other electronic payments (Card)
     const paymentParams = {
       orderId: order.id,
       amount: order.totalPrice,
@@ -111,16 +124,12 @@ export const paymentService = {
         quantity: i.quantity,
         variant: `${i.color} - ${i.size}`
       })),
-      method
+      method: method as any
     };
 
     // 3. Delegate to appropriate payment provider module
     let paymentIntent: PaymentIntentResponse;
-    if (method === 'apple_pay') {
-      paymentIntent = await initiateApplePayPayment(paymentParams);
-    } else {
-      paymentIntent = await initiateCardPayment(paymentParams);
-    }
+    paymentIntent = await initiateCardPayment(paymentParams);
 
     // If initial gateway call failed, set order status to 'failed'
     if (!paymentIntent.success) {
@@ -158,6 +167,17 @@ export const paymentService = {
           orderId,
           status: 'failed',
           errorMessage: 'لم تكتمل عملية الدفع. حاول مرة أخرى أو اختر طريقة دفع أخرى.'
+        };
+      }
+
+      // Ensure JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        return {
+          verified: false,
+          orderId,
+          status: 'failed',
+          errorMessage: 'تلقى المتجر رداً غير متوقع من الخادم (HTML).'
         };
       }
 

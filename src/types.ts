@@ -56,6 +56,24 @@ export interface Settings {
   saDefaultCoupon?: string;
   egExclusiveProductIds?: string[];
   saExclusiveProductIds?: string[];
+  // Bank Account & Payment Gateways
+  bankName?: string;
+  bankAccountName?: string;
+  bankIban?: string;
+  bankAccountNumber?: string;
+  tabbyEnabled?: boolean;
+  tabbyPublicKey?: string;
+  tamaraEnabled?: boolean;
+  tamaraPublicKey?: string;
+  paypalEnabled?: boolean;
+  paypalClientId?: string;
+  // WhatsApp Automation & Marketing
+  whatsappMarketingAutoEnabled?: boolean;
+  whatsappCartRecoveryEnabled?: boolean;
+  whatsappWelcomeEnabled?: boolean;
+  whatsappDiscountCode?: string;
+  whatsappMarketingMessageTemplate?: string;
+  whatsappCartRecoveryMessageTemplate?: string;
 }
 
 export interface Product {
@@ -217,6 +235,8 @@ export interface Order {
   currency: Currency;
   paymentMethod: string;
   status: OrderStatus;
+  whatsappOptIn?: boolean;
+  whatsappOptInDate?: string;
   date: string;
   createdAt?: string;
 }

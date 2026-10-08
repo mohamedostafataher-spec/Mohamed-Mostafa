@@ -45,9 +45,11 @@ export default function CartDrawer({
 
   // Discount calculation
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
-  const totalAmount = subtotal - discountAmount;
 
   const freeShippingThreshold = country === 'SA' ? 800 : 1500;
+  const standardShippingFee = country === 'SA' ? 40 : 75;
+  const shippingFee = subtotal >= freeShippingThreshold ? 0 : standardShippingFee;
+  const totalAmount = subtotal - discountAmount + shippingFee;
 
   // Coupon handle
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -325,10 +327,16 @@ export default function CartDrawer({
                 )}
                 <div className="flex justify-between">
                   <span className="flex items-center gap-1">
-                    <span>رسوم الشحن الملكي للباب</span>
-                    <span className="bg-green-50 text-green-600 text-[9px] px-1.5 py-0.5 rounded font-bold">مجاني</span>
+                    <span>الشحن والتوصيل للمنزل</span>
+                    {shippingFee === 0 ? (
+                      <span className="bg-emerald-50 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-200">مجاني 🇸🇦</span>
+                    ) : (
+                      <span className="bg-gray-100 text-gray-700 text-[9px] px-1.5 py-0.5 rounded font-bold">قياسي</span>
+                    )}
                   </span>
-                  <span className="text-gray-900 font-semibold">0.00 {currencyLabel}</span>
+                  <span className="text-gray-900 font-semibold">
+                    {shippingFee === 0 ? 'مجاني' : `${shippingFee.toLocaleString()} ${currencyLabel}`}
+                  </span>
                 </div>
               </div>
 

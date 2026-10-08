@@ -198,7 +198,7 @@ export default function StoreView({
                 <span>{selectedCategory === 'offers' ? 'تخفيضات وعروض حصرية 🏷️' : 'عروض موسم SULTA الحصرية 🏷️'}</span>
               </div>
               <h1 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-[#111827] leading-tight">
-                {selectedCategory === 'offers' ? 'عروض وتخفيضات ملابس النوم والبيجامات الحريرية' : 'أرقى تصاميم ملابس النوم والبيجامات الحريرية'}
+                {selectedCategory === 'offers' ? 'عروض وتخفيضات ملابس النوم والبيجامات الملكية' : 'أرقى تصاميم ملابس النوم والبيجامات الفاخرة'}
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
                 {selectedCategory === 'offers' 
@@ -240,7 +240,7 @@ export default function StoreView({
                 <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-md font-bold">خصم 20%</span>
               </div>
               <p className="text-[10px] text-gray-500 leading-normal">
-                يُطبق تلقائياً في السلة للطلبيات الأولى! 🌸
+                خصم 20% يجمع مع أسعار التخفيض لجميع قطع التشكيلة الملكية! 🌸
               </p>
             </div>
           </div>
@@ -418,8 +418,12 @@ export default function StoreView({
 
               // Calculate price & discount for Salla badge
               const currentPrice = country === 'EG' ? product.priceEG : product.priceSA;
-              const hasSale = country === 'EG' ? !!product.salePriceEG : !!product.salePriceSA;
-              const discountVal = (product.rating >= 4.8) ? 25 : 20;
+              const salePrice = country === 'EG' ? product.salePriceEG : product.salePriceSA;
+              const hasSale = !!salePrice && salePrice < currentPrice;
+              const calculatedDiscount = hasSale 
+                ? Math.round(((currentPrice - salePrice!) / currentPrice) * 100)
+                : 20;
+              const discountVal = calculatedDiscount;
 
               return (
                 <div

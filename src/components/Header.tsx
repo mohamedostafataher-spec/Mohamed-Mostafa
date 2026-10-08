@@ -91,10 +91,10 @@ export default function Header({
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => {
-    const itemPrice = item.product?.priceSA || 0;
+    const itemPrice = country === 'EG' ? item.product?.priceEG : item.product?.priceSA;
     return sum + (itemPrice * item.quantity);
   }, 0);
-  const currencyLabel = 'ر.س';
+  const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,20 +127,23 @@ export default function Header({
           <div className="flex items-center gap-1.5 text-gray-700 font-medium truncate">
             <Truck size={13} className="text-black shrink-0" />
             <span className="hidden sm:inline">
-              شحن سريع ومجاني لكافة مدن ومناطق المملكة العربية السعودية للطلبات فوق 800 ريال 🇸🇦 | كود الخصم: <strong className="font-mono text-black">SULTA20</strong>
+              {country === 'SA' 
+                ? 'شحن مجاني لكافة مدن ومناطق المملكة للطلبات بقيمة 800 ر.س فأكثر 🇸🇦 | شحن قياسي موحد 40 ر.س' 
+                : 'شحن مجاني داخل مصر للطلبات بقيمة 1500 ج.م فأكثر 🇪🇬 | شحن قياسي موحد 75 ج.م'} | كود: <strong className="font-mono text-black">SULTA20</strong>
             </span>
             <span className="sm:hidden font-semibold truncate text-[9px]">
-              شحن مجاني فوق 800 ر.س لكافة مدن المملكة • كود: <strong className="text-black">SULTA20</strong>
+              {country === 'SA' ? 'شحن مجاني فوق 800 ر.س (قياسي 40 ر.س)' : 'شحن مجاني فوق 1500 ج.م (قياسي 75 ج.م)'} • كود: <strong className="text-black">SULTA20</strong>
             </span>
           </div>
 
-          {/* Flash Promo Countdown (Desktop) */}
+          {/* Genuine Promo Code Badge (Desktop) */}
           <div className="hidden md:flex items-center gap-1.5 text-[10.5px] font-bold text-gray-600 shrink-0">
-            <Sparkles size={12} className="text-black" />
-            <span>ينتهي عرض الموسم خلال:</span>
-            <span className="font-mono bg-white px-2 py-0.5 rounded border border-gray-200 text-gray-900 font-bold" dir="ltr">
-              {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.mins).padStart(2, '0')}:{String(timeLeft.secs).padStart(2, '0')}
+            <Sparkles size={12} className="text-[#A44C5C]" />
+            <span>كود الخصم الفوري:</span>
+            <span className="font-mono bg-white px-2 py-0.5 rounded border border-gray-300 text-gray-900 font-bold tracking-wider" dir="ltr">
+              SULTA20
             </span>
+            <span className="text-[10px] text-emerald-700 font-semibold">(خصم 20% يجمع مع العروض)</span>
           </div>
 
           {/* Right Controls: Instagram, TikTok & Country Switcher */}
@@ -174,9 +177,9 @@ export default function Header({
             </a>
 
             {/* Country and Currency Switcher */}
-            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-2 py-0.5 shadow-2xs text-[9.5px] sm:text-[10px] font-bold text-gray-900">
-              <span>🇸🇦</span>
-              <span>ر.س</span>
+            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-2 py-0.5 shadow-2xs text-[9.5px] sm:text-[10px] font-bold text-gray-900 cursor-pointer hover:bg-gray-50" onClick={() => setCountry(country === 'SA' ? 'EG' : 'SA')}>
+              <span>{country === 'SA' ? '🇸🇦' : '🇪🇬'}</span>
+              <span>{currencyLabel}</span>
             </div>
           </div>
 

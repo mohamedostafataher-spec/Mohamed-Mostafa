@@ -27,7 +27,7 @@ const DEFAULT_WAX_COLORS = [
 const DEFAULT_RIBBONS = [
   { id: 'champagne', nameAr: 'شريط شامبين ميتاليك فخم', hex: '#F6E7A6' },
   { id: 'pink', nameAr: 'شريط وردي كراميل ناعم', hex: '#F4B6C2' },
-  { id: 'black', nameAr: 'شريط حريري أسود فاحم دراماتيكي', hex: '#0B0B0B' }
+  { id: 'black', nameAr: 'شريط ملكي أسود فاحم دراماتيكي', hex: '#0B0B0B' }
 ];
 
 export default function RoyalSensesSalon({
@@ -164,7 +164,7 @@ export default function RoyalSensesSalon({
 
     if (outfitTop.id === outfitBottom.id) {
       setHarmonyScore(60);
-      setHarmonyText("تنسيق قطعة أحادية مكررة يفتقر لتباين الكوتور. جربي مزج عباءة حريرية مع طقم نوم دانتيل.");
+      setHarmonyText("تنسيق قطعة أحادية مكررة يفتقر لتباين الكوتور. جربي مزج قطعة ملوكية مع طقم نوم دانتيل.");
       return;
     }
 
@@ -282,7 +282,7 @@ export default function RoyalSensesSalon({
           <span className="text-[#A44C5C] text-2xl sm:text-3xl">⚜️</span>
         </h2>
         <p className="text-xs sm:text-sm text-gray-500 font-sans max-w-2xl mx-auto leading-relaxed">
-          عيشي أبعاد الرفاهية السبع! اختبري فيزياء وهج الحرير الطبيعي، حددي مهر أختام الشمع الملكية، أو نسقي أطقم مخصصة لك وشاركيها كتحفة فنية غير مسبوقة.
+          عيشي أبعاد الرفاهية السبع! اختبري فيزياء وهج النسيج الطبيعي، حددي مهر أختام الشمع الملكية، أو نسقي أطقم مخصصة لك وشاركيها كتحفة فنية غير مسبوقة.
         </p>
       </div>
 
@@ -294,7 +294,7 @@ export default function RoyalSensesSalon({
             activeSuite === 'fabric' ? 'bg-[#A44C5C] text-[#F6E7A6] shadow-md font-bold' : 'hover:bg-white hover:text-gray-900'
           }`}
         >
-          ✨ بريق وهج الحرير
+          ✨ بريق وهج النسيج
         </button>
         <button
           onClick={() => { setActiveSuite('wax'); playLuxuryTone(392.00, 493.88, 0.3, 'sine'); }}
@@ -345,7 +345,7 @@ export default function RoyalSensesSalon({
               <div className="flex-1 flex flex-col items-center justify-center py-6 relative z-10">
                 <div className="relative w-64 h-84 md:w-72 md:h-96 rounded-2xl overflow-hidden shadow-2xl border border-white/50 bg-white group">
                   
-                  {/* Dynamic Custom WebGL-styled Satin Reflection overlay using CSS gradients and rotation */}
+                  {/* Dynamic Custom WebGL-styled Couture Reflection overlay using CSS gradients and rotation */}
                   <motion.div 
                     animate={{
                       background: `linear-gradient(${lightSlider * 3.6}deg, rgba(255,255,255,0) 0%, rgba(255,245,220,${(lightSlider / 100) * 0.4}) 35%, rgba(255,255,255,0) 70%)`
@@ -373,7 +373,7 @@ export default function RoyalSensesSalon({
                   {/* Reflection Specs Metrics Panel popup */}
                   <div className="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-2 rounded-xl text-left border border-white/10 z-20 font-sans text-[10px] text-white">
                     <div className="flex justify-between gap-4">
-                      <span>Refractive Index (Satin):</span>
+                      <span>Refractive Index (Couture):</span>
                       <strong className="text-[#F6E7A6]">1.46 - Ultra Gloss</strong>
                     </div>
                     <div className="flex justify-between gap-4 mt-1">
@@ -384,7 +384,7 @@ export default function RoyalSensesSalon({
                 </div>
 
                 <div className="mt-5 text-center max-w-sm space-y-1">
-                  <span className="text-xs font-bold text-gray-800 block">مرشد صالون الألياف لبريق الحرير:</span>
+                  <span className="text-xs font-bold text-gray-800 block">مرشد صالون الألياف لبريق النسيج:</span>
                   <p className="text-[11px] text-gray-550 leading-relaxed font-sans">
                     حركي المزلاج بالأسفل لتوجيه أشعة ضوء الثريا أو الغروب على الثوب، وانظري كيف تتولد التماوجات المضيئة وتتراقص حواف ريش السروال بشكل مدهش.
                   </p>
@@ -448,7 +448,7 @@ export default function RoyalSensesSalon({
 
                     {/* Styled Ribbon colors */}
                     <div className="space-y-1 font-sans">
-                      <span className="text-[10px] text-gray-400 block pb-1">الشريط الحريري الفاخر:</span>
+                      <span className="text-[10px] text-gray-400 block pb-1">الشريط الملوكي الفاخر:</span>
                       <div className="flex gap-2 justify-center items-center">
                         <span className="w-16 h-3 rounded" style={{ backgroundColor: ribbonColor.hex }} />
                         <span className="text-[10px] text-white font-semibold">{ribbonColor.nameAr.split(' ')[1]}</span>
@@ -471,7 +471,7 @@ export default function RoyalSensesSalon({
                 <div className="mt-5 text-center max-w-sm space-y-1">
                   <span className="text-xs text-amber-500 font-serif font-semibold block">مختوم بشرف العناية اليدوية ✦</span>
                   <p className="text-[11px] text-gray-500 leading-relaxed font-sans">
-                    ستستلمي طلبكِ مغلفاً ببطاقة شمعية كلاسيكية مع شريط حريري ملون، كنز مادي حقيقي لتجربة استلام أسطورية.
+                    ستستلمي طلبكِ مغلفاً ببطاقة شمعية كلاسيكية مع شريط ملوكي ملون، كنز مادي حقيقي لتجربة استلام أسطورية.
                   </p>
                 </div>
               </div>
@@ -562,7 +562,7 @@ export default function RoyalSensesSalon({
               <div className="space-y-6 flex-1 flex flex-col justify-between">
                 <div className="space-y-4">
                   <div className="border-b border-gray-150 pb-3">
-                    <h5 className="text-sm font-extrabold text-[#0B0B0B] block">1. اختر قطعة الحرير للمعاينة:</h5>
+                    <h5 className="text-sm font-extrabold text-[#0B0B0B] block">1. اختر قطعة الملكية للمعاينة:</h5>
                     <span className="text-[10px] text-gray-400 font-sans">تطبيق محاكاة الضوء على خامات الكوتور</span>
                   </div>
 
@@ -622,7 +622,7 @@ export default function RoyalSensesSalon({
                   <div className="space-y-3 font-sans text-[11px] text-gray-700">
                     <div className="space-y-1">
                       <div className="flex justify-between flex-row-reverse">
-                        <span>قوة وهج الحرير (Light Angle):</span>
+                        <span>قوة وهج النسيج (Light Angle):</span>
                         <strong className="text-[#A44C5C]">{lightSlider}%</strong>
                       </div>
                       <input 
@@ -712,7 +712,7 @@ export default function RoyalSensesSalon({
 
                   {/* Ribbon colors list */}
                   <div className="space-y-2">
-                    <span className="text-xs font-bold text-gray-700 block text-right">3. لون الشريط الحريري المحيط:</span>
+                    <span className="text-xs font-bold text-gray-700 block text-right">3. لون الشريط الملوكي المحيط:</span>
                     <div className="space-y-2 font-sans text-xs">
                       {ribbonsList.map(ri => (
                         <div

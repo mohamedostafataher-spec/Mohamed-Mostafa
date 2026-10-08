@@ -18,8 +18,8 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
     cottonLycraTitleAr: savedSection?.cottonLycraTitleAr || 'تشكيلة قطن ليكرا الإنشائية (Cotton Lycra Collection)',
     cottonLycraDescAr: savedSection?.cottonLycraDescAr || 'مزيج فريد يجمع بين نقاء القطن العضوي المتين ومرونة الليكرا الفائقة لمرونة انسيابية تناسب الحركة والنشاطات المنزلية بامتياز مع الحفاظ على الشكل الأنيق.',
     
-    satinTitleAr: savedSection?.satinTitleAr || 'مجموعة الحرير الفاخر الملكية (Satin Collection)',
-    satinDescAr: savedSection?.satinDescAr || 'الحرير الملكي المعالج حرارياً بلمعة مطفأة ووزن خفيف منسدل بنعومة تضاهي الحرير الطبيعي. يوفر ملمساً بارداً ولطيفاً جداً على البشرة والعرائس بمظهر غاية في الجاذبية والفخامة.',
+    softFabricTitleAr: savedSection?.softFabricTitleAr || 'مجموعة الأنسجة الناعمة الملكية (Soft Fabric Collection)',
+    softFabricDescAr: savedSection?.softFabricDescAr || 'الأنسجة الملكية المعالجة حرارياً بلمعة مطفأة ووزن خفيف منسدل بنعومة تضاهي الطبيعي. يوفر ملمساً بارداً ولطيفاً جداً على البشرة والعرائس بمظهر غاية في الجاذبية والفخامة.',
     
     summerTitleAr: savedSection?.summerTitleAr || 'الأقمشة الصيفية الخفيفة (Summer Fabrics)',
     summerDescAr: savedSection?.summerDescAr || 'أقمشة باردة معالجة لتنفس كامل ومقاومة درجات الحرارة. نعتمد خامات خفيفة ومفتحة للمسام تمنحكِ انتعاش الخلوة ونسمة هواء مستمرة حتى في أحر الأيام.',
@@ -28,13 +28,13 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
     winterDescAr: savedSection?.winterDescAr || 'مخمل دافئ وكثيف مع طواقم مبطنة حرارياً توفر العزل التام والدفء اللطيف داخل المنزل ليمنحكِ فخامة الأميرات مع حماية قصوى من تيارات الشتاء الباردة.',
     
     careTitleAr: savedSection?.careTitleAr || 'إرشادات العناية الخاصة والوقاية (Care Instructions)',
-    careDescAr: savedSection?.careDescAr || 'ننصح بتجنب درجات الحرارة المرتفعة أثناء الكي ويفضل الكي البخاري أو بدرجة حرارة معتدلة مخصصة للحرير. تجنبي المبيضات والمواد الكيميائية وحافظي على تهوية القطع وعطر الدار.',
+    careDescAr: savedSection?.careDescAr || 'ننصح بتجنب درجات الحرارة المرتفعة أثناء الكي ويفضل الكي البخاري أو بدرجة حرارة معتدلة مخصصة للأقمشة الفاخرة. تجنبي المبيضات والمواد الكيميائية وحافظي على تهوية القطع وعطر الدار.',
     
     benefitsTitleAr: savedSection?.benefitsTitleAr || 'مزايا فخامة خامات SULTA الممتازة (Fabric Benefits)',
     benefitsDescAr: savedSection?.benefitsDescAr || 'مضادة للحساسية، مقاومة للتجعد التلقائي، ثبات كلي للألوان الملكية حتى مع تكرار الغسيل، حياكة يدوية مزدوجة الحلقات تضمن عمرًا أطول للقطعة دون تلف للتمرير عبر الأجيال.',
     
     washingTitleAr: savedSection?.washingTitleAr || 'بروتوكول الغسيل والتطهير الملكي (Washing Instructions)',
-    washingDescAr: savedSection?.washingDescAr || 'تُغسل القطعة يدوياً بماء بارد أو غسيل آلي ناعم (برنامج الحرير الداخلي) بمقلوبها، مع استخدام مساحيق لطيفة خالية من الفوسفور، وتجفف في الظل للحفاظ على ألق الأنسجة ونعومتها الحريرية.'
+    washingDescAr: savedSection?.washingDescAr || 'تُغسل القطعة يدوياً بماء بارد أو غسيل آلي ناعم بمقلوبها، مع استخدام مساحيق لطيفة خالية من الفوسفور، وتجفف في الظل للحفاظ على ألق الأنسجة ونعومتها الفائقة.'
   };
 
   return (
@@ -84,14 +84,14 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
           </div>
         </div>
 
-        {/* Satin Collection */}
+        {/* Soft Collection */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-[#DF8A9D]/30 shadow-4xs transition-all flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2 flex-row-reverse text-[#A44C5C]">
               <span className="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center text-xs">🦢</span>
-              <h3 className="font-serif font-black text-xs md:text-sm text-gray-900">{sections.satinTitleAr}</h3>
+              <h3 className="font-serif font-black text-xs md:text-sm text-gray-900">{sections.softFabricTitleAr}</h3>
             </div>
-            <p className="text-gray-600 leading-relaxed text-3xs md:text-xs text-right">{sections.satinDescAr}</p>
+            <p className="text-gray-600 leading-relaxed text-3xs md:text-xs text-right">{sections.softFabricDescAr}</p>
           </div>
         </div>
 

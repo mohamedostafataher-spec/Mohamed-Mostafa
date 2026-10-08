@@ -3,23 +3,23 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Eye, ShieldAlert, Sparkles, Sliders, Wind, Check } from 'lucide-react';
 
 export default function FabricRealityCenter() {
-  const [selectedFabric, setSelectedFabric] = useState<'silk' | 'satin' | 'cotton'>('silk');
+  const [selectedFabric, setSelectedFabric] = useState<'couture' | 'stretch' | 'cotton'>('couture');
   const [zoomWeight, setZoomWeight] = useState<boolean>(false);
   const [breezeSpeed, setBreezeSpeed] = useState<number>(2); // 1 to 5 scale
 
   const fabrics = {
-    silk: {
-      nameAr: 'حرير التوت الطبيعي الخالص (Mulberry Silk 22-Momme)',
+    couture: {
+      nameAr: 'نسيج الكوتور المبرد (Couture Fiber)',
       softness: 98,
       stretch: 15,
-      thickness: 'ثقيل مترف 22 Momme (~95 gsm)',
-      weaveAr: 'نسيج حريري ناعم منسوج بمغزل أحادي دقيق جداً (Silk Weave)',
-      descriptionAr: 'أنعم ألياف بروتينية طبيعية مكافحة للتجاعيد، مصبوغة بصبغات عضوية لا تسبب الحساسية للجلد، وتمنحكِ شعوراً بالبرودة والانتعاش الطارد للحرارة.',
+      thickness: 'ثقيل مترف (~95 gsm)',
+      weaveAr: 'نسيج ملوكي ناعم منسوج بمغزل أحادي دقيق جداً (Royal Weave)',
+      descriptionAr: 'أنعم ألياف طبيعية مكافحة للتجاعيد، مصبوغة بصبغات عضوية لا تسبب الحساسية للجلد، وتمنحكِ شعوراً بالبرودة والانتعاش الطارد للحرارة.',
       originAr: 'أرقى مصانع النسيج الفاخر 🌸',
       airflow: 'مثالي نفاذ بنسبة 93%'
     },
-    satin: {
-      nameAr: 'حرير كوتور المطور (Luxury Stretch Silk)',
+    stretch: {
+      nameAr: 'نسيج كوتور المطور (Luxury Stretch Fiber)',
       softness: 90,
       stretch: 65,
       thickness: 'متوسط النعومة مريح (~120 gsm)',
@@ -45,10 +45,10 @@ export default function FabricRealityCenter() {
   return (
     <div className="bg-white rounded-3.5xl border border-stone-150 p-6 md:p-8 space-y-8 text-right font-sans shadow-sm" id="fabric_reality_center">
       <div className="border-b border-gray-100 pb-5">
-        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">الأقمشة الحريرية الفاخرة • SULTA Fabric Reality Center</span>
+        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">الأقمشة الملوكية الفاخرة • SULTA Fabric Reality Center</span>
         <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold select-none">٥. مركز واقع وخامات المنسوجات (Fabric Reality Center)</h3>
         <p className="text-gray-500 text-xs mt-1 leading-relaxed">
-          انغمسي في كواليس الألياف الطبيعية وخيوط الحرير. حللي نعومة ومرونة وسمك الخامة المختارة لقطع pajamas الخاصة بكِ، وعايني الألياف الدقيقة الافتراضية.
+          انغمسي في كواليس الألياف الطبيعية وخيوط الكوتور. حللي نعومة ومرونة وسمك الخامة المختارة لقطع pajamas الخاصة بكِ، وعايني الألياف الدقيقة الافتراضية.
         </p>
       </div>
 
@@ -86,7 +86,7 @@ export default function FabricRealityCenter() {
                   </div>
 
                   <span className="text-4xl relative z-10">
-                    {selectedFabric === 'silk' ? '🏮' : selectedFabric === 'satin' ? '🪞' : '☁️'}
+                    {selectedFabric === 'couture' ? '🏮' : selectedFabric === 'stretch' ? '🪞' : '☁️'}
                   </span>
                   
                   <span className="text-[10px] text-gray-400 font-bold block mt-2 tracking-wide font-mono">
@@ -144,12 +144,12 @@ export default function FabricRealityCenter() {
         {/* Right Selecting fabric & specs details section - 6 cols */}
         <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
           <div className="space-y-4">
-            <span className="text-xs font-bold text-[#0B0B0B] block">اختري الخامة الحريرية لمعاينة نسيجها:</span>
+            <span className="text-xs font-bold text-[#0B0B0B] block">اختري الخامة الملوكية لمعاينة نسيجها:</span>
             
             <div className="space-y-2.5">
               {[
-                { id: 'silk', labelAr: 'حرير التوت الطبيعي (Mulberry Silk)', subAr: 'نعومة قصوى فائقة دافئة وخالية من التجهيز' },
-                { id: 'satin', labelAr: 'حرير كوتور المطور (Luxury Stretch)', subAr: 'مرونة ارتدادية خارقة مع لمعة قوية مقاومة للتكسر' },
+                { id: 'couture', labelAr: 'نسيج الكوتور المبرد (Couture Fiber)', subAr: 'نعومة قصوى فائقة دافئة وخالية من التجهيز' },
+                { id: 'stretch', labelAr: 'نسيج كوتور المطور (Luxury Stretch)', subAr: 'مرونة ارتدادية خارقة مع لمعة قوية مقاومة للتكسر' },
                 { id: 'cotton', labelAr: 'كتان التوت العضوي (Mulberry Cotton)', subAr: 'تنفس مسامي فريد مناسب لشهور الصيف وحرارة الغلاف' }
               ].map((f) => (
                 <div

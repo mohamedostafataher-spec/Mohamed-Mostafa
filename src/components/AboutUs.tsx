@@ -24,7 +24,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
     },
     pillarsTitle: 'التزامات تليق بكِ / Our Timeless Commitments',
     pillars: [
-      { title: 'غزل ملكي / Royal Weave', description: 'خيوط معالجة بالمودال المستقر حرارياً، مما يضمن انسيابية تشبه الحرير ومتانة فائقة.' },
+      { title: 'غزل ملكي / Royal Weave', description: 'خيوط معالجة بالمودال المستقر حرارياً، مما يضمن انسيابية مذهلة ومتانة فائقة.' },
       { title: 'لمسة دقيقة / Fine Finish', description: 'خيطت بعناية في أرقى مشاغل الحياكة، مزودة بفيونكات دانتيل رقيقة وخياطة غير مرئية.' },
       { title: 'قيمة حقيقية / Direct Value', description: 'جسر مباشر من المشغل إلى البوتيك، لضمان جودة الأقمشة الفائقة مع الحفاظ على تسعير عادل.' }
     ]
@@ -186,10 +186,10 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                 <div className="space-y-4">
                   {[
                     { hex: '#0B0B0B', name: 'أسود مخملي ملوكي (Midnight Velvet Black)', desc: 'يرمز للسيادة العريقة والأناقة الكلاسيكية الفائقة.', text: 'text-[#FAF5F0]' },
-                    { hex: '#DF8A9D', name: 'وردي ناعم مخملي (Satin Soft Pink)', desc: 'لون الأنوثة والدلال الحالم والفيونكات اليدوية الرقيقة.', text: 'text-[#0B0B0B]' },
+                    { hex: '#DF8A9D', name: 'وردي ناعم مخملي (Soft Pink)', desc: 'لون الأنوثة والدلال الحالم والفيونكات اليدوية الرقيقة.', text: 'text-[#0B0B0B]' },
                     { hex: '#A44C5C', name: 'بورغندي فاخر (Royal Burgundy)', desc: 'يمثل التطريزات النادرة وشغف كوتور مشاغلنا الفاخرة.', text: 'text-[#FAF5F0]' },
-                    { hex: '#DBC082', name: 'ذهبي شامبين لامع (Champagne Gold)', desc: 'يعكس بريق أزرار الحرير والحفر المذهب لصناديق الهدايا.', text: 'text-[#0B0B0B]' },
-                    { hex: '#FAF5F0', name: 'عاجي أوف وايت دافئ (Satin Off-White)', desc: 'يحاكي ملمس الحرير الخام المبرد ويريح عين الزبونة الفاخرة.', text: 'text-[#0B0B0B]' }
+                    { hex: '#DBC082', name: 'ذهبي شامبين لامع (Champagne Gold)', desc: 'يعكس بريق الأزرار الملكية والحفر المذهب لصناديق الهدايا.', text: 'text-[#0B0B0B]' },
+                    { hex: '#FAF5F0', name: 'عاجي أوف وايت دافئ (Off-White)', desc: 'يحاكي ملمس النسيج الخام المبرد ويريح عين الزبونة الفاخرة.', text: 'text-[#0B0B0B]' }
                   ].map((color, i) => {
                     const [isCopied, setIsCopied] = useState(false);
                     const handleCopy = () => {
@@ -247,7 +247,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                     <span className="text-sm">📷</span>
                     <div>
                       <strong className="block text-xs text-[#0B0B0B] font-serif">الإضاءة النهارية الناعمة (Daylight)</strong>
-                      <span className="block text-[10px] text-gray-500 mt-0.5">الابتعاد التام عن الفلاشات الصناعية القوية؛ تُصور البيجامات دائماً بجانب النوافذ للحصول على ظلال الحرير الحقيقية الناعمة.</span>
+                      <span className="block text-[10px] text-gray-500 mt-0.5">الابتعاد التام عن الفلاشات الصناعية القوية؛ تُصور البيجامات دائماً بجانب النوافذ للحصول على ظلال المنسوجات الحقيقية الناعمة.</span>
                     </div>
                   </li>
                   <li className="flex items-start gap-2.5">
@@ -272,7 +272,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <BookOpen className="text-[#DBC082]" size={18} />
-                    <h4 className="font-serif text-sm font-semibold text-[#0B0B0B]">محاكي التباين والحرير</h4>
+                    <h4 className="font-serif text-sm font-semibold text-[#0B0B0B]">محاكي التباين والمنسوجات</h4>
                   </div>
                   <span className="text-[9px] bg-white text-[#A44C5C] font-bold px-2 py-0.5 rounded-full shadow-2xs">تفاعلي</span>
                 </div>
@@ -283,8 +283,8 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                 {(() => {
                   const [activeFabric, setActiveFabric] = useState('silk');
                   const fabrics = [
-                    { id: 'silk', name: 'الحرير الفاخر', colorHex: '#DF8A9D', bg: 'bg-[#A44C5C]', border: 'border-[#DF8A9D]/50', text: 'text-[#DF8A9D]', fontColor: '#FAF5F0', badge: 'وردية كوتور' },
-                    { id: 'satin', name: 'الحرير المبرد', colorHex: '#0B0B0B', bg: 'bg-[#FAF5F0]', border: 'border-[#DBC082]/50', text: 'text-[#0B0B0B]', fontColor: '#A44C5C', badge: 'تطريز ذهبي' },
+                    { id: 'silk', name: 'القطن الفاخر', colorHex: '#DF8A9D', bg: 'bg-[#A44C5C]', border: 'border-[#DF8A9D]/50', text: 'text-[#DF8A9D]', fontColor: '#FAF5F0', badge: 'وردية كوتور' },
+                    { id: 'satin', name: 'النسيج المبرد', colorHex: '#0B0B0B', bg: 'bg-[#FAF5F0]', border: 'border-[#DBC082]/50', text: 'text-[#0B0B0B]', fontColor: '#A44C5C', badge: 'تطريز ذهبي' },
                     { id: 'lace', name: 'الدانتيل الفرنسي', colorHex: '#FAF5F0', bg: 'bg-[#A44C5C]', border: 'border-white/40', text: 'text-[#FAF5F0]', fontColor: '#FAF5F0', badge: 'أبيض عاجي' }
                   ];
                   const currentFab = fabrics.find(f => f.id === activeFabric) || fabrics[0];

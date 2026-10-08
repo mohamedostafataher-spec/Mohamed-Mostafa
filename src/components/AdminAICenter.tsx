@@ -105,7 +105,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
               title: 'التقرير التأسيسي لمؤشرات الأداء العليا لدار SULTA',
               type: 'monthly',
               timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-              content: 'نظام رصد المبيعات التلقائي يعمل بكفاءة 100%. تم الكشف عن معدلات تحويل قوية في كل من المملكة العربية السعودية وجمهورية مصر العربية، مع تفضيل عالي لمجموعات الحرير الحريري الملكي باللون الوردي والأرجواني.'
+              content: 'نظام رصد المبيعات التلقائي يعمل بكفاءة 100%. تم الكشف عن معدلات تحويل قوية في كل من المملكة العربية السعودية وجمهورية مصر العربية، مع تفضيل عالي لمجموعات الكوتور الملكي باللون الوردي والأرجواني.'
             }
           ];
           setAiReports(defaultReports);
@@ -291,7 +291,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
       } else if (agentId === 'content_agent') {
         contextPayload = {
           contentType: agentInputPayload.contentType || 'مقالات المدونة',
-          topic: agentInputPayload.topic || 'بيجامات الحرير ليلة الزفاف الملكية',
+          topic: agentInputPayload.topic || 'بيجامات الكوتور ليلة الزفاف الملكية',
           additionalDetails: agentInputPayload.additionalDetails || ''
         };
       } else if (agentId === 'marketing_agent') {
@@ -317,7 +317,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
       } else if (agentId === 'translation_agent') {
         contextPayload = {
           direction: agentInputPayload.direction || 'العربية ↔ الإنجليزية',
-          text: agentInputPayload.text || 'دار سولا للأزياء الراقية وملابس النوم تقدم أرقى مجموعات الحرير الطبيعي المزين بالدانتيل الفرنسي.'
+          text: agentInputPayload.text || 'دار سولا للأزياء الراقية وملابس النوم تقدم أرقى مجموعات الكوتور المزين بالدانتيل الفرنسي.'
         };
       } else if (agentId === 'ceo_agent') {
         // Calculate dynamic real metrics from DB
@@ -892,7 +892,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                           <label className="block text-xs font-bold text-gray-700">موضوع المحتوى أو اسم التشكيلة</label>
                           <input
                             type="text"
-                            placeholder="مثال: تشكيلة الصيف المذهلة بالحرير"
+                            placeholder="مثال: تشكيلة الصيف المذهلة بالكوتور"
                             value={agentInputPayload.topic || ''}
                             onChange={(e) => setAgentInputPayload({ ...agentInputPayload, topic: e.target.value })}
                             className="w-full border border-gray-200 bg-stone-50 rounded-xl px-4 py-3 text-xs text-right"
@@ -902,7 +902,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                       <div>
                         <label className="block text-xs font-bold text-gray-700">توجيهات إضافية مرغوبة</label>
                         <textarea
-                          placeholder="مثال: التركيز على حصرية وخفة الحرير الطبيعي بعبق المسك البولندي المعتق..."
+                          placeholder="مثال: التركيز على حصرية وخفة النسيج الطبيعي بعبق المسك البولندي المعتق..."
                           value={agentInputPayload.additionalDetails || ''}
                           onChange={(e) => setAgentInputPayload({ ...agentInputPayload, additionalDetails: e.target.value })}
                           className="w-full border border-gray-200 bg-stone-50 rounded-xl px-4 py-3 text-xs text-right"

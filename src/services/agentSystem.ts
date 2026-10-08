@@ -127,7 +127,7 @@ export const agentSystem = {
       `رابط صفحة تتبع الباقة مباشرة: ${trackingUrl}\n\n` +
       `المصنوعات المحجوزة لكِ:\n${productsText}\n\n` +
       `القيمة الإجمالية المفوترة: ${order.totalPrice.toLocaleString()} ${order.currency}\n\n` +
-      `يجري الآن فحص جودة الحرير والوضع في الصندوق الملكي المعطر بالشريط الحريري المميز تمهيداً للتوصيل السريع عتبة دارك. شكراً لاختيارك رقي SULTA 👑`;
+      `يجري الآن فحص جودة المنتج والوضع في الصندوق الملكي المعطر بالشريط الملكي المميز تمهيداً للتوصيل السريع عتبة دارك. شكراً لاختيارك رقي SULTA 👑`;
 
     const mockMessage: SimulatedWhatsAppMessage = {
       id: `WA-${Date.now()}`,
@@ -204,7 +204,7 @@ export const agentSystem = {
     if (newStatus === 'shipped') {
       updateMessage += `\n\n🚚 رقم التتبع المخصص مع الناقل هو: ${trackingId}`;
     } else if (newStatus === 'delivered') {
-      updateMessage += `\n\n🎉 نأمل أن تلمسي السعادة المطلقة بقطع الحرير الفاخرة المعبأة بخلطة عطور البوتيك الزكية! بعد 48 ساعة سنقوم بإرسال استطلاع جودة مبسط لنستمع لذوقك الرفيع.`;
+      updateMessage += `\n\n🎉 نأمل أن تلمسي السعادة المطلقة بقطع الكوتور الفاخرة المعبأة بخلطة عطور البوتيك الزكية! بعد 48 ساعة سنقوم بإرسال استطلاع جودة مبسط لنستمع لذوقك الرفيع.`;
     }
 
     const mockMessage: SimulatedWhatsAppMessage = {
@@ -299,7 +299,7 @@ export const agentSystem = {
           const apologyCoupon = 'APOLOGY20';
           const apologyMessage = `✦ اعتذار بالغ ورجاء بالقبول من SULTA ✦\n\n` +
             `أميرتنا العزيزة: ${order.customerName} 🌸\n` +
-            `نعلم تماماً أن الشغف بانتظار باقة الحرير الخاصة بكِ يفوق الوصف. نعتذر ببالغ الأسف لملاحظة نظامنا حدوث تأخير طفيف في معالجة طلبكِ رقم ${order.id} بسبب الضغط الاستثنائي على مصممينا بورشة الكوتور.\n\n` +
+            `نعلم تماماً أن الشغف بانتظار باقة الكوتور الخاصة بكِ يفوق الوصف. نعتذر ببالغ الأسف لملاحظة نظامنا حدوث تأخير طفيف في معالجة طلبكِ رقم ${order.id} بسبب الضغط الاستثنائي على مصممينا بورشة الكوتور.\n\n` +
             `لكِ منا اعتذار ملكي خالص، وباقة تعويض خاصة:\n` +
             `🎟️ كود خصم إضافي بقيمة ٢٠٪ لطلبكِ القادم: [ ${apologyCoupon} ]\n\n` +
             `فريقنا يضع لمسات التغليف النهائي الآن، وسنقوم بتسريع التوصيل اللوجستي للحد الأقصى لتعويض صبركِ النبيل.`;
@@ -398,7 +398,7 @@ export const agentSystem = {
             `سيدتنا وأميرتنا الغالية: ${customerName} 👑\n` +
             `يسرنا ويشرفنا إشعاركِ بأنه تم ترقية ملفكِ التعريفي تلقائياً وبأقصى درجات الفخر إلى نخبة العميلات:\n` +
             `👑 [ SULTA VIP CUSTOMER ] 👑\n\n` +
-            `نظراً لولائكِ المرموق وثقتكِ الفائقة في قطعنا الحريرية، ستحصلين الآن بشكل مستمر على:\n` +
+            `نظراً لولائكِ المرموق وثقتكِ الفائقة في قطعنا الفاخرة، ستحصلين الآن بشكل مستمر على:\n` +
             `✨ خصم ثابت بقيمة ١٥٪ على جميع التصاميم باستخدام الكود الخاص بكِ: [ ${vipCoupon} ]\n` +
             `✨ أولوية تامة وتفصيل مجاني مخصص بقسم الدعم والصالون وصيانة القطع.\n` +
             `✨ هدايا دورية وعينات عطور مع كل طلب.\n\n` +
@@ -438,25 +438,21 @@ export const agentSystem = {
   // 7. Abandoned Checkout Agent
   simulateAbandonedCheckout: (customerName: string, phone: string, cartItems: any[], country: string) => {
     const productsList = cartItems.map(it => `• ${it.product.nameAr}`).join('\n');
-    const currency = country === 'EG' ? 'EGP' : 'SAR';
+    const currencyLabel = country === 'SA' ? 'ر.س' : 'ج.م';
     
     agentSystem.addLog(
       'abandoned_agent',
       'Abandoned Checkout Agent',
-      `🛒 رصد سلة متروكة! العميلة ${customerName} قامت بإضافة منتجات في السلة وغادرت بدون إتمام عملية الدفع. تم تفعيل نظام الاسترجاع التلقائي بعد ساعة واحدة.`,
+      `🛒 رصد سلة متروكة! العميلة ${customerName} قامت بإضافة منتجات في السلة وغادرت بدون إتمام عملية الدفع. تم تفعيل نظام الاسترجاع التلقائي (التذكير الأول).`,
       'warning',
       { customerName, phone, cartItems }
     );
 
-    // Simulated 1-Hour Recovery Reminder
-    const recoveryCoupon = 'SULTALOVE10';
-    const hourOneMessage = `✦ تذكـير لطيف من سلة أمنياتكِ في SULTA ✦\n\n` +
-      `أميرتنا العزيزة ${customerName} 🌸\n` +
-      `لاحظنا بقلق مغادرتكِ لصالون SULTA الأنيق تاركةً قطع الحرير المميزة بانتظارك في السلة اللطيفة:\n\n` +
-      `${productsList}\n\n` +
-      `لنسهل عليكِ إضفاء الرقي والسعادة للياليكِ، قمنا بتوليد كوبون خصم استثنائي صالح لمدة ٢٤ ساعة فقط:\n` +
-      `🎟️ كود خصم ١٠٪: [ ${recoveryCoupon} ]\n\n` +
-      `لا تتركي ليلتكِ تفقد أناقتها، أتمي الشراء الآن بلمحة سريعة.`;
+    // Sequence Message 1: Gentle reminder without discount (as per Meta/SULTA guidelines)
+    const hourOneMessage = `أهلًا ${customerName}، تركتِ قطعة جميلة في سلتكِ من SULTA 🌸\n\n` +
+      `سلتكِ بانتظاركِ هنا لتكملة أناقتكِ: ${window.location.origin}\n\n` +
+      `لقد اخترتِ قطعاً مميزة:\n${productsList}\n\n` +
+      `إذا كان عندكِ سؤال عن المقاس أو الخامة، يسعدنا نساعدكِ عبر الواتساب.`;
 
     const mockMessage: SimulatedWhatsAppMessage = {
       id: `WA-AB-${Date.now()}`,
@@ -475,7 +471,7 @@ export const agentSystem = {
     agentSystem.addLog(
       'abandoned_agent',
       'Abandoned Checkout Agent',
-      `تم إرسال تذكير الساعة الأولى تلقائياً للعميلة ${customerName} لإتمام حجز قطع الحرير مع الكوبون الخاص بنجاح.`,
+      `تم إرسال تذكير "سلة بانتظارك" تلقائياً للعميلة ${customerName} بدون خصم (تطبيقاً للمرحلة الأولى من الخطة) بنجاح.`,
       'success',
       mockMessage
     );

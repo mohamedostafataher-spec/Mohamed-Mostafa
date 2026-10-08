@@ -125,7 +125,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     id: "art-001",
     title: "أسرار اختيار بيجامة العروس المثالية - ليلة من العمر تفوق الواقع",
     slug: "bride-pajama-secrets",
-    content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الحرير الملكي المفتوح، وتطويقها بالدانتيل الراقي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
+    content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الأنسجة الملكية المفتوحة، وتطويقها بالدانتيل الراقي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
     excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
     imageUrl: "/img/sulta_default_1_1781140865386.png",
     author: "SULTA Atelier",
@@ -138,14 +138,14 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
   },
   {
     id: "art-002",
-    title: "الحرير الطبيعي vs الصناعي - علم المنسوجات المترفة",
-    slug: "pure-silk-science",
-    content: "إن لمس أقمشة SULTA هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الحريرية الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
+    title: "الألياف الطبيعية vs الصناعية - علم المنسوجات المترفة",
+    slug: "pure-fabric-science",
+    content: "إن لمس أقمشة SULTA هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الناعمة الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
     excerpt: "تعلمي كيف تفرقين بين التفاصيل الراقية والأقمشة المقلدة لترتدي دوماً ما يليق بوقارك.",
     imageUrl: "/img/pink_bow_pajama_1780730148591.png",
     author: "Atelier SULTA",
     category: "Fabric",
-    tags: ["Tissue Silk", "Authenticity", "Couture"],
+    tags: ["Tissue Soft", "Authenticity", "Couture"],
     publishedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -154,7 +154,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
 ];
 
 export const SEED_FAQ: FaqItem[] = [
-  { id: "faq-1", question: "كيف أقوم بتنظيف فساتين الحرير الطبيعي من سولتة؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
+  { id: "faq-1", question: "كيف أقوم بتنظيف قطع الأنسجة الطبيعية من سولتة؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
   { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Atelier SULTA علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
 ];
 
@@ -164,7 +164,7 @@ export const SEED_ADVANCED_COUPONS: any[] = [
 ];
 
 export const SEED_PROMOTIONS: any[] = [
-  { id: 'prom-1', name: 'أسبوع الحرير الملكي', description: 'خصم ٢٥٪ على جميع مشغولات الحرير الملكي الصافي بمناسبة تدشين مجموعة العروس الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الحرير الملكي الفاخر - خصم ٢٥٪' }
+  { id: 'prom-1', name: 'أسبوع الأنسجة الملكية', description: 'خصم ٢٥٪ على جميع مشغولات الأنسجة الملكية الصافية بمناسبة تدشين مجموعة العروس الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الأنسجة الملكية الفاخر - خصم ٢٥٪' }
 ];
 
 export const SEED_ACTIVITY_LOGS: any[] = [
@@ -257,7 +257,7 @@ function mapCollection(data: any): Collection {
 function mapSettings(data: any): Settings {
   const rawHero = Array.isArray(data.hero_images) ? data.hero_images : (data.hero_images ? JSON.parse(data.hero_images) : []);
   const checkedHero = (rawHero && rawHero.length > 0) ? rawHero : [
-    '/img/sulta_silk_luxury_banner.jpg',
+    '/img/sulta_luxury_banner.jpg',
     '/img/sulta_collections_1_1781140831329.png',
     '/img/sulta_loungewear_1_1781140813379.png'
   ];
@@ -284,7 +284,7 @@ function mapSettings(data: any): Settings {
 
   return {
     siteName: mappedSiteName,
-    logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_silk_luxury_banner.jpg',
+    logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_couture_luxury_banner.jpg',
     promoBannerAr: cleanText(data.promo_banner_ar),
     promoEndTime: data.promo_end_time,
     heroMiniAlertAr: cleanText(data.hero_mini_alert_ar),
@@ -308,7 +308,25 @@ function mapSettings(data: any): Settings {
     egDefaultCoupon: data.egDefaultCoupon || data.eg_default_coupon,
     saDefaultCoupon: data.saDefaultCoupon || data.sa_default_coupon,
     egExclusiveProductIds: data.egExclusiveProductIds || data.eg_exclusive_product_ids ? (Array.isArray(data.egExclusiveProductIds || data.eg_exclusive_product_ids) ? (data.egExclusiveProductIds || data.eg_exclusive_product_ids) : JSON.parse(data.egExclusiveProductIds || data.eg_exclusive_product_ids)) : [],
-    saExclusiveProductIds: data.saExclusiveProductIds || data.sa_exclusive_product_ids ? (Array.isArray(data.saExclusiveProductIds || data.sa_exclusive_product_ids) ? (data.sa_exclusive_product_ids || data.sa_exclusive_product_ids) : JSON.parse(data.sa_exclusive_product_ids || data.sa_exclusive_product_ids)) : []
+    saExclusiveProductIds: data.saExclusiveProductIds || data.sa_exclusive_product_ids ? (Array.isArray(data.saExclusiveProductIds || data.sa_exclusive_product_ids) ? (data.sa_exclusive_product_ids || data.sa_exclusive_product_ids) : JSON.parse(data.sa_exclusive_product_ids || data.sa_exclusive_product_ids)) : [],
+    // Bank Account & Payment Gateways
+    bankName: data.bankName || data.bank_name || 'مصرف الراجحي',
+    bankAccountName: data.bankAccountName || data.bank_account_name || 'مؤسسة سُلطة للأزياء',
+    bankIban: data.bankIban || data.bank_iban || '',
+    bankAccountNumber: data.bankAccountNumber || data.bank_account_number || '',
+    tabbyEnabled: data.tabbyEnabled ?? data.tabby_enabled ?? true,
+    tabbyPublicKey: data.tabbyPublicKey || data.tabby_public_key || '',
+    tamaraEnabled: data.tamaraEnabled ?? data.tamara_enabled ?? true,
+    tamaraPublicKey: data.tamaraPublicKey || data.tamara_public_key || '',
+    paypalEnabled: data.paypalEnabled ?? data.paypal_enabled ?? true,
+    paypalClientId: data.paypalClientId || data.paypal_client_id || '',
+    // WhatsApp Marketing & Cart Recovery Automation
+    whatsappMarketingAutoEnabled: data.whatsappMarketingAutoEnabled ?? data.whatsapp_marketing_auto_enabled ?? true,
+    whatsappCartRecoveryEnabled: data.whatsappCartRecoveryEnabled ?? data.whatsapp_cart_recovery_enabled ?? true,
+    whatsappWelcomeEnabled: data.whatsappWelcomeEnabled ?? data.whatsapp_welcome_enabled ?? true,
+    whatsappDiscountCode: data.whatsappDiscountCode || data.whatsapp_discount_code || 'SULTA20',
+    whatsappMarketingMessageTemplate: data.whatsappMarketingMessageTemplate || data.whatsapp_marketing_template || '',
+    whatsappCartRecoveryMessageTemplate: data.whatsappCartRecoveryMessageTemplate || data.whatsapp_cart_recovery_template || ''
   };
 }
 
@@ -434,6 +452,43 @@ function mapProduct(data: any): Product {
   // Ensure default sizes exist
   if (!sizes || sizes.length === 0) {
     sizes = ['S', 'M', 'L', 'XL'];
+  }
+
+  // Smart luxury enrichment for the official SULTA collection products
+  // Matches by ID or name similarity to ensure pristine luxury presentation
+  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => 
+    p.id === data.id || 
+    (nameAr && (
+      (nameAr.includes('الثقوب') && p.nameAr.includes('نُقط')) ||
+      (nameAr === 'وردي' && p.nameAr.includes('روز مخملي')) ||
+      (nameAr.includes('Polka') && p.nameAr.includes('ليلك')) ||
+      (nameAr.includes('فلورا') && p.nameAr.includes('فلورا')) ||
+      (nameAr.includes('روزي') && p.nameAr.includes('روزا')) ||
+      (nameAr.includes('فيونكة') && p.nameAr.includes('سُكّر'))
+    ))
+  );
+
+  if (fallbackProduct) {
+    // Always use curated SULTA luxury titles to eliminate vague/repetitive naming
+    nameAr = fallbackProduct.nameAr;
+    nameEn = fallbackProduct.nameEn;
+    if (!fabricAr || fabricAr.length < 5 || fabricAr === 'خامة فاخرة') {
+      fabricAr = fallbackProduct.fabricAr;
+      fabricEn = fallbackProduct.fabricEn;
+    }
+    if (!washInstructionsAr || washInstructionsAr.length < 5) {
+      washInstructionsAr = fallbackProduct.washInstructionsAr;
+    }
+    if (!descriptionAr || descriptionAr.length < 60) {
+      descriptionAr = fallbackProduct.descriptionAr;
+      descriptionEn = fallbackProduct.descriptionEn;
+    }
+    if (!colors || colors.length === 0) {
+      colors = fallbackProduct.colors;
+    }
+    if (!sizes || sizes.length === 0) {
+      sizes = fallbackProduct.sizes;
+    }
   }
 
   return {
@@ -600,17 +655,28 @@ function mapTicket(data: any): SupportTicket {
 export const SEED_FALLBACK_PRODUCTS: Product[] = [
   {
     id: '51005136-8066-4844-8efe-718cd7644e6b',
-    nameAr: 'بجامة Polka Dots الحمالات الملكية',
-    nameEn: 'Polka Dots Strappy Pajama Set',
+    nameAr: 'بيجامة ليلك المنقّط — Polka Dot',
+    nameEn: 'Lilac Polka Dot Strappy Pajama Set',
     category: 'new',
-    categoryAr: 'المجموعة الجديدة',
+    categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 700,
     priceSA: 200,
-    descriptionAr: 'رؤية SULTA للمنتج: ارتقي بتجربة نومكِ إلى مستوى الكوتور الفاخر مع طقم بجامة Polka Dots الحمالات.',
-    descriptionEn: 'Elevate your lounging experience with Polka Dots Strappy Pajama Set.',
-    fabricAr: 'ساتان معالج ناعم وحريري مخملي',
-    fabricEn: 'Silky Fine Fine Thread',
-    washInstructionsAr: 'غسيل يدوي لطيف أو غسيل جاف',
+    descriptionAr: `أناقة ناعمة… وراحة تستحقينها.
+اختاري بيجامة ليلك المنقّط لإطلالة منزلية أنثوية تجمع بين النقشة المرحة والتفاصيل الراقية. تصميمها يضيف لمسة مميزة لأوقات استرخائك، سواء كانت سهرة هادئة أو صباحًا على مهل.
+
+• اللون: كحلي ملكي منقّط مع تفاصيل وردي ناعم
+• الخامة: 95% خامة ناعمة الملمس معالجة + 5% إيلاستين لمرونة حركية مثالية
+• المقاسات المتوفرة: S, M, L, XL مع جدول قياسات دقيق بالسنتمتر
+• تفاصيل الطقم: توب نوم بحمالات رقيقة قابلة للتعديل + شورت بخصر مطاطي مرن + رباط شعر متناسق
+• العناية: غسيل يدوي بماء بارد أو غسيل جاف لطيف (Dry Clean)، يكوى بالبخار الخفيف
+
+دلّلي وقتك بقطعة تحبّين ارتداءها مرّة بعد مرّة.
+
+تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
+    descriptionEn: 'Lilac Polka Dot Strappy Pajama Set with delicate lace borders and breathable soft fabric.',
+    fabricAr: '95% خامة ناعمة معالجة فائقة النعومة + 5% إيلاستين',
+    fabricEn: '95% Premium Soft Fabric + 5% Elastane',
+    washInstructionsAr: 'غسيل يدوي بماء بارد أو غسيل جاف لطيف (Dry Clean)، يكوى بالبخار الخفيف.',
     images: [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023866351_q9mcco4s.png',
@@ -628,17 +694,28 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
   },
   {
     id: '614f6daa-d291-410b-a450-be23de75f868',
-    nameAr: 'بيجامه فلورا الفاخرة | Flora',
-    nameEn: 'Flora Luxury Pajama Set',
+    nameAr: 'بيجامة فلورا — نسمات الورد',
+    nameEn: 'Flora Pajama Set — Rose Whispers',
     category: 'new',
-    categoryAr: 'المجموعة الجديدة',
+    categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 840,
     priceSA: 220,
-    descriptionAr: 'تصميم فلورا الساحر من سولتة، مصمم بأعلى معايير الحرير الملكي.',
-    descriptionEn: 'Flora charming pajama set by SULTA.',
-    fabricAr: 'حرير ملكي طبيعي معالج',
-    fabricEn: 'Pure Royal Silk',
-    washInstructionsAr: 'غسيل يدوي بماء بارد',
+    descriptionAr: `لمسة زهرية تُضفي نعومة على إطلالتك المنزلية.
+تجمع بيجامة فلورا بين الطابع الأنثوي والتصميم المريح، لترافقك في لحظات الاسترخاء وتمنحك إحساسًا جميلًا بالتجدّد. خيار لطيف لنفسك أو هدية أنيقة لشخص عزيز.
+
+• اللون: بيبي روز بنقشات الباستيل الزهرية
+• الخامة: 100% ألياف ناعمة معالجة بلمسة مبردة لطيفة ضد التجعد
+• المقاسات المتوفرة: S, M, L, XL
+• تفاصيل الطقم: قميص نوم بأزرار أمامية صدفية وياقة ناعمة + بنطال كامل بخصر مطاطي
+• العناية: غسيل يدوي بماء بارد وشامبو الأقمشة الخفيف، تجفيف في الظل
+
+راحة أنيقة… بتفاصيل مستوحاة من جمال الورد.
+
+تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
+    descriptionEn: 'Flora Luxury Pajama Set with gentle pastel tones and cooling soft touch.',
+    fabricAr: '100% خامة ملكية معالجة فائقة النعومة',
+    fabricEn: '100% Pure Royal Treated Fabric',
+    washInstructionsAr: 'غسيل يدوي بماء بارد وشامبو الأنسجة الناعمة، تجفيف في الظل.',
     images: [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948372793_xb0h46zo.jpeg',
@@ -655,17 +732,28 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
   },
   {
     id: '8d738e1c-0861-4569-8949-fc2d98c4fa50',
-    nameAr: 'بيجامة الفيونكة الملكية | Bow Pajama',
-    nameEn: 'Bow Luxury Pajama Set',
+    nameAr: 'بيجامة سُكّر — لمسة فيونكة | وردي ملكي',
+    nameEn: 'Sugar Bow Pajama Set — Royal Pink',
     category: 'new',
-    categoryAr: 'المجموعة الجديدة',
+    categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 800,
     priceSA: 195,
-    descriptionAr: 'أناقة الفيونكة الناعمة لتلهمكِ ليالي هادئة ومفعمة بالأنوثة.',
-    descriptionEn: 'Bow luxury pajama set for serene nights.',
-    fabricAr: 'حرير فاخر مع الدانتيل الراقي',
-    fabricEn: 'Fine Silk & Lace',
-    washInstructionsAr: 'غسيل يدوي',
+    descriptionAr: `تفاصيل رقيقة تجعل البساطة أجمل.
+بيجامة سُكّر بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة، خيار أنيق لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتّب والراحة اليومية، بتفاصيل تضيف لمسة دلع من دون مبالغة.
+
+• اللون: وردي ملكي ناعم (Royal Rose)
+• الخامة: 92% خامة فاخرة + 8% ألياف ناعمة معالجة
+• المقاسات المتوفرة: S, M, L, XL
+• تفاصيل الطقم: قميص نوم بأكمام متوسطة مزين بفيونكات ناعمة + بنطال مريح مع حواشي متناسقة
+• العناية: غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل
+
+هدوء اللون… وأناقة التفاصيل.
+
+تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
+    descriptionEn: 'Sugar Bow Luxury Pajama Set in royal soft pink with hand-finished bow accents.',
+    fabricAr: '92% خامة فاخرة + 8% ألياف ناعمة معالجة',
+    fabricEn: '92% Fine Fabric + 8% Smooth Soft Fibers',
+    washInstructionsAr: 'غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل.',
     images: [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
@@ -678,7 +766,156 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     status: 'active',
     rating: 5,
     reviewsCount: 51,
+    stock: 14
+  },
+  {
+    id: 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc',
+    nameAr: 'بيجامة روزا — ورد المساء',
+    nameEn: 'Rosa Evening Bloom Pajama Set',
+    category: 'new',
+    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    priceEG: 750,
+    priceSA: 200,
+    descriptionAr: `وردي ناعم ومزاج أجمل.
+أضيفي لمسة من الرقة إلى خزانة ملابسك المنزلية مع بيجامة روزا. تصميمها الأنثوي يجعلها مناسبة لأوقات الراحة، وللأمسيات الهادئة التي تحبين أن تكون فيها إطلالتك مرتّبة ومريحة.
+
+• اللون: وردي دافئ بلمعة لؤلؤية هادئة
+• الخامة: خامة مبردة عالية الكثافة ونعومة الملمس نخب أول
+• المقاسات المتوفرة: S, M, L, XL
+• تفاصيل الطقم: قميص نوم بأكمام طويلة مع ياقة كوتور راقية وأزرار مخملية + بنطال كامل مع جيب جانبي ناعم
+• العناية: غسيل يدوي أو دورة أقمشة رقيقة بماء بارد
+
+لأن راحتك تستحق لمسة وردية.
+
+تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
+    descriptionEn: 'Rosa Evening Bloom Luxury Pajama Set with pearl sheen and relaxed fit.',
+    fabricAr: 'خامة مبردة عالية الكثافة ونعومة الملمس',
+    fabricEn: 'High-Density Cooling Soft Fabric',
+    washInstructionsAr: 'غسيل يدوي أو دورة أقمشة رقيقة بماء بارد.',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png'
+    ],
+    colors: [{ name: 'وردي دافئ', hex: '#E8A5B8' }, { name: 'سكري هادئ', hex: '#FAF5EE' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: false,
+    featured: true,
+    status: 'active',
+    rating: 4.8,
+    reviewsCount: 29,
+    stock: 11
+  },
+  {
+    id: '78f851f3-5f75-4153-9fbe-0e8ad54825be',
+    nameAr: 'بيجامة روز مخملي',
+    nameEn: 'Velvet Rose Pajama Set',
+    category: 'new',
+    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    priceEG: 850,
+    priceSA: 220,
+    descriptionAr: `إطلالة وردية بلمسة من الأناقة الهادئة.
+اختاري بيجامة روز مخملي لإطلالة منزلية ناعمة وسهلة التنسيق. لونها الأنثوي يضفي إحساسًا جميلًا بالتجدّد، وتصميمها يجعلها رفيقة مناسبة للحظات الاسترخاء في المنزل.
+
+• اللون: روز مخملي ناعم (Brushed Dusty Rose)
+• الخامة: خامة مخملية الملمس معالجة بتقنية النعومة الفائقة بدون احتكاك
+• المقاسات المتوفرة: S, M, L, XL
+• تفاصيل الطقم: قميص نوم كوتور أنيق + بنطال خصر مرن مريح
+• العناية: غسيل يدوي خفيف بالماء البارد دون عصر قوي
+
+قطعتك المفضّلة لأوقات الراحة… بأناقة SULTA.
+
+تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
+    descriptionEn: 'Velvet Rose Pajama Set featuring ultra-soft brushed finish and luxury tailoring.',
+    fabricAr: 'خامة مخملية الملمس معالجة بتقنية النعومة الفائقة',
+    fabricEn: 'Peach-Skin Velvet Touch Fabric',
+    washInstructionsAr: 'غسيل يدوي خفيف بالماء البارد دون عصر قوي.',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619728379_8p82a5cn.jpeg'
+    ],
+    colors: [{ name: 'روز مخملي', hex: '#DF8A9D' }, { name: 'عاجي', hex: '#FDFBF7' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    featured: true,
+    status: 'active',
+    rating: 4.9,
+    reviewsCount: 36,
+    stock: 9
+  },
+  {
+    id: '1d4e8104-17c9-4b64-8300-38340bdeaa18',
+    nameAr: 'بيجامة نُقط — لمسة مرحة',
+    nameEn: 'Classic Dot Pajama Set — Playful Touch',
+    category: 'new',
+    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    priceEG: 800,
+    priceSA: 195,
+    descriptionAr: `نقشة مميزة… وإطلالة منزلية مختلفة.
+بيجامة نُقط تضيف لمسة مرحة إلى إطلالتك، مع تصميم يليق بأوقاتك اليومية في المنزل. اختاريها إذا كنتِ تحبين التفاصيل اللافتة والقطع التي تجمع بين الأنوثة والطابع العملي.
+
+• اللون: أحمر قرمزي ناعم منقّط بنقاط بيضاء رقيقة
+• الخامة: خامة ناعمة عالية التهوية وخفيفة الوزن مضادة للشحنات
+• المقاسات المتوفرة: S, M, L, XL
+• تفاصيل الطقم: قميص نوم كلاسيكي بنقشة النقط الناعمة + بنطال خفيف بخصر مطاطي مرن
+• العناية: غسيل يدوي أو غسيل لطيف بدرجة حرارة 30 مئوية
+
+تفاصيل صغيرة… تصنع فرقًا في إطلالتك.
+
+تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
+    descriptionEn: 'Classic Dot Pajama Set with playful dots pattern and ultra-soft breathable fabric.',
+    fabricAr: 'خامة ناعمة عالية التهوية وخفيفة الوزن',
+    fabricEn: 'Lightweight Breathable Soft Fabric',
+    washInstructionsAr: 'غسيل يدوي أو غسيل لطيف بدرجة حرارة 30 مئوية.',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876911471_gev0lr37.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876939000_gx8p3lpg.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876942187_v57vs9y3.jpeg'
+    ],
+    colors: [{ name: 'أحمر منقط', hex: '#C0392B' }, { name: 'وردي هادئ', hex: '#DF8A9D' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: false,
+    featured: true,
+    status: 'active',
+    rating: 4.9,
+    reviewsCount: 22,
     stock: 10
+  },
+  {
+    id: '54929551-5958-4b33-9ff9-abe83722cb78',
+    nameAr: 'بيجامة سُكّر — لمسة فيونكة | أوف وايت عاجي',
+    nameEn: 'Sugar Bow Pajama Set — Ivory White',
+    category: 'new',
+    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    priceEG: 800,
+    priceSA: 200,
+    descriptionAr: `أناقة ناعمة بتفاصيل تلفت النظر.
+تأتي بيجامة سُكّر باللون الأوف وايت العاجي بلمسة فيونكة أنثوية تضيف طابعًا رقيقًا لإطلالتك المنزلية وتناسب صباحيات العرائس. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف SULTA الفاخر.
+
+• اللون: أوف وايت عاجي نقي (Bridal Ivory White)
+• الخامة: 95% خامة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة مريحة
+• المقاسات المتوفرة: S, M, L, XL
+• تفاصيل الطقم: قميص نوم عاجي بفيونكات دقيقة وخطوط رقيقة + بنطال واسع ومريح
+• العناية: غسيل يدوي بماء بارد ومنظف مخصص للأقمشة الفاخرة
+
+هدوء اللون العاجي… وأناقة التفاصيل.
+
+تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
+    descriptionEn: 'Sugar Bow Luxury Pajama Set in bridal ivory white with delicate trims and soft bows.',
+    fabricAr: '95% خامة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة',
+    fabricEn: '95% Bridal Ivory Fine Fabric + 5% Comfort Stretch',
+    washInstructionsAr: 'غسيل يدوي بماء بارد ومنظف مخصص للأقمشة البيضاء الفاخرة.',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg'
+    ],
+    colors: [{ name: 'أوف وايت عاجي', hex: '#FDFBF7' }, { name: 'شامبين هادئ', hex: '#F6E7A6' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    featured: true,
+    status: 'active',
+    rating: 5,
+    reviewsCount: 47,
+    stock: 13
   }
 ];
 
@@ -787,9 +1024,9 @@ export const dbService = {
         contactEmail: 'concierge@sulta.sa',
         shippingRates: [
           { regionAr: 'شحن سريع ومجاني لكافة مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Express Shipping', fee: 0 },
-          { regionAr: 'توصيل فاخر بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 35 }
+          { regionAr: 'توصيل فاخر بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 40 }
         ],
-        defaultShippingFee: 35,
+        defaultShippingFee: 40,
         instagram: 'https://www.instagram.com/sultabrand',
         facebook: '',
         tiktok: 'https://www.tiktok.com/@sulta.brand'
@@ -1442,8 +1679,8 @@ export const dbService = {
   },
 
   saveProduct: async (product: Product): Promise<void> => {
-    // Standard allowed categories in CHECK constraint: ('satin', 'cotton', 'loungewear', 'dresses', 'new')
-    const allowedCategories = ['satin', 'cotton', 'loungewear', 'dresses', 'new'];
+    // Standard allowed categories in CHECK constraint: ('soft', 'cotton', 'loungewear', 'dresses', 'new')
+    const allowedCategories = ['soft', 'cotton', 'loungewear', 'dresses', 'new'];
     const safeCategory = allowedCategories.includes(product.category) ? product.category : 'new';
     
     // UUID format check for foreign keys that might cause syntax errors in Supabase strict mode

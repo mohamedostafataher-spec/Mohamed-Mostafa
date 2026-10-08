@@ -162,7 +162,7 @@ export default function OrderDetailView({
                   nameAr: rawP.name_ar || rawP.name || '',
                   nameEn: rawP.name_en || rawP.name || '',
                   category: cat,
-                  categoryAr: rawP.category_ar || 'تصاميم الحرير',
+                  categoryAr: rawP.category_ar || 'تصاميم ملكية',
                   priceEG: Number(rawP.price_eg ?? 0),
                   priceSA: Number(rawP.price_sa ?? 0),
                   descriptionAr: rawP.description_ar || '',
@@ -851,7 +851,7 @@ export default function OrderDetailView({
               { step: 1, label: 'تم الطلب', icon: Clock, desc: 'سجلنا طلبكِ في المنظومة' },
               { step: 2, label: 'تم التأكيد', icon: ShieldCheck, desc: 'مراجعة وتأكيد البيانات' },
               { step: 3, label: 'جاري التجهيز', icon: Package, desc: 'تحضير البجامة وكوتور الخياطة' },
-              { step: 4, label: 'تم التغليف', icon: CheckCircle, desc: 'وضع شريط الحرير والختم الشمعي' },
+              { step: 4, label: 'تم التغليف', icon: CheckCircle, desc: 'وضع شريط ملوكي والختم الشمعي' },
               { step: 5, label: 'تم الشحن', icon: Truck, desc: 'مغادرة الشحنة مع الناقل الملكي' },
               { step: 6, label: 'في الطريق', icon: MapPin, desc: 'المندوب متوجه حالياً لعتبة الدار' },
               { step: 7, label: 'تم التسليم', icon: GiftIconPlaceholder, desc: 'استلام مبارك وسعيد بتمام الأناقة' }
@@ -973,7 +973,7 @@ export default function OrderDetailView({
               🕒 متى يصل طلبي؟
             </button>
             <button 
-              onClick={() => handleSendChatMessage("هل تم شحن باقة الحرير؟ وما هي التفاصيل؟")}
+              onClick={() => handleSendChatMessage("هل تم شحن باقتي؟ وما هي التفاصيل؟")}
               className="text-[10px] bg-white/5 hover:bg-white/10 text-[#F6E7A6] border border-white/10 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
             >
               🚚 هل تم الشحن؟
@@ -1379,7 +1379,7 @@ export default function OrderDetailView({
                 <span className="font-serif italic text-[#A44C5C] text-xs tracking-[0.2em] block mb-2 uppercase">تقييم تجربة سولتة كوتور</span>
                 <h3 className="font-serif text-lg font-bold text-[#0B0B0B]">يسعدنا سماع رأيك الملكي 👑</h3>
                 <p className="text-xs text-gray-500 mt-2">
-                  بعد تسليم طلبيتكِ الفاخرة، يسرنا جداً معرفة لمساتكِ وتجربتكِ لقطع الحرير. تفضلي بتقييم الخدمة ورفع صورة لتجربة التغليف لربح مميزات الـ VIP.
+                  بعد تسليم طلبيتكِ الفاخرة، يسرنا جداً معرفة لمساتكِ وتجربتكِ لقطعنا. تفضلي بتقييم الخدمة ورفع صورة لتجربة التغليف لربح مميزات الـ VIP.
                 </p>
               </div>
 
@@ -1388,7 +1388,7 @@ export default function OrderDetailView({
                 {/* Left col in feedback: Star selection and comment text area */}
                 <div className="md:col-span-7 space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-gray-750 mb-2">كيف تقيّمين جودة التصميم والحرير؟</label>
+                    <label className="block text-xs font-bold text-gray-750 mb-2">كيف تقيّمين جودة التصميم والمنسوجات؟</label>
                     <div className="flex gap-2 flex-row-reverse justify-end">
                       {[5, 4, 3, 2, 1].map((star) => (
                         <button 
@@ -1409,7 +1409,7 @@ export default function OrderDetailView({
                       rows={3}
                       value={satisfactionComment}
                       onChange={(e) => setSatisfactionComment(e.target.value)}
-                      placeholder="اكتبي تجربتكِ مع مقاسات البجامة، ونعومة الحرير، وروائح البوتيك المعطرة للمنتجات..."
+                      placeholder="اكتبي تجربتكِ مع مقاسات البجامة، ونعومة المنسوجات، وروائح البوتيك المعطرة للمنتجات..."
                       className="w-full text-xs p-3.5 rounded-2xl border border-gray-250 bg-white placeholder-gray-400 focus:outline-none focus:border-[#A44C5C] focus:ring-1 focus:ring-[#A44C5C] font-sans"
                     />
                   </div>

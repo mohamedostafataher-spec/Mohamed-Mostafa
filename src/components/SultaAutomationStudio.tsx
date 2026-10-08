@@ -76,7 +76,7 @@ export const stickersMetadata = [
   },
   {
     id: 4,
-    title: "Silk Sleep Mask",
+    title: "Couture Sleep Mask",
     type: "die-cut",
     emoji: "🛌",
     bgColor: "bg-pink-50",
@@ -118,7 +118,7 @@ export const stickersMetadata = [
   },
   {
     id: 6,
-    title: "Coquette Satin Bow",
+    title: "Coquette Couture Bow",
     type: "bow",
     emoji: "🎀",
     bgColor: "bg-pink-100",
@@ -415,13 +415,13 @@ export default function SultaAutomationStudio({
     "Sweet Dreams Are Made of SULTA 🌟",
     "لا توقظي الأميرة قبل الظهر من فضلك! 😴",
     "Cozy Girlhood Forever ✨",
-    "نصفي ممتلئ بالقهوة.. والنصف الآخر بالحرير ☕",
+    "نصفي ممتلئ بالقهوة.. والنصف الآخر بالدلال ☕",
     "Eau De Sleep: 100% SULTA 🌸",
     "مستوى الدلال اليومي: ملكي متوج 👑",
     "Sleeping is my cardio 🛌",
     "أعطوني بيجامة وسأغير العالم.. غداً! 🦄",
     "SULTA Sweetheart ❤️",
-    "عالم مليء بالفيونكات والحرير الخالص 🎀",
+    "عالم مليء بالفيونكات والجمال الخالص 🎀",
     "Overthinking is canceled, Bedtime is active! 🚫",
     "دائماً متألقة ببيجامتي الوردية ★ SULTA 💖"
   ]);
@@ -466,22 +466,22 @@ export default function SultaAutomationStudio({
       
       setTagSku(activeProduct.sku || `SLT-${activeProduct.id ? activeProduct.id.slice(0, 5).toUpperCase() : 'COUT'}`);
       setTagSize(activeProduct.sizes && activeProduct.sizes.length > 0 ? activeProduct.sizes.join(' / ') : 'M / L');
-      setTagFabric(activeProduct.fabricAr || 'حرير عضوي ملكي معالج');
+      setTagFabric(activeProduct.fabricAr || 'نسيج عضوي ملكي معالج');
       setTagPrice(`${activeProduct.priceSA ? activeProduct.priceSA.toLocaleString() : '450'} ر.س`);
       
       setCareWashing(activeProduct.washInstructionsAr || 'يغسل يدوياً بماء بارد (تحت 30 درجة) مع تجنب المحاليل المبيضة للحفاظ على مرونة النسيج اللطيف.');
       setCareDrying(`يجفف بالتعليق في مكان ظليل بعيداً عن أشعة الشمس المباشرة لمنع بهتان الألياف وبقاء رونقها.`);
       setCareIroning(`يكوى بكيّ بارد خفيف وبخار ذكي من الناحية الداخلية وببطانة رقيقة لحفظ رقة دانتيل سولا.`);
       
-      setFabricTitle(`⚜️ شهادة وثوقية نسيج [${activeProduct.fabricAr || 'حرير كوتور المترف'}]`);
-      setFabricDesc(`تؤكد دار SULTA أن هذا المنتج منسوج كلياً من أجود خيوط الحرير الطبيعي ملمس الساتين الناعم. خيوط معالجة حرارياً لتلاؤم بشرتكم وتتنفس بحرية كاملة.`);
+      setFabricTitle(`⚜️ شهادة وثوقية نسيج [${activeProduct.fabricAr || 'كوتور المترف'}]`);
+      setFabricDesc(`تؤكد دار SULTA أن هذا المنتج منسوج كلياً من أجود خيوط النسيج الطبيعي الملمس الناعم. خيوط معالجة حرارياً لتلاؤم بشرتكم وتتنفس بحرية كاملة.`);
       
       setVipHolder(`صاحبة السمو أميرة سولا`);
-      setVipTier(`العضوية الذهبية الحريرية (Gold Family)`);
+      setVipTier(`العضوية الذهبية الملوكية (Gold Family)`);
       setVipBenefits(`خصم ثابت 10% مدى الحياة على كارت الـ VIP للمجموعات القادمة مع وصول مبكر للتصاميم الباريسية الحصرية.`);
       
       setInsertStory(`نحن في سولا نؤمن أن النوم ليس مجرد راحة، بل هو طقس ملكي تتدثرين فيه بالنعومة الخالصة لتستيقظي كالملكة المتوجة.`);
-      setInsertScent(`طرد معطر برائحة الساتين والحرير المعتق بعبير: اللافندر والمسك الأبيض الخلاب`);
+      setInsertScent(`طرد معطر برائحة النسيج الملوكي والمعتق بعبير: اللافندر والمسك الأبيض الخلاب`);
       
       setQrSupport(`دعم كونسيرج ومبيعات سولا`);
       setQrSocial(`كتالوج المجموعات الجديد بالمملكة والخليج`);
@@ -688,14 +688,14 @@ export default function SultaAutomationStudio({
     const specSheet = `*مواصفات طباعة كيت التغليف المؤتمت لبراند SULTA SLEEPWEAR*
 المنتج المختار: ${productName}
 كود البكج البصري (SKU): ${tagSku || 'SLT-MASTER'}
-خيوط النسيج المختارة: ${tagFabric || 'حرير طبيعي كوتور'}
-المقاس المعتمَد: ${tagSize || 'M / L'}
+خيوط النسيج المختارة: ${tagFabric || 'قطن ملكي كوتور'}
+مقاس المعتمَد: ${tagSize || 'M / L'}
 جهة التوريد التقنية: SULTA Packaging Studio Auto-Generate
 
 تفاصيل المقاسات والمواد المطلوبة لكل من العناصر الـ 8 الفنية:
 1- كارت الشكر الفاخر (Thank You Card): مقاس 14.8 × 10.5 سم | ورق محبب (Textured Cardstock) بوزن 350 جرام.
 2- الستيكر المستدير (Luxury Sticker): مقاس 6 × 6 سم | طباعة ورق مذهب مطفي أو فينيل شفاف محمي عيار Spot UV.
-3- كارت السعر والعلاقة (Hang Tag): مقاس 5 × 9 سم | فتحة شريط حريري علوي 3.5 ملم | سلوفان مخملي مطفي.
+3- كارت السعر والعلاقة (Hang Tag): مقاس 5 × 9 سم | فتحة شريط ملكي علوي 3.5 ملم | سلوفان مخملي مطفي.
 4- كارت رعاية النسيج الصديق (Care Instructions): مقاس 9 × 9 سم | طباعة حبرية آمنة على ورق كرافت ناعم.
 5- كارت مواصفات النسيج المترف (Fabric Info): مقاس 12 × 8 سم | كرتون سلوفان عاكس للضوء مع طلاء ملمسي.
 6- بطاقات الـ VIP الذهبية المعدنية (VIP Card): مقاس 8.5 × 5.4 سم | طباعة PVC مع هولوغرام ورموز مذهبة نافرة.
@@ -789,7 +789,7 @@ export default function SultaAutomationStudio({
                   <div className="text-right">
                     <span className="text-xs font-black text-stone-800 block truncate max-w-[150px]">{p.nameAr}</span>
                     <span className="text-[10px] font-bold text-[#A44C5C] block">
-                      {p.priceEG ? p.priceEG.toLocaleString() : '3,900'} ج.م • {p.fabricAr ? p.fabricAr.slice(0, 15) : 'حرير طبيعي'}
+                      {p.priceEG ? p.priceEG.toLocaleString() : '3,900'} ج.م • {p.fabricAr ? p.fabricAr.slice(0, 15) : 'نسيج ملكي'}
                     </span>
                   </div>
                 </button>
@@ -836,7 +836,7 @@ export default function SultaAutomationStudio({
                 { id: 'thank_you_card', name: '✉️ كارت الشكر' },
                 { id: 'sticker_logo', name: '🏷️ ستيكر الهوية' },
                 { id: 'hang_tag', name: '🔖 كارت التسعير / تاغ' },
-                { id: 'care_card', name: '🧴 كارت الرعاية بالحرير' },
+                { id: 'care_card', name: '🧴 كارت الرعاية بالمنتج' },
                 { id: 'fabric_card', name: '📜 بطاقة ميزات القماش' },
                 { id: 'vip_card', name: '💳 بطاقة العضوية VIP' },
                 { id: 'insert_card', name: '🎀 كرت حشو البوكس' },
@@ -1360,7 +1360,7 @@ export default function SultaAutomationStudio({
                       className="accent-[#A44C5C]"
                     />
                     <label htmlFor="boxRibbonCheck" className="text-[10px] text-stone-700 font-bold cursor-pointer select-none">
-                      إضافة شريط حريري تزييني (Silk Ribbon) حول العلبة
+                      إضافة شريط ملكي تزييني حول العلبة
                     </label>
                   </div>
                 </div>
@@ -1871,7 +1871,7 @@ export default function SultaAutomationStudio({
                         <div className="bg-stone-50 p-2.5 rounded-xl border border-stone-150 text-right space-y-0.5">
                           <span className="text-[9px] font-black text-[#A44C5C] block">💡 معلومات المعاينة والإنتاج:</span>
                           <p className="text-[8px] text-stone-500 leading-normal">
-                             هذا منظور مجسم يحاكي دقة اللمعان وانعكاسات الحرير الخارجي. لطباعة التصميم بدقة أرسلي المخطط المسطح للمصنع المصري.
+                             هذا منظور مجسم يحاكي دقة اللمعان وانعكاسات المنسوجات الخارجية. لطباعة التصميم بدقة أرسلي المخطط المسطح للمصنع المصري.
                           </p>
                         </div>
                       </div>
@@ -2052,7 +2052,7 @@ export default function SultaAutomationStudio({
                     <div className="text-[10px] leading-tight text-stone-750 flex justify-between font-medium">
                       <span className="text-stone-400 ml-1">القطعة:</span>
                       <span className="font-bold text-stone-900 truncate max-w-[110px] text-left">
-                        {activeProduct?.nameAr || 'بيجامة دلال الحرير'}
+                        {activeProduct?.nameAr || 'بيجامة دلال الملكي'}
                       </span>
                     </div>
                     <div className="text-[10px] leading-none text-stone-750 flex justify-between">
@@ -2097,7 +2097,7 @@ export default function SultaAutomationStudio({
                   className="w-72 h-72 bg-[#FAFAF9] border border-stone-200 rounded-2xl p-5 flex flex-col justify-between text-right shadow-md text-stone-900 animate-fade-in-rapid"
                 >
                   <div className="text-center font-serif text-[11px] font-black border-b border-stone-200 pb-2 w-full text-[#A44C5C] tracking-wide">
-                    🧴 دليل الرعاية والحفاظ على حرير SULTA كوتور
+                    🧴 دليل الرعاية والحفاظ على منتجات SULTA كوتور
                   </div>
 
                   <div className="my-auto space-y-2">
@@ -2205,7 +2205,7 @@ export default function SultaAutomationStudio({
                   <div className="flex justify-between items-center text-[9px] text-[#A44C5C] font-black font-sans">
                     <span className="flex items-center gap-1 text-stone-500 font-bold">
                       <span>🧪 الرائحة العطرية المعالجة:</span>
-                      <span className="bg-[#FFF] border border-stone-200 px-2 py-0.5 rounded-md text-stone-800 text-[8.5px] font-serif uppercase tracking-wider">{insertScent.replace('طرد معطر برائحة الساتين والحرير المعتق بعبير:', '').trim()}</span>
+                      <span className="bg-[#FFF] border border-stone-200 px-2 py-0.5 rounded-md text-stone-800 text-[8.5px] font-serif uppercase tracking-wider">{insertScent.replace('طرد معطر برائحة النسيج الملوكي والمعتق بعبير:', '').trim()}</span>
                     </span>
                     <span>مع كامل الود الفخم 🌸</span>
                   </div>
@@ -2308,7 +2308,7 @@ export default function SultaAutomationStudio({
             <div>
               <p className="font-bold text-stone-900">💡 أتمتة مستندات الطباعة بالكامل لبراند SULTA:</p>
               <p className="mt-1 text-stone-600">
-                عند إضافتكِ لأي منتج جديد كلياً في قاعدة بيانات Supabase، يتعرّف محرك الذكاء الاصطناعي <b>Creative Packaging AI Engine</b> على خصائص القطعة ميكانيكياً ويقوم برسم الكروت وخطوط رعاية الحرير وتجهيز القماش والملصقات تلقائياً دون أي حاجة للاستعانة ببرامج تصميم خارجية.
+                عند إضافتكِ لأي منتج جديد كلياً في قاعدة بيانات Supabase، يتعرّف محرك الذكاء الاصطناعي <b>Creative Packaging AI Engine</b> على خصائص القطعة ميكانيكياً ويقوم برسم الكروت وخطوط رعاية الكوتور وتجهيز القماش والملصقات تلقائياً دون أي حاجة للاستعانة ببرامج تصميم خارجية.
               </p>
             </div>
           </div>
@@ -2368,7 +2368,7 @@ export default function SultaAutomationStudio({
             onClick={() => setActiveAssetId('care_card')}
             className={`bg-stone-50 p-3 rounded-2xl border cursor-pointer hover:border-[#A44C5C] transition-all text-center space-y-2 ${activeAssetId === 'care_card' ? 'border-[#A44C5C] bg-[#FFF8FA]' : 'border-stone-200'}`}
           >
-            <span className="text-[10px] font-bold text-[#A44C5C] block">🧴 كارت غسل الحرير</span>
+            <span className="text-[10px] font-bold text-[#A44C5C] block">🧴 كارت غسل المنسوجات</span>
             <div className="h-24 bg-white rounded-lg border border-stone-150 flex items-center justify-center overflow-hidden scale-90">
               <span className="text-[8px] text-stone-400 p-2 text-center">تعليمات الرعاية والدلال</span>
             </div>

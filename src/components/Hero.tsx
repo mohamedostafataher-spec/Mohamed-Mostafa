@@ -20,9 +20,9 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
 
   const fallbackBanners = [
     {
-      mediaUrl: '/img/sulta_silk_luxury_banner.jpg',
+      mediaUrl: '/img/sulta_couture_luxury_banner.jpg',
       title: 'أزياء النوم الفاخرة',
-      subtitle: 'بيجامات وأرواب الحرير الفاخر المبرد',
+      subtitle: 'بيجامات وأرواب الكوتور الفاخر المبرد',
       ctaText: 'تسوقي التشكيلة الآن',
       mediaType: 'image'
     },
@@ -48,7 +48,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
     url: cleanImgUrl(b.mediaUrl || b.url, 'sleepwear'),
     alt: b.title || 'SULTA',
     title: b.title || 'أزياء النوم الفاخرة',
-    subtitle: b.subtitle || 'بيجامات وأرواب الحرير الملكي',
+    subtitle: b.subtitle || 'بيجامات وأرواب القطع الملكية',
     ctaText: b.ctaText || 'تسوقي الآن',
     mediaType: b.mediaType || 'image'
   }));

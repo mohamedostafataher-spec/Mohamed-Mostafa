@@ -22,7 +22,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
     {
       id: 'sulta-m1',
       title: 'سلطانة في السرير، ملكة في الكهف 👑',
-      description: 'للسلطانات اللواتي يعشقن النوم العميق ببيجامات الحرير المطرزة يدوياً.',
+      description: 'للسلطانات اللواتي يعشقن النوم العميق ببيجامات الكوتور المطرزة يدوياً.',
       imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
       category: 'meme',
       sharesCount: 142
@@ -45,7 +45,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
     },
     {
       id: 'sulta-s2',
-      title: 'سحر الملمس الحريري الفاتن ✨',
+      title: 'سحر الملمس الملوكي الفاتن ✨',
       description: 'تحذير ملكي: القطعة ناعمة جداً لدرجة تخدر الحواس فور ملامستها للبشرة.',
       imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600&auto=format&fit=crop',
       category: 'sticker',

@@ -76,7 +76,7 @@ export default function PremiumLuxuryExperience({
       } else {
         // Fallback videos
         setVids([
-          { id: 'v1', title: 'مجموعة الحرير الفاخرة لعام 2026', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-girl-in-satin-pajamas-stretching-in-bed-41618-large.mp4', productId: 'satin-blush' },
+          { id: 'v1', title: 'مجموعة الكوتور الفاخرة لعام 2026', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-girl-in-satin-pajamas-stretching-in-bed-41618-large.mp4', productId: 'satin-blush' },
           { id: 'v2', title: 'مجموعة العروس الملكية', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bride-in-white-silk-robe-getting-ready-40015-large.mp4', productId: 'ivory-dream' }
         ]);
       }
@@ -185,7 +185,7 @@ export default function PremiumLuxuryExperience({
     let prSa = giftProducts.reduce((sum, p) => sum + p.priceSA, 0);
     let prEg = giftProducts.reduce((sum, p) => sum + p.priceEG, 0);
     // Add packaging fee
-    const packFee = packaging === 'royal-chest' ? 120 : packaging === 'midnight-box' ? 60 : 35;
+    const packFee = packaging === 'royal-chest' ? 120 : packaging === 'midnight-box' ? 60 : 40;
     return { sa: prSa + (currentCountry === 'SA' ? packFee : packFee * 8), eg: prEg + (currentCountry === 'EG' ? packFee * 8 : packFee) };
   };
 
@@ -274,8 +274,8 @@ export default function PremiumLuxuryExperience({
   // =====================================
   const defaultMoods = [
     { slug: 'cozy', nameAr: 'ليالي مريحة ودافئة (Cozy Night)', icon: '🕯️', desc: 'بجايم وفساتين قطن مضلع معالج بنعومة عالية تمنحك استكناناً وهدوءاً.' },
-    { slug: 'luxury', nameAr: 'قمة الترف والوقار (Luxury Night)', icon: '👑', desc: 'أطقم كوتور حرير فاخر مع دانتيل راقي مطرز يدوياً لتكوني نجمة ساطعة.' },
-    { slug: 'bride', nameAr: 'جناح سولتة للعروس (Bride Suite)', icon: '👰', desc: 'مزيج من الروز ناصع البياض والسلاسل الحريرية للأوقات الخاصة الخالدة.' },
+    { slug: 'luxury', nameAr: 'قمة الترف والوقار (Luxury Night)', icon: '👑', desc: 'أطقم كوتور فاخرة مع دانتيل راقي مطرز يدوياً لتكوني نجمة ساطعة.' },
+    { slug: 'bride', nameAr: 'جناح سولتة للعروس (Bride Suite)', icon: '👰', desc: 'مزيج من الروز ناصع البياض والقطع الملكية للأوقات الخاصة الخالدة.' },
     { slug: 'travel', nameAr: 'سفر دائم الترطيب (Travel Collection)', icon: '✈️', desc: 'تصاميم خفيفة للتوضيب، مريحة وأنيقة في ردهات الفنادق العالمية.' }
   ];
 
@@ -293,7 +293,7 @@ export default function PremiumLuxuryExperience({
   // 5. BUNDLE ENGINE MODULE
   // =====================================
   const bundleDeals = [
-    { id: 'b2', titleAr: 'باقة الحرير الثنائية (خياران للرفاهية)', descAr: 'اشتري أي قطعتين حرير واحصل على خصم 15% فوري ومستودع هدايا مجاناً.', discount: 0.15 },
+    { id: 'b2', titleAr: 'باقة الكوتور الثنائية (خياران للرفاهية)', descAr: 'اشتري أي قطعتين كوتور واحصل على خصم 15% فوري ومستودع هدايا مجاناً.', discount: 0.15 },
     { id: 'b3', titleAr: 'مجموعة العروس الذهبية المتكاملة (3 قطع)', descAr: 'اختر 3 قطع كوتور واستمتع بخصم 25% مع علبة القطيفة الملكية وسوار مهدى.', discount: 0.25 }
   ];
 
@@ -464,7 +464,7 @@ export default function PremiumLuxuryExperience({
                     <Layers className="text-[#DF8A9C]" />
                     منسق الإطلالات الملكي الشامل (Supreme Couture Outfit Builder)
                   </h3>
-                  <p className="text-gray-400 text-xs mt-1">امزجي قطع الحرير والبيجامات مع روب الدانتيل والحليّ والنعال للحصول على توليفة مظهر مثالية بالذوق الملكي.</p>
+                  <p className="text-gray-400 text-xs mt-1">امزجي قطع الكوتور والبيجامات مع روب الدانتيل والحليّ والنعال للحصول على توليفة مظهر مثالية بالذوق الملكي.</p>
                 </div>
               </div>
 
@@ -640,7 +640,7 @@ export default function PremiumLuxuryExperience({
                         className={`p-4 border rounded-2xl cursor-pointer transition-all ${packaging === 'midnight-box' ? 'border-[#DF8A9C] bg-[#DF8A9C]/5' : 'border-gray-100 hover:border-gray-200'}`}
                       >
                         <div className="text-xl mb-1">🖤</div>
-                        <div className="text-xs font-bold text-gray-950">صندوق SULTA الأسود الحريري</div>
+                        <div className="text-xs font-bold text-gray-950">صندوق SULTA الأسود الملوكي</div>
                         <p className="text-[10px] text-gray-400 mt-1">صندوق خشبي فاخر مكسو بالكتان المعطر برذاذ العود الخالص (60 ر.س)</p>
                       </div>
 
@@ -649,8 +649,8 @@ export default function PremiumLuxuryExperience({
                         className={`p-4 border rounded-2xl cursor-pointer transition-all ${packaging === 'pink-sack' ? 'border-[#DF8A9C] bg-[#DF8A9C]/5' : 'border-gray-100 hover:border-gray-200'}`}
                       >
                         <div className="text-xl mb-1">🌸</div>
-                        <div className="text-xs font-bold text-gray-950">كيس الحرير الوردي من الأتيليه</div>
-                        <p className="text-[10px] text-gray-400 mt-1">كيس حريري معطر مغلق بالشرائط المخملية للهدية الرقيقة (35 ر.س)</p>
+                        <div className="text-xs font-bold text-gray-950">كيس الكوتور الوردي من الأتيليه</div>
+                        <p className="text-[10px] text-gray-400 mt-1">كيس ملكي معطر مغلق بالشرائط المخملية للهدية الرقيقة (40 ر.س)</p>
                       </div>
 
                       <div 
@@ -729,7 +729,7 @@ export default function PremiumLuxuryExperience({
                     <div className="flex justify-between text-xs text-gray-600 bg-white p-3 border border-gray-100 rounded-xl">
                       <span>نوع التغليف المجهر:</span>
                       <span className="font-bold text-gray-800">
-                        {packaging === 'midnight-box' ? '🖤 صندوق الحرير الأسود' : packaging === 'pink-sack' ? '🌸 الكيس الحريري الوردي' : '👑 المخمل المخرم الملكي'}
+                        {packaging === 'midnight-box' ? '🖤 صندوق الملكي الأسود' : packaging === 'pink-sack' ? '🌸 الكيس الملكي الوردي' : '👑 المخمل المخرم الملكي'}
                       </span>
                     </div>
 
@@ -823,7 +823,7 @@ export default function PremiumLuxuryExperience({
                   <h4 className="text-sm font-serif font-semibold text-gray-900">النسيج والملمس الذي تذوبين فيه دلالاً؟</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button onClick={() => handleSelectQuizAnswer('fabric', 'satin')} className="p-4 border rounded-2xl border-gray-100 hover:border-[#DF8A9C] text-xs font-bold transition-all hover:bg-[#DF8A9C]/5">
-                      ✨ حرير ملكي ناعم بارد وخفيف كالحلم
+                      ✨ نسيج ملكي ناعم بارد وخفيف كالحلم
                     </button>
                     <button onClick={() => handleSelectQuizAnswer('fabric', 'cotton')} className="p-4 border rounded-2xl border-gray-100 hover:border-[#DF8A9C] text-xs font-bold transition-all hover:bg-[#DF8A9C]/5">
                       🧶 قطن سُلطة الملكي العضوي يتنفس معكِ
@@ -1083,7 +1083,7 @@ export default function PremiumLuxuryExperience({
                     onClick={() => setLookbookSelectedProd(products[1] || products[0])}
                     className="absolute bottom-1/3 left-1/4 bg-[#A44C5C] text-[#F3E5AB] px-3 py-1.5 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1.5 animate-pulse"
                   >
-                    🥛 حرير لؤلؤ العاج <span className="text-[#DF8A9C] font-sans">{formatPrice(2500, 310)}</span>
+                    🥛 نسيج لؤلؤ العاج <span className="text-[#DF8A9C] font-sans">{formatPrice(2500, 310)}</span>
                   </button>
 
                   <div className="absolute bottom-4 right-4 bg-black/60 text-white p-3 rounded-xl text-3xs">
@@ -1150,7 +1150,7 @@ export default function PremiumLuxuryExperience({
                   <Tv className="text-rose-600" />
                   قناة وشاشة تليفزيون سولتة لايف (SULTA TV - Luxury Video Commerce)
                 </h3>
-                <p className="text-gray-400 text-xs mt-1">تسوّقي بكل سهولة من معارض الفيديو المستمرة. مع كل حركة وتفاصيل انسياب الحرير، أضيفي المنتج الظاهر في الفيديو بلمسة واحدة.</p>
+                <p className="text-gray-400 text-xs mt-1">تسوّقي بكل سهولة من معارض الفيديو المستمرة. مع كل حركة وتفاصيل انسياب المنسوجات، أضيفي المنتج الظاهر في الفيديو بلمسة واحدة.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1272,7 +1272,7 @@ export default function PremiumLuxuryExperience({
                           <SultaImage src={cleanImgUrl("/img/sulta_product_1.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">ميار أسامة - الرياض</span>
-                            <p className="text-[9px] text-gray-400 line-clamp-2">" خامة الحرير ثقيلة وبديعة، التغليف الملكي عطر الدار يجنن! "</p>
+                            <p className="text-[9px] text-gray-400 line-clamp-2">" الخامات ثقيلة وبديعة، التغليف الملكي عطر الدار يجنن! "</p>
                           </div>
                         </div>
 

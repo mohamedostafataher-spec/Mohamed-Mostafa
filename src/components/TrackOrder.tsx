@@ -208,7 +208,7 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
           </div>
           <span className="text-[10px] uppercase font-bold tracking-widest text-[#A44C5C]/70 block mb-1 font-sans">SULTA Atelier & Boutique</span>
           <h1 className="font-serif text-3.5xl text-gray-950 font-light tracking-tight mb-2.5">بوابة التتبع المباشرة</h1>
-          <p className="text-gray-500 font-sans text-xs max-w-sm mx-auto leading-relaxed">أدخلي بيانات طلبكِ الحريري للاستعلام العاجل ومتابعة رحلة الباقة الملكية حتى عتبة داركم.</p>
+          <p className="text-gray-500 font-sans text-xs max-w-sm mx-auto leading-relaxed">أدخلي بيانات طلبكِ الملكي للاستعلام العاجل ومتابعة رحلة الباقة الملكية حتى عتبة داركم.</p>
         </motion.div>
 
         {/* Grand Luxury Segment Switcher & Control Panel */}

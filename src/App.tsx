@@ -41,7 +41,7 @@ import RoyalSensesSalon from './components/RoyalSensesSalon';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import MobileBottomNav from './components/MobileBottomNav';
 
-import { dbService, supabase, cleanImgUrl } from './services/db';
+import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
 import { recordView, recordCartAddition } from './utils/analytics';
 
@@ -65,33 +65,13 @@ function AppContent() {
   const [country, setCountry] = useState<Country>('SA');
   const [autoTrackId, setAutoTrackId] = useState<string | null>(null);
 
-  // Synchronise manually chosen country changes to localStorage
+  // High-precision geographic country detector
   useEffect(() => {
+    // Synchronise manually chosen country changes to localStorage
     try {
-      localStorage.setItem('sulta_user_country_preference', 'SA');
+      localStorage.setItem('sulta_user_country_preference', country);
     } catch (e) {}
-  }, []);
-
-  // High-precision geographic country detector (Forced to Saudi identity)
-  useEffect(() => {
-    // Force Saudi Arabia as the only brand territory
-    if (country !== 'SA') {
-      setCountry('SA');
-    }
-
-    // Beautiful Luxe notification removed as per user request to reduce popups
-    /*
-    const sessionAlerted = sessionStorage.getItem('sulta_country_alerted');
-    if (!sessionAlerted) {
-      sessionStorage.setItem('sulta_country_alerted', 'true');
-      const welcomeMessage = `أهلاً بكِ في سُـلـطَـة 🇸🇦 متجر أزياء النوم والبيجامات الحريرية الفاخرة بالمملكة العربية السعودية.`;
-      
-      setTimeout(() => {
-        toast(welcomeMessage, 'success');
-      }, 1500);
-    }
-    */
-  }, [country, toast]);
+  }, [country]);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
@@ -122,7 +102,7 @@ function AppContent() {
     }
   });
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(SEED_FALLBACK_PRODUCTS);
   const [coupons, setCoupons] = useState<DiscountCoupon[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -668,10 +648,10 @@ function AppContent() {
   const catalogPool = activeProducts.length > 0 ? activeProducts : (filteredProducts.length > 0 ? filteredProducts : products);
 
   // Distinct product pools to eliminate repetitive product displays (Zero duplication)
-  const bestSellers = catalogPool.slice(0, 6);
+  const bestSellers = catalogPool.slice(0, 4);
   const bestSellerIds = new Set(bestSellers.map(p => p.id));
   const remainingProducts = catalogPool.filter(p => !bestSellerIds.has(p.id));
-  const newArrivals = remainingProducts.length > 0 ? remainingProducts.slice(0, 6) : catalogPool.slice(6, 12);
+  const newArrivals = remainingProducts.length > 0 ? remainingProducts : catalogPool.slice(2, 6);
   const featuredProducts = catalogPool.slice(0, 6);
   const trendingProducts = catalogPool.slice(0, 6);
   const seasonalCollections = catalogPool.slice(0, 6);
@@ -726,7 +706,7 @@ function AppContent() {
             {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}
             {[
               { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
-              { title: 'وصل حديثاً من تشكيلة البيجامات الملكية ✨', label: 'أحدث تصاميم أزياء النوم والحرير الفاخر', data: newArrivals },
+              { title: 'وصل حديثاً من تشكيلة البيجامات الملكية ✨', label: 'أحدث تصاميم أزياء النوم والقطع الفاخرة', data: newArrivals },
             ].map((section, sectionIdx) => (
               <React.Fragment key={section.title}>
                 <section className={`${sectionIdx === 0 ? 'pt-3 sm:pt-5 pb-8 sm:pb-12' : 'py-8 sm:py-12'} ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
@@ -865,7 +845,7 @@ function AppContent() {
                           <span>خصم إضافي وشحن مجاني 🏷️</span>
                         </div>
                         <h4 className="text-base sm:text-xl font-black text-gray-950">
-                          وفري حتى 30% على تشكيلات النوم والحرير الملكي
+                          وفري حتى 30% على تشكيلات النوم والقطع الملكية
                         </h4>
                         <p className="text-gray-600 text-[11px] sm:text-xs">
                           استخدمي كود الخصم الترحيبي <strong className="font-mono text-black bg-white px-2 py-0.5 rounded border border-gray-300">SULTA20</strong> عند إتمام الطلب للحصول على خصم فوري وشحن مجاني!
@@ -934,7 +914,7 @@ function AppContent() {
                   </div>
                   <div className="text-right">
                     <span className="block font-bold text-gray-950 text-xs sm:text-sm">شحن سريع ومجاني</span>
-                    <span className="text-[10px] sm:text-[11px] text-gray-500">لكافة مدن ومناطق المملكة للطلبات فوق 800 ر.س 🇸🇦</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">لكافة مدن المملكة للطلبات فوق 800 ر.س (قياسي 40 ر.س) 🇸🇦</span>
                   </div>
                 </div>
 
@@ -944,7 +924,7 @@ function AppContent() {
                   </div>
                   <div className="text-right">
                     <span className="block font-bold text-gray-950 text-xs sm:text-sm">سداد آمن 100%</span>
-                    <span className="text-[10px] sm:text-[11px] text-gray-500">مدى، Apple Pay والدفع عند الاستلام</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">مدى، باي بال والدفع عند الاستلام</span>
                   </div>
                 </div>
 
@@ -1341,7 +1321,7 @@ function AppContent() {
               <button type="button" onClick={() => setTab('faq')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
               <button type="button" onClick={() => setTab('track-order')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">تتبع طلبيتكِ</button>
               <button type="button" onClick={() => setTab('returns')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
-              <button type="button" onClick={() => setTab('fabrics')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات الحريرية والحرير</button>
+              <button type="button" onClick={() => setTab('fabrics')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات والمنسوجات</button>
               <button type="button" onClick={() => setTab('contact')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">اتصلي بنا</button>
               <div className="pt-2 text-[10.5px] text-gray-400 leading-normal">
                 ✓ شحن سريع ومغلف بعناية فائقة<br />
@@ -1562,7 +1542,7 @@ function AppContent() {
                 <input
                   type="text"
                   autoFocus
-                  placeholder="ابحثي عن حرير، عرايس، شتوي..."
+                  placeholder="ابحثي عن كوتور، عرايس، شتوي..."
                   value={searchQuery}
                   onChange={(e) => handleSearchQueryChange(e.target.value)}
                   className="w-full bg-gray-50 rounded-full border border-gray-300 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/15 focus:border-black text-right shadow-2xs font-sans"

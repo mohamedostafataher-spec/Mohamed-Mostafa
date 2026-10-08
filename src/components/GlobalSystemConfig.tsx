@@ -34,9 +34,9 @@ export default function GlobalSystemConfig({
     if (settings) {
       setShippingRates(settings.shippingRates || [
         { regionAr: 'شحن سريع ومجاني لكافة مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Flat Shipping Rate', fee: 0 },
-        { regionAr: 'شحن وتوصيل فوري بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 35 }
+        { regionAr: 'شحن وتوصيل فوري بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 40 }
       ]);
-      setDefaultShippingFee(settings.defaultShippingFee || 35);
+      setDefaultShippingFee(settings.defaultShippingFee || 40);
       setContactPhone(settings.contactPhone || '+966 59 689 4393');
       setWhatsapp(settings.whatsapp || '966596894393');
       setContactPhoneSaudi(settings.contactPhoneSaudi || '+966 59 689 4393');
