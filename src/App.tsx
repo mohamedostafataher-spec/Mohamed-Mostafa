@@ -542,6 +542,15 @@ function AppContent() {
     toast(`تهانينا! 🎉 تم حجز طلبك الفاخر بنجاح برقم الاستعلام: ${newOrder.id}. تم إرسال تفاصيل الفاتورة عبر واتساب.`, 'success');
   };
 
+  const handleTrackOrderFromModal = (orderId: string) => {
+    setCart([]);
+    setAppliedCoupon(null);
+    setIsCheckoutOpen(false);
+    setAutoTrackId(orderId);
+    setTab('track-order');
+    toast(`جاري عرض بيانات تتبع طلبيتكِ الملكية 📦`, 'success');
+  };
+
   // Select Product Handler (updates customer history)
   const handleSelectProduct = (product: Product) => {
     recordView(product.id);
@@ -1266,6 +1275,7 @@ function AppContent() {
           appliedCoupon={appliedCoupon}
           onClose={() => setIsCheckoutOpen(false)}
           onOrderSuccess={handleOrderSuccess}
+          onTrackOrder={handleTrackOrderFromModal}
           settings={settings}
         />
       )}
@@ -1356,10 +1366,11 @@ function AppContent() {
             <div className="pt-2">
               <h5 className="font-bold text-[11px] text-gray-900 mb-2">وسائل الدفع المعتمدة بالمملكة</h5>
               <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="bg-[#111827] text-white px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">Pay Apple Pay</span>
+                <span className="bg-[#003087] text-white px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs font-sans">PayPal باي بال</span>
                 <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">mada مدى</span>
                 <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">Visa</span>
                 <span className="bg-orange-50 text-orange-850 border border-orange-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">Mastercard</span>
+                <span className="bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded text-[10px] font-bold">تحويل بنكي</span>
                 <span className="bg-gray-100 text-gray-900 border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
               </div>
             </div>

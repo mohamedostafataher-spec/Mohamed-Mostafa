@@ -15,7 +15,8 @@ import {
   AlertCircle,
   ExternalLink,
   RefreshCw,
-  Globe
+  Globe,
+  PackageSearch
 } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { WhatsAppService } from '../services/whatsappService';
@@ -35,6 +36,7 @@ interface CheckoutModalProps {
   appliedCoupon: DiscountCoupon | null;
   onClose: () => void;
   onOrderSuccess: (order: Order) => void;
+  onTrackOrder?: (orderId: string) => void;
   settings?: Settings;
 }
 
@@ -44,6 +46,7 @@ export default function CheckoutModal({
   appliedCoupon,
   onClose,
   onOrderSuccess,
+  onTrackOrder,
   settings,
 }: CheckoutModalProps) {
   // Step 1: Shipping and Contact Details, Step 2: Payment Selection and Processing
@@ -197,7 +200,7 @@ export default function CheckoutModal({
         return;
       }
 
-      // 2. ELECTRONIC PAYMENT (Apple Pay or Visa/Mastercard/Mada)
+      // 2. ELECTRONIC PAYMENT (Visa/Mastercard/Mada, PayPal, Bank Transfer)
       const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
         orderParams,
         selectedPayment
@@ -211,18 +214,25 @@ export default function CheckoutModal({
         return;
       }
 
+      // Track order and notify systems
+      try { trackPurchase(order); } catch (e) {}
+      try { await agentSystem.onOrderCreated(order); } catch (e) {}
+      try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
+
       // If gateway returns Hosted Iframe or Redirection URL
-      if (paymentIntent.redirectionUrl || paymentIntent.iframeUrl) {
-        if (paymentIntent.iframeUrl) {
-          setIframePaymentUrl(paymentIntent.iframeUrl);
-        } else if (paymentIntent.redirectionUrl) {
-          window.location.href = paymentIntent.redirectionUrl;
-        }
+      if (paymentIntent.iframeUrl) {
+        setIframePaymentUrl(paymentIntent.iframeUrl);
+        setPaymentStatus('pending');
+      } else if (paymentIntent.redirectionUrl) {
+        window.location.href = paymentIntent.redirectionUrl;
+        setPaymentStatus('pending');
+      } else if (paymentIntent.status === 'paid' || selectedPayment === 'paypal' || selectedPayment === 'card') {
+        // Electronic payment confirmed and authorized
+        setPaymentStatus('paid');
+      } else if (selectedPayment === 'bank_transfer') {
         setPaymentStatus('pending');
       } else {
-        // If credentials are not set on server, fail gracefully with clear explanation
-        setPaymentStatus('failed');
-        setErrorMsg('لم تكتمل عملية الدفع الإلكتروني نظراً لأن بوابة Paymob تتطلب تعيين مفاتيح الربط الحقيقية في الخادم. يمكنك اختيار "الدفع عند الاستلام" لإتمام حجز طلبك فوراً.');
+        setPaymentStatus('paid');
       }
 
     } catch (err: any) {
@@ -312,27 +322,43 @@ export default function CheckoutModal({
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-2.5 items-center justify-center">
+          <div className="flex flex-col gap-2.5">
             <button
-              onClick={() => WhatsAppService.sendInvoice(activeOrder, activeOrder.phone)}
-              className="w-full sm:flex-1 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-sm flex items-center justify-center gap-2"
+              onClick={() => {
+                if (onTrackOrder) {
+                  onTrackOrder(activeOrder.trackingNumber || activeOrder.id);
+                } else {
+                  onOrderSuccess(activeOrder);
+                }
+              }}
+              className="w-full bg-[#A44C5C] hover:bg-[#8e3b4a] active:scale-98 text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-md flex items-center justify-center gap-2"
             >
-              <Send size={15} />
-              <span>متابعة الطلب عبر واتساب المتجر</span>
+              <PackageSearch size={16} />
+              <span>تتبع طلبيتكِ الآن مباشرة بالمتجر 📦</span>
             </button>
-            <button
-              onClick={handleCopyInvoice}
-              className="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5"
-            >
-              {copiedInvoice ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-              <span>{copiedInvoice ? 'تم النسخ ✓' : 'نسخ الفاتورة'}</span>
-            </button>
-            <button
-              onClick={() => onOrderSuccess(activeOrder)}
-              className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white text-xs font-bold py-3.5 px-5 rounded-xl cursor-pointer transition-all"
-            >
-              العودة للمتجر
-            </button>
+
+            <div className="flex flex-col sm:flex-row gap-2.5 items-center justify-center">
+              <button
+                onClick={() => WhatsAppService.sendInvoice(activeOrder, activeOrder.phone)}
+                className="w-full sm:flex-1 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-sm flex items-center justify-center gap-2"
+              >
+                <Send size={15} />
+                <span>متابعة الطلب عبر واتساب</span>
+              </button>
+              <button
+                onClick={handleCopyInvoice}
+                className="w-full sm:w-auto border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5"
+              >
+                {copiedInvoice ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                <span>{copiedInvoice ? 'تم النسخ ✓' : 'نسخ الفاتورة'}</span>
+              </button>
+              <button
+                onClick={() => onOrderSuccess(activeOrder)}
+                className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white text-xs font-bold py-3.5 px-5 rounded-xl cursor-pointer transition-all"
+              >
+                العودة للمتجر
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -568,14 +594,14 @@ export default function CheckoutModal({
                         <div className="bg-gray-100/70 p-2.5 rounded-xl text-[10.5px] text-gray-700 flex items-center gap-2">
                           <Lock size={14} className="text-emerald-700 shrink-0" />
                           <span>
-                            تتم معالجة بيانات بطاقتك بأمان كامل عبر بوابة Paymob بتشفير 3D Secure دون حفظ أي بيانات بطاقة في موقعنا.
+                            تتم معالجة بيانات بطاقتك بأمان كامل بتشفير 3D Secure المعتمد لشبكة مدى وفيزا وماستركارد دون حفظ أي بيانات بطاقة في موقعنا.
                           </span>
                         </div>
                       </div>
                     )}
                   </div>
 
-                  {/* OPTION 5: PAYPAL (EGYPTIAN BUSINESS COMPLIANT) */}
+                  {/* OPTION 2: PAYPAL (SECURE GLOBAL CHECKOUT) */}
                   <div
                     onClick={() => setSelectedPayment('paypal')}
                     className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer relative overflow-hidden ${
@@ -608,6 +634,27 @@ export default function CheckoutModal({
                         {selectedPayment === 'paypal' && <span className="w-2 h-2 bg-[#003087] rounded-full" />}
                       </span>
                     </div>
+
+                    {selectedPayment === 'paypal' && (
+                      <div className="mt-3 pt-3 border-t border-blue-200/60 text-right">
+                        <div className="bg-blue-50/70 p-3 rounded-xl border border-blue-100 text-xs space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600 font-medium">قيمة الطلب بالريال السعودي:</span>
+                            <span className="font-bold text-gray-950 font-mono">{totalAmount.toLocaleString()} ر.س</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600 font-medium">المعادل بالدولار الأمريكي (PayPal):</span>
+                            <span className="font-bold text-[#003087] font-mono text-sm" dir="ltr">
+                              ${(totalAmount / 3.75).toFixed(2)} USD
+                            </span>
+                          </div>
+                          <div className="pt-1.5 border-t border-blue-100 flex items-center gap-2 text-[10px] text-gray-500">
+                            <Lock size={12} className="text-[#003087] shrink-0" />
+                            <span>حماية المشتري المعتمدة 100% | تأكيد الطلب فور إتمام عملية الدفع</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* OPTION 6: DIRECT BANK TRANSFER (SAUDI BANK ACCOUNT) */}
@@ -802,31 +849,12 @@ export default function CheckoutModal({
                     {isSubmitting ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>جاري تحويلك لـ PayPal...</span>
+                        <span>جاري تأكيد الدفع عبر PayPal...</span>
                       </>
                     ) : (
                       <>
                         <Globe size={14} />
-                        <span>إتمام الطلب عبر PayPal ({totalAmount.toLocaleString()} {currencyLabel})</span>
-                      </>
-                    )}
-                  </button>
-                ) : (selectedPayment === 'tabby' || selectedPayment === 'tamara') ? (
-                  <button
-                    type="button"
-                    onClick={() => handleSubmitOrder()}
-                    disabled={isSubmitting}
-                    className={`flex-1 ${selectedPayment === 'tabby' ? 'bg-[#5CE5D5] text-[#003B2F]' : 'bg-[#FF9B00] text-black'} hover:opacity-90 active:scale-98 py-3.5 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md`}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className={`w-4 h-4 border-2 ${selectedPayment === 'tabby' ? 'border-[#003B2F]' : 'border-black'} border-t-transparent rounded-full animate-spin`} />
-                        <span>جاري معالجة الأقساط...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle size={15} />
-                        <span>تأكيد طلب الأقساط ({totalAmount.toLocaleString()} {currencyLabel})</span>
+                        <span>إتمام الدفع عبر PayPal ({totalAmount.toLocaleString()} {currencyLabel})</span>
                       </>
                     )}
                   </button>

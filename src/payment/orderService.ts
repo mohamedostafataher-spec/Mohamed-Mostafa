@@ -45,18 +45,14 @@ export const orderService = {
     const trackingCode = this.generateOrderCode();
 
     let readablePaymentMethod = 'الدفع عند الاستلام';
-    if (params.paymentMethodType === 'apple_pay') {
-      readablePaymentMethod = 'Apple Pay (أبل باي)';
-    } else if (params.paymentMethodType === 'card') {
+    if (params.paymentMethodType === 'card') {
       readablePaymentMethod = 'بطاقة ائتمانية / مدى (Visa / Mastercard / Mada)';
-    } else if (params.paymentMethodType === 'tabby') {
-      readablePaymentMethod = 'تابي (Tabby - قسمها على 4 دفعات)';
-    } else if (params.paymentMethodType === 'tamara') {
-      readablePaymentMethod = 'تمارا (Tamara - قسمها على 4 دفعات)';
-    } else if (params.paymentMethodType === 'bank_transfer') {
-      readablePaymentMethod = 'تحويل بنكي مباشر (حساب المتجر)';
     } else if (params.paymentMethodType === 'paypal') {
       readablePaymentMethod = 'PayPal (باي بال)';
+    } else if (params.paymentMethodType === 'bank_transfer') {
+      readablePaymentMethod = 'تحويل بنكي مباشر (حساب المتجر)';
+    } else if (params.paymentMethodType === 'cod') {
+      readablePaymentMethod = 'الدفع عند الاستلام (COD)';
     }
 
     const newOrder: Order = {

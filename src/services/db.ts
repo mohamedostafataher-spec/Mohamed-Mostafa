@@ -187,7 +187,27 @@ export function cleanText(text: any): any {
   if (typeof text !== 'string') return text;
   return text
     .replace(/zoria/ig, 'SULTA')
-    .replace(/زوريا/g, 'سولتا');
+    .replace(/زوريا/g, 'سولتا')
+    .replace(/كوتور ساتان/g, 'كوتور ناعم')
+    .replace(/الساتان/g, 'الكوتور الفاخر')
+    .replace(/ساتان/g, 'كوتور فاخر')
+    .replace(/(?<![فبك])الستان/g, 'الكوتور الفاخر')
+    .replace(/(?<![فبك])ستان/g, 'كوتور فاخر')
+    .replace(/الحريرية/g, 'الملكية الفاخرة')
+    .replace(/حريرية/g, 'ملكية فاخرة')
+    .replace(/الحرير/g, 'الأنسجة الفاخرة')
+    .replace(/حرير/g, 'أنسجة فاخرة')
+    .replace(/الإيطالي/g, 'الملكي الفاخر')
+    .replace(/إيطالي/g, 'فاخر')
+    .replace(/الايطالي/g, 'الملكي الفاخر')
+    .replace(/ايطالي/g, 'فاخر')
+    .replace(/الإيطالية/g, 'الملكية الفاخرة')
+    .replace(/إيطالية/g, 'فاخرة')
+    .replace(/الايطالية/g, 'الملكية الفاخرة')
+    .replace(/ايطالية/g, 'فاخرة')
+    .replace(/satin/ig, 'couture')
+    .replace(/silk/ig, 'couture')
+    .replace(/italian/ig, 'luxury');
 }
 
 export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
