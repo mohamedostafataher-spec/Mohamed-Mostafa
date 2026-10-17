@@ -932,8 +932,8 @@ function AppContent() {
                     <ShieldCheck size={18} />
                   </div>
                   <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">سداد آمن 100%</span>
-                    <span className="text-[10px] sm:text-[11px] text-gray-500">مدى، باي بال والدفع عند الاستلام</span>
+                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">سداد مريح ومباشر</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">الدفع عند الاستلام أو تحويل بنكي مباشر</span>
                   </div>
                 </div>
 
@@ -1364,31 +1364,23 @@ function AppContent() {
             </div>
 
             <div className="pt-2">
-              <h5 className="font-bold text-[11px] text-gray-900 mb-2">وسائل الدفع المعتمدة بالمملكة</h5>
+              <h5 className="font-bold text-[11px] text-gray-900 mb-2">طرق الدفع المتاحة بالمتجر</h5>
               <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="bg-[#003087] text-white px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs font-sans">PayPal باي بال</span>
-                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">mada مدى</span>
-                <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">Visa</span>
-                <span className="bg-orange-50 text-orange-850 border border-orange-200 px-2 py-0.5 rounded text-[10px] font-bold font-mono">Mastercard</span>
-                <span className="bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded text-[10px] font-bold">تحويل بنكي</span>
                 <span className="bg-gray-100 text-gray-900 border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
+                <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (الراجحي)</span>
               </div>
             </div>
           </div>
 
         </div>
 
-        {/* Bottom credits & Salla Trust Stamp */}
+        {/* Bottom credits */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-sans">
           <div className="flex items-center gap-2">
             <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر SULTA للأزياء الفاخرة</span>
-            <span className="text-gray-300">·</span>
-            <span>الرقم الضريبي الموحد مسجل ومعتمد</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px]">
-            <span className="bg-gray-100 text-gray-900 border border-gray-250 px-2 py-0.5 rounded-md font-bold">
-              ✓ موثق في المركز السعودي للأعمال
-            </span>
+          <div className="text-gray-400 text-[11px]">
+            <span>تسوق سهل وسريع مع توصيل آمن لكافة مناطق المملكة والخليج ومصر</span>
           </div>
         </div>
       </footer>

@@ -119,11 +119,26 @@ export const agentSystem = {
   // 2. WhatsApp AI Agent
   sendWhatsAppNotification: (order: Order, trackingId: string, trackingUrl: string) => {
     const productsText = order.items.map(it => `• ${it.productName} (اللون: ${it.color} / المقاس: ${it.size}) [الكمية: ${it.quantity}]`).join('\n');
+    const isBank = (order.paymentMethod || '').includes('بنكي') || (order.paymentMethod || '').toLowerCase().includes('bank');
     
+    let bankSection = '';
+    if (isBank) {
+      bankSection = `🏦 ✦ بيانات الحساب البنكي لإتمام التحويل ✦\n` +
+        `• البنك: مصرف الراجحي\n` +
+        `• اسم الحساب: مؤسسة سُلطة للأزياء\n` +
+        `• رقم الآيبان (IBAN):\n` +
+        `SA82 8000 0000 1234 5678 9012\n` +
+        `• المبلغ المطلوب تحويله: ${order.totalPrice.toLocaleString()} ${order.currency}\n\n` +
+        `📸 فضلاً قومي بتحويل المبلغ وأرسلي صورة أو لقطة شاشة لإشعار التحويل البنكي هنا في المحادثة لتأكيد حجز طلبكِ وبدء التجهيز والشحن فوراً ✨\n\n`;
+    } else {
+      bankSection = `💵 وسيلة السداد: الدفع عند الاستلام (نقداً عند استلام شحنتكِ من مندوب التوصيل لباب منزلكِ).\n\n`;
+    }
+
     const whatsappContent = `✦ بوابـة SULTA الملكـية لتأكيد الطلبات ✦\n\n` +
       `أميرتنا الموقرة: ${order.customerName} 🌸\n` +
       `نسعد لتأكيد طلبكِ المترف تحت الرقم: ${order.id}\n\n` +
       `📋 كود التتبع الملكي: ${trackingId}\n\n` +
+      bankSection +
       `🔍 لتتبع شحنتكِ مباشرة:\n` +
       `ادخلي لصفحة "تتبع طلبيتكِ" بالمتجر واكتبي كود التتبع [ ${trackingId} ] أو عبر الرابط المباشر:\n` +
       `${trackingUrl}\n\n` +

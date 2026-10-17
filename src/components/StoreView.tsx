@@ -56,6 +56,33 @@ export default function StoreView({
   const [cardColorSelections, setCardColorSelections] = useState<Record<string, { name: string; hex: string }>>({});
   const [showStyleAssistant, setShowStyleAssistant] = useState(false);
   const [addedItemIds, setAddedItemIds] = useState<Record<string, boolean>>({});
+
+  // Dynamic Catalog Price Range Calculation
+  const { minPriceCatalog, maxPriceCatalog } = useMemo(() => {
+    if (!products || products.length === 0) {
+      return { minPriceCatalog: 0, maxPriceCatalog: country === 'EG' ? 2000 : 800 };
+    }
+    let min = Infinity;
+    let max = 0;
+    products.forEach(p => {
+      const price = country === 'EG' ? (p.priceEG || 0) : (p.priceSA || 0);
+      if (price > 0) {
+        if (price < min) min = price;
+        if (price > max) max = price;
+      }
+    });
+    const safeMin = min === Infinity ? 0 : Math.floor(min);
+    const safeMax = max <= safeMin ? safeMin + (country === 'EG' ? 1000 : 500) : Math.ceil(max);
+    return { minPriceCatalog: safeMin, maxPriceCatalog: safeMax };
+  }, [products, country]);
+
+  const [maxPrice, setMaxPrice] = useState<number>(maxPriceCatalog);
+  const [isPriceSliderOpen, setIsPriceSliderOpen] = useState<boolean>(true);
+
+  // Sync maxPrice when country or catalog prices update
+  useEffect(() => {
+    setMaxPrice(maxPriceCatalog);
+  }, [maxPriceCatalog, country]);
   
   // Quick view states
   const [qvSelectedSize, setQvSelectedSize] = useState<string>('');
@@ -136,6 +163,14 @@ export default function StoreView({
       });
     }
 
+    // Price range slider filter
+    if (maxPrice > 0 && maxPrice < maxPriceCatalog) {
+      result = result.filter(p => {
+        const price = country === 'EG' ? (p.priceEG || 0) : (p.priceSA || 0);
+        return price <= maxPrice;
+      });
+    }
+
     // Sorting
     return [...result].sort((a, b) => {
       const priceA = country === 'EG' ? a.priceEG : a.priceSA;
@@ -147,7 +182,7 @@ export default function StoreView({
       if (sortBy === 'bestseller') return (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0);
       return 0; // default newest
     });
-  }, [products, selectedCategory, selectedCollection, searchQuery, sortBy, country]);
+  }, [products, selectedCategory, selectedCollection, searchQuery, sortBy, country, maxPrice, maxPriceCatalog]);
 
   // Handle color change inside inline product card
   const handleCardColorSelect = (productId: string, color: { name: string; hex: string }, event: React.MouseEvent) => {
@@ -349,13 +384,127 @@ export default function StoreView({
               </div>
             </div>
 
+            {/* Price Filter Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setIsPriceSliderOpen(prev => !prev)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer shadow-2xs ${
+                isPriceSliderOpen || maxPrice < maxPriceCatalog
+                  ? 'bg-[#111827] text-white border-black'
+                  : 'bg-white text-gray-800 border-gray-200 hover:border-gray-400'
+              }`}
+              title="تصفية المنتجات حسب النطاق السعري"
+              id="toggle-price-slider"
+            >
+              <SlidersHorizontal size={13} className={maxPrice < maxPriceCatalog ? 'text-[#DF8A9C]' : ''} />
+              <span>نطاق السعر</span>
+              {maxPrice < maxPriceCatalog && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#DF8A9C]" />
+              )}
+            </button>
+
           </div>
 
         </div>
       </div>
 
+      {/* 3.1 SULTA Interactive Price Range Slider Panel */}
+      <AnimatePresence>
+        {isPriceSliderOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden border-b border-gray-200 bg-gray-50/90 backdrop-blur-md"
+          >
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal size={14} className="text-[#A44C5C]" />
+                  <span className="font-bold text-xs text-gray-900">تصفية المنتجات حسب النطاق السعري</span>
+                  <span className="text-[11px] text-gray-500 font-medium">({filteredProducts.length} قطعة متاحة)</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <div className="bg-white border border-gray-200 px-3 py-1 rounded-lg text-xs font-bold text-gray-900 shadow-2xs font-mono">
+                    الحد الأقصى: <span className="text-[#A44C5C] font-black">{maxPrice.toLocaleString()} {currencyLabel}</span>
+                  </div>
+                  {maxPrice < maxPriceCatalog && (
+                    <button
+                      type="button"
+                      onClick={() => setMaxPrice(maxPriceCatalog)}
+                      className="text-[11px] font-bold text-gray-500 hover:text-black underline cursor-pointer"
+                    >
+                      إعادة ضبط
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Slider Track with Custom Luxury Styling */}
+              <div className="space-y-1.5 py-1">
+                <input
+                  type="range"
+                  min={minPriceCatalog}
+                  max={maxPriceCatalog}
+                  step={country === 'EG' ? 25 : 10}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#A44C5C] focus:outline-none"
+                  id="store-price-range-slider"
+                />
+                
+                {/* Min / Max Labels */}
+                <div className="flex justify-between text-[11px] text-gray-400 font-mono font-medium">
+                  <span>من {minPriceCatalog.toLocaleString()} {currencyLabel}</span>
+                  <span>إلى {maxPriceCatalog.toLocaleString()} {currencyLabel}</span>
+                </div>
+              </div>
+
+              {/* Quick Preset Buttons */}
+              <div className="flex items-center gap-1.5 pt-2 flex-wrap">
+                <span className="text-[10px] text-gray-400 font-bold ml-1">اختيارات سريعة:</span>
+                <button
+                  type="button"
+                  onClick={() => setMaxPrice(maxPriceCatalog)}
+                  className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer ${
+                    maxPrice === maxPriceCatalog 
+                      ? 'bg-black text-white shadow-2xs' 
+                      : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400'
+                  }`}
+                >
+                  الكل ({maxPriceCatalog.toLocaleString()} {currencyLabel})
+                </button>
+                {[
+                  Math.round(minPriceCatalog + (maxPriceCatalog - minPriceCatalog) * 0.35),
+                  Math.round(minPriceCatalog + (maxPriceCatalog - minPriceCatalog) * 0.65),
+                  Math.round(minPriceCatalog + (maxPriceCatalog - minPriceCatalog) * 0.85)
+                ].map((presetPrice, idx) => {
+                  const rounded = Math.round(presetPrice / 10) * 10;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setMaxPrice(rounded)}
+                      className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer ${
+                        maxPrice === rounded
+                          ? 'bg-black text-white shadow-2xs' 
+                          : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
+                      حتى {rounded.toLocaleString()} {currencyLabel}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 4. Active Filters Reset Chips */}
-      {(selectedCategory !== 'all' || searchQuery) && (
+      {(selectedCategory !== 'all' || searchQuery || maxPrice < maxPriceCatalog) && (
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-2 flex-wrap">
           <span className="text-[11px] text-gray-400 font-bold">تصفية نشطة:</span>
           {selectedCategory !== 'all' && (
@@ -370,8 +519,14 @@ export default function StoreView({
               <button onClick={() => onClearSearch && onClearSearch()} className="hover:text-red-600 font-bold mr-1">✕</button>
             </span>
           )}
+          {maxPrice < maxPriceCatalog && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-pink-50 text-[#A44C5C] text-[11px] font-bold border border-pink-200">
+              <span>السعر: حتى {maxPrice.toLocaleString()} {currencyLabel}</span>
+              <button onClick={() => setMaxPrice(maxPriceCatalog)} className="hover:text-red-600 font-bold mr-1">✕</button>
+            </span>
+          )}
           <button
-            onClick={() => { setSelectedCategory('all'); onClearSearch && onClearSearch(); }}
+            onClick={() => { setSelectedCategory('all'); onClearSearch && onClearSearch(); setMaxPrice(maxPriceCatalog); }}
             className="text-[11px] font-bold text-[#A44C5C] hover:underline"
           >
             إلغاء التصفية

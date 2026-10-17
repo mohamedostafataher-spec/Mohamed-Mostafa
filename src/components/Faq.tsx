@@ -39,8 +39,8 @@ export default function Faq() {
     },
     {
       category: 'payments',
-      question: 'هل عمليات الدفع آمنة؟',
-      answer: 'موقعنا مجهز بأعلى بروتوكولات الأمان SSL والتشفير البنكي المعتمد. نقبل بطاقات الائتمان الرئيسية وخيارات الدفع الآمنة ومدى وباي بال.'
+      question: 'ما هي طرق الدفع المتاحة بالمتجر؟',
+      answer: 'نوفر طريقتين مريحتين ومباشرتين: الدفع عند الاستلام نقداً عند باب منزلك، أو التحويل البنكي المباشر لحساب المتجر (مصرف الراجحي) مع تأكيد فوري عبر الواتساب.'
     }
   ]);
 
@@ -82,7 +82,7 @@ export default function Faq() {
           </h2>
           <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mb-4" />
           <p className="text-sm text-gray-500 font-sans max-w-xl mx-auto leading-relaxed mb-8">
-            في "سُلْطَة"، نحن مكرسون لتقديم تجربة تسوق متميزة. تصفحي الإجابات الموثقة من خبرائنا لمساعدتكِ، أو تواصلي مع فريق العناية بالعملاء مباشرة.
+            في "سُلْطَة"، نحن مكرسون لتقديم تجربة تسوق متميزة. تصفحي الإجابات المعتمدة من فريقنا لمساعدتكِ، أو تواصلي مع فريق العناية بالعملاء مباشرة.
           </p>
           <div className="flex justify-center gap-4">
             <button className="bg-[#A44C5C] text-white px-8 py-3 text-xs tracking-widest uppercase font-serif hover:bg-[#A44C5C] transition-colors" onClick={() => window.scrollTo({top: 800, behavior: 'smooth'})}>

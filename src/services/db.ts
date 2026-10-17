@@ -1572,6 +1572,124 @@ export const dbService = {
     };
   },
 
+  getOrderByIdOrTracking: async (query: string): Promise<Order | null> => {
+    if (!query || typeof query !== 'string') return null;
+    const cleanQ = query.trim().toUpperCase();
+
+    // 1. First, check localStorage for instant offline access
+    try {
+      const localOrders: Order[] = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
+      const localMatch = localOrders.find((o: any) => 
+        (o.id && o.id.toUpperCase() === cleanQ) ||
+        (o.trackingNumber && o.trackingNumber.toUpperCase() === cleanQ) ||
+        (o.id && (cleanQ.length >= 8 && (o.id.toUpperCase().startsWith(cleanQ) || cleanQ.startsWith(o.id.toUpperCase()))))
+      );
+      if (localMatch) {
+        return mapOrder(localMatch);
+      }
+    } catch (e) {
+      console.warn("LocalStorage order search fallback:", e);
+    }
+
+    // 2. Query Supabase support_tickets (where complete order JSON is stored!)
+    try {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanQ);
+      
+      let ticketData: any[] = [];
+      if (isUuid) {
+        const { data } = await supabase
+          .from('support_tickets')
+          .select('*')
+          .eq('subject', `ORDER:${cleanQ.toLowerCase()}`)
+          .limit(1);
+        if (data && data.length > 0) ticketData = data;
+      }
+
+      // If not found yet, query support_tickets by LIKE or text
+      if (ticketData.length === 0) {
+        const { data } = await supabase
+          .from('support_tickets')
+          .select('*')
+          .or(`subject.ilike.%${cleanQ}%,message.ilike.%${cleanQ}%`)
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (data && data.length > 0) ticketData = data;
+      }
+
+      for (const t of ticketData) {
+        try {
+          const raw = typeof t.message === 'string' ? JSON.parse(t.message) : t.message;
+          if (raw) {
+            const rawId = (raw.id || '').toUpperCase();
+            const rawTracking = (raw.trackingNumber || raw.tracking_number || '').toUpperCase();
+            if (rawId === cleanQ || rawTracking === cleanQ || (cleanQ.length >= 8 && rawId.startsWith(cleanQ))) {
+              return mapOrder(raw);
+            }
+          }
+        } catch {}
+      }
+    } catch (err) {
+      console.warn("Cloud support_tickets order search fallback:", err);
+    }
+
+    // 3. Query Supabase orders table (ONLY if query is a valid UUID to avoid Postgres 22P02 error)
+    try {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanQ);
+      if (isUuid) {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('id', cleanQ.toLowerCase())
+          .maybeSingle();
+        if (data && !error) {
+          return mapOrder(data);
+        }
+      }
+    } catch (err) {
+      console.warn("Cloud orders table search fallback:", err);
+    }
+
+    // 4. Query all recent orders from support_tickets and orders as comprehensive fallback
+    try {
+      const [ordersRes, ticketsRes] = await Promise.all([
+        supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(50),
+        supabase.from('support_tickets').select('*').or('subject.like.ORDER:%,subject.like.ORDER-%').order('created_at', { ascending: false }).limit(50)
+      ]);
+
+      const candidates: any[] = [];
+      if (ticketsRes.data) {
+        for (const t of ticketsRes.data) {
+          try {
+            const raw = typeof t.message === 'string' ? JSON.parse(t.message) : t.message;
+            if (raw) candidates.push(raw);
+          } catch {}
+        }
+      }
+      if (ordersRes.data) {
+        candidates.push(...ordersRes.data);
+      }
+
+      const match = candidates.find((o: any) => {
+        const oId = (o.id || '').toUpperCase();
+        const oTrack = (o.trackingNumber || o.tracking_number || '').toUpperCase();
+        const oPhone = (o.phone || '').replace(/\D/g, '');
+        const cleanQDigits = cleanQ.replace(/\D/g, '');
+        return oId === cleanQ || 
+               oTrack === cleanQ || 
+               (cleanQ.length >= 8 && (oId.startsWith(cleanQ) || cleanQ.startsWith(oId))) ||
+               (cleanQDigits.length >= 6 && oPhone.includes(cleanQDigits));
+      });
+
+      if (match) {
+        return mapOrder(match);
+      }
+    } catch (err) {
+      console.warn("Cloud all orders fallback search failed:", err);
+    }
+
+    return null;
+  },
+
   saveOrder: async (order: Order): Promise<void> => {
     const origin = typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost') 
       ? window.location.origin 

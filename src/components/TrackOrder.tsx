@@ -98,6 +98,18 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
         });
       }
 
+      // 3. Direct cloud ticket & database search fallback
+      if (results.length === 0 && query.trim()) {
+        try {
+          const directMatch = await dbService.getOrderByIdOrTracking(query.trim());
+          if (directMatch) {
+            results = [directMatch];
+          }
+        } catch (e) {
+          console.warn("Direct tracking search failed:", e);
+        }
+      }
+
       if (results.length === 0) {
         setError('تعذر العثور على أي طلبيات مطابقة. يرجى مراجعة إدخال البيانات ثانيةً.');
       } else {

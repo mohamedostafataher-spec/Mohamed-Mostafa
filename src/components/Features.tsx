@@ -19,8 +19,8 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
     },
     {
       icon: <ShieldCheck size={22} className="text-black" />,
-      title: 'سداد مشفر آمن بالكامل',
-      desc: 'ندعم بطاقات مدى والفيزا وماستركارد وباي بال بالإضافة للدفع عند الاستلام.',
+      title: 'خيارات دفع مريحة ومباشرة',
+      desc: 'الدفع عند الاستلام نقداً عند باب منزلك، أو تحويل بنكي مباشر مع تأكيد عبر الواتساب.',
     },
     {
       icon: <Sparkles size={22} className="text-black" />,

@@ -113,104 +113,65 @@ export default function OrderDetailView({
       setLoading(true);
       setError(null);
       try {
-        let { data, error: dbErr } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('id', orderId)
-          .maybeSingle();
+        const foundOrder = await dbService.getOrderByIdOrTracking(orderId);
+        if (foundOrder) {
+          setOrder(foundOrder);
 
-        // If not found by id, try matching by tracking_number
-        if (!data) {
-          const { data: byTrack } = await supabase
-            .from('orders')
-            .select('*')
-            .eq('tracking_number', orderId)
-            .maybeSingle();
-          if (byTrack) data = byTrack;
-        }
+          // If products need hydration, query products in this order
+          if (foundOrder.items && foundOrder.items.length > 0) {
+            try {
+              const productIds = foundOrder.items.map(it => it.productId);
+              const { data: pData } = await supabase
+                .from('products')
+                .select('*')
+                .in('id', productIds);
+              
+              if (pData) {
+                const dict: Record<string, Product> = { ...productsMap };
+                pData.forEach((rawP: any) => {
+                  const cat = rawP.category || 'sleepwear';
+                  const imgs = Array.isArray(rawP.images) ? rawP.images : (rawP.images ? JSON.parse(rawP.images) : []);
+                  const cleanImgs = imgs.map((img: any) => {
+                    let path = img;
+                    if (img && !img.startsWith('/') && !img.startsWith('http')) {
+                      path = `/img/${img}.png`;
+                    }
+                    return cleanImgUrl(path, cat);
+                  });
 
-        if (dbErr) throw dbErr;
-        
-        if (data) {
-          const mapped = mapOrder(data);
-          setOrder(mapped);
-
-          // If no products loaded, query products in this order
-          if (mapped.items && mapped.items.length > 0) {
-            const productIds = mapped.items.map(it => it.productId);
-            const { data: pData } = await supabase
-              .from('products')
-              .select('*')
-              .in('id', productIds);
-            
-            if (pData) {
-              const dict: Record<string, Product> = { ...productsMap };
-              pData.forEach((rawP: any) => {
-                // simple mapping matching mapping function
-                const cat = rawP.category || 'sleepwear';
-                const imgs = Array.isArray(rawP.images) ? rawP.images : (rawP.images ? JSON.parse(rawP.images) : []);
-                const cleanImgs = imgs.map((img: any) => {
-                  let path = img;
-                  if (img && !img.startsWith('/') && !img.startsWith('http')) {
-                    path = `/img/${img}.png`;
-                  }
-                  return cleanImgUrl(path, cat);
+                  dict[rawP.id] = {
+                    id: rawP.id,
+                    nameAr: rawP.name_ar || rawP.name || '',
+                    nameEn: rawP.name_en || rawP.name || '',
+                    category: cat,
+                    categoryAr: rawP.category_ar || 'تصاميم ملكية',
+                    priceEG: Number(rawP.price_eg ?? 0),
+                    priceSA: Number(rawP.price_sa ?? 0),
+                    descriptionAr: rawP.description_ar || '',
+                    descriptionEn: rawP.description_en || '',
+                    fabricAr: rawP.fabric_ar || '',
+                    fabricEn: rawP.fabric_en || '',
+                    washInstructionsAr: rawP.wash_instructions_ar || '',
+                    images: cleanImgs.length > 0 ? cleanImgs : ['/img/placeholder.png'],
+                    colors: Array.isArray(rawP.colors) ? rawP.colors : (rawP.colors ? JSON.parse(rawP.colors) : []),
+                    sizes: Array.isArray(rawP.sizes) ? rawP.sizes : (rawP.sizes ? JSON.parse(rawP.sizes) : []),
+                    rating: Number(rawP.rating ?? 5),
+                    reviewsCount: Number(rawP.reviews_count ?? 0),
+                    stock: Number(rawP.stock ?? 10)
+                  };
                 });
-
-                dict[rawP.id] = {
-                  id: rawP.id,
-                  nameAr: rawP.name_ar || rawP.name || '',
-                  nameEn: rawP.name_en || rawP.name || '',
-                  category: cat,
-                  categoryAr: rawP.category_ar || 'تصاميم ملكية',
-                  priceEG: Number(rawP.price_eg ?? 0),
-                  priceSA: Number(rawP.price_sa ?? 0),
-                  descriptionAr: rawP.description_ar || '',
-                  descriptionEn: rawP.description_en || '',
-                  fabricAr: rawP.fabric_ar || '',
-                  fabricEn: rawP.fabric_en || '',
-                  washInstructionsAr: rawP.wash_instructions_ar || '',
-                  images: cleanImgs.length > 0 ? cleanImgs : ['/img/placeholder.png'],
-                  colors: Array.isArray(rawP.colors) ? rawP.colors : (rawP.colors ? JSON.parse(rawP.colors) : []),
-                  sizes: Array.isArray(rawP.sizes) ? rawP.sizes : (rawP.sizes ? JSON.parse(rawP.sizes) : []),
-                  rating: Number(rawP.rating ?? 5),
-                  reviewsCount: Number(rawP.reviews_count ?? 0),
-                  stock: Number(rawP.stock ?? 10)
-                };
-              });
-              setProductsMap(dict);
+                setProductsMap(dict);
+              }
+            } catch (pErr) {
+              console.warn("Product loading fallback:", pErr);
             }
           }
         } else {
-          // Check localStorage as robust resilient duplicate fallback
-          const offlineOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
-          const cleanQ = orderId.trim().toUpperCase();
-          const localO = offlineOrders.find((o: any) => 
-            (o.id && o.id.toUpperCase() === cleanQ) ||
-            (o.trackingNumber && o.trackingNumber.toUpperCase() === cleanQ) ||
-            (o.id && (o.id.toUpperCase().startsWith(cleanQ) || cleanQ.startsWith(o.id.toUpperCase())))
-          );
-          if (localO) {
-            setOrder(localO);
-          } else {
-            setError('تعذر العثور على طلبكِ في منظومة سولتة السحابية. يرجى التأكد من الكود المكتوب.');
-          }
+          setError('تعذر العثور على طلبكِ في منظومة سُلطة. يرجى التأكد من صحة رقم الطلب أو كود التتبع.');
         }
       } catch (err: any) {
         console.error("Failed to read order from DB:", err);
-        // Localstorage fallback
-        const offlineOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
-        const cleanQ = orderId.trim().toUpperCase();
-        const localO = offlineOrders.find((o: any) => 
-          (o.id && o.id.toUpperCase() === cleanQ) ||
-          (o.trackingNumber && o.trackingNumber.toUpperCase() === cleanQ) ||
-          (o.id && (o.id.toUpperCase().startsWith(cleanQ) || cleanQ.startsWith(o.id.toUpperCase())))
-        );
-        if (localO) {
-          setOrder(localO);
-        } else {
-          setError('نعـتذر، حدث تعذر أثناء جلب بيانات طلبكِ المحدثة. يرجى التحقق من اتصال شبكتكِ.');
-        }
+        setError('تعذر العثور على بيانات الطلب حالياً. يرجى مراجعة رقم الطلب أو كود التتبع والمحاولة مجدداً.');
       } finally {
         setLoading(false);
       }

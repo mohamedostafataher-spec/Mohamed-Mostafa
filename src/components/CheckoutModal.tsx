@@ -59,8 +59,8 @@ export default function CheckoutModal({
   const [address, setAddress] = useState('');
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
 
-  // Selected Payment Method: 'card' | 'cod' | 'paypal' | 'bank_transfer'
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('card');
+  // Selected Payment Method: 'cod' | 'bank_transfer'
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('cod');
 
   // Processing & Verification States
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -200,39 +200,28 @@ export default function CheckoutModal({
         return;
       }
 
-      // 2. ELECTRONIC PAYMENT (Visa/Mastercard/Mada, PayPal, Bank Transfer)
-      const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
-        orderParams,
-        selectedPayment
-      );
+      // 2. DIRECT BANK TRANSFER
+      if (selectedPayment === 'bank_transfer') {
+        const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
+          orderParams,
+          'bank_transfer'
+        );
 
-      setActiveOrder(order);
+        setActiveOrder(order);
 
-      if (!paymentIntent.success) {
-        setPaymentStatus('failed');
-        setErrorMsg(paymentIntent.errorMessage || 'لم تكتمل عملية الدفع. حاول مرة أخرى أو اختر طريقة دفع أخرى.');
+        if (!paymentIntent.success) {
+          setPaymentStatus('failed');
+          setErrorMsg(paymentIntent.errorMessage || 'لم يتم تسجيل الطلب. يرجى المحاولة مرة أخرى.');
+          return;
+        }
+
+        // Track order and notify systems
+        try { trackPurchase(order); } catch (e) {}
+        try { await agentSystem.onOrderCreated(order); } catch (e) {}
+        try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
+
+        setPaymentStatus('pending');
         return;
-      }
-
-      // Track order and notify systems
-      try { trackPurchase(order); } catch (e) {}
-      try { await agentSystem.onOrderCreated(order); } catch (e) {}
-      try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
-
-      // If gateway returns Hosted Iframe or Redirection URL
-      if (paymentIntent.iframeUrl) {
-        setIframePaymentUrl(paymentIntent.iframeUrl);
-        setPaymentStatus('pending');
-      } else if (paymentIntent.redirectionUrl) {
-        window.location.href = paymentIntent.redirectionUrl;
-        setPaymentStatus('pending');
-      } else if (paymentIntent.status === 'paid' || selectedPayment === 'paypal' || selectedPayment === 'card') {
-        // Electronic payment confirmed and authorized
-        setPaymentStatus('paid');
-      } else if (selectedPayment === 'bank_transfer') {
-        setPaymentStatus('pending');
-      } else {
-        setPaymentStatus('paid');
       }
 
     } catch (err: any) {
@@ -254,7 +243,10 @@ export default function CheckoutModal({
       : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966596894393');
 
     const handleCopyInvoice = () => {
-      const summary = `رقم الطلب: ${activeOrder.trackingNumber || activeOrder.id}\nالاسم: ${activeOrder.customerName}\nالجوال: ${activeOrder.phone}\nالمدينة: ${activeOrder.city}\nالإجمالي: ${activeOrder.totalPrice.toLocaleString()} ر.س\nوسيلة الدفع: ${activeOrder.paymentMethod}`;
+      let summary = `رقم الطلب: ${activeOrder.trackingNumber || activeOrder.id}\nالاسم: ${activeOrder.customerName}\nالجوال: ${activeOrder.phone}\nالمدينة: ${activeOrder.city}\nالإجمالي: ${activeOrder.totalPrice.toLocaleString()} ر.س\nوسيلة الدفع: ${activeOrder.paymentMethod}`;
+      if (activeOrder.paymentMethod && activeOrder.paymentMethod.includes('بنكي')) {
+        summary += `\n\nبيانات التحويل البنكي:\nمصرف الراجحي - مؤسسة سُلطة للأزياء\nالآيبان: SA82 8000 0000 1234 5678 9012\n* فضلاً أرسلي صورة إشعار التحويل لتأكيد الشحن فوراً 📸`;
+      }
       navigator.clipboard.writeText(summary);
       setCopiedInvoice(true);
       setTimeout(() => setCopiedInvoice(false), 3000);
@@ -276,19 +268,17 @@ export default function CheckoutModal({
           </span>
           
           <h3 className="text-xl sm:text-2xl font-black text-gray-950 mb-2">
-            {isCod ? 'تم استلام طلبكِ بنجاح 📦' : isPending ? 'طلبكِ بانتظار إتمام الدفع 🕒' : 'تم تأكيد الدفع والطلب بنجاح 👑'}
+            {isCod ? 'تم استلام طلبكِ بنجاح 📦' : 'طلبكِ بانتظار إشعار التحويل البنكي 🕒'}
           </h3>
           
           <p className="text-gray-600 text-xs sm:text-sm max-w-md mx-auto leading-relaxed mb-6 font-medium">
             {isCod 
-              ? 'تم استلام طلبك بنجاح وسيتم التواصل معك لتأكيد الطلب وشحنه لباب منزلك مع ميزة الدفع عند الاستلام.'
-              : isPending
-              ? 'تم إنشاء طلبكِ بنجاح، يرجى إتمام عملية الدفع عبر بوابة الدفع المختارة لتأكيد الطلب وبدء الشحن.'
-              : 'تم استلام دفعتكِ الإلكترونية المؤكدة بنجاح، ويتم الآن تجهيز وتغليف طلبكِ الملكي للشحن السريع.'}
+              ? 'تم استلام طلبكِ بنجاح وسيتم التواصل معكِ لتأكيد الطلب وشحنه لباب منزلكِ مع ميزة الدفع عند الاستلام.'
+              : 'تم تسجيل حجز طلبكِ بنجاح! فضلاً حولي المبلغ على الحساب البنكي أدناه وأرسلي صورة إشعار التحويل عبر الواتساب لتأكيد الشحن فوراً 📸.'}
           </p>
 
           {/* Invoice Summary Box */}
-          <div className="bg-[#F8F9FA] border border-gray-200 rounded-2xl p-4 sm:p-5 mb-6 text-right text-xs space-y-2.5">
+          <div className="bg-[#F8F9FA] border border-gray-200 rounded-2xl p-4 sm:p-5 mb-4 text-right text-xs space-y-2.5">
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-500 font-medium">رقم التتبع والطلب:</span>
               <span className="font-bold text-gray-950 font-mono text-sm">{activeOrder.trackingNumber || activeOrder.id.slice(0, 16)}</span>
@@ -311,8 +301,8 @@ export default function CheckoutModal({
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">حالة الطلب:</span>
-              <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${isCod ? 'bg-amber-100 text-amber-900' : isPending ? 'bg-blue-100 text-blue-900' : 'bg-emerald-100 text-emerald-900'}`}>
-                {isCod ? 'بانتظار المعاينة والتأكيد (COD)' : isPending ? 'بانتظار الدفع (Pending)' : 'مدفوع ومؤكد (Paid)'}
+              <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${isCod ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-900'}`}>
+                {isCod ? 'بانتظار المعاينة والتأكيد (COD)' : 'بانتظار إشعار التحويل البنكي'}
               </span>
             </div>
             <div className="flex justify-between border-t border-gray-200 pt-2 text-sm font-black text-gray-950">
@@ -320,6 +310,37 @@ export default function CheckoutModal({
               <span className="font-mono text-base">{activeOrder.totalPrice.toLocaleString()} {currencyLabel}</span>
             </div>
           </div>
+
+          {/* Bank Account Details Card for Bank Transfer */}
+          {(isPending || (activeOrder.paymentMethod && activeOrder.paymentMethod.includes('بنكي'))) && (
+            <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-4 sm:p-5 mb-6 text-right text-xs space-y-2.5 animate-fade-in">
+              <div className="flex items-center justify-between border-b border-blue-200 pb-2">
+                <span className="font-bold text-blue-950 flex items-center gap-1.5 text-xs">
+                  <span>🏦 بيانات الحساب البنكي لإتمام التحويل:</span>
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                  مصرف الراجحي
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">اسم المستفيد:</span>
+                <span className="font-bold text-gray-950">مؤسسة سُلطة للأزياء</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">رقم الآيبان (IBAN):</span>
+                <span className="font-bold font-mono text-gray-950 select-all bg-white px-2 py-0.5 rounded border border-gray-300">
+                  SA82 8000 0000 1234 5678 9012
+                </span>
+              </div>
+              <div className="flex justify-between items-center border-t border-blue-200/60 pt-2 font-bold text-blue-950">
+                <span>المبلغ المطلوب تحويله:</span>
+                <span className="font-mono text-sm">{activeOrder.totalPrice.toLocaleString()} {currencyLabel}</span>
+              </div>
+              <p className="text-[10px] text-blue-900 font-bold bg-white/80 p-2.5 rounded-xl border border-blue-100 text-center">
+                📸 يرجى إرسال صورة أو لقطة شاشة لإشعار التحويل عبر زر الواتساب أدناه لتأكيد حجز طلبكِ وبدء التجهيز والشحن فوراً.
+              </p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-col gap-2.5">
@@ -504,12 +525,11 @@ export default function CheckoutModal({
                       <Lock size={13} className="text-emerald-600" />
                       <span>وسائل الدفع المتاحة في الخطوة التالية:</span>
                     </span>
-                    <span className="text-[10px] text-gray-400">مفعلة وآمنة 100%</span>
+                    <span className="text-[10px] text-gray-400">خيارات مرنة ومباشرة</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.5 rounded text-[9.5px] font-bold font-mono">mada مدى</span>
-                    <span className="bg-blue-50 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded text-[9.5px] font-bold font-mono">PayPal</span>
-                    <span className="bg-white text-gray-800 border border-gray-300 px-2 py-0.5 rounded text-[9.5px] font-bold">الدفع عند الاستلام (COD)</span>
+                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[9.5px] font-bold">الدفع عند الاستلام (COD)</span>
+                    <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[9.5px] font-bold">تحويل بنكي مباشر (الراجحي)</span>
                   </div>
                 </div>
 
@@ -544,185 +564,10 @@ export default function CheckoutModal({
 
                 <div className="space-y-3">
                   
-                  {/* OPTION 1: CREDIT CARD & MADA (VISA / MASTERCARD / MADA) */}
-                  <div
-                    onClick={() => setSelectedPayment('card')}
-                    className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer ${
-                      selectedPayment === 'card'
-                        ? 'border-black bg-neutral-50 shadow-xs ring-1 ring-black'
-                        : 'border-gray-200 bg-white hover:bg-gray-50/60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-800 shrink-0 font-bold text-xs">
-                          💳
-                        </span>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-black text-xs text-gray-950">
-                              بطاقة ائتمانية / مدى
-                            </span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
-                                mada
-                              </span>
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-mono">
-                                Visa
-                              </span>
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-mono">
-                                MC
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-[10px] text-gray-500 mt-0.5">
-                            سداد مشفر وآمن عبر بطاقات مدى البنكية والفيزا وماستركارد
-                          </p>
-                        </div>
-                      </div>
-
-                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        selectedPayment === 'card' ? 'border-black' : 'border-gray-300'
-                      }`}>
-                        {selectedPayment === 'card' && <span className="w-2 h-2 bg-black rounded-full" />}
-                      </span>
-                    </div>
-
-                    {/* Active Card Security Notice */}
-                    {selectedPayment === 'card' && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <div className="bg-gray-100/70 p-2.5 rounded-xl text-[10.5px] text-gray-700 flex items-center gap-2">
-                          <Lock size={14} className="text-emerald-700 shrink-0" />
-                          <span>
-                            تتم معالجة بيانات بطاقتك بأمان كامل بتشفير 3D Secure المعتمد لشبكة مدى وفيزا وماستركارد دون حفظ أي بيانات بطاقة في موقعنا.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* OPTION 2: PAYPAL (SECURE GLOBAL CHECKOUT) */}
-                  <div
-                    onClick={() => setSelectedPayment('paypal')}
-                    className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer relative overflow-hidden ${
-                      selectedPayment === 'paypal'
-                        ? 'border-[#003087] bg-[#003087]/5 shadow-xs ring-1 ring-[#003087]'
-                        : 'border-gray-200 bg-white hover:bg-gray-50/60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-[#003087] text-white flex items-center justify-center shrink-0 font-bold font-sans text-[10px]">
-                          PayPal
-                        </span>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-black text-xs text-gray-950">PayPal (باي بال)</span>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-[#003087]">
-                              عالمي وآمن 🌐
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-gray-500 mt-0.5">
-                            سداد سريع وآمن عبر حساب PayPal أو البطاقات الدولية (تسوية عبر الحساب البنكي المرتبط)
-                          </p>
-                        </div>
-                      </div>
-
-                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        selectedPayment === 'paypal' ? 'border-[#003087]' : 'border-gray-300'
-                      }`}>
-                        {selectedPayment === 'paypal' && <span className="w-2 h-2 bg-[#003087] rounded-full" />}
-                      </span>
-                    </div>
-
-                    {selectedPayment === 'paypal' && (
-                      <div className="mt-3 pt-3 border-t border-blue-200/60 text-right">
-                        <div className="bg-blue-50/70 p-3 rounded-xl border border-blue-100 text-xs space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-600 font-medium">قيمة الطلب بالريال السعودي:</span>
-                            <span className="font-bold text-gray-950 font-mono">{totalAmount.toLocaleString()} ر.س</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-600 font-medium">المعادل بالدولار الأمريكي (PayPal):</span>
-                            <span className="font-bold text-[#003087] font-mono text-sm" dir="ltr">
-                              ${(totalAmount / 3.75).toFixed(2)} USD
-                            </span>
-                          </div>
-                          <div className="pt-1.5 border-t border-blue-100 flex items-center gap-2 text-[10px] text-gray-500">
-                            <Lock size={12} className="text-[#003087] shrink-0" />
-                            <span>حماية المشتري المعتمدة 100% | تأكيد الطلب فور إتمام عملية الدفع</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* OPTION 6: DIRECT BANK TRANSFER (SAUDI BANK ACCOUNT) */}
-                  <div
-                    onClick={() => setSelectedPayment('bank_transfer')}
-                    className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer ${
-                      selectedPayment === 'bank_transfer'
-                        ? 'border-gray-900 bg-gray-50 shadow-xs ring-1 ring-gray-900'
-                        : 'border-gray-200 bg-white hover:bg-gray-50/60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-gray-100 text-gray-800 flex items-center justify-center shrink-0">
-                          <Check size={18} />
-                        </span>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-black text-xs text-gray-950">
-                              تحويل بنكي مباشر (Bank Transfer)
-                            </span>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800">
-                              تأكيد يدوي ⚡
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-gray-500 mt-0.5">
-                            التحويل المباشر لحساب المتجر البنكي (الراجحي / الأهلي)
-                          </p>
-                        </div>
-                      </div>
-
-                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        selectedPayment === 'bank_transfer' ? 'border-gray-900' : 'border-gray-300'
-                      }`}>
-                        {selectedPayment === 'bank_transfer' && <span className="w-2 h-2 bg-gray-900 rounded-full" />}
-                      </span>
-                    </div>
-
-                    {selectedPayment === 'bank_transfer' && (
-                      <div className="mt-3 pt-3 border-t border-gray-200 text-right">
-                        <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100 text-[10.5px] space-y-2">
-                          <p className="font-bold text-blue-900 mb-1">بيانات الحساب البنكي (SULTA):</p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-500">اسم البنك:</span>
-                            <span className="font-bold text-gray-900">مصرف الراجحي</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-500">اسم الحساب:</span>
-                            <span className="font-bold text-gray-900">مؤسسة سُلطة التجارية</span>
-                          </div>
-                          <div className="flex items-center justify-between group">
-                            <span className="text-gray-500">رقم الآيبان (IBAN):</span>
-                            <div className="flex items-center gap-1.5 font-mono text-gray-900 font-bold select-all bg-white px-2 py-0.5 rounded border border-gray-200">
-                              <span>SA82 8000 0000 1234 5678 9012</span>
-                            </div>
-                          </div>
-                          <p className="text-[9.5px] text-gray-500 italic pt-1 border-t border-blue-100">
-                            * يرجى إرسال إيصال التحويل عبر الواتساب لتأكيد الطلب وبدء الشحن فوراً.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* OPTION 7: CASH ON DELIVERY (COD) */}
+                  {/* OPTION 1: CASH ON DELIVERY (COD) */}
                   <div
                     onClick={() => setSelectedPayment('cod')}
-                    className={`w-full text-right p-3.5 rounded-2xl transition-all border cursor-pointer ${
+                    className={`w-full text-right p-4 rounded-2xl transition-all border cursor-pointer ${
                       selectedPayment === 'cod'
                         ? 'border-emerald-600 bg-emerald-50/50 shadow-xs ring-1 ring-emerald-600'
                         : 'border-gray-200 bg-white hover:bg-gray-50/60'
@@ -743,7 +588,7 @@ export default function CheckoutModal({
                             </span>
                           </div>
                           <p className="text-[10px] text-gray-500 mt-0.5">
-                            سداد قيمة الطلبية نقداً لمندوب الشحن فور وصولها لباب منزلك
+                            سداد قيمة الطلبية نقداً لمندوب الشحن فور وصولها لباب منزلكِ
                           </p>
                         </div>
                       </div>
@@ -760,39 +605,76 @@ export default function CheckoutModal({
                         <div className="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 text-xs space-y-1">
                           <span className="font-bold text-emerald-950 block">✓ راحة وأمان:</span>
                           <p className="text-[11px] text-emerald-900 leading-relaxed">
-                            استلمي طلبيتكِ الملكية مفحوصة ومغلفة بعناية، وسددي المبلغ ({totalAmount.toLocaleString()} {currencyLabel}) للمندوب بعد استلام الشحنة.
+                            استلمي طلبيتكِ مفحوصة ومغلفة بعناية، وسددي المبلغ ({totalAmount.toLocaleString()} {currencyLabel}) نقداً للمندوب عند الاستلام.
                           </p>
                         </div>
                       </div>
                     )}
                   </div>
 
-                </div>
-
-                {/* Paymob Iframe Modal if triggered */}
-                {iframePaymentUrl && (
-                  <div className="fixed inset-0 z-60 bg-black/75 flex items-center justify-center p-3 sm:p-6 animate-fade-in" dir="rtl">
-                    <div className="bg-white rounded-3xl w-full max-w-2xl h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-gray-200">
-                      <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Lock size={16} className="text-emerald-600" />
-                          <span className="text-xs font-bold text-gray-900">نافذة الدفع الآمنة (Paymob 3D Secure)</span>
+                  {/* OPTION 2: DIRECT BANK TRANSFER (SAUDI BANK ACCOUNT) */}
+                  <div
+                    onClick={() => setSelectedPayment('bank_transfer')}
+                    className={`w-full text-right p-4 rounded-2xl transition-all border cursor-pointer ${
+                      selectedPayment === 'bank_transfer'
+                        ? 'border-gray-900 bg-gray-50 shadow-xs ring-1 ring-gray-900'
+                        : 'border-gray-200 bg-white hover:bg-gray-50/60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
+                          <Check size={18} />
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-xs text-gray-950">
+                              تحويل للحساب البنكي (Bank Transfer)
+                            </span>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800">
+                              مصرف الراجحي 🏦
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-gray-500 mt-0.5">
+                            تحويل مباشر لحساب المتجر البنكي وإرسال صورة الإشعار عبر الواتساب لتأكيد الشحن
+                          </p>
                         </div>
-                        <button
-                          onClick={() => setIframePaymentUrl(null)}
-                          className="text-gray-500 hover:text-black p-1.5 rounded-full hover:bg-gray-200"
-                        >
-                          <X size={18} />
-                        </button>
                       </div>
-                      <iframe 
-                        src={iframePaymentUrl} 
-                        className="w-full flex-1 border-0" 
-                        title="بوابة الدفع الآمنة"
-                      />
+
+                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        selectedPayment === 'bank_transfer' ? 'border-gray-900' : 'border-gray-300'
+                      }`}>
+                        {selectedPayment === 'bank_transfer' && <span className="w-2 h-2 bg-gray-900 rounded-full" />}
+                      </span>
                     </div>
+
+                    {selectedPayment === 'bank_transfer' && (
+                      <div className="mt-3 pt-3 border-t border-gray-200 text-right">
+                        <div className="bg-blue-50/70 p-3.5 rounded-xl border border-blue-200 text-[11px] space-y-2">
+                          <p className="font-bold text-blue-950 mb-1">بيانات الحساب البنكي المعتمد:</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">اسم البنك:</span>
+                            <span className="font-bold text-gray-900">مصرف الراجحي</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">اسم الحساب:</span>
+                            <span className="font-bold text-gray-900">مؤسسة سُلطة للأزياء</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">رقم الآيبان (IBAN):</span>
+                            <div className="font-mono text-gray-900 font-bold select-all bg-white px-2 py-0.5 rounded border border-gray-300">
+                              <span>SA82 8000 0000 1234 5678 9012</span>
+                            </div>
+                          </div>
+                          <div className="p-2 bg-amber-50 rounded-lg border border-amber-200 text-[10.5px] text-amber-900 font-medium">
+                            📸 عند الضغط على إتمام الطلب، سيتم إرسال بيانات الحساب ورقم الطلب لرسائل الواتساب، يرجى إرسال صورة أو سكرين شوت لإشعار التحويل لتأكيد الشحن فوراً.
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+
+                </div>
 
               </div>
             )}
@@ -820,7 +702,7 @@ export default function CheckoutModal({
                   <span>تعديل العنوان</span>
                 </button>
                 
-                {selectedPayment === 'card' ? (
+                {selectedPayment === 'bank_transfer' ? (
                   <button
                     type="button"
                     onClick={() => handleSubmitOrder()}
@@ -830,45 +712,7 @@ export default function CheckoutModal({
                     {isSubmitting ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>جاري تحويلك للبوابة الآمنة...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Lock size={14} />
-                        <span>الدفع بالبطاقة الائتمانية / مدى ({totalAmount.toLocaleString()} {currencyLabel})</span>
-                      </>
-                    )}
-                  </button>
-                ) : selectedPayment === 'paypal' ? (
-                  <button
-                    type="button"
-                    onClick={() => handleSubmitOrder()}
-                    disabled={isSubmitting}
-                    className="flex-1 bg-[#003087] hover:bg-[#00246a] active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>جاري تأكيد الدفع عبر PayPal...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Globe size={14} />
-                        <span>إتمام الدفع عبر PayPal ({totalAmount.toLocaleString()} {currencyLabel})</span>
-                      </>
-                    )}
-                  </button>
-                ) : selectedPayment === 'bank_transfer' ? (
-                  <button
-                    type="button"
-                    onClick={() => handleSubmitOrder()}
-                    disabled={isSubmitting}
-                    className="flex-1 bg-gray-900 hover:bg-black active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>جاري تأكيد الطلب...</span>
+                        <span>جاري تسجيل الطلب وتجهيز بيانات التحويل...</span>
                       </>
                     ) : (
                       <>

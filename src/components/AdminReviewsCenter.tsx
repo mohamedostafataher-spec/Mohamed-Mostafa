@@ -134,7 +134,7 @@ export default function AdminReviewsCenter({ reviews, products }: AdminReviewsCe
                  <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-bold text-gray-900 text-sm">{r.username}</span>
-                      {r.isVerifiedPurchase && <span className="bg-green-100 text-green-700 text-[9px] px-2 py-0.5 rounded-full flex items-center gap-1"><CheckCircle className="w-3 h-3" /> مشتري موثق</span>}
+                      {r.isVerifiedPurchase && <span className="bg-green-100 text-green-700 text-[9px] px-2 py-0.5 rounded-full flex items-center gap-1"><CheckCircle className="w-3 h-3" /> مشتري مؤكد</span>}
                       <span className="text-[10px] text-gray-400">{new Date(r.date).toLocaleString('ar-EG')}</span>
                     </div>
                     <div className="text-amber-400 text-sm">{'⭐'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</div>

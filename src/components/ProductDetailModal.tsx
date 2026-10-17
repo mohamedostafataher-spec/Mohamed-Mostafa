@@ -357,29 +357,9 @@ export default function ProductDetailModal({
     window.open(url, '_blank');
   };
 
-  // Web Share API handler with elegant fallback
-  const handleShareClick = async () => {
-    const shareUrl = `${window.location.origin}?product=${product.id}`;
-    const shareTitle = `تصاميم ملابس نوم SULTA الفاخرة - ${product.nameAr}`;
-    const shareText = `شاهدت هذا التصميم الخيالي لبيجامات وملابس نوم SULTA الفاخرة ✨\nالموديل: "${product.nameAr}" 🌸\nنسيج مريح ينبض بالنعومة والرقي الملوكي الحقيقي!`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shareTitle,
-          text: shareText,
-          url: shareUrl,
-        });
-        toast('تمت المشاركة الملكية بنجاح! 🌸', 'success');
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.warn('Web Share failed, opening panel instead:', err);
-          setIsSharePanelOpen(!isSharePanelOpen);
-        }
-      }
-    } else {
-      setIsSharePanelOpen(!isSharePanelOpen);
-    }
+  // Share product click handler
+  const handleShareClick = () => {
+    setIsSharePanelOpen(prev => !prev);
   };
 
   // Color Accuracy description selector
@@ -1695,7 +1675,7 @@ export default function ProductDetailModal({
                               <span className="font-bold text-gray-805">{r.username}</span>
                               {r.isVerifiedPurchase && (
                                 <span className="bg-green-50 text-green-700 text-[8px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border border-green-100/50">
-                                  <Check className="w-2.5 h-2.5" /> مشتري موثق
+                                  <Check className="w-2.5 h-2.5" /> مشتري مؤكد
                                 </span>
                               )}
                             </div>
@@ -1854,13 +1834,14 @@ export default function ProductDetailModal({
                 onClick={handleShareClick}
                 className={`p-3 rounded-xl transition-all border cursor-pointer flex items-center justify-center gap-1.5 ${
                   isSharePanelOpen 
-                    ? "bg-black text-white border-black font-semibold" 
-                    : "bg-[#FAFAF7] hover:bg-white text-gray-800 border-gray-200 hover:text-black hover:scale-103"
+                    ? "bg-black text-white border-black font-semibold shadow-xs" 
+                    : "bg-[#FAFAF7] hover:bg-white text-gray-800 border-gray-200 hover:text-black hover:scale-102"
                 }`}
-                title="مشاركة القطعة الفاخرة"
+                title="مشاركة المنتج"
+                id="share-product-button"
               >
                 <Share2 size={15} />
-                <span className="text-[10px] font-sans font-bold">مشاركة 🌸</span>
+                <span className="text-xs font-sans font-bold">مشاركة المنتج</span>
               </button>
             </div>
 
@@ -1869,20 +1850,20 @@ export default function ProductDetailModal({
               <div className="bg-[#FAFAF5] border border-[#E9DADA] rounded-2xl p-4 space-y-3.5 text-right mt-1 shadow-xs ring-1 ring-black/5 animate-fadeIn">
                 <div className="flex justify-between items-center border-b border-[#E9DADA]/60 pb-1.5 flex-row-reverse">
                   <div className="flex items-center gap-1.5 flex-row-reverse">
-                    <span className="text-xs font-serif font-black text-gray-900">مشاركة قطعة SULTA الفاخرة ✨</span>
-                    <Sparkles size={11} className="text-[#DF8A9C] animate-pulse" />
+                    <span className="text-xs font-serif font-black text-gray-900">مشاركة المنتج ✨</span>
+                    <Sparkles size={11} className="text-[#DF8A9C]" />
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsSharePanelOpen(false)}
-                    className="text-gray-400 hover:text-gray-650 text-xs cursor-pointer font-bold px-1"
+                    className="text-gray-400 hover:text-gray-700 text-xs cursor-pointer font-bold px-1"
                   >
                     إغلاق ×
                   </button>
                 </div>
 
-                <p className="text-[10px] text-gray-600 font-sans leading-relaxed">
-                  شاركي فخامة وأناقة علامة SULTA لملابس النوم الراقية مع صديقاتكِ أو على حسابتكِ الاجتماعية بلمسة واحدة.
+                <p className="text-[11px] text-gray-600 font-sans leading-relaxed">
+                  شاركي هذا التصميم الفاخر مباشرةً عبر تطبيق واتساب أو انسخي رابط المنتج إلى الحافظة لمشاركته مع صديقاتكِ:
                 </p>
 
                 {/* Grid of sharing methods */}
@@ -1892,41 +1873,59 @@ export default function ProductDetailModal({
                     type="button"
                     onClick={() => {
                       const shareUrl = `${window.location.origin}?product=${product.id}`;
-                      const text = `شاهدت هذا التصميم الخيالي لبيجامات وملابس نوم SULTA الفاخرة ✨:
-🌸 الموديل: *${product.nameAr}*
-🎨 الألوان المتوفرة: ${product.colors.map(c => c.name).join(' - ')}
-💎 المقاسات المتوافرة: ${product.sizes.join(', ')}
-💰 السعر: ${price.toLocaleString()} ${currencyLabel}
-
-القطعة منسوجة بقمة الفخامة والنعومة ومتاحة للتوصيل الفوري لكافة مدن المملكة ودول الخليج العربيّة!
-رابط القطعة الفاخرة للاستعراض والطلب:
-${shareUrl}`;
+                      const text = `🌸 مرحباً! شاهدت هذا التصميم الراقي من SULTA للأزياء وملابس النوم الفاخرة:\n*${product.nameAr}*\n💰 السعر: ${price.toLocaleString()} ${currencyLabel}\n🎨 الألوان: ${product.colors.map(c => c.name).join(' - ')}\n🔗 رابط المنتج المباشر للاستعراض والطلب:\n${shareUrl}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
-                    className="bg-[#25D366] hover:bg-[#20ba59] text-white py-2 px-3 rounded-xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                    className="bg-[#25D366] hover:bg-[#20ba59] active:scale-98 text-white py-2.5 px-3 rounded-xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                    id="share-product-whatsapp"
                   >
-                    <Send size={12} className="rotate-220 text-white" />
+                    <Send size={13} className="text-white" />
                     <span>مشاركة عبر واتساب (WhatsApp)</span>
                   </button>
 
-                  {/* Copy Link to Clipboards */}
+                  {/* Copy Link to Clipboard */}
                   <button
                     type="button"
                     onClick={() => {
                       const shareUrl = `${window.location.origin}?product=${product.id}`;
                       navigator.clipboard.writeText(shareUrl);
                       setCopied(true);
+                      toast('تم نسخ رابط المنتج إلى الحافظة بنجاح! 📋', 'success');
                       setTimeout(() => setCopied(false), 2500);
                     }}
-                    className={`py-2 px-3 rounded-xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer border ${
+                    className={`py-2.5 px-3 rounded-xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer border active:scale-98 ${
                       copied 
                         ? 'bg-emerald-50 border-emerald-300 text-emerald-800' 
-                        : 'bg-white hover:bg-gray-50 border-[#E9DADA] text-gray-850'
+                        : 'bg-white hover:bg-gray-50 border-[#E9DADA] text-gray-850 shadow-2xs'
                     }`}
+                    id="copy-product-link"
                   >
-                    {copied ? <Check size={12} className="text-emerald-600 animate-bounce" /> : <Copy size={12} className="text-gray-500" />}
-                    <span>{copied ? 'تم نسخ الرابط بنجاح! 🌸' : 'نسخ رابط القطعة المباشر'}</span>
+                    {copied ? <Check size={13} className="text-emerald-600 animate-bounce" /> : <Copy size={13} className="text-gray-500" />}
+                    <span>{copied ? 'تم نسخ الرابط بنجاح! 🌸' : 'نسخ رابط المنتج للحافظة'}</span>
                   </button>
+                </div>
+
+                {/* Direct Link Input Box */}
+                <div className="bg-white p-1.5 rounded-xl border border-gray-200 flex items-center justify-between gap-2" dir="ltr">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const shareUrl = `${window.location.origin}?product=${product.id}`;
+                      navigator.clipboard.writeText(shareUrl);
+                      setCopied(true);
+                      toast('تم نسخ رابط المنتج إلى الحافظة بنجاح! 📋', 'success');
+                      setTimeout(() => setCopied(false), 2500);
+                    }}
+                    className="bg-black hover:bg-gray-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shrink-0 transition-all cursor-pointer"
+                  >
+                    {copied ? 'تم النسخ ✓' : 'نسخ'}
+                  </button>
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${typeof window !== 'undefined' ? window.location.origin : ''}?product=${product.id}`}
+                    className="text-[10.5px] font-mono text-gray-500 bg-transparent border-0 outline-none w-full text-left truncate select-all"
+                  />
                 </div>
 
                 {/* Elegant Instagram / Stories sharing guide */}
