@@ -261,6 +261,8 @@ export interface DiscountCoupon {
   code: string;
   discountPercent: number;
   description: string;
+  expiresAt?: string;
+  isActive?: boolean;
 }
 
 export interface ContactMessage {

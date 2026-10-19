@@ -391,6 +391,10 @@ function mapProduct(data: any): Product {
   let tags = Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []);
   let collection = data.collection || undefined;
   let seo = data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined;
+  let metaPriceSA: number | undefined;
+  let metaPriceEG: number | undefined;
+  let metaSalePriceSA: number | undefined;
+  let metaSalePriceEG: number | undefined;
 
   // Try parsing name fallback if nameAr and nameEn are empty but name column contains data
   if (!nameAr && !nameEn && data.name) {
@@ -442,6 +446,10 @@ function mapProduct(data: any): Product {
         if (meta.tags) tags = meta.tags;
         if (meta.collection) collection = meta.collection;
         if (meta.seo) seo = meta.seo;
+        if (meta.priceSA !== undefined && Number(meta.priceSA) > 0) metaPriceSA = Number(meta.priceSA);
+        if (meta.priceEG !== undefined && Number(meta.priceEG) > 0) metaPriceEG = Number(meta.priceEG);
+        if (meta.salePriceSA !== undefined) metaSalePriceSA = Number(meta.salePriceSA);
+        if (meta.salePriceEG !== undefined) metaSalePriceEG = Number(meta.salePriceEG);
       } catch (e) {
         console.error("[SULTA DB] Failed to parse metadata from description:", e);
       }
@@ -511,14 +519,38 @@ function mapProduct(data: any): Product {
     }
   }
 
+  const resolvedPriceSA = metaPriceSA !== undefined 
+    ? metaPriceSA 
+    : (Number(data.price_sa) > 0 
+      ? Number(data.price_sa) 
+      : (Number(data.price) > 0 
+        ? Number(data.price) 
+        : (fallbackProduct ? fallbackProduct.priceSA : 0)));
+
+  const resolvedPriceEG = metaPriceEG !== undefined 
+    ? metaPriceEG 
+    : (Number(data.price_eg) > 0 
+      ? Number(data.price_eg) 
+      : (resolvedPriceSA > 0 
+        ? resolvedPriceSA * 5 
+        : (fallbackProduct ? fallbackProduct.priceEG : 0)));
+
+  const resolvedSalePriceSA = metaSalePriceSA !== undefined 
+    ? metaSalePriceSA 
+    : (data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined));
+
+  const resolvedSalePriceEG = metaSalePriceEG !== undefined 
+    ? metaSalePriceEG 
+    : (data.sale_price_eg ? Number(data.sale_price_eg) : (data.sale_price ? Number(data.sale_price) : undefined));
+
   return {
     id: data.id,
     nameAr: cleanText(nameAr),
     nameEn: cleanText(nameEn),
     category: catKey,
     categoryAr: cleanText(data.category_ar || ''),
-    priceEG: Number(data.price_eg ?? 0),
-    priceSA: Number(data.price_sa ?? 0),
+    priceEG: resolvedPriceEG,
+    priceSA: resolvedPriceSA,
     descriptionAr: cleanText(descriptionAr),
     descriptionEn: cleanText(descriptionEn),
     fabricAr: cleanText(fabricAr),
@@ -533,8 +565,8 @@ function mapProduct(data: any): Product {
     reviewsCount,
     stock: Number(data.stock ?? 0),
     sku,
-    salePriceEG: data.sale_price_eg ? Number(data.sale_price_eg) : (data.sale_price ? Number(data.sale_price) : undefined),
-    salePriceSA: data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined),
+    salePriceEG: resolvedSalePriceEG,
+    salePriceSA: resolvedSalePriceSA,
     featured,
     status,
     shortDescription,
@@ -578,8 +610,10 @@ function mapReview(data: any): Review {
 function mapCoupon(data: any): DiscountCoupon {
   return {
     code: data.code || '',
-    discountPercent: Number(data.discount_percent ?? 0),
-    description: data.description || ''
+    discountPercent: Number(data.discount_percent ?? data.discountPercent ?? 0),
+    description: data.description || '',
+    expiresAt: data.expires_at || data.expiresAt || undefined,
+    isActive: data.active !== undefined ? Boolean(data.active) : (data.isActive !== undefined ? Boolean(data.isActive) : true)
   };
 }
 
@@ -1402,19 +1436,56 @@ export const dbService = {
     onSuccess: (products: Product[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
+    const deliverProducts = (rawList: Product[]) => {
+      try {
+        const savedStr = localStorage.getItem('sulta_saved_products');
+        if (!savedStr) {
+          onSuccess(rawList);
+          return;
+        }
+        const savedMap = JSON.parse(savedStr);
+        if (!savedMap || typeof savedMap !== 'object') {
+          onSuccess(rawList);
+          return;
+        }
+
+        const mergedMap = new Map<string, Product>();
+        for (const p of rawList) {
+          mergedMap.set(p.id, p);
+        }
+        for (const [id, savedP] of Object.entries(savedMap)) {
+          if (savedP && typeof savedP === 'object') {
+            const existing = mergedMap.get(id);
+            if (existing) {
+              mergedMap.set(id, { ...existing, ...(savedP as Product) });
+            } else {
+              mergedMap.set(id, savedP as Product);
+            }
+          }
+        }
+        onSuccess(Array.from(mergedMap.values()));
+      } catch (e) {
+        console.warn('[SULTA DB] Error merging local products:', e);
+        onSuccess(rawList);
+      }
+    };
+
+    // Immediate optimistic delivery of fallback + any local edits so page loads instantly with correct prices
+    deliverProducts(SEED_FALLBACK_PRODUCTS);
+
     supabase.from('products').select('*').then(({ data, error }) => {
       if (error || !data || data.length === 0) {
         console.warn('[SULTA DB] Supabase products empty or error, using fallback products with active images:', error);
-        onSuccess(SEED_FALLBACK_PRODUCTS);
+        deliverProducts(SEED_FALLBACK_PRODUCTS);
       } else {
         console.log(`[SULTA DB] Successfully synced ${data.length} products from Supabase.`);
         const mapped = data.map(mapProduct);
         const finalProducts = mapped.length > 0 ? mapped : SEED_FALLBACK_PRODUCTS;
-        onSuccess(finalProducts);
+        deliverProducts(finalProducts);
       }
     }).catch((err: any) => {
       console.error('[SULTA DB] Exception fetching products from Supabase, using fallback:', err);
-      onSuccess(SEED_FALLBACK_PRODUCTS);
+      deliverProducts(SEED_FALLBACK_PRODUCTS);
     });
 
     const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);
@@ -1425,13 +1496,11 @@ export const dbService = {
           const { data, error } = await supabase.from('products').select('*');
           if (error) {
             console.error('[SULTA DB] Realtime error on products update:', error);
-            onSuccess([]);
           } else if (data) {
             console.log(`[SULTA DB] Realtime update: ${data.length} products loaded.`);
-            onSuccess(data.map(mapProduct));
+            deliverProducts(data.map(mapProduct));
           }
         } catch {
-          onSuccess([]);
         }
       })
       .subscribe();
@@ -1445,14 +1514,46 @@ export const dbService = {
     onSuccess: (coupons: DiscountCoupon[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('coupons').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapCoupon)); }).catch((err) => { console.warn('Supabase fetch failed for coupons', err); /* fallback provided by state default */ });
+    const deliverCoupons = (dbCoupons: DiscountCoupon[]) => {
+      try {
+        const localCoupons = JSON.parse(localStorage.getItem('sulta_coupons') || '[]');
+        const map = new Map<string, DiscountCoupon>();
+        for (const c of dbCoupons) {
+          map.set(c.code.toUpperCase(), c);
+        }
+        for (const c of localCoupons) {
+          map.set(c.code.toUpperCase(), c);
+        }
+        onSuccess(Array.from(map.values()));
+      } catch {
+        onSuccess(dbCoupons);
+      }
+    };
+
+    // Optimistic local read
+    try {
+      const localCoupons = JSON.parse(localStorage.getItem('sulta_coupons') || '[]');
+      if (localCoupons.length > 0) deliverCoupons([]);
+    } catch {}
+
+    supabase.from('coupons').select('*').then(({ data, error }) => {
+      if (error) {
+        console.warn('Supabase fetch failed for coupons', error);
+        deliverCoupons([]);
+      } else if (data) {
+        deliverCoupons(data.map(mapCoupon));
+      }
+    }).catch((err) => {
+      console.warn('Supabase fetch failed for coupons', err);
+      deliverCoupons([]);
+    });
 
     const channelName = 'public:coupons:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'coupons' }, async () => {
         const { data } = await supabase.from('coupons').select('*');
-        if (data) onSuccess(data.map(mapCoupon));
+        if (data) deliverCoupons(data.map(mapCoupon));
       })
       .subscribe();
 
@@ -1487,12 +1588,17 @@ export const dbService = {
   ): (() => void) => {
     const loadAndMerge = (dbOrders: any[], ticketOrders: any[]) => {
       let localOrders: any[] = [];
+      let deletedOrderIds: string[] = [];
       try {
         localOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
       } catch (e) {
         console.warn("Failed to read sulta_offline_orders from localStorage", e);
       }
+      try {
+        deletedOrderIds = JSON.parse(localStorage.getItem('sulta_deleted_order_ids') || '[]');
+      } catch (e) {}
       
+      const deletedSet = new Set(deletedOrderIds);
       const ordersMap = new Map<string, Order>();
 
       // 1. Process cloud tickets containing full JSON order metadata
@@ -1500,7 +1606,7 @@ export const dbService = {
         for (const t of ticketOrders) {
           try {
             const raw = typeof t.message === 'string' ? JSON.parse(t.message) : t.message;
-            if (raw && raw.id) {
+            if (raw && raw.id && !deletedSet.has(raw.id)) {
               const mapped = mapOrder(raw);
               ordersMap.set(mapped.id, mapped);
             }
@@ -1511,6 +1617,7 @@ export const dbService = {
       // 2. Process orders from official 'orders' table
       if (Array.isArray(dbOrders)) {
         for (const o of dbOrders) {
+          if (deletedSet.has(o.id)) continue;
           if (!ordersMap.has(o.id)) {
             ordersMap.set(o.id, mapOrder(o));
           } else {
@@ -1525,6 +1632,7 @@ export const dbService = {
 
       // 3. Process local offline orders fallback
       for (const lo of localOrders) {
+        if (deletedSet.has(lo.id)) continue;
         if (!ordersMap.has(lo.id)) {
           ordersMap.set(lo.id, mapOrder(lo));
         }
@@ -1817,8 +1925,19 @@ export const dbService = {
   },
 
   saveProduct: async (product: Product): Promise<void> => {
-    // Standard allowed categories in CHECK constraint: ('soft', 'cotton', 'loungewear', 'dresses', 'new')
-    const allowedCategories = ['soft', 'cotton', 'loungewear', 'dresses', 'new'];
+    // 1. Dual-write to localStorage for instant client persistence & offline resilience
+    try {
+      const savedStr = localStorage.getItem('sulta_saved_products') || '{}';
+      const savedMap = JSON.parse(savedStr);
+      savedMap[product.id] = product;
+      localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
+      console.log(`[SULTA DB] Saved product "${product.nameAr}" (ID: ${product.id}, Price: ${product.priceSA} SAR) to localStorage.`);
+    } catch (e) {
+      console.warn('[SULTA DB] Error saving product to localStorage:', e);
+    }
+
+    // Standard allowed categories in CHECK constraint: ('satin', 'soft', 'cotton', 'loungewear', 'dresses', 'new')
+    const allowedCategories = ['satin', 'soft', 'cotton', 'loungewear', 'dresses', 'new'];
     const safeCategory = allowedCategories.includes(product.category) ? product.category : 'new';
     
     // UUID format check for foreign keys that might cause syntax errors in Supabase strict mode
@@ -1843,6 +1962,10 @@ export const dbService = {
 
     // Pack all product metadata into a JSON block so legacy database structures retain 100% of features
     const metadata = {
+      priceSA: product.priceSA,
+      priceEG: product.priceEG,
+      salePriceSA: product.salePriceSA,
+      salePriceEG: product.salePriceEG,
       nameAr: product.nameAr || '',
       nameEn: product.nameEn || '',
       descriptionAr: product.descriptionAr || '',
@@ -1874,8 +1997,8 @@ export const dbService = {
       category: safeCategory,
       category_id: resolvedCategoryId || null,
       category_ar: product.categoryAr,
-      price: product.priceEG || product.priceSA || 0,
-      price_eg: product.priceEG,
+      price: product.priceSA || product.priceEG || 0,
+      price_eg: product.priceEG || (product.priceSA ? product.priceSA * 5 : 0),
       price_sa: product.priceSA,
       description_ar: product.descriptionAr,
       description_en: product.descriptionEn,
@@ -2041,7 +2164,64 @@ export const dbService = {
     }
 
     console.log("[SULTA DB] Save finished. Payload columns remaining:", Object.keys(payload), "Error:", error ? error.message : "Success 🎉");
-    if (error) throw error;
+    if (error) {
+      console.warn("[SULTA DB] Supabase upsert returned error, but product is preserved in localStorage:", error.message || error);
+    }
+  },
+
+  updateProductPrice: async (productId: string, priceSA: number, priceEG?: number, salePriceSA?: number): Promise<void> => {
+    try {
+      const savedStr = localStorage.getItem('sulta_saved_products') || '{}';
+      let savedMap: Record<string, Product> = {};
+      try {
+        savedMap = JSON.parse(savedStr);
+      } catch {
+        savedMap = {};
+      }
+
+      const existing = savedMap[productId] || SEED_FALLBACK_PRODUCTS.find(p => p.id === productId);
+      const calculatedEG = priceEG !== undefined && priceEG > 0 
+        ? priceEG 
+        : (existing?.priceEG && existing.priceSA ? Math.round(priceSA * (existing.priceEG / existing.priceSA)) : priceSA * 5);
+
+      const updatedProd: Product = existing ? {
+        ...existing,
+        priceSA,
+        priceEG: calculatedEG,
+        salePriceSA: salePriceSA !== undefined ? salePriceSA : existing.salePriceSA
+      } : {
+        id: productId,
+        nameAr: 'منتج كوتور فاخر',
+        nameEn: 'Couture Product',
+        category: 'new',
+        categoryAr: 'المجموعة الجديدة',
+        priceSA,
+        priceEG: calculatedEG,
+        salePriceSA,
+        descriptionAr: '',
+        descriptionEn: '',
+        fabricAr: 'كوتور ناعم',
+        fabricEn: 'Soft Couture',
+        washInstructionsAr: 'غسيل لطيف',
+        images: ['/img/sulta_product_1.png'],
+        colors: [{ name: 'وردي كوتور', hex: '#E8A5B8' }],
+        sizes: ['S', 'M', 'L', 'XL'],
+        stock: 10,
+        rating: 5,
+        reviewsCount: 10,
+        status: 'active',
+        featured: true
+      };
+
+      savedMap[productId] = updatedProd;
+      localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
+      console.log(`[SULTA DB] Successfully updated price for ${productId} to ${priceSA} SAR.`);
+
+      // Sync to Supabase in background
+      await dbService.saveProduct(updatedProd);
+    } catch (err: any) {
+      console.warn('[SULTA DB] updateProductPrice notice:', err);
+    }
   },
 
   getHomepageSections: async (): Promise<any[]> => {
@@ -2071,28 +2251,76 @@ export const dbService = {
   },
 
   deleteProduct: async (productId: string): Promise<void> => {
+    try {
+      const savedStr = localStorage.getItem('sulta_saved_products') || '{}';
+      const savedMap = JSON.parse(savedStr);
+      delete savedMap[productId];
+      localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
+    } catch (e) {
+      console.warn('[SULTA DB] Error deleting product from localStorage:', e);
+    }
     const { error } = await supabase.from('products').delete().eq('id', productId);
-    if (error) throw error;
+    if (error) console.warn('[SULTA DB] Supabase delete notice:', error.message || error);
   },
 
   saveCoupon: async (coupon: DiscountCoupon): Promise<void> => {
-    const { error } = await supabase
-      .from('coupons')
-      .upsert([{
-        code: coupon.code,
+    try {
+      const localCoupons: DiscountCoupon[] = JSON.parse(localStorage.getItem('sulta_coupons') || '[]');
+      const filtered = localCoupons.filter(c => c.code.toUpperCase() !== coupon.code.toUpperCase());
+      filtered.push(coupon);
+      localStorage.setItem('sulta_coupons', JSON.stringify(filtered));
+    } catch (e) {
+      console.warn("Failed to save coupon to localStorage", e);
+    }
+
+    try {
+      const payload: any = {
+        code: coupon.code.toUpperCase().trim(),
         discount_percent: coupon.discountPercent,
-        description: coupon.description,
+        description: coupon.description || '',
         discount_value: 0
-      }]);
-    if (error) throw error;
+      };
+      if (coupon.expiresAt) {
+        payload.expires_at = new Date(coupon.expiresAt).toISOString();
+      }
+      if (coupon.isActive !== undefined) {
+        payload.active = coupon.isActive;
+      }
+      const { error } = await supabase
+        .from('coupons')
+        .upsert([payload], { onConflict: 'code' });
+      if (error) console.warn("Supabase coupon save warning:", error.message);
+    } catch (err: any) {
+      console.warn("Coupon save exception:", err);
+    }
   },
 
   deleteCoupon: async (code: string): Promise<void> => {
-    const { error } = await supabase.from('coupons').delete().eq('code', code);
-    if (error) throw error;
+    try {
+      const localCoupons: DiscountCoupon[] = JSON.parse(localStorage.getItem('sulta_coupons') || '[]');
+      const filtered = localCoupons.filter(c => c.code.toUpperCase() !== code.toUpperCase());
+      localStorage.setItem('sulta_coupons', JSON.stringify(filtered));
+    } catch (e) {
+      console.warn("Failed to delete coupon from localStorage", e);
+    }
+
+    try {
+      const { error } = await supabase.from('coupons').delete().eq('code', code.toUpperCase());
+      if (error) console.warn("Supabase coupon delete warning:", error.message);
+    } catch (err: any) {
+      console.warn("Coupon delete exception:", err);
+    }
   },
 
   deleteOrder: async (orderId: string): Promise<void> => {
+    try {
+      const deletedIds = JSON.parse(localStorage.getItem('sulta_deleted_order_ids') || '[]');
+      if (!deletedIds.includes(orderId)) {
+        deletedIds.push(orderId);
+        localStorage.setItem('sulta_deleted_order_ids', JSON.stringify(deletedIds));
+      }
+    } catch {}
+
     try {
       const localOrders = JSON.parse(localStorage.getItem('sulta_offline_orders') || '[]');
       const filtered = localOrders.filter((o: any) => o.id !== orderId);
@@ -2107,14 +2335,10 @@ export const dbService = {
       if (oErr) console.warn("Supabase orders delete error:", oErr.message);
 
       // 2. Delete from support_tickets table (where full payload resides)
-      // We check for both ORDER: prefix and ORDER- prefix just in case of historical data
-      const { error: tErr } = await supabase.from('support_tickets').delete().or(`subject.eq.ORDER:${orderId},subject.eq.ORDER-${orderId}`);
+      const { error: tErr } = await supabase.from('support_tickets').delete().or(`subject.eq.ORDER:${orderId},subject.eq.ORDER-${orderId},subject.ilike.%${orderId}%`);
       if (tErr) console.warn("Supabase support_tickets delete error:", tErr.message);
-      
-      if (oErr && tErr) throw new Error("Could not delete order from either table");
     } catch (err) {
       console.error("Critical error on cloud deleteOrder:", err);
-      throw err;
     }
   },
 

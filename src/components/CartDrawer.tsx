@@ -59,6 +59,16 @@ export default function CartDrawer({
 
     const found = coupons.find(c => c.code.toUpperCase() === couponCode.trim().toUpperCase());
     if (found) {
+      if (found.isActive === false) {
+        setCouponErr('هذا الكوبون غير مفعّل حالياً.');
+        setAppliedCoupon(null);
+        return;
+      }
+      if (found.expiresAt && new Date(found.expiresAt).getTime() < new Date().setHours(0, 0, 0, 0)) {
+        setCouponErr(`كود الخصم انتهت صلاحيته بتاريخ ${new Date(found.expiresAt).toLocaleDateString('ar-SA')}.`);
+        setAppliedCoupon(null);
+        return;
+      }
       setAppliedCoupon(found);
       setCouponSuccess(true);
     } else {
