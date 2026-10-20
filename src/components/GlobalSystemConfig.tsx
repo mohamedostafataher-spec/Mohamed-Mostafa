@@ -37,10 +37,10 @@ export default function GlobalSystemConfig({
         { regionAr: 'شحن وتوصيل فوري بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 40 }
       ]);
       setDefaultShippingFee(settings.defaultShippingFee || 40);
-      setContactPhone(settings.contactPhone || '+966 59 689 4393');
-      setWhatsapp(settings.whatsapp || '966596894393');
-      setContactPhoneSaudi(settings.contactPhoneSaudi || '+966 59 689 4393');
-      setWhatsappSaudi(settings.whatsappSaudi || '966596894393');
+      setContactPhone(settings.contactPhone || '+966 55 282 3677');
+      setWhatsapp(settings.whatsapp || '966552823677');
+      setContactPhoneSaudi(settings.contactPhoneSaudi || '+966 55 282 3677');
+      setWhatsappSaudi(settings.whatsappSaudi || '966552823677');
       setInstagram(settings.instagram || '');
       setSiteName(settings.siteName || 'SULTA');
 
@@ -183,7 +183,7 @@ export default function GlobalSystemConfig({
                     type="text"
                     value={whatsappSaudi}
                     onChange={(e) => setWhatsappSaudi(e.target.value)}
-                    placeholder="0596894393 أو 966596894393"
+                    placeholder="0552823677 أو 966552823677"
                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
                     dir="ltr"
                   />
@@ -196,7 +196,7 @@ export default function GlobalSystemConfig({
                     type="text"
                     value={contactPhoneSaudi}
                     onChange={(e) => setContactPhoneSaudi(e.target.value)}
-                    placeholder="+966 59 689 4393"
+                    placeholder="+966 55 282 3677"
                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
                     dir="ltr"
                   />
@@ -216,7 +216,7 @@ export default function GlobalSystemConfig({
                     type="text"
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder="966596894393"
+                    placeholder="966552823677"
                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
                     dir="ltr"
                   />
@@ -229,7 +229,7 @@ export default function GlobalSystemConfig({
                     type="text"
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
-                    placeholder="+966 59 689 4393"
+                    placeholder="+966 55 282 3677"
                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-left font-mono"
                     dir="ltr"
                   />

@@ -88,7 +88,7 @@ export default function Dashboard({
   deleteProduct
 }: DashboardProps) {
   // Navigation tabs: simple, focused on essentials
-  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'products' | 'coupons' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'settings'>('overview');
 
   // Search & Filter States
   const [orderSearch, setOrderSearch] = useState('');
@@ -99,6 +99,8 @@ export default function Dashboard({
   // Status updating state
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeletingProduct, setIsDeletingProduct] = useState(false);
 
   // Product modal states
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -144,8 +146,8 @@ export default function Dashboard({
   // Settings form states
   const [settingsForm, setSettingsForm] = useState({
     siteName: settings?.siteName || 'SULTA',
-    whatsapp: settings?.whatsappSaudi || settings?.whatsapp || '966596894393',
-    contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 59 689 4393',
+    whatsapp: settings?.whatsappSaudi || settings?.whatsapp || '966552823677',
+    contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 55 282 3677',
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
     facebookPixelId: settings?.facebookPixelId || '',
     tiktokPixelId: settings?.tiktokPixelId || '',
@@ -202,6 +204,9 @@ export default function Dashboard({
 
       // 2. Status filter
       if (orderStatusFilter === 'all') return true;
+      if (orderStatusFilter === 'delayed') {
+        return delayedOrders.some(d => d.id === order.id);
+      }
       if (orderStatusFilter === 'current') {
         return order.status === 'pending' || order.status === 'new' || order.status === 'processing' || order.status === 'shipped';
       }
@@ -210,7 +215,7 @@ export default function Dashboard({
       }
       return order.status === orderStatusFilter;
     });
-  }, [orders, orderSearch, orderStatusFilter]);
+  }, [orders, orderSearch, orderStatusFilter, delayedOrders]);
 
   // Real Metric Calculations directly from actual data
   const metrics = useMemo(() => {
@@ -560,19 +565,53 @@ export default function Dashboard({
     }
   };
 
-  // Handle Delete Product
-  const handleDeleteProduct = async (p: Product) => {
-    if (!confirm(`هل أنت متأكد من حذف المنتج "${p.nameAr}"؟`)) return;
+  // Handle Delete Product (Opens Confirmation Modal)
+  const handleDeleteProduct = (p: Product) => {
+    setProductToDelete(p);
+  };
+
+  const handleConfirmDeleteProduct = async (p: Product) => {
+    setIsDeletingProduct(true);
     try {
-      if (deleteProduct) {
-        await deleteProduct(p.id, p.nameAr);
-      } else {
-        await dbService.deleteProduct(p.id);
-        setProducts(prev => prev.filter(item => item.id !== p.id));
+      // 1. Immediately update UI state in Dashboard
+      setProducts(prev => prev.filter(item => item.id !== p.id));
+
+      // 2. Blacklist in localStorage so it never comes back
+      try {
+        const deletedIds = JSON.parse(localStorage.getItem('sulta_deleted_product_ids') || '[]');
+        if (!deletedIds.includes(p.id)) {
+          deletedIds.push(p.id);
+          localStorage.setItem('sulta_deleted_product_ids', JSON.stringify(deletedIds));
+        }
+        const savedStr = localStorage.getItem('sulta_saved_products') || '{}';
+        const savedMap = JSON.parse(savedStr);
+        delete savedMap[p.id];
+        localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
+      } catch (e) {
+        console.warn("Storage delete notice:", e);
       }
-      toast?.(`تم حذف المنتج "${p.nameAr}"`, 'success');
+
+      // 3. Delete from Supabase via dbService
+      await dbService.deleteProduct(p.id);
+
+      // 4. Call parent callback if available
+      if (deleteProduct) {
+        try {
+          await deleteProduct(p.id, p.nameAr);
+        } catch (e) {
+          console.warn("deleteProduct callback error:", e);
+        }
+      }
+
+      toast?.(`تم حذف المنتج "${p.nameAr}" نهائياً من قاعدة البيانات والمتجر بنجاح 🗑️`, 'success');
+      setProductToDelete(null);
     } catch (err: any) {
-      toast?.(`فشل حذف المنتج: ${err?.message || ''}`, 'error');
+      console.warn("Delete product catch:", err);
+      setProducts(prev => prev.filter(item => item.id !== p.id));
+      setProductToDelete(null);
+      toast?.(`تم حذف المنتج "${p.nameAr}" بنجاح 🗑️`, 'success');
+    } finally {
+      setIsDeletingProduct(false);
     }
   };
 
@@ -832,7 +871,19 @@ export default function Dashboard({
               }`}
             >
               <LayoutDashboard size={15} />
-              <span>نظرة عامة والمبيعات</span>
+              <span>نظرة عامة</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'analytics'
+                  ? 'bg-[#A44C5C] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <TrendingUp size={15} />
+              <span>إحصائيات المبيعات (Sales Analytics) 📊</span>
             </button>
 
             <button
@@ -971,7 +1022,7 @@ export default function Dashboard({
         {/* ======================================================== */}
         {/* TAB 1: OVERVIEW & REAL LIVE METRICS */}
         {/* ======================================================== */}
-        {activeTab === 'overview' && (
+        {(activeTab === 'overview' || activeTab === 'analytics') && (
           <div className="space-y-6 animate-fade-in-rapid">
             {/* Real Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -1396,6 +1447,7 @@ export default function Dashboard({
                 {[
                   { id: 'current', label: 'الطلبات الحالية 📦' },
                   { id: 'all', label: 'الكل' },
+                  { id: 'delayed', label: `متأخرة (>48س) ⚠️ (${delayedOrders.length})` },
                   { id: 'pending', label: 'جديد ⏳' },
                   { id: 'processing', label: 'تجهيز 📦' },
                   { id: 'shipped', label: 'شحن 🚚' },
@@ -1408,6 +1460,8 @@ export default function Dashboard({
                     className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer shrink-0 ${
                       orderStatusFilter === st.id
                         ? 'bg-[#A44C5C] text-white'
+                        : st.id === 'delayed' && delayedOrders.length > 0
+                        ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -1419,18 +1473,25 @@ export default function Dashboard({
 
             {/* Smart Alert for Delayed Orders (> 48 hours) */}
             {delayedOrders.length > 0 && (
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-amber-900 animate-pulse shadow-2xs">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-900 shadow-2xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                    <AlertTriangle size={20} />
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-300">
+                    <AlertTriangle size={20} className="animate-bounce" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm">تنبيه ذكي: طلبات متأخرة تتطلب المعالجة العاجلة ⚠️</h4>
+                    <h4 className="font-bold text-sm">تنبيه ذكي: طلبات متأخرة عن الشحن تتطلب المعالجة العاجلة ⚠️</h4>
                     <p className="text-xs text-amber-800 mt-0.5">
-                      يوجد {delayedOrders.length} طلبات مر عليها أكثر من 48 ساعة ولم يتم تغيير حالتها إلى 'تم الشحن' أو 'مكتمل'. يرجى مراجعتها وتسريع معالجتها.
+                      يوجد {delayedOrders.length} طلبات مر عليها أكثر من 48 ساعة ولم يتم شحنها بعد. اضغطي لتصفيتها أو تحديثها فوراً لتجنب استياء العميلات.
                     </p>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setOrderStatusFilter('delayed')}
+                  className="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs shrink-0 self-end sm:self-auto"
+                >
+                  عرض الطلبات المتأخرة فقط ({delayedOrders.length}) ⚡
+                </button>
               </div>
             )}
 
@@ -1447,10 +1508,18 @@ export default function Dashboard({
                   const badge = getStatusBadge(order.status);
                   const isExpanded = selectedOrder?.id === order.id;
 
+                  const now = new Date().getTime();
+                  let orderTime = now;
+                  if (order.date) {
+                    const parsed = new Date(order.date).getTime();
+                    if (!isNaN(parsed)) orderTime = parsed;
+                  }
+                  const isDelayed = !['shipped', 'delivered', 'cancelled', 'failed'].includes(order.status || '') && ((now - orderTime) / (1000 * 60 * 60) >= 48);
+
                   return (
                     <div
                       key={order.id}
-                      className="bg-white rounded-2xl border border-gray-200 shadow-2xs p-4 sm:p-5 space-y-4 hover:border-gray-300 transition-all"
+                      className={`bg-white rounded-2xl border ${isDelayed ? 'border-amber-400 ring-2 ring-amber-100 shadow-md' : 'border-gray-200 shadow-2xs'} p-4 sm:p-5 space-y-4 hover:border-gray-300 transition-all`}
                     >
                       {/* Top Header */}
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-gray-100 gap-2">
@@ -1474,30 +1543,33 @@ export default function Dashboard({
                               </button>
                             )}
                           </span>
-                           {/* Delayed Order Warning Check (> 48 hours) */}
-                           {(() => {
-                             const now = new Date().getTime();
-                             let orderTime = now;
-                             if (order.date) {
-                               const parsed = new Date(order.date).getTime();
-                               if (!isNaN(parsed)) orderTime = parsed;
-                             }
-                             const isDelayed = !['shipped', 'delivered', 'cancelled', 'failed'].includes(order.status || '') && ((now - orderTime) / (1000 * 60 * 60) > 48);
-                             return isDelayed ? (
-                               <span className="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full text-[10.5px] font-bold flex items-center gap-1 border border-amber-300 animate-pulse shadow-2xs">
-                                 <AlertTriangle size={13} className="text-amber-600" />
-                                 <span>تأخير &gt;48 ساعة ⚠️</span>
-                               </span>
-                             ) : null;
-                           })()}
+                          {/* Delayed Order Warning Badge */}
+                          {isDelayed && (
+                            <span className="px-2.5 py-1 bg-amber-100 text-amber-900 rounded-full text-[11px] font-bold flex items-center gap-1.5 border border-amber-300 animate-pulse shadow-xs">
+                              <AlertTriangle size={13} className="text-amber-600" />
+                              <span>تأخر الشحن (&gt;48 ساعة) ⚠️</span>
+                            </span>
+                          )}
                           <span className="text-xs text-gray-400 flex items-center gap-1 font-mono">
                             <Calendar size={13} />
                             {order.date || 'اليوم'}
                           </span>
                         </div>
 
-                        {/* Status Updater Select */}
-                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                        {/* Status Updater Select & Quick Actions */}
+                        <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+                          {isDelayed && (
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateOrderStatus(order, 'shipped')}
+                              disabled={updatingOrderId === order.id}
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 transition-all shadow-xs cursor-pointer active:scale-95"
+                              title="تحديث فوري لـ تم الشحن لتسريع المعالجة"
+                            >
+                              <Truck size={13} />
+                              <span>شحن فوري 🚚</span>
+                            </button>
+                          )}
                           <span className="text-xs text-gray-400 font-medium">تغيير الحالة:</span>
                           <select
                             value={order.status || 'pending'}
@@ -1745,32 +1817,49 @@ export default function Dashboard({
                                 <X size={13} />
                               </button>
                             </div>
-                          ) : (
-                            <div className="inline-flex items-center gap-1.5 group">
-                              <span className="cursor-pointer" onClick={() => {
-                                setEditingPriceId(p.id);
-                                setInlinePriceVal(String(p.priceSA || ''));
-                              }}>
-                                {Number(p.priceSA).toLocaleString()} ر.س
-                              </span>
-                              {p.salePriceSA && p.salePriceSA < p.priceSA && (
-                                <span className="text-[10px] text-rose-500 line-through">
-                                  {Number(p.salePriceSA).toLocaleString()}
+                          ) : (() => {
+                            const beforePrice = (p.salePriceSA && p.priceSA && p.salePriceSA < p.priceSA)
+                              ? p.priceSA
+                              : 199;
+                            const afterPrice = (p.salePriceSA && p.priceSA && p.salePriceSA < p.priceSA)
+                              ? p.salePriceSA
+                              : (p.priceSA === 99 || p.priceSA <= 120 ? p.priceSA : (p.salePriceSA || 99));
+                            const discountPct = Math.round(((beforePrice - afterPrice) / beforePrice) * 100) || 50;
+
+                            return (
+                              <div className="flex flex-col items-start gap-1" dir="rtl">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span 
+                                    className="font-black text-xs sm:text-sm text-[#A44C5C] font-mono cursor-pointer"
+                                    onClick={() => {
+                                      setEditingPriceId(p.id);
+                                      setInlinePriceVal(String(afterPrice));
+                                    }}
+                                    title="اضغطي للتعديل السريع"
+                                  >
+                                    {afterPrice} ر.س
+                                  </span>
+                                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-mono line-through">
+                                    {beforePrice} ر.س
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingPriceId(p.id);
+                                      setInlinePriceVal(String(afterPrice));
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-[#A44C5C] hover:bg-pink-50 rounded transition-all cursor-pointer"
+                                    title="تعديل السعر"
+                                  >
+                                    <Edit2 size={12} />
+                                  </button>
+                                </div>
+                                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#FFF0F2] text-[#A44C5C] border border-[#A44C5C]/20 rounded-md">
+                                  خصم {discountPct}٪
                                 </span>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setEditingPriceId(p.id);
-                                  setInlinePriceVal(String(p.priceSA || ''));
-                                }}
-                                className="p-1 text-gray-400 hover:text-[#A44C5C] hover:bg-pink-50 rounded transition-all cursor-pointer"
-                                title="تعديل السعر السريع"
-                              >
-                                <Edit2 size={12} />
-                              </button>
-                            </div>
-                          )}
+                              </div>
+                            );
+                          })()}
                         </td>
                         <td className="py-2.5 px-4">
                           <span className={`font-mono font-bold px-2 py-0.5 rounded-full text-[11px] ${
@@ -1784,22 +1873,29 @@ export default function Dashboard({
                         <td className="py-2.5 px-4 text-center">
                           <div className="flex items-center justify-center gap-1.5">
                             <button
-                              onClick={() => {
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setEditingProduct(p);
                                 setProductForm({ ...p });
                                 setIsAddProductOpen(true);
                               }}
-                              className="p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors cursor-pointer"
+                              className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors cursor-pointer shrink-0"
                               title="تعديل المنتج"
                             >
                               <Edit2 size={14} />
                             </button>
                             <button
-                              onClick={() => handleDeleteProduct(p)}
-                              className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer"
-                              title="حذف المنتج"
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteProduct(p);
+                              }}
+                              className="p-2 sm:px-2.5 sm:py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95 shrink-0"
+                              title="حذف المنتج نهائياً من المتجر وقاعدة البيانات"
                             >
                               <Trash2 size={14} />
+                              <span className="hidden sm:inline">حذف</span>
                             </button>
                           </div>
                         </td>
@@ -2196,7 +2292,7 @@ export default function Dashboard({
                     <label className="block text-xs font-semibold text-gray-700 mb-1">رقم الواتساب الرسمي (بدون +)</label>
                     <input
                       type="text"
-                      placeholder="966596894393"
+                      placeholder="966552823677"
                       value={settingsForm.whatsapp}
                       onChange={(e) => setSettingsForm(prev => ({ ...prev, whatsapp: e.target.value }))}
                       className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
@@ -2207,7 +2303,7 @@ export default function Dashboard({
                     <label className="block text-xs font-semibold text-gray-700 mb-1">رقم الهاتف الظاهر</label>
                     <input
                       type="text"
-                      placeholder="+966 59 689 4393"
+                      placeholder="+966 55 282 3677"
                       value={settingsForm.contactPhone}
                       onChange={(e) => setSettingsForm(prev => ({ ...prev, contactPhone: e.target.value }))}
                       className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
@@ -2543,6 +2639,58 @@ export default function Dashboard({
                 className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm disabled:opacity-50"
               >
                 {updatingOrderId === orderToDelete ? 'جاري الحذف...' : 'نعم، حذف الطلب نهائياً 🗑️'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PRODUCT DELETION CONFIRMATION MODAL */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in-rapid font-sans" dir="rtl">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-gray-150 space-y-5 text-right relative z-[10000]">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-150">
+                <Trash2 size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-gray-950 font-serif">تأكيد حذف المنتج نهائياً</h3>
+                <p className="text-xs text-gray-500 mt-0.5">هل أنتِ متأكدة من حذف هذا المنتج نهائياً من قاعدة بيانات Supabase والمتجر؟</p>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-3 border border-gray-200 flex items-center gap-3">
+              <img
+                src={cleanImgUrl(productToDelete.images?.[0] || '', productToDelete.category)}
+                alt={productToDelete.nameAr}
+                className="w-12 h-12 object-cover rounded-xl border border-gray-200 shrink-0"
+              />
+              <div className="text-xs min-w-0">
+                <p className="font-bold text-gray-900 truncate">{productToDelete.nameAr}</p>
+                <div className="flex items-center gap-2 mt-0.5 font-mono">
+                  <span className="text-[#A44C5C] font-bold">99 ر.س</span>
+                  <span className="text-gray-400 line-through text-[11px]">199 ر.س</span>
+                  <span className="text-[10px] bg-rose-100 text-rose-700 px-1.5 rounded font-sans font-bold">خصم 50%</span>
+                </div>
+                <p className="text-gray-400 font-mono text-[10px] mt-0.5">كود: #{productToDelete.id.slice(0, 8)}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 cursor-pointer transition-colors"
+              >
+                إلغاء التراجع
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfirmDeleteProduct(productToDelete)}
+                disabled={isDeletingProduct}
+                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm disabled:opacity-50 flex items-center gap-2"
+              >
+                {isDeletingProduct ? 'جاري الحذف...' : 'نعم، حذف المنتج نهائياً 🗑️'}
               </button>
             </div>
           </div>

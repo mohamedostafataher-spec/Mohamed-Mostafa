@@ -425,7 +425,7 @@ export default function OrderDetailView({
       `الحالة الحالية: ${getStatusTitle(order.status)}\n` +
       `يرجى موافاتي بالتفاصيل الملكية الإضافية. شكراً لكم 🌸`
     );
-    const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393');
+    const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677');
     const cleanWhatsapp = targetWhatsapp.replace(/\D/g, '');
     window.open(`https://wa.me/${cleanWhatsapp}?text=${msg}`, '_blank');
   };

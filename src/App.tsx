@@ -954,12 +954,12 @@ function AppContent() {
                   <div className="text-right">
                     <span className="block font-bold text-gray-950 text-xs sm:text-sm">خدمة عملاء واتساب</span>
                     <a 
-                      href="https://wa.me/966596894393" 
+                      href="https://wa.me/966552823677" 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="text-[10px] sm:text-[11px] text-gray-900 font-mono font-bold hover:underline"
                     >
-                      0596894393 🇸🇦
+                      0552823677 🇸🇦
                     </a>
                   </div>
                 </div>
@@ -1347,7 +1347,7 @@ function AppContent() {
             </h4>
             <div className="space-y-2 text-xs">
               <a 
-                href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
+                href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors group shadow-2xs"
@@ -1359,7 +1359,7 @@ function AppContent() {
                     <span className="text-[10px] text-gray-500">متاح للمساعدة الفورية وتأكيد الطلبات</span>
                   </div>
                 </div>
-                <span className="font-mono text-gray-900 font-black text-xs" dir="ltr">0596894393</span>
+                <span className="font-mono text-gray-900 font-black text-xs" dir="ltr">0552823677</span>
               </a>
             </div>
 
@@ -1478,7 +1478,7 @@ function AppContent() {
             {/* Quick Country switcher & WhatsApp in Mobile menu list */}
             <div className="border-t border-gray-100 pt-4 mt-4 space-y-3">
               <a
-                href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%B7%D9%84%D8%A8%D8%A7%D8%AA"
+                href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%B7%D9%84%D8%A8%D8%A7%D8%AA"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-[#111827] text-white py-2.5 px-3.5 rounded-xl font-sans font-bold text-xs flex items-center justify-between shadow-sm hover:bg-black transition-all border border-gray-700"
@@ -1488,7 +1488,7 @@ function AppContent() {
                   <span>واتساب خدمة العملاء (المملكة العربية السعودية 🇸🇦)</span>
                 </span>
                 <span className="font-mono text-[11px] bg-white/20 px-2 py-0.5 rounded-full" dir="ltr">
-                  0596894393
+                  0552823677
                 </span>
               </a>
 
@@ -1609,8 +1609,8 @@ function AppContent() {
       )}
 
       <WhatsAppFloat 
-        number={settings?.whatsappSaudi || settings?.whatsapp || '966596894393'} 
-        saudiNumber="966596894393" 
+        number={settings?.whatsappSaudi || settings?.whatsapp || '966552823677'} 
+        saudiNumber="966552823677" 
         country={country} 
       />
     </div>

@@ -571,14 +571,14 @@ export default function StoreView({
               const safeIdx = (activeImgIdx >= 0 && activeImgIdx < productImgs.length) ? activeImgIdx : 0;
               const currentImg = cleanImgUrl(productImgs[safeIdx], product.category);
 
-              // Calculate price & discount for Salla badge
+              // Calculate price & discount for Salla badge (199 before -> 99 after = 50% off)
               const currentPrice = country === 'EG' ? product.priceEG : product.priceSA;
               const salePrice = country === 'EG' ? product.salePriceEG : product.salePriceSA;
               const hasSale = !!salePrice && salePrice < currentPrice;
               const calculatedDiscount = hasSale 
                 ? Math.round(((currentPrice - salePrice!) / currentPrice) * 100)
-                : 20;
-              const discountVal = calculatedDiscount;
+                : 50;
+              const discountVal = calculatedDiscount || 50;
 
               return (
                 <div

@@ -77,9 +77,11 @@ export default function CheckoutModal({
     // Check if device supports specific features if needed
   }, []);
 
-  // Subtotal and Calculations
+  // Subtotal and Calculations (99 SAR after discount)
   const subtotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
+    const itemPrice = country === 'EG' 
+      ? (item.product.salePriceEG || item.product.priceEG) 
+      : (item.product.salePriceSA || (item.product.priceSA <= 120 ? item.product.priceSA : 99));
     return sum + itemPrice * item.quantity;
   }, 0);
 
@@ -139,7 +141,7 @@ export default function CheckoutModal({
       return setErrorMsg('الرجاء إدخال رقم الجوال السعودي للتواصل والشحن.');
     }
     if (!validateSaudiPhone(phone)) {
-      return setErrorMsg('الرجاء كتابة رقم جوال سعودي صحيح يبدأ بـ 05 أو 9665+ (مثال: 0596894393).');
+      return setErrorMsg('الرجاء كتابة رقم جوال سعودي صحيح يبدأ بـ 05 أو 9665+ (مثال: 0552823677).');
     }
     if (!city.trim()) {
       return setErrorMsg('الرجاء تحديد المدينة في المملكة العربية السعودية (مثال: الرياض، جدة، الدمام).');
@@ -237,10 +239,10 @@ export default function CheckoutModal({
   if (activeOrder && (paymentStatus === 'cod' || paymentStatus === 'paid' || paymentStatus === 'pending')) {
     const isCod = paymentStatus === 'cod';
     const isPending = paymentStatus === 'pending';
-    const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393').replace(/\D/g, '');
+    const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
     const cleanWhatsapp = targetWhatsapp.startsWith('05') 
       ? ('966' + targetWhatsapp.slice(1)) 
-      : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966596894393');
+      : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966552823677');
 
     const handleCopyInvoice = () => {
       let summary = `رقم الطلب: ${activeOrder.trackingNumber || activeOrder.id}\nالاسم: ${activeOrder.customerName}\nالجوال: ${activeOrder.phone}\nالمدينة: ${activeOrder.city}\nالإجمالي: ${activeOrder.totalPrice.toLocaleString()} ر.س\nوسيلة الدفع: ${activeOrder.paymentMethod}`;
@@ -468,7 +470,7 @@ export default function CheckoutModal({
                   <div className="relative">
                     <input
                       type="tel"
-                      placeholder="0596894393"
+                      placeholder="0552823677"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all font-mono text-left pl-14"
@@ -759,7 +761,9 @@ export default function CheckoutModal({
             {/* Cart products list */}
             <div className="space-y-2.5 mb-5 max-h-48 overflow-y-auto text-xs text-right pr-1">
               {cart.map((item, idx) => {
-                const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
+                const itemPrice = country === 'EG' 
+                  ? (item.product.salePriceEG || item.product.priceEG) 
+                  : (item.product.salePriceSA || (item.product.priceSA <= 120 ? item.product.priceSA : 99));
                 return (
                   <div key={idx} className="flex gap-2.5 items-center justify-between bg-white p-2.5 rounded-xl border border-gray-200">
                     <div className="w-9 h-11 bg-gray-100 rounded-lg overflow-hidden shrink-0">

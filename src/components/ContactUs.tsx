@@ -93,16 +93,16 @@ export default function ContactUs({ settings }: ContactUsProps) {
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <a
-                      href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9"
+                      href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-mono font-bold text-base text-[#0B0B0B] hover:text-[#A44C5C] transition-colors"
                       dir="ltr"
                     >
-                      {settings?.whatsappSaudi || '0596894393'}
+                      {settings?.whatsappSaudi || '0552823677'}
                     </a>
                     <a
-                      href="https://wa.me/966596894393?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9"
+                      href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 bg-[#25D366] hover:bg-[#20ba59] text-white text-[11px] font-bold px-3 py-1 rounded-lg transition-colors shadow-xs"
@@ -111,7 +111,7 @@ export default function ContactUs({ settings }: ContactUsProps) {
                     </a>
                   </div>
                   <span className="text-[10px] text-gray-500 font-sans">
-                    الرقم الموحد: +966 59 689 4393 (متاح طوال اليوم لكافة مدن المملكة)
+                    الرقم الموحد: +966 55 282 3677 (متاح طوال اليوم لكافة مدن المملكة)
                   </span>
                 </div>
 

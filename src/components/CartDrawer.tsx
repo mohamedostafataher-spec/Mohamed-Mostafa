@@ -37,9 +37,11 @@ export default function CartDrawer({
 
   const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
-  // Total pricing logic
+  // Total pricing logic (Using discounted price 99 SAR)
   const subtotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
+    const itemPrice = country === 'EG' 
+      ? (item.product.salePriceEG || item.product.priceEG) 
+      : (item.product.salePriceSA || (item.product.priceSA <= 120 ? item.product.priceSA : 99));
     return sum + itemPrice * item.quantity;
   }, 0);
 
@@ -151,7 +153,9 @@ export default function CartDrawer({
             ) : (
               <div className="space-y-4 divide-y divide-gray-100">
                 {cart.map((item, idx) => {
-                  const itemPrice = country === 'EG' ? item.product.priceEG : item.product.priceSA;
+                  const itemPrice = country === 'EG' 
+                    ? (item.product.salePriceEG || item.product.priceEG) 
+                    : (item.product.salePriceSA || (item.product.priceSA <= 120 ? item.product.priceSA : 99));
                   
                   return (
                     <div key={idx} className="flex gap-4 pt-4 first:pt-0 group relative">

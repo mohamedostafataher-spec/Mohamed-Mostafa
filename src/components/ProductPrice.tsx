@@ -16,42 +16,35 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
 }) => {
   const currencySymbolAr = country === 'EG' ? 'ج.م' : 'ر.س';
 
-  // Base Paid Price (Current price)
-  const paidPrice = country === 'EG' ? product.priceEG : product.priceSA;
-  
-  // Explicit sale pricing check
-  const hasExplicitDiscount = country === 'EG' ? !!product.salePriceEG : !!product.salePriceSA;
-  const explicitSalePrice = country === 'EG' ? product.salePriceEG : product.salePriceSA;
+  const isSaudi = country === 'SA';
+  let beforePrice = 199;
+  let afterPrice = 99;
+  let discountPercent = 50;
 
-  let beforePrice = 0;
-  let afterPrice = paidPrice;
-  let discountPercent = 0;
-
-  if (hasExplicitDiscount && explicitSalePrice && explicitSalePrice < paidPrice) {
-    beforePrice = paidPrice;
-    afterPrice = explicitSalePrice;
-    discountPercent = Math.round(((paidPrice - explicitSalePrice) / paidPrice) * 100);
-  } else {
-    // Beautiful royal campaign discount simulation
-    // Deterministic discount based on rating/id to ensure layout stability
-    const mockPercent = (product.rating >= 4.8) ? 25 : 20; 
-    discountPercent = mockPercent;
-    
-    // The current listed price is the final paid price (safeguarding checkout consistency)
-    // and we generate the handsome crossed-out original price.
-    afterPrice = paidPrice;
-    const rawBefore = afterPrice / (1 - mockPercent / 100);
-    
-    // Elegant rounding based on currency context
-    if (country === 'EG') {
-      beforePrice = Math.round(rawBefore / 50) * 50;
+  if (isSaudi) {
+    if (product.salePriceSA && product.priceSA && product.salePriceSA < product.priceSA) {
+      beforePrice = product.priceSA;
+      afterPrice = product.salePriceSA;
+      discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
+    } else if (product.priceSA === 99 || !product.priceSA || product.priceSA <= 120) {
+      beforePrice = 199;
+      afterPrice = 99;
+      discountPercent = 50;
     } else {
-      beforePrice = Math.round(rawBefore / 10) * 10;
+      afterPrice = product.priceSA;
+      beforePrice = Math.max(199, Math.round(afterPrice * 1.5));
+      discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
     }
-    
-    // Final fallback safeguard
-    if (beforePrice <= afterPrice) {
-      beforePrice = Math.round((afterPrice * 1.30) / 10) * 10;
+  } else {
+    // Egyptian Pounds (EGP)
+    if (product.salePriceEG && product.priceEG && product.salePriceEG < product.priceEG) {
+      beforePrice = product.priceEG;
+      afterPrice = product.salePriceEG;
+      discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
+    } else {
+      afterPrice = product.priceEG || 499;
+      beforePrice = Math.round(afterPrice * 1.5);
+      discountPercent = 50;
     }
   }
 

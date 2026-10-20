@@ -324,7 +324,7 @@ export default function ProductDetailModal({
   };
 
   const isFav = favorites.includes(product.id);
-  const price = product.priceSA;
+  const price = product.salePriceSA || (product.priceSA <= 120 ? product.priceSA : 99);
   const currencyLabel = 'SAR';
 
   // Dynamic outfit pairing matcher
@@ -340,8 +340,8 @@ export default function ProductDetailModal({
 
   // Prefilled WhatsApp order text builder
   const handleOrderWhatsApp = () => {
-    const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966596894393').replace(/\D/g, '');
-    const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : targetPhone;
+    const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
+    const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : (targetPhone.startsWith('966') ? targetPhone : '966552823677');
     const text = `مرحباً براند SULTA للأزياء الملكية 🌸، أود حجز القطعة التالية:
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}

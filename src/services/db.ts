@@ -285,13 +285,13 @@ function mapSettings(data: any): Settings {
   let mappedSiteName = cleanText(data.site_name || 'SULTA');
 
   let mappedWhatsapp = data.whatsapp;
-  if (!mappedWhatsapp || mappedWhatsapp === '966500000000' || mappedWhatsapp.includes('966530454045') || mappedWhatsapp === '201110095403' || mappedWhatsapp.includes('20111')) {
-    mappedWhatsapp = '966596894393';
+  if (!mappedWhatsapp || mappedWhatsapp === '966500000000' || mappedWhatsapp.includes('966530454045') || mappedWhatsapp === '201110095403' || mappedWhatsapp.includes('20111') || mappedWhatsapp.includes('596894393')) {
+    mappedWhatsapp = '966552823677';
   }
 
   let mappedContactPhone = data.contact_phone;
-  if (!mappedContactPhone || mappedContactPhone === '+966500000000' || mappedContactPhone.includes('966530454045') || mappedContactPhone.includes('+20')) {
-    mappedContactPhone = '+966 59 689 4393';
+  if (!mappedContactPhone || mappedContactPhone === '+966500000000' || mappedContactPhone.includes('966530454045') || mappedContactPhone.includes('+20') || mappedContactPhone.includes('596894393')) {
+    mappedContactPhone = '+966 55 282 3677';
   }
 
   let mappedContactEmail = data.contact_email;
@@ -299,8 +299,8 @@ function mapSettings(data: any): Settings {
     mappedContactEmail = 'concierge@sulta.sa';
   }
 
-  let mappedWhatsappSaudi = '966596894393';
-  let mappedContactPhoneSaudi = '+966 59 689 4393';
+  let mappedWhatsappSaudi = '966552823677';
+  let mappedContactPhoneSaudi = '+966 55 282 3677';
 
   return {
     siteName: mappedSiteName,
@@ -519,29 +519,44 @@ function mapProduct(data: any): Product {
     }
   }
 
-  const resolvedPriceSA = metaPriceSA !== undefined 
+  let resolvedPriceSA = metaPriceSA !== undefined 
     ? metaPriceSA 
     : (Number(data.price_sa) > 0 
       ? Number(data.price_sa) 
       : (Number(data.price) > 0 
         ? Number(data.price) 
-        : (fallbackProduct ? fallbackProduct.priceSA : 0)));
+        : (fallbackProduct ? fallbackProduct.priceSA : 199)));
+
+  let resolvedSalePriceSA = metaSalePriceSA !== undefined 
+    ? metaSalePriceSA 
+    : (data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined));
+
+  // Store owner campaign: 199 SAR before discount -> 99 SAR after discount (50% off)
+  if (resolvedSalePriceSA === undefined) {
+    if (resolvedPriceSA === 99 || resolvedPriceSA <= 120) {
+      resolvedPriceSA = 199;
+      resolvedSalePriceSA = 99;
+    } else if (resolvedPriceSA >= 180 && resolvedPriceSA <= 220) {
+      resolvedPriceSA = 199;
+      resolvedSalePriceSA = 99;
+    } else {
+      resolvedSalePriceSA = 99;
+      resolvedPriceSA = Math.max(199, resolvedPriceSA);
+    }
+  } else if (resolvedSalePriceSA === resolvedPriceSA) {
+    resolvedPriceSA = 199;
+    resolvedSalePriceSA = 99;
+  }
 
   const resolvedPriceEG = metaPriceEG !== undefined 
     ? metaPriceEG 
     : (Number(data.price_eg) > 0 
       ? Number(data.price_eg) 
-      : (resolvedPriceSA > 0 
-        ? resolvedPriceSA * 5 
-        : (fallbackProduct ? fallbackProduct.priceEG : 0)));
-
-  const resolvedSalePriceSA = metaSalePriceSA !== undefined 
-    ? metaSalePriceSA 
-    : (data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined));
+      : 899);
 
   const resolvedSalePriceEG = metaSalePriceEG !== undefined 
     ? metaSalePriceEG 
-    : (data.sale_price_eg ? Number(data.sale_price_eg) : (data.sale_price ? Number(data.sale_price) : undefined));
+    : (data.sale_price_eg ? Number(data.sale_price_eg) : 499);
 
   return {
     id: data.id,
@@ -713,8 +728,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameEn: 'Lilac Polka Dot Strappy Pajama Set',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 700,
-    priceSA: 200,
+    priceEG: 899,
+    priceSA: 199,
+    salePriceSA: 99,
+    salePriceEG: 499,
     descriptionAr: `أناقة ناعمة… وراحة تستحقينها.
 اختاري بيجامة ليلك المنقّط لإطلالة منزلية أنثوية تجمع بين النقشة المرحة والتفاصيل الراقية. تصميمها يضيف لمسة مميزة لأوقات استرخائك، سواء كانت سهرة هادئة أو صباحًا على مهل.
 
@@ -752,8 +769,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameEn: 'Flora Pajama Set — Rose Whispers',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 840,
-    priceSA: 220,
+    priceEG: 899,
+    priceSA: 199,
+    salePriceSA: 99,
+    salePriceEG: 499,
     descriptionAr: `لمسة زهرية تُضفي نعومة على إطلالتك المنزلية.
 تجمع بيجامة فلورا بين الطابع الأنثوي والتصميم المريح، لترافقك في لحظات الاسترخاء وتمنحك إحساسًا جميلًا بالتجدّد. خيار لطيف لنفسك أو هدية أنيقة لشخص عزيز.
 
@@ -790,8 +809,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameEn: 'Sugar Bow Pajama Set — Royal Pink',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 800,
-    priceSA: 195,
+    priceEG: 899,
+    priceSA: 199,
+    salePriceSA: 99,
+    salePriceEG: 499,
     descriptionAr: `تفاصيل رقيقة تجعل البساطة أجمل.
 بيجامة سُكّر بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة، خيار أنيق لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتّب والراحة اليومية، بتفاصيل تضيف لمسة دلع من دون مبالغة.
 
@@ -828,8 +849,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameEn: 'Rosa Evening Bloom Pajama Set',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 750,
-    priceSA: 200,
+    priceEG: 899,
+    priceSA: 199,
+    salePriceSA: 99,
+    salePriceEG: 499,
     descriptionAr: `وردي ناعم ومزاج أجمل.
 أضيفي لمسة من الرقة إلى خزانة ملابسك المنزلية مع بيجامة روزا. تصميمها الأنثوي يجعلها مناسبة لأوقات الراحة، وللأمسيات الهادئة التي تحبين أن تكون فيها إطلالتك مرتّبة ومريحة.
 
@@ -865,8 +888,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameEn: 'Velvet Rose Pajama Set',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 850,
-    priceSA: 220,
+    priceEG: 899,
+    priceSA: 199,
+    salePriceSA: 99,
+    salePriceEG: 499,
     descriptionAr: `إطلالة وردية بلمسة من الأناقة الهادئة.
 اختاري بيجامة روز مخملي لإطلالة منزلية ناعمة وسهلة التنسيق. لونها الأنثوي يضفي إحساسًا جميلًا بالتجدّد، وتصميمها يجعلها رفيقة مناسبة للحظات الاسترخاء في المنزل.
 
@@ -902,8 +927,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameEn: 'Classic Dot Pajama Set — Playful Touch',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 800,
-    priceSA: 195,
+    priceEG: 899,
+    priceSA: 199,
+    salePriceSA: 99,
+    salePriceEG: 499,
     descriptionAr: `نقشة مميزة… وإطلالة منزلية مختلفة.
 بيجامة نُقط تضيف لمسة مرحة إلى إطلالتك، مع تصميم يليق بأوقاتك اليومية في المنزل. اختاريها إذا كنتِ تحبين التفاصيل اللافتة والقطع التي تجمع بين الأنوثة والطابع العملي.
 
@@ -940,8 +967,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameEn: 'Sugar Bow Pajama Set — Ivory White',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 800,
-    priceSA: 200,
+    priceEG: 899,
+    priceSA: 199,
+    salePriceSA: 99,
+    salePriceEG: 499,
     descriptionAr: `أناقة ناعمة بتفاصيل تلفت النظر.
 تأتي بيجامة سُكّر باللون الأوف وايت العاجي بلمسة فيونكة أنثوية تضيف طابعًا رقيقًا لإطلالتك المنزلية وتناسب صباحيات العرائس. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف SULTA الفاخر.
 
@@ -1049,9 +1078,9 @@ export const dbService = {
           needsUpdate = true;
         }
 
-        if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500') || data.whatsapp === '201110095403' || data.whatsapp.includes('20111')) {
-          const fixedWhatsapp = '966596894393';
-          const fixedPhone = '+966 59 689 4393';
+        if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500') || data.whatsapp === '201110095403' || data.whatsapp.includes('20111') || data.whatsapp.includes('596894393')) {
+          const fixedWhatsapp = '966552823677';
+          const fixedPhone = '+966 55 282 3677';
           updatePayload.whatsapp = fixedWhatsapp;
           updatePayload.contact_phone = fixedPhone;
           data.whatsapp = fixedWhatsapp;
@@ -1071,10 +1100,10 @@ export const dbService = {
     if (!settingsObj) {
       settingsObj = {
         siteName: 'SULTA',
-        contactPhone: '+966 59 689 4393',
-        contactPhoneSaudi: '+966 59 689 4393',
-        whatsapp: '966596894393',
-        whatsappSaudi: '966596894393',
+        contactPhone: '+966 55 282 3677',
+        contactPhoneSaudi: '+966 55 282 3677',
+        whatsapp: '966552823677',
+        whatsappSaudi: '966552823677',
         contactEmail: 'concierge@sulta.sa',
         shippingRates: [
           { regionAr: 'شحن سريع ومجاني لكافة مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Express Shipping', fee: 0 },
@@ -1438,22 +1467,30 @@ export const dbService = {
   ): (() => void) => {
     const deliverProducts = (rawList: Product[]) => {
       try {
+        let deletedIds: string[] = [];
+        try {
+          deletedIds = JSON.parse(localStorage.getItem('sulta_deleted_product_ids') || '[]');
+        } catch {}
+
+        const filteredRaw = rawList.filter(p => !deletedIds.includes(p.id));
+
         const savedStr = localStorage.getItem('sulta_saved_products');
         if (!savedStr) {
-          onSuccess(rawList);
+          onSuccess(filteredRaw);
           return;
         }
         const savedMap = JSON.parse(savedStr);
         if (!savedMap || typeof savedMap !== 'object') {
-          onSuccess(rawList);
+          onSuccess(filteredRaw);
           return;
         }
 
         const mergedMap = new Map<string, Product>();
-        for (const p of rawList) {
+        for (const p of filteredRaw) {
           mergedMap.set(p.id, p);
         }
         for (const [id, savedP] of Object.entries(savedMap)) {
+          if (deletedIds.includes(id)) continue;
           if (savedP && typeof savedP === 'object') {
             const existing = mergedMap.get(id);
             if (existing) {
@@ -2251,6 +2288,16 @@ export const dbService = {
   },
 
   deleteProduct: async (productId: string): Promise<void> => {
+    // 1. Blacklist in localStorage so it never comes back from fallbacks or cache
+    try {
+      const deletedIds = JSON.parse(localStorage.getItem('sulta_deleted_product_ids') || '[]');
+      if (!deletedIds.includes(productId)) {
+        deletedIds.push(productId);
+        localStorage.setItem('sulta_deleted_product_ids', JSON.stringify(deletedIds));
+      }
+    } catch {}
+
+    // 2. Remove from sulta_saved_products cache
     try {
       const savedStr = localStorage.getItem('sulta_saved_products') || '{}';
       const savedMap = JSON.parse(savedStr);
@@ -2259,8 +2306,14 @@ export const dbService = {
     } catch (e) {
       console.warn('[SULTA DB] Error deleting product from localStorage:', e);
     }
-    const { error } = await supabase.from('products').delete().eq('id', productId);
-    if (error) console.warn('[SULTA DB] Supabase delete notice:', error.message || error);
+
+    // 3. Delete permanently from Supabase products table
+    try {
+      const { error } = await supabase.from('products').delete().eq('id', productId);
+      if (error) console.warn('[SULTA DB] Supabase delete notice:', error.message || error);
+    } catch (err: any) {
+      console.error('[SULTA DB] Supabase delete exception:', err?.message || err);
+    }
   },
 
   saveCoupon: async (coupon: DiscountCoupon): Promise<void> => {

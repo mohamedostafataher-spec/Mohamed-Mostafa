@@ -113,9 +113,9 @@ export default function Header({
     { id: 'offers', label: 'العروض 🏷️' }
   ];
 
-  const activeWhatsApp = settings?.whatsappSaudi || '966596894393';
+  const activeWhatsApp = settings?.whatsappSaudi || '966552823677';
   const activeWhatsAppClean = activeWhatsApp.replace(/\D/g, '');
-  const activeWhatsAppDisplay = '0596894393';
+  const activeWhatsAppDisplay = '0552823677';
 
   return (
     <header className="sticky top-0 z-50 bg-white font-sans transition-all duration-200" dir="rtl">
