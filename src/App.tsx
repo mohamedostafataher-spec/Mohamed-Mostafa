@@ -25,6 +25,7 @@ import RibbonBowDivider from './components/RibbonBowDivider';
 import SocialLinksView from './components/SocialLinksView';
 import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
 import FabricGuide from './components/FabricGuide';
+import { ProductPrice } from './components/ProductPrice';
 
 // Luxury Add-on views
 import SultaCollections from './components/SultaCollections';
@@ -756,6 +757,9 @@ function AppContent() {
                               <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100 rounded-t-2xl">
                                 {/* Badges */}
                                 <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+                                  <span className="bg-[#E11D48] text-white text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
+                                    خصم 50%
+                                  </span>
                                   {prod.isBestSeller && (
                                     <span className="bg-[#F59E0B] text-black text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
                                       الأكثر طلباً 👑
@@ -813,9 +817,7 @@ function AppContent() {
                             {/* Price & Add to Cart button */}
                             <div className="p-2.5 sm:p-3 pt-0 space-y-2 mt-auto">
                               <div className="flex items-baseline justify-between border-t border-gray-100 pt-2">
-                                <span className="font-extrabold text-sm sm:text-base text-gray-950 font-mono" dir="ltr">
-                                  {priceVal.toLocaleString()} {currencyLabel}
-                                </span>
+                                <ProductPrice product={prod} country="SA" size="sm" showBadge={false} />
                                 <span className="text-[9.5px] text-gray-400">شامل الضريبة</span>
                               </div>
 
@@ -1595,7 +1597,8 @@ function AppContent() {
                             <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-gray-400 font-sans">
                               <span>{p.categoryAr}</span>
                               <span>•</span>
-                              <span className="text-black font-semibold font-mono">{p.priceSA} ر.س</span>
+                              <span className="text-gray-400 line-through text-[10px] font-mono">200 ر.س</span>
+                              <span className="text-black font-bold font-mono text-xs">{p.priceSA || 99} ر.س</span>
                             </div>
                           </div>
                         </div>

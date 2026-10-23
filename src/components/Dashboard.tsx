@@ -1820,7 +1820,7 @@ export default function Dashboard({
                           ) : (() => {
                             const beforePrice = (p.salePriceSA && p.priceSA && p.salePriceSA < p.priceSA)
                               ? p.priceSA
-                              : 199;
+                              : 200;
                             const afterPrice = (p.salePriceSA && p.priceSA && p.salePriceSA < p.priceSA)
                               ? p.salePriceSA
                               : (p.priceSA === 99 || p.priceSA <= 120 ? p.priceSA : (p.salePriceSA || 99));
@@ -2669,7 +2669,7 @@ export default function Dashboard({
                 <p className="font-bold text-gray-900 truncate">{productToDelete.nameAr}</p>
                 <div className="flex items-center gap-2 mt-0.5 font-mono">
                   <span className="text-[#A44C5C] font-bold">99 ر.س</span>
-                  <span className="text-gray-400 line-through text-[11px]">199 ر.س</span>
+                  <span className="text-gray-400 line-through text-[11px]">200 ر.س</span>
                   <span className="text-[10px] bg-rose-100 text-rose-700 px-1.5 rounded font-sans font-bold">خصم 50%</span>
                 </div>
                 <p className="text-gray-400 font-mono text-[10px] mt-0.5">كود: #{productToDelete.id.slice(0, 8)}</p>

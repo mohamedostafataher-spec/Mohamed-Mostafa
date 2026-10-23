@@ -17,7 +17,7 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
   const currencySymbolAr = country === 'EG' ? 'ج.م' : 'ر.س';
 
   const isSaudi = country === 'SA';
-  let beforePrice = 199;
+  let beforePrice = 200;
   let afterPrice = 99;
   let discountPercent = 50;
 
@@ -27,12 +27,12 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
       afterPrice = product.salePriceSA;
       discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
     } else if (product.priceSA === 99 || !product.priceSA || product.priceSA <= 120) {
-      beforePrice = 199;
+      beforePrice = 200;
       afterPrice = 99;
       discountPercent = 50;
     } else {
       afterPrice = product.priceSA;
-      beforePrice = Math.max(199, Math.round(afterPrice * 1.5));
+      beforePrice = Math.max(200, Math.round(afterPrice * 1.5));
       discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
     }
   } else {
@@ -73,7 +73,7 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
         </span>
         
         {/* Original Price (Strikethrough) */}
-        <span className={`${fontBefore} text-gray-450 font-sans line-through decoration-rose-450/40 opacity-70`}>
+        <span className={`${fontBefore} text-gray-400 font-sans line-through decoration-gray-400 font-normal`}>
           {beforePrice.toLocaleString()} {currencySymbolAr}
         </span>
       </div>

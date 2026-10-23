@@ -525,26 +525,26 @@ function mapProduct(data: any): Product {
       ? Number(data.price_sa) 
       : (Number(data.price) > 0 
         ? Number(data.price) 
-        : (fallbackProduct ? fallbackProduct.priceSA : 199)));
+        : (fallbackProduct ? fallbackProduct.priceSA : 200)));
 
   let resolvedSalePriceSA = metaSalePriceSA !== undefined 
     ? metaSalePriceSA 
     : (data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined));
 
-  // Store owner campaign: 199 SAR before discount -> 99 SAR after discount (50% off)
+  // Store owner campaign: 200 SAR before discount -> 99 SAR after discount (50% off)
   if (resolvedSalePriceSA === undefined) {
     if (resolvedPriceSA === 99 || resolvedPriceSA <= 120) {
-      resolvedPriceSA = 199;
+      resolvedPriceSA = 200;
       resolvedSalePriceSA = 99;
     } else if (resolvedPriceSA >= 180 && resolvedPriceSA <= 220) {
-      resolvedPriceSA = 199;
+      resolvedPriceSA = 200;
       resolvedSalePriceSA = 99;
     } else {
       resolvedSalePriceSA = 99;
-      resolvedPriceSA = Math.max(199, resolvedPriceSA);
+      resolvedPriceSA = Math.max(200, resolvedPriceSA);
     }
   } else if (resolvedSalePriceSA === resolvedPriceSA) {
-    resolvedPriceSA = 199;
+    resolvedPriceSA = 200;
     resolvedSalePriceSA = 99;
   }
 
@@ -729,7 +729,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 899,
-    priceSA: 199,
+    priceSA: 200,
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `أناقة ناعمة… وراحة تستحقينها.
@@ -770,7 +770,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 899,
-    priceSA: 199,
+    priceSA: 200,
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `لمسة زهرية تُضفي نعومة على إطلالتك المنزلية.
@@ -810,7 +810,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 899,
-    priceSA: 199,
+    priceSA: 200,
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `تفاصيل رقيقة تجعل البساطة أجمل.
@@ -850,7 +850,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 899,
-    priceSA: 199,
+    priceSA: 200,
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `وردي ناعم ومزاج أجمل.
@@ -889,7 +889,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 899,
-    priceSA: 199,
+    priceSA: 200,
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `إطلالة وردية بلمسة من الأناقة الهادئة.
@@ -928,7 +928,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 899,
-    priceSA: 199,
+    priceSA: 200,
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `نقشة مميزة… وإطلالة منزلية مختلفة.
@@ -968,7 +968,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
     priceEG: 899,
-    priceSA: 199,
+    priceSA: 200,
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `أناقة ناعمة بتفاصيل تلفت النظر.
