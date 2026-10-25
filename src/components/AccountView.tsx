@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useToast } from './Toast';
 import { Order, Product, Country, Review, OrderStatus } from "../types";
+import { trackTikTokCompleteRegistration, ttqIdentify } from "../utils/tiktokPixel";
 import { jsPDF } from "jspdf";
 import { dbService } from "../services/db";
 import OrderDetailView from "./OrderDetailView";
@@ -109,8 +110,16 @@ export default function AccountView({
           : await dbService.supabase.auth.signUp({ email, password });
 
       if (error) throw error;
-      if (authMode === "signup")
+      if (authMode === "signup") {
         toast("تم إنشاء الحساب! يرجى تفعيل البريد الإلكتروني إذا تطلب الأمر.", 'success');
+        try {
+          trackTikTokCompleteRegistration(email, email);
+        } catch {}
+      } else {
+        try {
+          ttqIdentify({ email });
+        } catch {}
+      }
     } catch (err: any) {
       setAuthError(err.message || "حدث خطأ أثناء الاتصال بالنظام الملكي.");
     } finally {

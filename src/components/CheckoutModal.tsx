@@ -22,6 +22,12 @@ import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { WhatsAppService } from '../services/whatsappService';
 import { agentSystem } from '../services/agentSystem';
 import { trackInitiateCheckout, trackPurchase } from '../utils/analytics';
+import { 
+  ttqIdentify, 
+  trackTikTokAddPaymentInfo, 
+  trackTikTokPlaceAnOrder, 
+  trackTikTokPurchase 
+} from '../utils/tiktokPixel';
 import SultaImage from './SultaImage';
 import { 
   paymentService, 
@@ -156,6 +162,15 @@ export default function CheckoutModal({
       console.warn("InitiateCheckout tracking notice:", e);
     }
 
+    // TikTok Pixel: Identify user with SHA-256 and fire AddPaymentInfo
+    const normalizedPhone = formatSaudiPhone(phone);
+    ttqIdentify({
+      phone: normalizedPhone,
+      email: `${normalizedPhone.replace(/\D/g, '')}@sulta.sa`,
+      externalId: name.trim()
+    });
+    trackTikTokAddPaymentInfo(cart, totalAmount, 'SAR');
+
     setStep(2);
   };
 
@@ -190,8 +205,9 @@ export default function CheckoutModal({
         setActiveOrder(order);
         setPaymentStatus('cod');
 
-        // Analytics tracking
+        // Analytics tracking & TikTok Pixel
         try { trackPurchase(order); } catch (e) {}
+        try { trackTikTokPurchase(order, 'SAR'); } catch (e) {}
         try { await agentSystem.onOrderCreated(order); } catch (e) {}
 
         // WhatsApp invoice notification
@@ -217,8 +233,9 @@ export default function CheckoutModal({
           return;
         }
 
-        // Track order and notify systems
+        // Track order and notify systems & TikTok Pixel
         try { trackPurchase(order); } catch (e) {}
+        try { trackTikTokPurchase(order, 'SAR'); } catch (e) {}
         try { await agentSystem.onOrderCreated(order); } catch (e) {}
         try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
 

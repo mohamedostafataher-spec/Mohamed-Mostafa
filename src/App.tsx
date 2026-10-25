@@ -44,7 +44,16 @@ import MobileBottomNav from './components/MobileBottomNav';
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
-import { recordView, recordCartAddition, trackViewContent, trackAddToCart, trackPurchase } from './utils/analytics';
+import { recordView, recordCartAddition, trackViewContent, trackAddToCart, trackPurchase, initPixels } from './utils/analytics';
+import {
+  ttqIdentify,
+  trackTikTokViewContent,
+  trackTikTokAddToWishlist,
+  trackTikTokSearch,
+  trackTikTokAddToCart,
+  trackTikTokInitiateCheckout,
+  trackTikTokPurchase
+} from './utils/tiktokPixel';
 
 
 export default function App() {
@@ -111,6 +120,11 @@ function AppContent() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [homepageSections, setHomepageSections] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
+ 
+  // Initialize and synchronize tracking pixels (Meta Pixel 1487210983271476 & TikTok Pixel DBESRBJC77U4J2JQDUB0)
+  useEffect(() => {
+    initPixels(settings || { facebookPixelId: '1487210983271476', tiktokPixelId: 'DBESRBJC77U4J2JQDUB0' });
+  }, [settings]);
 
   // Auto-open product detail page when deep-linked with ?product=ID or ?p=ID
   useEffect(() => {
@@ -349,6 +363,13 @@ function AppContent() {
     if (session?.user?.id) {
       localStorage.setItem('sulta_active_user_id', session.user.id);
       
+      // TikTok Pixel Advanced Matching identify with client-side SHA-256
+      ttqIdentify({
+        email: session.user.email || undefined,
+        phone: session.user.phone || (session.user.user_metadata as any)?.phone || undefined,
+        externalId: session.user.id
+      });
+      
       const userKey = `sulta_favorites_${session.user.id}`;
       const savedUserFavs = localStorage.getItem(userKey);
       let userFavs: string[] = savedUserFavs ? JSON.parse(savedUserFavs) : [];
@@ -424,6 +445,9 @@ function AppContent() {
         return prev.filter(id => id !== productId);
       } else {
         toast(`تم إضافة "${prodName}" إلى مفضلتك الملكية ✨💖`, "success");
+        if (matchedProduct) {
+          trackTikTokAddToWishlist(matchedProduct, 'SAR');
+        }
         return [...prev, productId];
       }
     });
@@ -438,19 +462,9 @@ function AppContent() {
       trackAddToCart(product, qty, 'SAR');
     } catch {}
 
-    // TikTok Pixel direct AddToCart tracking
+    // TikTok Pixel AddToCart event (exact TikTok object structure)
     try {
-      if (typeof window !== 'undefined' && (window as any).ttq) {
-        (window as any).ttq.track('AddToCart', {
-          content_id: product.id,
-          content_type: 'product',
-          content_name: product.nameAr || product.nameEn,
-          quantity: qty,
-          price: product.priceSA || 99,
-          value: (product.priceSA || 99) * qty,
-          currency: 'SAR'
-        });
-      }
+      trackTikTokAddToCart(product, qty, 'SAR');
     } catch (err) {
       console.warn('[TikTok Pixel] AddToCart error:', err);
     }
@@ -484,19 +498,9 @@ function AppContent() {
       trackAddToCart(product, qty, 'SAR');
     } catch {}
 
-    // TikTok Pixel direct AddToCart tracking
+    // TikTok Pixel AddToCart event (exact TikTok object structure)
     try {
-      if (typeof window !== 'undefined' && (window as any).ttq) {
-        (window as any).ttq.track('AddToCart', {
-          content_id: product.id,
-          content_type: 'product',
-          content_name: product.nameAr || product.nameEn,
-          quantity: qty,
-          price: product.priceSA || 99,
-          value: (product.priceSA || 99) * qty,
-          currency: 'SAR'
-        });
-      }
+      trackTikTokAddToCart(product, qty, 'SAR');
     } catch (err) {
       console.warn('[TikTok Pixel] AddToCart error:', err);
     }
@@ -568,28 +572,28 @@ function AppContent() {
     setAppliedCoupon(coupon);
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
+
+    // TikTok Pixel InitiateCheckout event
+    try {
+      const cartTotal = cart.reduce((sum, item) => sum + (item.product.priceSA || 99) * item.quantity, 0);
+      trackTikTokInitiateCheckout(cart, cartTotal, 'SAR');
+    } catch (err) {
+      console.warn('[TikTok Pixel] InitiateCheckout error:', err);
+    }
   };
 
   // Final Checkout booking success
   const handleOrderSuccess = (newOrder: Order) => {
-    // TikTok Pixel direct CompletePayment tracking
+    // Universal Analytics
     try {
       trackPurchase(newOrder);
     } catch {}
 
+    // TikTok Pixel Purchase & PlaceAnOrder events with customer identification
     try {
-      if (typeof window !== 'undefined' && (window as any).ttq) {
-        (window as any).ttq.track('CompletePayment', {
-          content_ids: newOrder.items?.map(i => i.productId) || [],
-          content_type: 'product',
-          value: Number(newOrder.totalPrice) || 99,
-          currency: newOrder.currency || 'SAR',
-          order_id: newOrder.id,
-          quantity: newOrder.items?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 1
-        });
-      }
+      trackTikTokPurchase(newOrder, newOrder.currency || 'SAR');
     } catch (err) {
-      console.warn('[TikTok Pixel] CompletePayment error:', err);
+      console.warn('[TikTok Pixel] Purchase track error:', err);
     }
 
     // Reset shopping state
@@ -621,18 +625,9 @@ function AppContent() {
       trackViewContent(product, 'SAR');
     } catch {}
 
-    // TikTok Pixel direct ViewContent tracking
+    // TikTok Pixel ViewContent event
     try {
-      if (typeof window !== 'undefined' && (window as any).ttq) {
-        (window as any).ttq.track('ViewContent', {
-          content_id: product.id,
-          content_type: 'product',
-          content_name: product.nameAr || product.nameEn,
-          price: product.priceSA || 99,
-          value: product.priceSA || 99,
-          currency: 'SAR'
-        });
-      }
+      trackTikTokViewContent(product, 'SAR');
     } catch (err) {
       console.warn('[TikTok Pixel] ViewContent error:', err);
     }
@@ -658,6 +653,12 @@ function AppContent() {
     if (query.trim().length > 2) {
       try {
         localStorage.setItem('sulta_search_history', query);
+        const matches = products.filter(p => 
+          p.nameAr?.includes(query) || 
+          p.nameEn?.toLowerCase().includes(query.toLowerCase()) || 
+          p.categoryAr?.includes(query)
+        );
+        trackTikTokSearch(query, matches, 'SAR');
       } catch { }
     }
   };
@@ -676,6 +677,14 @@ function AppContent() {
       };
       
       await dbService.saveNewsletterSubscription(newSub);
+      
+      // TikTok Pixel Advanced Matching identify on newsletter subscription
+      ttqIdentify({
+        email: subscribeEmail,
+        phone: subscribePhone || undefined,
+        externalId: newSub.id
+      });
+
       setSubscribeSuccess(true);
       setTimeout(() => {
         setSubscribeEmail('');

@@ -105,30 +105,35 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
   if (!settings || typeof window === 'undefined') return;
 
   // 1. META (FACEBOOK) PIXEL
-  const metaId = (settings.facebookPixelId || '').trim();
+  const metaId = (settings.facebookPixelId || '1487210983271476').trim();
   if (metaId && !initializedPixels.meta) {
     try {
-      (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
-        if (f.fbq) return;
-        n = f.fbq = function() {
-          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = true;
-        n.version = '2.0';
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = true;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s);
-      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      if (typeof window.fbq === 'function') {
+        initializedPixels.meta = true;
+        logPixelEvent('Meta (Facebook)', 'init', `تم تفعيل Meta Pixel (${metaId}) بنجاح`);
+      } else {
+        (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
+          if (f.fbq) return;
+          n = f.fbq = function() {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = true;
+          n.version = '2.0';
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = true;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-      window.fbq('init', metaId);
-      window.fbq('track', 'PageView');
-      initializedPixels.meta = true;
-      logPixelEvent('Meta (Facebook)', 'init', `تم ربط معرف البيكسل (${metaId}) وتتبع PageView`);
+        window.fbq('init', metaId);
+        window.fbq('track', 'PageView');
+        initializedPixels.meta = true;
+        logPixelEvent('Meta (Facebook)', 'init', `تم ربط معرف البيكسل (${metaId}) وتتبع PageView`);
+      }
     } catch (err: any) {
       console.warn('[Pixel] Meta initialization error:', err);
     }
