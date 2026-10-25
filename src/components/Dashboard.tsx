@@ -36,7 +36,8 @@ import {
   MapPin,
   Calendar,
   Layers,
-  ChevronDown
+  ChevronDown,
+  Activity
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -53,6 +54,7 @@ import {
 import { Product, Order, DiscountCoupon, Settings, Category, Collection } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
+import PixelDiagnosticsView from './PixelDiagnosticsView';
 
 interface DashboardProps {
   products: Product[];
@@ -88,7 +90,7 @@ export default function Dashboard({
   deleteProduct
 }: DashboardProps) {
   // Navigation tabs: simple, focused on essentials
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'settings' | 'pixel-diagnostics'>('overview');
 
   // Search & Filter States
   const [orderSearch, setOrderSearch] = useState('');
@@ -149,7 +151,7 @@ export default function Dashboard({
     whatsapp: settings?.whatsappSaudi || settings?.whatsapp || '966552823677',
     contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 55 282 3677',
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
-    facebookPixelId: settings?.facebookPixelId || '',
+    facebookPixelId: settings?.facebookPixelId || '1487210983271476',
     tiktokPixelId: settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0',
     snapchatPixelId: settings?.snapchatPixelId || '',
     googleAnalyticsId: settings?.googleAnalyticsId || '',
@@ -939,6 +941,18 @@ export default function Dashboard({
             >
               <SettingsIcon size={15} />
               <span>إعدادات المتجر والبيكسل</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('pixel-diagnostics')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border ${
+                activeTab === 'pixel-diagnostics'
+                  ? 'bg-[#A44C5C] text-white border-[#A44C5C] shadow-xs'
+                  : 'text-gray-700 hover:text-black hover:bg-gray-100 border-gray-200'
+              }`}
+            >
+              <Activity size={15} className={activeTab === 'pixel-diagnostics' ? 'animate-pulse' : 'text-[#A44C5C]'} />
+              <span>فاحص البيكسل المباشر ⚡</span>
             </button>
           </nav>
         </div>
@@ -2324,6 +2338,31 @@ export default function Dashboard({
 
               {/* Marketing Pixels */}
               <div className="space-y-4 pt-2">
+                {/* Live Diagnostic Quick Access Banner */}
+                <div className="bg-gradient-to-l from-emerald-50 via-teal-50/50 to-emerald-50 border border-emerald-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Activity size={18} className="animate-pulse" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-xs text-emerald-950 flex items-center gap-1.5">
+                        <span>فاحص اتصال البيكسل في الوقت الفعلي (Pixel Diagnostics)</span>
+                        <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded-md font-bold">مباشر ⚡</span>
+                      </h5>
+                      <p className="text-[11px] text-emerald-800 mt-0.5">
+                        تحققي الآن من سلامة وصول أحداث Meta و TikTok بدون تعارضات مع إمكانية إرسال أحداث تجريبية ومشاهدتها في الحال.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('pixel-diagnostics')}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold transition-all cursor-pointer shrink-0 shadow-xs flex items-center justify-center gap-1.5"
+                  >
+                    <span>فتح صفحة التشخيص المباشر ↗</span>
+                  </button>
+                </div>
+
                 <h4 className="font-bold text-sm text-gray-850 pb-2 border-b border-gray-100 flex items-center justify-between">
                   <span>ربط البيكسل والإعلانات الحقيقية (Marketing Pixels)</span>
                   <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md font-bold">
@@ -2456,6 +2495,15 @@ export default function Dashboard({
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB 7: REAL-TIME PIXEL DIAGNOSTICS & CONFLICT DETECTION */}
+        {/* ======================================================== */}
+        {activeTab === 'pixel-diagnostics' && (
+          <div className="animate-fade-in-rapid">
+            <PixelDiagnosticsView settings={settings} toast={toast} />
           </div>
         )}
 
