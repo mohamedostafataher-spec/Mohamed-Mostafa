@@ -44,7 +44,7 @@ import MobileBottomNav from './components/MobileBottomNav';
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
-import { recordView, recordCartAddition } from './utils/analytics';
+import { recordView, recordCartAddition, trackViewContent, trackAddToCart, trackPurchase } from './utils/analytics';
 
 
 export default function App() {
@@ -434,6 +434,27 @@ function AppContent() {
   // Add Item to Shopping Cart Bag
   const handleAddToCart = (product: Product, color: { name: string; hex: string }, size: string, qty: number = 1, customOpts?: any) => {
     recordCartAddition(product.id);
+    try {
+      trackAddToCart(product, qty, 'SAR');
+    } catch {}
+
+    // TikTok Pixel direct AddToCart tracking
+    try {
+      if (typeof window !== 'undefined' && (window as any).ttq) {
+        (window as any).ttq.track('AddToCart', {
+          content_id: product.id,
+          content_type: 'product',
+          content_name: product.nameAr || product.nameEn,
+          quantity: qty,
+          price: product.priceSA || 99,
+          value: (product.priceSA || 99) * qty,
+          currency: 'SAR'
+        });
+      }
+    } catch (err) {
+      console.warn('[TikTok Pixel] AddToCart error:', err);
+    }
+
     setCart(prev => {
       const existingIdx = prev.findIndex(
         i => i.product.id === product.id && i.selectedColor.name === color.name && i.selectedSize === size
@@ -459,6 +480,27 @@ function AppContent() {
   // Immediate checkout buy-now trigger
   const handleBuyNow = (product: Product, color: { name: string; hex: string }, size: string, qty: number = 1) => {
     recordCartAddition(product.id);
+    try {
+      trackAddToCart(product, qty, 'SAR');
+    } catch {}
+
+    // TikTok Pixel direct AddToCart tracking
+    try {
+      if (typeof window !== 'undefined' && (window as any).ttq) {
+        (window as any).ttq.track('AddToCart', {
+          content_id: product.id,
+          content_type: 'product',
+          content_name: product.nameAr || product.nameEn,
+          quantity: qty,
+          price: product.priceSA || 99,
+          value: (product.priceSA || 99) * qty,
+          currency: 'SAR'
+        });
+      }
+    } catch (err) {
+      console.warn('[TikTok Pixel] AddToCart error:', err);
+    }
+
     // Clear cart or add item directly
     setCart([{ product, selectedColor: color, selectedSize: size, quantity: qty }]);
     setAppliedCoupon(null);
@@ -530,6 +572,26 @@ function AppContent() {
 
   // Final Checkout booking success
   const handleOrderSuccess = (newOrder: Order) => {
+    // TikTok Pixel direct CompletePayment tracking
+    try {
+      trackPurchase(newOrder);
+    } catch {}
+
+    try {
+      if (typeof window !== 'undefined' && (window as any).ttq) {
+        (window as any).ttq.track('CompletePayment', {
+          content_ids: newOrder.items?.map(i => i.productId) || [],
+          content_type: 'product',
+          value: Number(newOrder.totalPrice) || 99,
+          currency: newOrder.currency || 'SAR',
+          order_id: newOrder.id,
+          quantity: newOrder.items?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 1
+        });
+      }
+    } catch (err) {
+      console.warn('[TikTok Pixel] CompletePayment error:', err);
+    }
+
     // Reset shopping state
     setCart([]);
     setAppliedCoupon(null);
@@ -552,9 +614,29 @@ function AppContent() {
     toast(`جاري عرض بيانات تتبع طلبيتكِ الملكية 📦`, 'success');
   };
 
-  // Select Product Handler (updates customer history)
+  // Select Product Handler (updates customer history & fires ViewContent)
   const handleSelectProduct = (product: Product) => {
     recordView(product.id);
+    try {
+      trackViewContent(product, 'SAR');
+    } catch {}
+
+    // TikTok Pixel direct ViewContent tracking
+    try {
+      if (typeof window !== 'undefined' && (window as any).ttq) {
+        (window as any).ttq.track('ViewContent', {
+          content_id: product.id,
+          content_type: 'product',
+          content_name: product.nameAr || product.nameEn,
+          price: product.priceSA || 99,
+          value: product.priceSA || 99,
+          currency: 'SAR'
+        });
+      }
+    } catch (err) {
+      console.warn('[TikTok Pixel] ViewContent error:', err);
+    }
+
     setSelectedProduct(product);
     setRecentlyViewed(prev => {
       const exists = prev.some(p => p.id === product.id);
