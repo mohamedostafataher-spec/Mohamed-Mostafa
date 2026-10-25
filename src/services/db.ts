@@ -322,7 +322,7 @@ function mapSettings(data: any): Settings {
     facebookPixelId: data.facebook_pixel_id,
     googleAnalyticsId: data.google_analytics_id,
     snapchatPixelId: data.snapchat_pixel_id,
-    tiktokPixelId: data.tiktok_pixel_id,
+    tiktokPixelId: data.tiktok_pixel_id || 'DBESRBJC77U4J2JQDUB0',
     shippingRates: Array.isArray(data.shipping_rates) ? data.shipping_rates : (data.shipping_rates ? JSON.parse(data.shipping_rates) : []),
     defaultShippingFee: Number(data.default_shipping_fee ?? 0),
     egDefaultCoupon: data.egDefaultCoupon || data.eg_default_coupon,
@@ -1088,6 +1088,12 @@ export const dbService = {
           needsUpdate = true;
         }
 
+        if (!data.tiktok_pixel_id || data.tiktok_pixel_id !== 'DBESRBJC77U4J2JQDUB0') {
+          updatePayload.tiktok_pixel_id = 'DBESRBJC77U4J2JQDUB0';
+          data.tiktok_pixel_id = 'DBESRBJC77U4J2JQDUB0';
+          needsUpdate = true;
+        }
+
         if (needsUpdate) {
           await supabase.from('settings').update(updatePayload).eq('id', data.id);
         }
@@ -1112,7 +1118,8 @@ export const dbService = {
         defaultShippingFee: 40,
         instagram: 'https://www.instagram.com/sultabrand',
         facebook: '',
-        tiktok: 'https://www.tiktok.com/@sulta.brand'
+        tiktok: 'https://www.tiktok.com/@sulta.brand',
+        tiktokPixelId: 'DBESRBJC77U4J2JQDUB0'
       };
     }
 

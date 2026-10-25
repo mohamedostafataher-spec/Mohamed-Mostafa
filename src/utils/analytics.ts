@@ -135,10 +135,14 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
   }
 
   // 2. TIKTOK PIXEL
-  const tiktokId = (settings.tiktokPixelId || '').trim();
+  const tiktokId = (settings.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0').trim();
   if (tiktokId && !initializedPixels.tiktok) {
     try {
-      (function(w: any, d: any, t: any) {
+      if (window.ttq && window.ttq._i && window.ttq._i[tiktokId]) {
+        initializedPixels.tiktok = true;
+        logPixelEvent('TikTok', 'init', `تم تفعيل تيك توك بيكسل (${tiktokId}) بنجاح`);
+      } else {
+        (function(w: any, d: any, t: any) {
         w.TiktokAnalyticsObject = t;
         const ttq = (w[t] = w[t] || []);
         ttq.methods = [
@@ -178,10 +182,11 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
 
       initializedPixels.tiktok = true;
       logPixelEvent('TikTok', 'init', `تم تفعيل تيك توك بيكسل (${tiktokId}) بنجاح`);
-    } catch (err: any) {
-      console.warn('[Pixel] TikTok initialization error:', err);
     }
+  } catch (err: any) {
+    console.warn('[Pixel] TikTok initialization error:', err);
   }
+}
 
   // 3. SNAPCHAT PIXEL
   const snapId = (settings.snapchatPixelId || '').trim();

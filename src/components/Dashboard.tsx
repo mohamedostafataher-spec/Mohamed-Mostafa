@@ -150,7 +150,7 @@ export default function Dashboard({
     contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 55 282 3677',
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
     facebookPixelId: settings?.facebookPixelId || '',
-    tiktokPixelId: settings?.tiktokPixelId || '',
+    tiktokPixelId: settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0',
     snapchatPixelId: settings?.snapchatPixelId || '',
     googleAnalyticsId: settings?.googleAnalyticsId || '',
     defaultShippingFee: settings?.defaultShippingFee || 0
