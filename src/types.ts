@@ -61,6 +61,7 @@ export interface Settings {
   bankAccountName?: string;
   bankIban?: string;
   bankAccountNumber?: string;
+  bankQrCodeUrl?: string;
   tabbyEnabled?: boolean;
   tabbyPublicKey?: string;
   tamaraEnabled?: boolean;

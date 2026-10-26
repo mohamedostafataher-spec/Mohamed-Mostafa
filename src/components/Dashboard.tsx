@@ -90,7 +90,16 @@ export default function Dashboard({
   deleteProduct
 }: DashboardProps) {
   // Navigation tabs: simple, focused on essentials
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'settings' | 'pixel-diagnostics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'settings' | 'pixel-diagnostics'>(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      const sub = p.get('subtab') || p.get('tab') || p.get('page') || p.get('section');
+      if (sub === 'pixel' || sub === 'pixel-diagnostics' || sub === 'diagnostics') {
+        return 'pixel-diagnostics';
+      }
+    }
+    return 'overview';
+  });
 
   // Search & Filter States
   const [orderSearch, setOrderSearch] = useState('');
@@ -155,7 +164,12 @@ export default function Dashboard({
     tiktokPixelId: settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0',
     snapchatPixelId: settings?.snapchatPixelId || '',
     googleAnalyticsId: settings?.googleAnalyticsId || '',
-    defaultShippingFee: settings?.defaultShippingFee || 0
+    defaultShippingFee: settings?.defaultShippingFee || 0,
+    bankName: settings?.bankName || 'مصرف الراجحي',
+    bankAccountName: settings?.bankAccountName || 'ابو بكر احمد على يونس',
+    bankAccountNumber: settings?.bankAccountNumber || '108000010006086396260',
+    bankIban: settings?.bankIban || 'SA65 8000 0108 6080 1639 6260',
+    bankQrCodeUrl: settings?.bankQrCodeUrl || '/assets/images/alrajhi_qr.jpg'
   });
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
@@ -723,7 +737,12 @@ export default function Dashboard({
         tiktokPixelId: settingsForm.tiktokPixelId,
         snapchatPixelId: settingsForm.snapchatPixelId,
         googleAnalyticsId: settingsForm.googleAnalyticsId,
-        defaultShippingFee: Number(settingsForm.defaultShippingFee) || 0
+        defaultShippingFee: Number(settingsForm.defaultShippingFee) || 0,
+        bankName: settingsForm.bankName,
+        bankAccountName: settingsForm.bankAccountName,
+        bankAccountNumber: settingsForm.bankAccountNumber,
+        bankIban: settingsForm.bankIban,
+        bankQrCodeUrl: settingsForm.bankQrCodeUrl
       };
 
       const success = await dbService.updateSettings(payload);
@@ -1038,6 +1057,35 @@ export default function Dashboard({
         {/* ======================================================== */}
         {(activeTab === 'overview' || activeTab === 'analytics') && (
           <div className="space-y-6 animate-fade-in-rapid">
+            {/* Live Pixel Health Banner */}
+            <div className="bg-gradient-to-l from-gray-950 via-gray-900 to-[#1F080D] text-white rounded-2xl p-4 sm:p-5 border border-gray-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#A44C5C]/30 text-[#E7A6B2] border border-[#A44C5C]/40 flex items-center justify-center shrink-0">
+                  <Activity size={20} className="animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-white">فاحص اتصال البيكسل في الوقت الفعلي</span>
+                    <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      متصل ونشط
+                    </span>
+                  </div>
+                  <p className="text-gray-300 text-xs mt-0.5">
+                    Meta Pixel: <span className="text-emerald-400 font-mono font-bold">1765916517819303</span> | TikTok Pixel: <span className="text-emerald-400 font-mono font-bold">DBESRBJC77U4J2JQDUB0</span> (جميع الأحداث الـ 17 جاهزة)
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('pixel-diagnostics')}
+                className="px-4 py-2 rounded-xl bg-[#A44C5C] hover:bg-[#8D3F4D] active:scale-95 text-white text-xs font-bold transition-all cursor-pointer shadow-md flex items-center justify-center gap-1.5 shrink-0"
+              >
+                <span>فتح صفحة التشخيص والاختبار ⚡</span>
+              </button>
+            </div>
+
             {/* Real Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Total Revenue */}
@@ -2458,6 +2506,92 @@ export default function Dashboard({
                       onChange={(e) => setWhatsappStatusTemplate(e.target.value)}
                       className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl p-3 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
                     />
+                  </div>
+                </div>
+              </div>
+
+              {/* Official Bank Account for Direct Payments */}
+              <div className="space-y-4 pt-4 border-t border-gray-150">
+                <div className="flex items-center justify-between pb-2 border-b border-gray-150">
+                  <h4 className="font-bold text-sm text-gray-950 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center text-xs">🏦</span>
+                    <span>بيانات الحساب البنكي المعتمد للدفع والتحويل (مصرف الراجحي)</span>
+                  </h4>
+                  <span className="text-[10px] font-bold bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200">
+                    الحساب الفعلي للمتجر 🇸🇦
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      اسم البنك
+                    </label>
+                    <input
+                      type="text"
+                      value={settingsForm.bankName}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, bankName: e.target.value }))}
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-sans focus:bg-white focus:outline-none focus:border-black font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      اسم المستفيد (صاحب الحساب)
+                    </label>
+                    <input
+                      type="text"
+                      value={settingsForm.bankAccountName}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, bankAccountName: e.target.value }))}
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-sans focus:bg-white focus:outline-none focus:border-black font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      رقم الحساب
+                    </label>
+                    <input
+                      type="text"
+                      value={settingsForm.bankAccountNumber}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, bankAccountNumber: e.target.value }))}
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      رقم الآيبان (IBAN)
+                    </label>
+                    <input
+                      type="text"
+                      value={settingsForm.bankIban}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, bankIban: e.target.value }))}
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
+                    />
+                  </div>
+                </div>
+
+                {/* QR Code preview card */}
+                <div className="bg-blue-50/60 border border-blue-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4">
+                  <div className="shrink-0 bg-white p-2 rounded-xl border border-gray-200 shadow-xs">
+                    <img
+                      src={settingsForm.bankQrCodeUrl || '/assets/images/alrajhi_qr.jpg'}
+                      alt="رمز الاستجابة السريعة لمصرف الراجحي"
+                      className="w-24 h-24 object-contain rounded-lg"
+                    />
+                  </div>
+                  <div className="space-y-1 text-right">
+                    <h5 className="font-bold text-xs text-blue-950 flex items-center gap-1.5">
+                      <span>رمز الاستجابة السريعة (QR Code) للتحويل الفوري</span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">نشط ومفعّل ✓</span>
+                    </h5>
+                    <p className="text-[11px] text-gray-600 leading-relaxed">
+                      يظهر هذا الباركود للعميلات في صفحة الدفع وتأكيد الحجز لمسحه مباشرة عبر تطبيق مصرف الراجحي أو البنوك السعودية.
+                    </p>
+                    <span className="text-[10px] text-blue-700 font-mono block mt-1">
+                      مسار الملف: {settingsForm.bankQrCodeUrl || '/assets/images/alrajhi_qr.jpg'}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -177,6 +177,15 @@ function AppContent() {
         setAutoTrackId(foundOrderId);
         window.localStorage.setItem('sulta_auto_track_order_id', foundOrderId);
       }
+    } else if (
+      tabParam === 'dashboard' ||
+      pageParam === 'dashboard' ||
+      tabParam === 'pixel' ||
+      tabParam === 'diagnostics' ||
+      pathname === '/dashboard' ||
+      pathname === '/pixel'
+    ) {
+      setTab('dashboard');
     }
   }, []);
 

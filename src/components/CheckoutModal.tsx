@@ -74,7 +74,21 @@ export default function CheckoutModal({
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<PaymentGatewayStatus | null>(null);
   const [copiedInvoice, setCopiedInvoice] = useState(false);
+  const [copiedIban, setCopiedIban] = useState(false);
+  const [copiedAccNum, setCopiedAccNum] = useState(false);
   const [iframePaymentUrl, setIframePaymentUrl] = useState<string | null>(null);
+
+  const handleCopyIban = (ibanText: string = 'SA6580000108608016396260') => {
+    navigator.clipboard.writeText(ibanText.replace(/\s+/g, ''));
+    setCopiedIban(true);
+    setTimeout(() => setCopiedIban(false), 2500);
+  };
+
+  const handleCopyAccNum = (accText: string = '108000010006086396260') => {
+    navigator.clipboard.writeText(accText.replace(/\s+/g, ''));
+    setCopiedAccNum(true);
+    setTimeout(() => setCopiedAccNum(false), 2500);
+  };
 
   const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
@@ -267,7 +281,7 @@ export default function CheckoutModal({
     const handleCopyInvoice = () => {
       let summary = `رقم الطلب: ${activeOrder.trackingNumber || activeOrder.id}\nالاسم: ${activeOrder.customerName}\nالجوال: ${activeOrder.phone}\nالمدينة: ${activeOrder.city}\nالإجمالي: ${activeOrder.totalPrice.toLocaleString()} ر.س\nوسيلة الدفع: ${activeOrder.paymentMethod}`;
       if (activeOrder.paymentMethod && activeOrder.paymentMethod.includes('بنكي')) {
-        summary += `\n\nبيانات التحويل البنكي:\nمصرف الراجحي - مؤسسة سُلطة للأزياء\nالآيبان: SA82 8000 0000 1234 5678 9012\n* فضلاً أرسلي صورة إشعار التحويل لتأكيد الشحن فوراً 📸`;
+        summary += `\n\nبيانات التحويل البنكي المعتمد:\nمصرف الراجحي - الحساب: ابو بكر احمد على يونس\nرقم الحساب: 108000010006086396260\nالآيبان: SA65 8000 0108 6080 1639 6260\n* فضلاً أرسلي صورة إشعار التحويل لتأكيد الشحن فوراً 📸`;
       }
       navigator.clipboard.writeText(summary);
       setCopiedInvoice(true);
@@ -296,7 +310,7 @@ export default function CheckoutModal({
           <p className="text-gray-600 text-xs sm:text-sm max-w-md mx-auto leading-relaxed mb-6 font-medium">
             {isCod 
               ? 'تم استلام طلبكِ بنجاح وسيتم التواصل معكِ لتأكيد الطلب وشحنه لباب منزلكِ مع ميزة الدفع عند الاستلام.'
-              : 'تم تسجيل حجز طلبكِ بنجاح! فضلاً حولي المبلغ على الحساب البنكي أدناه وأرسلي صورة إشعار التحويل عبر الواتساب لتأكيد الشحن فوراً 📸.'}
+              : 'تم تسجيل حجز طلبكِ بنجاح! فضلاً حولي المبلغ على حساب مصرف الراجحي أدناه وأرسلي صورة إشعار التحويل عبر الواتساب لتأكيد الشحن فوراً 📸.'}
           </p>
 
           {/* Invoice Summary Box */}
@@ -335,30 +349,90 @@ export default function CheckoutModal({
 
           {/* Bank Account Details Card for Bank Transfer */}
           {(isPending || (activeOrder.paymentMethod && activeOrder.paymentMethod.includes('بنكي'))) && (
-            <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-4 sm:p-5 mb-6 text-right text-xs space-y-2.5 animate-fade-in">
-              <div className="flex items-center justify-between border-b border-blue-200 pb-2">
-                <span className="font-bold text-blue-950 flex items-center gap-1.5 text-xs">
-                  <span>🏦 بيانات الحساب البنكي لإتمام التحويل:</span>
+            <div className="bg-gradient-to-br from-blue-50/90 via-indigo-50/50 to-blue-50/90 border border-blue-200 rounded-2xl p-4 sm:p-5 mb-6 text-right text-xs space-y-3 animate-fade-in shadow-xs">
+              <div className="flex items-center justify-between border-b border-blue-200 pb-2.5">
+                <span className="font-black text-blue-950 flex items-center gap-1.5 text-xs">
+                  <span>🏦 حساب الدفع البنكي الرسمي المعتمد:</span>
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-blue-600 text-white shadow-2xs">
                   مصرف الراجحي
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">اسم المستفيد:</span>
-                <span className="font-bold text-gray-950">مؤسسة سُلطة للأزياء</span>
+
+              {/* Beneficiary Name */}
+              <div className="flex justify-between items-center bg-white/80 p-2.5 rounded-xl border border-blue-100/80">
+                <span className="text-gray-600 font-medium">اسم المستفيد:</span>
+                <span className="font-bold text-gray-950 text-xs sm:text-sm">ابو بكر احمد على يونس</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">رقم الآيبان (IBAN):</span>
-                <span className="font-bold font-mono text-gray-950 select-all bg-white px-2 py-0.5 rounded border border-gray-300">
-                  SA82 8000 0000 1234 5678 9012
-                </span>
+
+              {/* Account Number with Copy */}
+              <div className="flex justify-between items-center bg-white/80 p-2.5 rounded-xl border border-blue-100/80 gap-2">
+                <span className="text-gray-600 font-medium shrink-0">رقم الحساب:</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-bold text-gray-950 text-xs sm:text-sm select-all">
+                    108000010006086396260
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyAccNum('108000010006086396260')}
+                    className="p-1.5 bg-blue-100 hover:bg-blue-200 active:scale-90 text-blue-800 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-all shrink-0"
+                    title="نسخ رقم الحساب"
+                  >
+                    {copiedAccNum ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                    <span>{copiedAccNum ? 'تم' : 'نسخ'}</span>
+                  </button>
+                </div>
               </div>
+
+              {/* IBAN with Copy */}
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white/80 p-2.5 rounded-xl border border-blue-100/80 gap-2">
+                <span className="text-gray-600 font-medium shrink-0">الآيبان (IBAN):</span>
+                <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+                  <span className="font-mono font-bold text-gray-950 text-[11px] sm:text-xs select-all bg-blue-50/50 px-2 py-1 rounded border border-blue-200/50" dir="ltr">
+                    SA65 8000 0108 6080 1639 6260
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyIban('SA6580000108608016396260')}
+                    className="p-1.5 bg-blue-100 hover:bg-blue-200 active:scale-90 text-blue-800 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-all shrink-0"
+                    title="نسخ الآيبان"
+                  >
+                    {copiedIban ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                    <span>{copiedIban ? 'تم' : 'نسخ'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* QR Code Scan Section */}
+              <div className="bg-white p-3 rounded-xl border border-blue-100 flex flex-col sm:flex-row items-center gap-3 text-center sm:text-right">
+                <div className="relative group shrink-0">
+                  <img
+                    src="/assets/images/alrajhi_qr.jpg"
+                    alt="باركود التحويل السريع - مصرف الراجحي"
+                    className="w-24 h-24 sm:w-28 sm:h-28 object-contain rounded-lg border border-gray-200 shadow-xs bg-white"
+                  />
+                  <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[8px] px-1.5 py-0.5 rounded font-sans">
+                    QR كود
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-bold text-blue-950 text-xs">
+                    دفع فوري سريع عبر الباركود (QR):
+                  </p>
+                  <p className="text-[11px] text-gray-600 leading-relaxed">
+                    يمكنكِ مسح الباركود مباشرة بتطبيق مصرف الراجحي أو أي تطبيق بنكي سعودي لإتمام التحويل دون إدخال الأرقام يدوياً.
+                  </p>
+                  <div className="pt-1 flex items-center justify-center sm:justify-start gap-1 text-[10px] text-blue-700 font-semibold">
+                    <span>⚡ التحويل فوري ومباشر على الحساب</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex justify-between items-center border-t border-blue-200/60 pt-2 font-bold text-blue-950">
                 <span>المبلغ المطلوب تحويله:</span>
-                <span className="font-mono text-sm">{activeOrder.totalPrice.toLocaleString()} {currencyLabel}</span>
+                <span className="font-mono text-sm text-emerald-800 font-black">{activeOrder.totalPrice.toLocaleString()} {currencyLabel}</span>
               </div>
-              <p className="text-[10px] text-blue-900 font-bold bg-white/80 p-2.5 rounded-xl border border-blue-100 text-center">
+              <p className="text-[10px] text-blue-900 font-bold bg-white/90 p-2.5 rounded-xl border border-blue-100 text-center">
                 📸 يرجى إرسال صورة أو لقطة شاشة لإشعار التحويل عبر زر الواتساب أدناه لتأكيد حجز طلبكِ وبدء التجهيز والشحن فوراً.
               </p>
             </div>
@@ -672,22 +746,72 @@ export default function CheckoutModal({
 
                     {selectedPayment === 'bank_transfer' && (
                       <div className="mt-3 pt-3 border-t border-gray-200 text-right">
-                        <div className="bg-blue-50/70 p-3.5 rounded-xl border border-blue-200 text-[11px] space-y-2">
-                          <p className="font-bold text-blue-950 mb-1">بيانات الحساب البنكي المعتمد:</p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-600">اسم البنك:</span>
-                            <span className="font-bold text-gray-900">مصرف الراجحي</span>
+                        <div className="bg-gradient-to-br from-blue-50/90 to-indigo-50/60 p-3.5 rounded-xl border border-blue-200 text-[11px] space-y-2.5">
+                          <div className="flex items-center justify-between pb-1.5 border-b border-blue-200/70">
+                            <p className="font-black text-blue-950 text-xs">بيانات الحساب البنكي المعتمد:</p>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-600 text-white">
+                              مصرف الراجحي
+                            </span>
                           </div>
+
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">اسم الحساب:</span>
-                            <span className="font-bold text-gray-900">مؤسسة سُلطة للأزياء</span>
+                            <span className="text-gray-600 font-medium">اسم المستفيد:</span>
+                            <span className="font-bold text-gray-950 text-xs">ابو بكر احمد على يونس</span>
                           </div>
+
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">رقم الآيبان (IBAN):</span>
-                            <div className="font-mono text-gray-900 font-bold select-all bg-white px-2 py-0.5 rounded border border-gray-300">
-                              <span>SA82 8000 0000 1234 5678 9012</span>
+                            <span className="text-gray-600 font-medium shrink-0">رقم الحساب:</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-gray-950 font-bold select-all bg-white px-2 py-0.5 rounded border border-gray-300 text-xs">
+                                108000010006086396260
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopyAccNum('108000010006086396260');
+                                }}
+                                className="px-2 py-0.5 bg-blue-100 hover:bg-blue-200 active:scale-95 text-blue-800 rounded font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-all"
+                              >
+                                {copiedAccNum ? <Check size={11} className="text-emerald-600" /> : <Copy size={11} />}
+                                <span>{copiedAccNum ? 'تم' : 'نسخ'}</span>
+                              </button>
                             </div>
                           </div>
+
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+                            <span className="text-gray-600 font-medium shrink-0">الآيبان (IBAN):</span>
+                            <div className="flex items-center justify-between sm:justify-end gap-1.5">
+                              <span className="font-mono text-gray-950 font-bold select-all bg-white px-2 py-0.5 rounded border border-gray-300 text-[10.5px]" dir="ltr">
+                                SA65 8000 0108 6080 1639 6260
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopyIban('SA6580000108608016396260');
+                                }}
+                                className="px-2 py-0.5 bg-blue-100 hover:bg-blue-200 active:scale-95 text-blue-800 rounded font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-all shrink-0"
+                              >
+                                {copiedIban ? <Check size={11} className="text-emerald-600" /> : <Copy size={11} />}
+                                <span>{copiedIban ? 'تم' : 'نسخ'}</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Quick QR preview */}
+                          <div className="flex items-center gap-2.5 bg-white p-2 rounded-lg border border-blue-100">
+                            <img
+                              src="/assets/images/alrajhi_qr.jpg"
+                              alt="باركود التحويل السريع"
+                              className="w-12 h-12 object-contain rounded border border-gray-200 shrink-0 bg-white"
+                            />
+                            <div className="text-[10px] text-gray-600 leading-tight">
+                              <span className="font-bold text-blue-900 block mb-0.5">باركود الدفع السريع (QR Code):</span>
+                              يمكنكِ مسح الباركود مباشرة بتطبيق مصرف الراجحي للدفع دون كتابة البيانات.
+                            </div>
+                          </div>
+
                           <div className="p-2 bg-amber-50 rounded-lg border border-amber-200 text-[10.5px] text-amber-900 font-medium">
                             📸 عند الضغط على إتمام الطلب، سيتم إرسال بيانات الحساب ورقم الطلب لرسائل الواتساب، يرجى إرسال صورة أو سكرين شوت لإشعار التحويل لتأكيد الشحن فوراً.
                           </div>
