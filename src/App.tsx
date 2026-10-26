@@ -121,9 +121,9 @@ function AppContent() {
   const [homepageSections, setHomepageSections] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
  
-  // Initialize and synchronize tracking pixels (Meta Pixel 1487210983271476 & TikTok Pixel DBESRBJC77U4J2JQDUB0)
+  // Initialize and synchronize tracking pixels (Meta Pixel 1765916517819303 & TikTok Pixel DBESRBJC77U4J2JQDUB0)
   useEffect(() => {
-    initPixels(settings || { facebookPixelId: '1487210983271476', tiktokPixelId: 'DBESRBJC77U4J2JQDUB0' });
+    initPixels(settings || { facebookPixelId: '1765916517819303', tiktokPixelId: 'DBESRBJC77U4J2JQDUB0' });
   }, [settings]);
 
   // Auto-open product detail page when deep-linked with ?product=ID or ?p=ID

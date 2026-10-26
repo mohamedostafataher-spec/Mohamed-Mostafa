@@ -105,7 +105,7 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
   if (!settings || typeof window === 'undefined') return;
 
   // 1. META (FACEBOOK) PIXEL
-  const metaId = (settings.facebookPixelId || '1487210983271476').trim();
+  const metaId = (settings.facebookPixelId || '1765916517819303').trim();
   if (metaId && !initializedPixels.meta) {
     try {
       if (typeof window.fbq === 'function') {

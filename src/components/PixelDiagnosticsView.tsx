@@ -64,7 +64,7 @@ interface PixelStatusInfo {
 }
 
 export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosticsViewProps) {
-  const metaPixelId = (settings?.facebookPixelId || '1487210983271476').trim();
+  const metaPixelId = (settings?.facebookPixelId || '1765916517819303').trim();
   const tiktokPixelId = (settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0').trim();
 
   const [logs, setLogs] = useState<PixelEventLog[]>([]);

@@ -151,7 +151,7 @@ export default function Dashboard({
     whatsapp: settings?.whatsappSaudi || settings?.whatsapp || '966552823677',
     contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 55 282 3677',
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
-    facebookPixelId: settings?.facebookPixelId || '1487210983271476',
+    facebookPixelId: settings?.facebookPixelId || '1765916517819303',
     tiktokPixelId: settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0',
     snapchatPixelId: settings?.snapchatPixelId || '',
     googleAnalyticsId: settings?.googleAnalyticsId || '',
