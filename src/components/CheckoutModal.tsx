@@ -21,7 +21,7 @@ import {
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { WhatsAppService } from '../services/whatsappService';
 import { agentSystem } from '../services/agentSystem';
-import { trackInitiateCheckout, trackPurchase } from '../utils/analytics';
+import { trackInitiateCheckout, trackPurchase, trackAddPaymentInfo } from '../utils/analytics';
 import { 
   ttqIdentify, 
   trackTikTokAddPaymentInfo, 
@@ -170,6 +170,9 @@ export default function CheckoutModal({
       externalId: name.trim()
     });
     trackTikTokAddPaymentInfo(cart, totalAmount, 'SAR');
+    try {
+      trackAddPaymentInfo(cart, totalAmount, 'SAR', selectedPayment);
+    } catch {}
 
     setStep(2);
   };

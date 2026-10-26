@@ -5,6 +5,7 @@ import { useToast } from './Toast';
 import { Settings, ContactMessage } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import SocialLinksView from './SocialLinksView';
+import { trackContact, trackLead } from '../utils/analytics';
 
 interface ContactUsProps {
   settings?: Settings;
@@ -33,6 +34,10 @@ export default function ContactUs({ settings }: ContactUsProps) {
       };
       
       await dbService.saveContactMessage(contactMsg);
+      try {
+        trackContact('email', message.slice(0, 50));
+        trackLead('نموذج اتصل بنا', 0, 'SAR');
+      } catch {}
       setSubmitted(true);
       setName('');
       setEmail('');

@@ -1,6 +1,7 @@
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import { Country } from '../types';
+import { trackContact } from '../utils/analytics';
 
 interface WhatsAppFloatProps {
   number?: string;
@@ -17,12 +18,19 @@ export default function WhatsAppFloat({
   const cleanSaudi = (saudiNumber || number || '966552823677').replace(/\D/g, '');
   const saudiUrl = `https://wa.me/${cleanSaudi}?text=${encodeURIComponent(message)}`;
 
+  const handleClick = () => {
+    try {
+      trackContact('whatsapp', 'المحادثة السريعة العائمة');
+    } catch {}
+  };
+
   return (
     <div className="fixed bottom-20 right-4 md:bottom-7 md:right-7 z-50 select-none font-sans" dir="rtl">
       <a
         href={saudiUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleClick}
         className="w-13 h-13 md:w-14 md:h-14 bg-[#DF8A9D] hover:bg-[#A44C5C] text-white rounded-full shadow-[0_6px_25px_rgba(223,138,157,0.35)] hover:shadow-[0_8px_30px_rgba(223,138,157,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
         aria-label="تواصل معنا عبر واتساب SULTA"
         title="تواصل مباشر عبر واتساب 0552823677"

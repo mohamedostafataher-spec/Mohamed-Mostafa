@@ -19,6 +19,7 @@ import {
 import { useToast } from './Toast';
 import { Order, Product, Country, Review, OrderStatus } from "../types";
 import { trackTikTokCompleteRegistration, ttqIdentify } from "../utils/tiktokPixel";
+import { trackCompleteRegistration } from "../utils/analytics";
 import { jsPDF } from "jspdf";
 import { dbService } from "../services/db";
 import OrderDetailView from "./OrderDetailView";
@@ -114,6 +115,7 @@ export default function AccountView({
         toast("تم إنشاء الحساب! يرجى تفعيل البريد الإلكتروني إذا تطلب الأمر.", 'success');
         try {
           trackTikTokCompleteRegistration(email, email);
+          trackCompleteRegistration('البريد الإلكتروني', 'ناجح');
         } catch {}
       } else {
         try {

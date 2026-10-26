@@ -463,6 +463,168 @@ export const trackPurchase = (order: Order) => {
 };
 
 // ==========================================
+// META PIXEL EXTENDED STANDARD EVENTS
+// ==========================================
+
+export const trackAddPaymentInfo = (
+  items: any[] = [],
+  totalValue: number = 0,
+  currency: string = 'SAR',
+  paymentType: string = 'الدفع عند الاستلام'
+) => {
+  const ids = items.map(i => i.product?.id || i.productId || i.id || 'item');
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'AddPaymentInfo', {
+      content_ids: ids,
+      content_type: 'product',
+      value: totalValue,
+      currency: currency,
+      payment_type: paymentType
+    });
+    logPixelEvent('Meta (Facebook)', 'AddPaymentInfo', `إضافة بيانات الدفع (${paymentType}) بقيمة ${totalValue} ${currency}`, 'sent', totalValue, currency);
+  }
+};
+
+export const trackAddToWishlist = (product: Product, currency: string = 'SAR') => {
+  const price = product.priceSA || 0;
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'AddToWishlist', {
+      content_name: product.nameAr,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: price,
+      currency: currency
+    });
+    logPixelEvent('Meta (Facebook)', 'AddToWishlist', `إضافة لقائمة الرغبات: ${product.nameAr}`, 'sent', price, currency);
+  }
+};
+
+export const trackCompleteRegistration = (method: string = 'البريد الإلكتروني', status: string = 'ناجح') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'CompleteRegistration', {
+      content_name: 'تسجيل حساب جديد',
+      status: status,
+      method: method
+    });
+    logPixelEvent('Meta (Facebook)', 'CompleteRegistration', `إكمال تسجيل جديد (${method})`, 'sent');
+  }
+};
+
+export const trackContact = (contactMethod: 'whatsapp' | 'phone' | 'email' | 'chat' = 'whatsapp', details?: string) => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Contact', {
+      content_name: 'تواصل مع خدمة العملاء',
+      contact_method: contactMethod,
+      details: details || ''
+    });
+    logPixelEvent('Meta (Facebook)', 'Contact', `تواصل مع المتجر عبر ${contactMethod}`, 'sent');
+  }
+};
+
+export const trackCustomizeProduct = (
+  product: Product,
+  customization: { color?: string; size?: string; scent?: string; wrap?: string; note?: string }
+) => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'CustomizeProduct', {
+      content_name: product.nameAr,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: product.priceSA || 0,
+      currency: 'SAR',
+      customization_options: JSON.stringify(customization)
+    });
+    logPixelEvent('Meta (Facebook)', 'CustomizeProduct', `تخصيص قطعة: ${product.nameAr} (${customization.color || ''} - ${customization.size || ''})`, 'sent');
+  }
+};
+
+export const trackSearch = (searchQuery: string, resultsCount: number = 0) => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Search', {
+      search_string: searchQuery,
+      content_category: 'أزياء وبيجامات حريرية',
+      num_items: resultsCount
+    });
+    logPixelEvent('Meta (Facebook)', 'Search', `بحث بالمتجر: "${searchQuery}" (${resultsCount} نتيجة)`, 'sent');
+  }
+};
+
+export const trackLead = (leadType: string = 'طلب استشارة كونسيرج', value: number = 0, currency: string = 'SAR') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Lead', {
+      content_name: leadType,
+      content_category: 'عميل محتمل',
+      value: value,
+      currency: currency
+    });
+    logPixelEvent('Meta (Facebook)', 'Lead', `عميل محتمل (Lead): ${leadType}`, 'sent', value, currency);
+  }
+};
+
+export const trackSubscribe = (subscriberEmail?: string, value: number = 0, currency: string = 'SAR') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Subscribe', {
+      value: value,
+      currency: currency,
+      predicted_ltv: value,
+      content_name: 'النشرة البريدية الملكية'
+    });
+    logPixelEvent('Meta (Facebook)', 'Subscribe', `اشتراك بالنشرة البريدية: ${subscriberEmail || ''}`, 'sent', value, currency);
+  }
+};
+
+export const trackSchedule = (scheduleDate?: string, serviceName: string = 'استشارة قياس خاصة') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Schedule', {
+      content_name: serviceName,
+      schedule_date: scheduleDate || new Date().toISOString()
+    });
+    logPixelEvent('Meta (Facebook)', 'Schedule', `حجز موعد: ${serviceName}`, 'sent');
+  }
+};
+
+export const trackStartTrial = (trialName: string = 'فترة تجربة VIP', value: number = 0, currency: string = 'SAR') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'StartTrial', {
+      value: value,
+      currency: currency,
+      predicted_ltv: value,
+      content_name: trialName
+    });
+    logPixelEvent('Meta (Facebook)', 'StartTrial', `بدء فترة تجريبية: ${trialName}`, 'sent', value, currency);
+  }
+};
+
+export const trackSubmitApplication = (applicationType: string = 'طلب انضمام لنادي سولتة VIP') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'SubmitApplication', {
+      content_name: applicationType
+    });
+    logPixelEvent('Meta (Facebook)', 'SubmitApplication', `تقديم طلب: ${applicationType}`, 'sent');
+  }
+};
+
+export const trackFindLocation = (city: string = 'الرياض', storeName: string = 'بوتيك سولتة') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'FindLocation', {
+      content_name: storeName,
+      city: city
+    });
+    logPixelEvent('Meta (Facebook)', 'FindLocation', `بحث عن موقع البوتيك: ${city}`, 'sent');
+  }
+};
+
+export const trackDonate = (amount: number = 0, currency: string = 'SAR') => {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Donate', {
+      value: amount,
+      currency: currency
+    });
+    logPixelEvent('Meta (Facebook)', 'Donate', `تبرع: ${amount} ${currency}`, 'sent', amount, currency);
+  }
+};
+
+// ==========================================
 // REALTIME LIVE VISITORS / SHOPIFY METRICS
 // ==========================================
 export interface LiveVisitorMetrics {

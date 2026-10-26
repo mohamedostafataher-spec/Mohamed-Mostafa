@@ -44,7 +44,18 @@ import MobileBottomNav from './components/MobileBottomNav';
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
-import { recordView, recordCartAddition, trackViewContent, trackAddToCart, trackPurchase, initPixels } from './utils/analytics';
+import {
+  recordView,
+  recordCartAddition,
+  trackViewContent,
+  trackAddToCart,
+  trackPurchase,
+  initPixels,
+  trackAddToWishlist,
+  trackSearch,
+  trackSubscribe,
+  trackLead
+} from './utils/analytics';
 import {
   ttqIdentify,
   trackTikTokViewContent,
@@ -447,6 +458,7 @@ function AppContent() {
         toast(`تم إضافة "${prodName}" إلى مفضلتك الملكية ✨💖`, "success");
         if (matchedProduct) {
           trackTikTokAddToWishlist(matchedProduct, 'SAR');
+          trackAddToWishlist(matchedProduct, 'SAR');
         }
         return [...prev, productId];
       }
@@ -659,6 +671,7 @@ function AppContent() {
           p.categoryAr?.includes(query)
         );
         trackTikTokSearch(query, matches, 'SAR');
+        trackSearch(query, matches.length);
       } catch { }
     }
   };
@@ -684,6 +697,12 @@ function AppContent() {
         phone: subscribePhone || undefined,
         externalId: newSub.id
       });
+
+      // Meta Pixel: Subscribe & Lead events
+      try {
+        trackSubscribe(subscribeEmail, 0, 'SAR');
+        trackLead('اشتراك بالنشرة الملكية', 0, 'SAR');
+      } catch {}
 
       setSubscribeSuccess(true);
       setTimeout(() => {

@@ -23,7 +23,18 @@ import {
   Eye,
   ShoppingBag,
   CreditCard,
-  PackageCheck
+  PackageCheck,
+  Heart,
+  UserCheck,
+  MessageCircle,
+  Sliders,
+  Calendar,
+  DollarSign,
+  MapPin,
+  Search,
+  FileText,
+  Mail,
+  BookOpen
 } from 'lucide-react';
 import { Settings } from '../types';
 import {
@@ -34,15 +45,32 @@ import {
   trackPageView,
   trackViewContent,
   trackAddToCart,
+  trackAddToWishlist,
   trackInitiateCheckout,
-  trackPurchase
+  trackAddPaymentInfo,
+  trackPurchase,
+  trackCompleteRegistration,
+  trackContact,
+  trackCustomizeProduct,
+  trackSearch,
+  trackLead,
+  trackSubscribe,
+  trackSchedule,
+  trackStartTrial,
+  trackSubmitApplication,
+  trackFindLocation,
+  trackDonate
 } from '../utils/analytics';
 import {
   ttqIdentify,
   trackTikTokViewContent,
   trackTikTokAddToCart,
+  trackTikTokAddToWishlist,
   trackTikTokInitiateCheckout,
-  trackTikTokPurchase
+  trackTikTokAddPaymentInfo,
+  trackTikTokPurchase,
+  trackTikTokSearch,
+  trackTikTokCompleteRegistration
 } from '../utils/tiktokPixel';
 
 interface PixelDiagnosticsViewProps {
@@ -63,6 +91,129 @@ interface PixelStatusInfo {
   eventCount: number;
 }
 
+// Meta Pixel Standard Event Registry Reference
+const META_STANDARD_EVENTS_TABLE = [
+  {
+    nameAr: 'مشاهدة المحتوى',
+    nameEn: 'ViewContent',
+    desc: 'زيارة إلى صفحة ويب لمنتج أو مقصودة لتتبع اهتمام العميل.',
+    code: "fbq('track', 'ViewContent');",
+    category: 'commerce'
+  },
+  {
+    nameAr: 'إضافة إلى عربة التسوق',
+    nameEn: 'AddToCart',
+    desc: 'إضافة عنصر إلى عربة التسوق أو سلة المشتريات.',
+    code: "fbq('track', 'AddToCart');",
+    category: 'commerce'
+  },
+  {
+    nameAr: 'إضافة إلى قائمة الرغبات',
+    nameEn: 'AddToWishlist',
+    desc: 'إضافة عناصر إلى قائمة رغبات أو مفضلة المتجر.',
+    code: "fbq('track', 'AddToWishlist');",
+    category: 'commerce'
+  },
+  {
+    nameAr: 'بدء إتمام الشراء',
+    nameEn: 'InitiateCheckout',
+    desc: 'بدء عملية إتمام الشراء والنقر على زر الانتقال للدفع.',
+    code: "fbq('track', 'InitiateCheckout');",
+    category: 'commerce'
+  },
+  {
+    nameAr: 'إضافة معلومات الدفع',
+    nameEn: 'AddPaymentInfo',
+    desc: 'إضافة معلومات الدفع والفوترة الخاصة بالعميل أثناء إتمام الشراء.',
+    code: "fbq('track', 'AddPaymentInfo');",
+    category: 'commerce'
+  },
+  {
+    nameAr: 'الشراء',
+    nameEn: 'Purchase',
+    desc: 'إكمال عملية الشراء بنجاح وتأكيد الطلب واستلام الإيصال.',
+    code: "fbq('track', 'Purchase', {value: 99.00, currency: 'SAR'});",
+    category: 'commerce'
+  },
+  {
+    nameAr: 'البحث',
+    nameEn: 'Search',
+    desc: 'بحث يتم إجراؤه في المتجر للبحث عن قطعة أو موديل معين.',
+    code: "fbq('track', 'Search');",
+    category: 'interaction'
+  },
+  {
+    nameAr: 'إكمال التسجيل',
+    nameEn: 'CompleteRegistration',
+    desc: 'إنشاء حساب جديد أو تسجيل عميل في خدمات المتجر.',
+    code: "fbq('track', 'CompleteRegistration');",
+    category: 'interaction'
+  },
+  {
+    nameAr: 'جهة الاتصال',
+    nameEn: 'Contact',
+    desc: 'التواصل بين العميل ونشاطك التجاري عبر الواتساب أو الهاتف أو الإيميل.',
+    code: "fbq('track', 'Contact');",
+    category: 'interaction'
+  },
+  {
+    nameAr: 'تخصيص المنتج',
+    nameEn: 'CustomizeProduct',
+    desc: 'تخصيص البيجامات (اختيار اللون، المقاس، التغليف، أو بطاقة الإهداء).',
+    code: "fbq('track', 'CustomizeProduct');",
+    category: 'interaction'
+  },
+  {
+    nameAr: 'بيانات العميل المحتمل',
+    nameEn: 'Lead',
+    desc: 'إرسال معلومات من العميل للتواصل معه لاحقاً أو طلب خدمة كونسيرج.',
+    code: "fbq('track', 'Lead');",
+    category: 'lead'
+  },
+  {
+    nameAr: 'اشتراك',
+    nameEn: 'Subscribe',
+    desc: 'بدء اشتراك بالنشرة البريدية أو عضوية سولتة الملكية.',
+    code: "fbq('track', 'Subscribe', {value: '0.00', currency: 'SAR', predicted_ltv: '0.00'});",
+    category: 'lead'
+  },
+  {
+    nameAr: 'الجدول الزمني',
+    nameEn: 'Schedule',
+    desc: 'حجز موعد أو استشارة قياس خاصة مع خبيرات سولتة.',
+    code: "fbq('track', 'Schedule');",
+    category: 'lead'
+  },
+  {
+    nameAr: 'إرسال طلب',
+    nameEn: 'SubmitApplication',
+    desc: 'إرسال طلب للانضمام لبرنامج ولاء أو وظيفة أو عضوية سفراء البراند.',
+    code: "fbq('track', 'SubmitApplication');",
+    category: 'lead'
+  },
+  {
+    nameAr: 'بدء الفترة التجريبية',
+    nameEn: 'StartTrial',
+    desc: 'بدء فترة تجريبية لعضوية VIP أو خدمات مخصصة.',
+    code: "fbq('track', 'StartTrial', {value: '0.00', currency: 'SAR', predicted_ltv: '0.00'});",
+    category: 'lead'
+  },
+  {
+    nameAr: 'بحث عن الموقع',
+    nameEn: 'FindLocation',
+    desc: 'البحث عن فرع بوتيك سولتة أو موقع الاستلام.',
+    code: "fbq('track', 'FindLocation');",
+    category: 'interaction'
+  },
+  {
+    nameAr: 'التبرع',
+    nameEn: 'Donate',
+    desc: 'مساهمة خيرية أو مبادرة مجتمعية مرتبطة بالمتجر.',
+    code: "fbq('track', 'Donate');",
+    category: 'interaction'
+  }
+];
+
 export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosticsViewProps) {
   const metaPixelId = (settings?.facebookPixelId || '1765916517819303').trim();
   const tiktokPixelId = (settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0').trim();
@@ -72,7 +223,9 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
   const [isTesting, setIsTesting] = useState(false);
   const [testSuccessMessage, setTestSuccessMessage] = useState<string | null>(null);
   const [copiedReport, setCopiedReport] = useState(false);
+  const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
   const [isRunningScan, setIsRunningScan] = useState(false);
+  const [activeCategoryTab, setActiveCategoryTab] = useState<'all' | 'commerce' | 'interaction' | 'lead' | 'table'>('all');
   const [lastScanTime, setLastScanTime] = useState<string>(
     new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
   );
@@ -99,13 +252,10 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
 
     // 1. Check Meta Pixel Status
     const isFbqFunction = typeof (window as any).fbq === 'function';
-    const isFbqLoaded = !!(window as any)._fbq || (isFbqFunction && (window as any).fbq.loaded);
     const metaScripts = Array.from(document.querySelectorAll('script')).filter(s =>
       s.src && s.src.includes('connect.facebook.net')
     );
     const metaScriptPresent = metaScripts.length > 0;
-    
-    // Check if script element was blocked / failed or adblocker replaced fbq with no-op
     const metaAdBlock = metaScriptPresent && !isFbqFunction;
 
     // 2. Check TikTok Pixel Status
@@ -138,7 +288,7 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
     }
 
     const metaStatus: PixelStatusInfo = {
-      name: 'Meta (Facebook) Pixel',
+      name: 'Meta (Facebook & Instagram) Pixel',
       id: metaPixelId,
       isConfigured: !!metaPixelId,
       scriptLoaded: metaScriptPresent,
@@ -182,8 +332,8 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
     }, 600);
   };
 
-  // Test Event Trigger Handlers
-  const runTestEvent = async (eventType: 'PageView' | 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase') => {
+  // Run Test for ANY Meta Standard Event
+  const runTestEvent = async (eventType: string) => {
     setIsTesting(true);
     setTestSuccessMessage(null);
 
@@ -199,41 +349,122 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
     } as any;
 
     try {
-      if (eventType === 'PageView') {
-        trackPageView('صفحة التشخيص التجريبية');
-        setTestSuccessMessage('تم إرسال حدث PageView بنجاح لكل من Meta و TikTok!');
-      } else if (eventType === 'ViewContent') {
-        trackViewContent(dummyProduct, 'SAR');
-        trackTikTokViewContent(dummyProduct, 'SAR');
-        setTestSuccessMessage('تم إرسال حدث ViewContent (مشاهدة منتج) بنجاح!');
-      } else if (eventType === 'AddToCart') {
-        trackAddToCart(dummyProduct, 1, 'SAR');
-        trackTikTokAddToCart(dummyProduct, 1, 'SAR');
-        setTestSuccessMessage('تم إرسال حدث AddToCart (إضافة للسلة) بنجاح!');
-      } else if (eventType === 'InitiateCheckout') {
-        trackInitiateCheckout([{ product: dummyProduct, quantity: 1 }], 99, 'SAR');
-        trackTikTokInitiateCheckout([{ product: dummyProduct, quantity: 1 }], 99, 'SAR');
-        setTestSuccessMessage('تم إرسال حدث InitiateCheckout (بدء الدفع) بنجاح!');
-      } else if (eventType === 'Purchase') {
-        const dummyOrder = {
-          id: 'TEST-' + Math.floor(100000 + Math.random() * 900000),
-          customerName: 'مختبر فحص البيكسل',
-          phone: '+966552823677',
-          city: 'الرياض',
-          address: 'حي النخيل، فحص تجريبي',
-          items: [{ productId: dummyProduct.id, quantity: 1, color: 'عنابي', size: 'M' }],
-          totalPrice: 99,
-          currency: 'SAR',
-          paymentMethod: 'الدفع عند الاستلام (تجريبي)'
-        } as any;
+      switch (eventType) {
+        case 'PageView':
+          trackPageView('صفحة التشخيص التجريبية');
+          setTestSuccessMessage('تم إرسال حدث PageView (عرض الصفحة) بنجاح!');
+          break;
 
-        trackPurchase(dummyOrder);
-        trackTikTokPurchase(dummyOrder, 'SAR');
-        setTestSuccessMessage(`تم إرسال حدث Purchase بنجاح للطلب #${dummyOrder.id}!`);
+        case 'ViewContent':
+          trackViewContent(dummyProduct, 'SAR');
+          trackTikTokViewContent(dummyProduct, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث ViewContent (مشاهدة المحتوى) بنجاح!');
+          break;
+
+        case 'AddToCart':
+          trackAddToCart(dummyProduct, 1, 'SAR');
+          trackTikTokAddToCart(dummyProduct, 1, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث AddToCart (إضافة إلى عربة التسوق) بنجاح!');
+          break;
+
+        case 'AddToWishlist':
+          trackAddToWishlist(dummyProduct, 'SAR');
+          trackTikTokAddToWishlist(dummyProduct, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث AddToWishlist (إضافة إلى قائمة الرغبات) بنجاح!');
+          break;
+
+        case 'InitiateCheckout':
+          trackInitiateCheckout([{ product: dummyProduct, quantity: 1 }], 99, 'SAR');
+          trackTikTokInitiateCheckout([{ product: dummyProduct, quantity: 1 }], 99, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث InitiateCheckout (بدء إتمام الشراء) بنجاح!');
+          break;
+
+        case 'AddPaymentInfo':
+          trackAddPaymentInfo([dummyProduct], 99, 'SAR', 'الدفع عند الاستلام');
+          trackTikTokAddPaymentInfo([dummyProduct], 99, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث AddPaymentInfo (إضافة معلومات الدفع) بنجاح!');
+          break;
+
+        case 'Purchase':
+          const dummyOrder = {
+            id: 'TEST-' + Math.floor(100000 + Math.random() * 900000),
+            customerName: 'مختبر فحص البيكسل',
+            phone: '+966552823677',
+            city: 'الرياض',
+            address: 'حي النخيل، فحص تجريبي',
+            items: [{ productId: dummyProduct.id, quantity: 1, color: 'عنابي', size: 'M' }],
+            totalPrice: 99,
+            currency: 'SAR',
+            paymentMethod: 'الدفع عند الاستلام (تجريبي)'
+          } as any;
+          trackPurchase(dummyOrder);
+          trackTikTokPurchase(dummyOrder, 'SAR');
+          setTestSuccessMessage(`تم إرسال حدث Purchase (الشراء) بنجاح للطلب #${dummyOrder.id}!`);
+          break;
+
+        case 'Search':
+          trackSearch('بيجامة حرير ملكية', 4);
+          trackTikTokSearch('بيجامة حرير ملكية', [dummyProduct], 'SAR');
+          setTestSuccessMessage('تم إرسال حدث Search (البحث) بنجاح!');
+          break;
+
+        case 'CompleteRegistration':
+          trackCompleteRegistration('البريد الإلكتروني', 'ناجح');
+          trackTikTokCompleteRegistration('test@sulta.sa', 'مختبر البيكسل');
+          setTestSuccessMessage('تم إرسال حدث CompleteRegistration (إكمال التسجيل) بنجاح!');
+          break;
+
+        case 'Contact':
+          trackContact('whatsapp', 'طلب استفسار عن مقاس حريري');
+          setTestSuccessMessage('تم إرسال حدث Contact (جهة الاتصال) بنجاح!');
+          break;
+
+        case 'CustomizeProduct':
+          trackCustomizeProduct(dummyProduct, { color: 'عنابي ملكي', size: 'M', wrap: 'تغليف هدايا فاخر' });
+          setTestSuccessMessage('تم إرسال حدث CustomizeProduct (تخصيص المنتج) بنجاح!');
+          break;
+
+        case 'Lead':
+          trackLead('طلب استشارة كونسيرج سولتة', 0, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث Lead (بيانات العميل المحتمل) بنجاح!');
+          break;
+
+        case 'Subscribe':
+          trackSubscribe('vip@sulta.sa', 0, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث Subscribe (اشتراك) بنجاح!');
+          break;
+
+        case 'Schedule':
+          trackSchedule(new Date().toISOString(), 'استشارة قياس منزلية ملكية');
+          setTestSuccessMessage('تم إرسال حدث Schedule (الجدول الزمني) بنجاح!');
+          break;
+
+        case 'StartTrial':
+          trackStartTrial('تجربة عضوية VIP لمدة 14 يوم', 0, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث StartTrial (بدء الفترة التجريبية) بنجاح!');
+          break;
+
+        case 'SubmitApplication':
+          trackSubmitApplication('طلب انضمام لنادي سفيرات سولتة');
+          setTestSuccessMessage('تم إرسال حدث SubmitApplication (إرسال طلب) بنجاح!');
+          break;
+
+        case 'FindLocation':
+          trackFindLocation('الرياض', 'بوتيك سولتة سنتريا مول');
+          setTestSuccessMessage('تم إرسال حدث FindLocation (بحث عن الموقع) بنجاح!');
+          break;
+
+        case 'Donate':
+          trackDonate(50, 'SAR');
+          setTestSuccessMessage('تم إرسال حدث Donate (التبرع) بنجاح!');
+          break;
+
+        default:
+          break;
       }
 
       if (toast) {
-        toast(`تم إرسال حدث ${eventType} التجريبي بنجاح إلى Meta و TikTok! 🚀`, 'success');
+        toast(`تم إرسال حدث ${eventType} القياسي إلى Meta Pixel (${metaPixelId}) بنجاح! 🚀`, 'success');
       }
     } catch (err: any) {
       console.error('Error during diagnostic test event:', err);
@@ -252,7 +483,7 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
 1. META PIXEL (Facebook / Instagram):
 - معرف البيكسل: ${diagnostics.meta.id}
 - حالة السكريبت في الصفحة: ${diagnostics.meta.scriptLoaded ? 'موجود ومحمّل ✅' : 'غير موجود ❌'}
-- كائن fbq جاهز للعمل: ${diagnostics.meta.objectDefined ? 'نعم (fbq function active) ✅' : 'لا ❌'}
+- كائن fbq جاهز للعمل: ${diagnostics.meta.objectDefined ? 'نعم (fbq active) ✅' : 'لا ❌'}
 - مانع إعلانات مكتشف: ${diagnostics.meta.adBlockDetected ? 'نعم (AdBlock Active) ⚠️' : 'لا ✅'}
 - إجمالي الأحداث المسجلة في الجلسة: ${diagnostics.meta.eventCount}
 - آخر حدث: ${diagnostics.meta.lastEventTime || 'لا يوجد بعد'}
@@ -274,6 +505,14 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
     setCopiedReport(true);
     if (toast) toast('تم نسخ تقرير الفحص الفني للحافظة بنجاح 📋', 'success');
     setTimeout(() => setCopiedReport(false), 3000);
+  };
+
+  // Copy Snippet Code
+  const handleCopySnippet = (codeText: string, index: number) => {
+    navigator.clipboard.writeText(codeText);
+    setCopiedCodeIdx(index);
+    if (toast) toast('تم نسخ كود الحدث القياسي للحافظة بنجاح 📋', 'success');
+    setTimeout(() => setCopiedCodeIdx(null), 2500);
   };
 
   // Filtered Logs
@@ -298,7 +537,6 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
       
       {/* 1. Header Banner */}
       <div className="bg-gradient-to-l from-gray-950 via-gray-900 to-[#2A0E14] text-white p-6 sm:p-7 rounded-3xl border border-gray-800 shadow-xl relative overflow-hidden">
-        {/* Subtle background glow */}
         <div className="absolute -top-24 -left-24 w-72 h-72 bg-[#A44C5C]/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -307,18 +545,18 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#A44C5C]/30 text-[#F5C2CB] border border-[#A44C5C]/40">
                 <Activity size={13} className="animate-pulse" />
-                فاحص البيكسل المباشر (Real-Time Pixel Diagnostics)
+                فاحص البيكسل المباشر ومكتبة الأحداث القياسية
               </span>
               <span className="text-[11px] text-gray-400 font-mono">
                 آخر فحص: {lastScanTime}
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <span>حالة اتصال Meta Pixel و TikTok Pixel</span>
+              <span>Meta Pixel (ID: {metaPixelId}) & TikTok Pixel</span>
               <Sparkles size={20} className="text-[#E7A6B2]" />
             </h2>
             <p className="text-gray-300 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
-              فحص فوري ودقيق لتأكيد إرسال أحداث الشراء وتصفح المنتجات إلى الحملات الإعلانية دون أي تعارضات أو تأخير.
+              يدعم المتجر الآن كافة الأحداث القياسية الرسمية لـ Meta (عرض المحتوى، السلة، قائمة الرغبات، الدفع، إتمام الشراء، البحث، التواصل، والمزيد).
             </p>
           </div>
 
@@ -370,36 +608,20 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
         </div>
       </div>
 
-      {/* 2. AdBlock Alert Banner (If AdBlocker active on browser) */}
+      {/* 2. AdBlock Alert Banner */}
       {diagnostics.adBlockOverall && (
         <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 flex items-start gap-3 text-xs animate-fade-in">
           <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <h4 className="font-bold text-amber-950">تنبيه فني: إضافة حظر إعلانات (AdBlocker) نشطة على جهازك الحالي</h4>
             <p className="text-amber-800 leading-relaxed">
-              تم رصد إضافة مثل (uBlock Origin أو AdGuard أو درع متصفح Brave) تمنع المتصفح من تنزيل سكريبتات فيسبوك أو تيك توك محلياً على جهاز الإدارة.
-              <span className="font-bold underline mr-1">هذا طبيعي ولا يؤثر على زوار متجرك في السعودية وخارجها</span> الذين لا يستخدمون مانع إعلانات، حيث تصل أحداثهم لمدير الإعلانات بدون أي عائق. لعمل فحص محلي هنا، يمكنك استثناء هذا الموقع مؤقتاً من مانع الإعلانات.
+              تم رصد إضافة مانع إعلانات تحجب الاتصال بـ facebook.net في جهاز الإدارة. هذا لا يؤثر على زوار المتجر العاديين على الإطلاق.
             </p>
           </div>
         </div>
       )}
 
-      {/* 3. Conflict Alert Banner (If duplicates or missing IDs found) */}
-      {diagnostics.conflictDetected && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-900 rounded-2xl p-4 flex items-start gap-3 text-xs animate-fade-in">
-          <XCircle size={18} className="text-rose-600 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <h4 className="font-bold text-rose-950">تم رصد تعارض أو خطأ في إعدادات البيكسل:</h4>
-            <ul className="list-disc list-inside space-y-1 text-rose-800">
-              {diagnostics.conflictDetails.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-
-      {/* 4. Real-Time Status Cards (Meta & TikTok Side-by-Side) */}
+      {/* 3. Real-Time Status Cards (Meta & TikTok Side-by-Side) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         
         {/* Meta Pixel Card */}
@@ -414,7 +636,7 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
                   <span>Meta (Facebook & Instagram) Pixel</span>
                 </h3>
                 <p className="text-[11px] text-gray-400 font-mono mt-0.5">
-                  ID: <span className="text-gray-800 font-bold">{diagnostics.meta.id}</span>
+                  ID: <span className="text-[#1877F2] font-black">{diagnostics.meta.id}</span>
                 </p>
               </div>
             </div>
@@ -461,9 +683,9 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
             </div>
 
             <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-              <span className="text-gray-600">وسم احتياطي (Noscript Beacon):</span>
+              <span className="text-gray-600">الأحداث القياسية المدعومة:</span>
               <span className="text-emerald-700 font-bold flex items-center gap-1">
-                <Check size={13} /> نشط في المتجر
+                17 حدث قياسي رسمي ✅
               </span>
             </div>
 
@@ -562,16 +784,16 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
 
       </div>
 
-      {/* 5. Live Interactive Test Ping Controls */}
-      <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xs space-y-4">
+      {/* 4. Live Interactive Test Ping Controls - Full Standard Meta Events Suite */}
+      <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-100">
           <div>
             <h3 className="font-black text-sm text-gray-950 flex items-center gap-2">
               <Zap size={17} className="text-[#A44C5C]" />
-              <span>إرسال أحداث تجريبية مباشرة (Live Event Ping)</span>
+              <span>مختبر الأحداث القياسية المباشرة (Meta Standard Events Tester)</span>
             </h3>
             <p className="text-xs text-gray-500 mt-0.5">
-              اضغطي على أي حدث لتجربة إرساله حياً وفورياً إلى Meta و TikTok ورؤية النتائج مباشرة في السجل ومدير الإعلانات:
+              اضغطي على أي حدث قياسي لتجربة إرساله حياً وفورياً لـ Meta Pixel ورؤية استجابته في السجل ومدير الإعلانات:
             </p>
           </div>
 
@@ -583,80 +805,370 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
           )}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {/* Category Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 text-xs">
           <button
-            onClick={() => runTestEvent('PageView')}
-            disabled={isTesting}
-            className="p-3.5 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-2 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+            onClick={() => setActiveCategoryTab('all')}
+            className={`px-3.5 py-1.5 rounded-xl font-bold cursor-pointer transition-all shrink-0 ${activeCategoryTab === 'all' ? 'bg-[#A44C5C] text-white shadow-2xs' : 'bg-gray-100 text-gray-600 hover:text-black'}`}
           >
-            <div className="w-9 h-9 rounded-xl bg-white shadow-2xs flex items-center justify-center text-gray-700 group-hover:text-[#A44C5C] group-hover:bg-white transition-colors">
-              <Eye size={18} />
-            </div>
-            <div>
-              <span className="block text-xs font-bold text-gray-900">PageView</span>
-              <span className="block text-[10px] text-gray-400">زيارة صفحة</span>
-            </div>
+            جميع الأحداث (All Events)
           </button>
-
           <button
-            onClick={() => runTestEvent('ViewContent')}
-            disabled={isTesting}
-            className="p-3.5 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-2 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+            onClick={() => setActiveCategoryTab('commerce')}
+            className={`px-3.5 py-1.5 rounded-xl font-bold cursor-pointer transition-all shrink-0 ${activeCategoryTab === 'commerce' ? 'bg-[#A44C5C] text-white shadow-2xs' : 'bg-gray-100 text-gray-600 hover:text-black'}`}
           >
-            <div className="w-9 h-9 rounded-xl bg-white shadow-2xs flex items-center justify-center text-gray-700 group-hover:text-[#A44C5C] group-hover:bg-white transition-colors">
-              <Sparkles size={18} />
-            </div>
-            <div>
-              <span className="block text-xs font-bold text-gray-900">ViewContent</span>
-              <span className="block text-[10px] text-gray-400">مشاهدة منتج</span>
-            </div>
+            أحداث التجارة والشراء (E-Commerce)
           </button>
-
           <button
-            onClick={() => runTestEvent('AddToCart')}
-            disabled={isTesting}
-            className="p-3.5 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-2 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+            onClick={() => setActiveCategoryTab('interaction')}
+            className={`px-3.5 py-1.5 rounded-xl font-bold cursor-pointer transition-all shrink-0 ${activeCategoryTab === 'interaction' ? 'bg-[#A44C5C] text-white shadow-2xs' : 'bg-gray-100 text-gray-600 hover:text-black'}`}
           >
-            <div className="w-9 h-9 rounded-xl bg-white shadow-2xs flex items-center justify-center text-gray-700 group-hover:text-[#A44C5C] group-hover:bg-white transition-colors">
-              <ShoppingBag size={18} />
-            </div>
-            <div>
-              <span className="block text-xs font-bold text-gray-900">AddToCart</span>
-              <span className="block text-[10px] text-gray-400">إضافة للحقيبة</span>
-            </div>
+            أحداث التفاعل والبحث (Interaction)
           </button>
-
           <button
-            onClick={() => runTestEvent('InitiateCheckout')}
-            disabled={isTesting}
-            className="p-3.5 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-2 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+            onClick={() => setActiveCategoryTab('lead')}
+            className={`px-3.5 py-1.5 rounded-xl font-bold cursor-pointer transition-all shrink-0 ${activeCategoryTab === 'lead' ? 'bg-[#A44C5C] text-white shadow-2xs' : 'bg-gray-100 text-gray-600 hover:text-black'}`}
           >
-            <div className="w-9 h-9 rounded-xl bg-white shadow-2xs flex items-center justify-center text-gray-700 group-hover:text-[#A44C5C] group-hover:bg-white transition-colors">
-              <CreditCard size={18} />
-            </div>
-            <div>
-              <span className="block text-xs font-bold text-gray-900">InitiateCheckout</span>
-              <span className="block text-[10px] text-gray-400">بدء الدفع</span>
-            </div>
+            العملاء والاشتراكات (Leads & Subscriptions)
           </button>
-
           <button
-            onClick={() => runTestEvent('Purchase')}
-            disabled={isTesting}
-            className="p-3.5 rounded-2xl bg-emerald-50/60 hover:bg-emerald-100/70 hover:border-emerald-300 border border-emerald-200 flex flex-col items-center justify-center gap-2 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50 col-span-2 sm:col-span-1"
+            onClick={() => setActiveCategoryTab('table')}
+            className={`px-3.5 py-1.5 rounded-xl font-bold cursor-pointer transition-all shrink-0 border ${activeCategoryTab === 'table' ? 'bg-black text-white border-black' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
           >
-            <div className="w-9 h-9 rounded-xl bg-white shadow-2xs flex items-center justify-center text-emerald-700 group-hover:scale-110 transition-transform">
-              <PackageCheck size={18} />
-            </div>
-            <div>
-              <span className="block text-xs font-black text-emerald-900">Purchase 🎉</span>
-              <span className="block text-[10px] text-emerald-700 font-bold">شراء مكتمل (99 ر.س)</span>
-            </div>
+            <BookOpen size={13} className="inline ml-1" />
+            جدول الأكواد والوصف الكامل
           </button>
         </div>
+
+        {/* Buttons Grid */}
+        {activeCategoryTab !== 'table' && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-1">
+            
+            {/* PageView */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'commerce') && (
+              <button
+                onClick={() => runTestEvent('PageView')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Eye size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">PageView</span>
+                  <span className="block text-[10px] text-gray-400">عرض الصفحة</span>
+                </div>
+              </button>
+            )}
+
+            {/* ViewContent */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'commerce') && (
+              <button
+                onClick={() => runTestEvent('ViewContent')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Sparkles size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">ViewContent</span>
+                  <span className="block text-[10px] text-gray-400">مشاهدة المحتوى</span>
+                </div>
+              </button>
+            )}
+
+            {/* AddToCart */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'commerce') && (
+              <button
+                onClick={() => runTestEvent('AddToCart')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <ShoppingBag size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">AddToCart</span>
+                  <span className="block text-[10px] text-gray-400">إضافة لعربة التسوق</span>
+                </div>
+              </button>
+            )}
+
+            {/* AddToWishlist */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'commerce') && (
+              <button
+                onClick={() => runTestEvent('AddToWishlist')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Heart size={18} className="text-rose-600 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">AddToWishlist</span>
+                  <span className="block text-[10px] text-gray-400">إضافة لقائمة الرغبات</span>
+                </div>
+              </button>
+            )}
+
+            {/* InitiateCheckout */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'commerce') && (
+              <button
+                onClick={() => runTestEvent('InitiateCheckout')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <CreditCard size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">InitiateCheckout</span>
+                  <span className="block text-[10px] text-gray-400">بدء إتمام الشراء</span>
+                </div>
+              </button>
+            )}
+
+            {/* AddPaymentInfo */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'commerce') && (
+              <button
+                onClick={() => runTestEvent('AddPaymentInfo')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <DollarSign size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">AddPaymentInfo</span>
+                  <span className="block text-[10px] text-gray-400">إضافة معلومات الدفع</span>
+                </div>
+              </button>
+            )}
+
+            {/* Purchase */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'commerce') && (
+              <button
+                onClick={() => runTestEvent('Purchase')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-emerald-50/80 hover:bg-emerald-100 hover:border-emerald-300 border border-emerald-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <PackageCheck size={18} className="text-emerald-700 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="block text-xs font-black text-emerald-950">Purchase 🎉</span>
+                  <span className="block text-[10px] text-emerald-700 font-bold">الشراء (99 ر.س)</span>
+                </div>
+              </button>
+            )}
+
+            {/* Search */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'interaction') && (
+              <button
+                onClick={() => runTestEvent('Search')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Search size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">Search</span>
+                  <span className="block text-[10px] text-gray-400">البحث</span>
+                </div>
+              </button>
+            )}
+
+            {/* CompleteRegistration */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'interaction') && (
+              <button
+                onClick={() => runTestEvent('CompleteRegistration')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <UserCheck size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">CompleteRegistration</span>
+                  <span className="block text-[10px] text-gray-400">إكمال التسجيل</span>
+                </div>
+              </button>
+            )}
+
+            {/* Contact */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'interaction') && (
+              <button
+                onClick={() => runTestEvent('Contact')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <MessageCircle size={18} className="text-emerald-600 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">Contact</span>
+                  <span className="block text-[10px] text-gray-400">جهة الاتصال</span>
+                </div>
+              </button>
+            )}
+
+            {/* CustomizeProduct */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'interaction') && (
+              <button
+                onClick={() => runTestEvent('CustomizeProduct')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Sliders size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">CustomizeProduct</span>
+                  <span className="block text-[10px] text-gray-400">تخصيص المنتج</span>
+                </div>
+              </button>
+            )}
+
+            {/* Lead */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'lead') && (
+              <button
+                onClick={() => runTestEvent('Lead')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <FileText size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">Lead</span>
+                  <span className="block text-[10px] text-gray-400">عميل محتمل</span>
+                </div>
+              </button>
+            )}
+
+            {/* Subscribe */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'lead') && (
+              <button
+                onClick={() => runTestEvent('Subscribe')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Mail size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">Subscribe</span>
+                  <span className="block text-[10px] text-gray-400">اشتراك</span>
+                </div>
+              </button>
+            )}
+
+            {/* Schedule */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'lead') && (
+              <button
+                onClick={() => runTestEvent('Schedule')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Calendar size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">Schedule</span>
+                  <span className="block text-[10px] text-gray-400">الجدول الزمني</span>
+                </div>
+              </button>
+            )}
+
+            {/* StartTrial */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'lead') && (
+              <button
+                onClick={() => runTestEvent('StartTrial')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Zap size={18} className="text-amber-500 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">StartTrial</span>
+                  <span className="block text-[10px] text-gray-400">فترة تجريبية</span>
+                </div>
+              </button>
+            )}
+
+            {/* SubmitApplication */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'lead') && (
+              <button
+                onClick={() => runTestEvent('SubmitApplication')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Send size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">SubmitApplication</span>
+                  <span className="block text-[10px] text-gray-400">إرسال طلب</span>
+                </div>
+              </button>
+            )}
+
+            {/* FindLocation */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'interaction') && (
+              <button
+                onClick={() => runTestEvent('FindLocation')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <MapPin size={18} className="text-gray-700 group-hover:text-[#A44C5C]" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">FindLocation</span>
+                  <span className="block text-[10px] text-gray-400">بحث عن الموقع</span>
+                </div>
+              </button>
+            )}
+
+            {/* Donate */}
+            {(activeCategoryTab === 'all' || activeCategoryTab === 'interaction') && (
+              <button
+                onClick={() => runTestEvent('Donate')}
+                disabled={isTesting}
+                className="p-3 rounded-2xl bg-gray-50 hover:bg-[#A44C5C]/10 hover:border-[#A44C5C]/30 border border-gray-200 flex flex-col items-center justify-center gap-1.5 text-center group cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+              >
+                <DollarSign size={18} className="text-emerald-600 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="block text-xs font-bold text-gray-900">Donate</span>
+                  <span className="block text-[10px] text-gray-400">التبرع</span>
+                </div>
+              </button>
+            )}
+
+          </div>
+        )}
+
+        {/* Reference Table View */}
+        {activeCategoryTab === 'table' && (
+          <div className="overflow-x-auto rounded-2xl border border-gray-200 max-h-96 overflow-y-auto scrollbar-thin">
+            <table className="w-full text-xs text-right border-collapse">
+              <thead className="bg-[#F8F9FA] text-gray-700 font-bold border-b border-gray-200 sticky top-0">
+                <tr>
+                  <th className="py-3 px-4">إجراء موقع الويب</th>
+                  <th className="py-3 px-4">الوصف</th>
+                  <th className="py-3 px-4">الرمز البرمجي القياسي</th>
+                  <th className="py-3 px-4 text-center">اختبار فوري</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {META_STANDARD_EVENTS_TABLE.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-gray-50/80 transition-colors">
+                    <td className="py-3 px-4 font-bold text-gray-900 whitespace-nowrap">
+                      <div>{row.nameAr}</div>
+                      <span className="text-[10px] text-[#A44C5C] font-mono">{row.nameEn}</span>
+                    </td>
+                    <td className="py-3 px-4 text-gray-600 leading-relaxed min-w-[200px]">
+                      {row.desc}
+                    </td>
+                    <td className="py-3 px-4 font-mono text-[11px] text-emerald-800 bg-emerald-50/50 rounded-lg whitespace-nowrap">
+                      <div className="flex items-center justify-between gap-2">
+                        <code>{row.code}</code>
+                        <button
+                          onClick={() => handleCopySnippet(row.code, idx)}
+                          className="p-1 hover:bg-emerald-100 rounded text-emerald-700 cursor-pointer transition-colors"
+                          title="نسخ الكود"
+                        >
+                          {copiedCodeIdx === idx ? <Check size={12} /> : <Copy size={12} />}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-center whitespace-nowrap">
+                      <button
+                        onClick={() => runTestEvent(row.nameEn)}
+                        disabled={isTesting}
+                        className="px-2.5 py-1 bg-[#A44C5C] hover:bg-[#8D3F4D] text-white rounded-lg font-bold text-[10px] cursor-pointer active:scale-95 transition-all"
+                      >
+                        إرسال الآن ⚡
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {/* 6. Live Pixel Event Log Stream */}
+      {/* 5. Live Pixel Event Log Stream */}
       <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2">
@@ -670,7 +1182,6 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Filter Buttons */}
             <div className="inline-flex rounded-xl bg-gray-100 p-0.5 text-xs">
               <button
                 onClick={() => setFilterPixel('all')}
@@ -710,7 +1221,7 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
             <Activity size={32} className="mx-auto text-gray-300 mb-2" />
             <p className="text-xs font-bold text-gray-600">لا توجد أحداث مسجلة في هذه الجلسة حتى الآن</p>
             <p className="text-[11px] text-gray-400 mt-1 max-w-sm mx-auto">
-              اضغطي على أحد أزرار الفحص التجريبي بالأعلى لإرسال حدث مباشر ومشاهدة وصوله وتفاصيله هنا فوراً.
+              اضغطي على أحد أزرار الفحص التجريبي بالأعلى لإرسال حدث قياسي ومشاهدة وصوله وتفاصيله هنا فوراً.
             </p>
           </div>
         ) : (
@@ -769,7 +1280,7 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
         )}
       </div>
 
-      {/* 7. Quick Help & Verification Links */}
+      {/* 6. Quick Help & Verification Links */}
       <div className="bg-gradient-to-r from-gray-50 via-white to-gray-50 rounded-3xl p-5 border border-gray-200 text-xs text-gray-600 space-y-2">
         <h4 className="font-bold text-gray-900 flex items-center gap-1.5">
           <HelpCircle size={15} className="text-[#A44C5C]" />
