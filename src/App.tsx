@@ -337,43 +337,13 @@ function AppContent() {
     };
   }, []);
 
-  // Order Status Notification System (Shipped, Out for delivery, Delivered)
+  // Clean up legacy notification keys if present to prevent unwanted alerts
   useEffect(() => {
-    if (!orders || orders.length === 0) return;
-    
     try {
-      const notifiedMap = JSON.parse(sessionStorage.getItem('sulta_notified_orders_v2') || '{}');
-      let updated = false;
-
-      orders.forEach(ord => {
-        const currentStatus = ord.status;
-        const lastNotifiedStatus = notifiedMap[ord.id];
-
-        if (['shipped', 'out_for_delivery', 'delivered'].includes(currentStatus) && lastNotifiedStatus !== currentStatus) {
-          let msg = '';
-          if (currentStatus === 'shipped') {
-            msg = `🚚 تنبيه سولتة: تم شحن طلبيتك الملكية رقم #${ord.id} وهي في الطريق إليكِ!`;
-          } else if (currentStatus === 'out_for_delivery') {
-            msg = `🛵 تنبيه سولتة: طلبيتك رقم #${ord.id} خرجت مع سفير التوصيل الملكي لتصلكِ قريباً!`;
-          } else if (currentStatus === 'delivered') {
-            msg = `✨ تنبيه سولتة: تم تسليم طلبيتك الملكية رقم #${ord.id} بنجاح. نتمنى أن تنال إعجابكِ!`;
-          }
-
-          if (msg) {
-            toast(msg, 'success');
-            notifiedMap[ord.id] = currentStatus;
-            updated = true;
-          }
-        }
-      });
-
-      if (updated) {
-        sessionStorage.setItem('sulta_notified_orders_v2', JSON.stringify(notifiedMap));
-      }
-    } catch (e) {
-      console.warn("Order notification check error:", e);
-    }
-  }, [orders, toast]);
+      sessionStorage.removeItem('sulta_notified_orders_v2');
+      sessionStorage.removeItem('sulta_notified_orders');
+    } catch {}
+  }, []);
 
   // UI Theme & Overlay States
   const [isMidnightVelvet, setIsMidnightVelvet] = useState<boolean>(false);
