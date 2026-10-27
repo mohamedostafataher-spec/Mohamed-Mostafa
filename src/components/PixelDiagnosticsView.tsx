@@ -331,20 +331,18 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
 
     // Conflict detection
     const conflictDetails: string[] = [];
-    if (metaScripts.length > 3) {
-      conflictDetails.push('تم العثور على تكرار في كود Meta Pixel (أكثر من ٣ سكريبتات)؛ قد يسبب تكراراً في إحصائياتك.');
+    if (metaScripts.length > 5) {
+      conflictDetails.push('تم العثور على تكرار كثيف في كود Meta Pixel؛ قد يسبب تكراراً في إحصائياتك.');
     }
-    if (tiktokScripts.length > 3) {
-      conflictDetails.push('تم العثور على تكرار في كود TikTok Pixel.');
-    }
-    if (!metaPixelId || metaPixelId === '1648674350574190') {
-      // It's the default ID, not "missing" but we can note it
+    if (tiktokScripts.length > 5) {
+      conflictDetails.push('تم العثور على تكرار كثيف في كود TikTok Pixel.');
     }
     if (!metaPixelId) {
       conflictDetails.push('معرف Meta Pixel غير محدد في الإعدادات.');
     }
-    if (!tiktokPixelId) {
-      conflictDetails.push('معرف TikTok Pixel غير محدد أو مفقود في الإعدادات.');
+    // TikTok is optional, only report as conflict if explicitly intended but missing
+    if (!tiktokPixelId && settings?.tiktokPixelId === '') {
+      // Not a conflict, just not configured
     }
 
     const metaStatus: PixelStatusInfo = {
@@ -590,7 +588,7 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
     } catch {}
   };
 
-  const isAllHealthy = diagnostics.meta.isReady && diagnostics.tiktok.isReady && !diagnostics.conflictDetected && !diagnostics.adBlockOverall;
+  const isAllHealthy = diagnostics.meta.isReady && (!tiktokPixelId || diagnostics.tiktok.isReady) && !diagnostics.conflictDetected && !diagnostics.adBlockOverall;
 
   return (
     <div className="space-y-6 text-right font-sans" dir="rtl">

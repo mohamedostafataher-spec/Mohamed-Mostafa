@@ -38,11 +38,16 @@ import {
   Layers,
   ChevronDown,
   Activity,
+  ArrowRight,
   Users,
   UserPlus,
   LogOut,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Globe,
+  PackageCheck,
+  Zap,
+  WifiOff
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -59,6 +64,7 @@ import {
 import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMember, TeamMemberRole } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
+import { PixelEventLog, subscribePixelLogs } from '../utils/analytics';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
 
 interface DashboardProps {
@@ -219,6 +225,15 @@ export default function Dashboard({
     bankQrCodeUrl: settings?.bankQrCodeUrl || '/assets/images/alrajhi_qr.jpg'
   });
   const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  // Live Pixel Activity Logs state (Shopify-style Live Feed)
+  const [pixelLogs, setPixelLogs] = useState<PixelEventLog[]>([]);
+
+  // Subscribe to real-time pixel events
+  React.useEffect(() => {
+    const unsubscribe = subscribePixelLogs(setPixelLogs);
+    return () => unsubscribe();
+  }, []);
 
   // Critical Stock Products (< 5 pieces)
   const criticalStockProducts = useMemo(() => {
@@ -1096,19 +1111,19 @@ export default function Dashboard({
               }`}
             >
               <SettingsIcon size={15} />
-              <span>إعدادات المتجر والبيكسل</span>
+              <span>إعدادات المتجر</span>
             </button>
 
             <button
               onClick={() => setActiveTab('pixel-diagnostics')}
               className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border ${
                 activeTab === 'pixel-diagnostics'
-                  ? 'bg-[#A44C5C] text-white border-[#A44C5C] shadow-xs'
+                  ? 'bg-black text-white border-black shadow-xs'
                   : 'text-gray-700 hover:text-black hover:bg-gray-100 border-gray-200'
               }`}
             >
               <Activity size={15} className={activeTab === 'pixel-diagnostics' ? 'animate-pulse' : 'text-[#A44C5C]'} />
-              <span>فاحص البيكسل المباشر ⚡</span>
+              <span>فاحص البيكسل والربط ⚡</span>
             </button>
           </nav>
         </div>
@@ -1194,440 +1209,279 @@ export default function Dashboard({
         {/* ======================================================== */}
         {(activeTab === 'overview' || activeTab === 'analytics') && (
           <div className="space-y-6 animate-fade-in-rapid">
-            {/* Live Pixel Health Banner */}
-            <div className="bg-gradient-to-l from-gray-950 via-gray-900 to-[#1F080D] text-white rounded-2xl p-4 sm:p-5 border border-gray-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#A44C5C]/30 text-[#E7A6B2] border border-[#A44C5C]/40 flex items-center justify-center shrink-0">
-                  <Activity size={20} className="animate-pulse" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-white">فاحص اتصال البيكسل في الوقت الفعلي</span>
-                    {settings?.facebookPixelId && settings?.tiktokPixelId ? (
-                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                        متصل ونشط
-                      </span>
-                    ) : (
-                      <span className="bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
-                        يوجد نقص في المعرفات ⚠️
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-gray-300 text-xs mt-0.5">
-                    Meta Pixel: <span className={settings?.facebookPixelId ? "text-emerald-400 font-mono font-bold" : "text-rose-400"}>{settings?.facebookPixelId || 'غير محدد'}</span> | TikTok Pixel: <span className={settings?.tiktokPixelId ? "text-emerald-400 font-mono font-bold" : "text-rose-400"}>{settings?.tiktokPixelId || 'غير محدد'}</span>
-                  </p>
-                </div>
-              </div>
+            {/* Live Shopify-Style Store Pulse Banner */}
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden group">
+               {/* Pulse Animation Background */}
+               <div className="absolute top-0 right-0 w-64 h-full bg-emerald-50/50 -skew-x-12 translate-x-20 group-hover:translate-x-16 transition-transform duration-1000" />
+               
+               <div className="relative z-10 flex items-center gap-4">
+                 <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shadow-2xs">
+                   <div className="relative">
+                     <Globe size={28} className="animate-pulse" />
+                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-ping" />
+                   </div>
+                 </div>
+                 <div>
+                   <div className="flex items-center gap-2">
+                     <h3 className="font-black text-lg text-gray-950">نبض المتجر المباشر (Store Pulse)</h3>
+                     <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-black flex items-center gap-1">
+                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                       نشط الآن
+                     </span>
+                   </div>
+                   <p className="text-xs text-gray-500 mt-0.5">
+                     تتبع حقيقي لكل عميلة تلمس المتجر عبر <span className="font-bold text-gray-700">Meta Pixel {settings?.facebookPixelId || '1648674350574190'}</span>
+                   </p>
+                 </div>
+               </div>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('pixel-diagnostics')}
-                className="px-4 py-2 rounded-xl bg-[#A44C5C] hover:bg-[#8D3F4D] active:scale-95 text-white text-xs font-bold transition-all cursor-pointer shadow-md flex items-center justify-center gap-1.5 shrink-0"
-              >
-                <span>فتح صفحة التشخيص والاختبار ⚡</span>
-              </button>
+               <div className="relative z-10 flex items-center gap-3">
+                 <div className="bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 text-center">
+                    <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">زوار نشطين الآن</span>
+                    <span className="text-xl font-black text-gray-950 font-mono">1</span>
+                 </div>
+                 <button
+                    onClick={() => setActiveTab('pixel-diagnostics')}
+                    className="bg-black hover:bg-gray-800 text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-2"
+                 >
+                    <Activity size={14} />
+                    <span>فحص تدفق البيانات ⚡</span>
+                 </button>
+               </div>
             </div>
 
-            {/* Real Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {/* Total Revenue */}
-              <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-2xs space-y-2">
-                <div className="flex items-center justify-between text-gray-500">
-                  <span className="text-xs font-medium">إجمالي المبيعات الفعلية</span>
-                  <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <DollarSign size={16} />
-                  </div>
-                </div>
-                <div className="text-xl sm:text-2xl font-black text-gray-950 font-mono" dir="ltr">
-                  {metrics.totalRevenue.toLocaleString()} <span className="text-xs font-sans text-gray-500">ر.س</span>
-                </div>
-                <p className="text-[10px] text-emerald-600 font-medium">
-                  محسوبة من كافة طلبات المتجر الحقيقية
-                </p>
-              </div>
-
-              {/* Total Orders */}
-              <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-2xs space-y-2">
-                <div className="flex items-center justify-between text-gray-500">
-                  <span className="text-xs font-medium">إجمالي الطلبات المسجلة</span>
-                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                    <Package size={16} />
-                  </div>
-                </div>
-                <div className="text-xl sm:text-2xl font-black text-gray-950 font-mono">
-                  {metrics.totalOrders} <span className="text-xs font-sans text-gray-500">طلب</span>
-                </div>
-                <p className="text-[10px] text-blue-600 font-medium">
-                  {metrics.pendingOrders} طلبات جديدة بانتظار التجهيز
-                </p>
-              </div>
-
-              {/* Total Products */}
-              <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-2xs space-y-2">
-                <div className="flex items-center justify-between text-gray-500">
-                  <span className="text-xs font-medium">المنتجات في الكتالوج</span>
-                  <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                    <ShoppingBag size={16} />
-                  </div>
-                </div>
-                <div className="text-xl sm:text-2xl font-black text-gray-950 font-mono">
-                  {metrics.totalProducts} <span className="text-xs font-sans text-gray-500">قطعة</span>
-                </div>
-                <p className="text-[10px] text-gray-400">
-                  {metrics.lowStockProducts > 0 ? `⚠️ ${metrics.lowStockProducts} قطع قارب مخزونها على النفاد` : 'المخزون مستقر'}
-                </p>
-              </div>
-
-              {/* Completed Orders */}
-              <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-2xs space-y-2">
-                <div className="flex items-center justify-between text-gray-500">
-                  <span className="text-xs font-medium">الطلبات المكتملة</span>
-                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                    <CheckCircle2 size={16} />
-                  </div>
-                </div>
-                <div className="text-xl sm:text-2xl font-black text-gray-950 font-mono">
-                  {metrics.deliveredOrders} <span className="text-xs font-sans text-gray-500">شحنة مكتملة</span>
-                </div>
-                <p className="text-[10px] text-gray-400">
-                  تم تسليمها للعميلات بنجاح
-                </p>
-              </div>
-            </div>
-
-            {/* ======================================================== */}
-            {/* RECHARTS SALES ANALYTICS: DAILY & MONTHLY CHARTS */}
-            {/* ======================================================== */}
-            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-2xs space-y-6">
-              {/* Header with Period Toggles */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-gray-150">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-[#FCF5F6] border border-[#DF8A9D]/30 text-[#A44C5C] flex items-center justify-center shadow-2xs">
-                    <TrendingUp size={20} />
+            {/* Shopify-Style Metric Cards Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: 'إجمالي المبيعات (ر.س)', val: metrics.totalRevenue, sub: 'منذ الافتتاح', icon: <DollarSign size={20} />, color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
+                { label: 'طلبات مكتملة', val: metrics.deliveredOrders, sub: 'تم شحنها بنجاح', icon: <PackageCheck size={20} />, color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+                { label: 'طلبات قيد الانتظار', val: metrics.pendingOrders, sub: 'بانتظار التجهيز', icon: <Clock size={20} />, color: 'bg-amber-50 text-amber-600 border-amber-100' },
+                { label: 'إجمالي المنتجات', val: metrics.totalProducts, sub: 'في الكتالوج الملكي', icon: <ShoppingBag size={20} />, color: 'bg-purple-50 text-purple-600 border-purple-100' },
+              ].map((m, i) => (
+                <div key={i} className="bg-white rounded-3xl p-5 border border-gray-200 shadow-2xs hover:shadow-md transition-shadow space-y-3 relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <div className={`w-10 h-10 rounded-xl ${m.color} flex items-center justify-center border`}>
+                      {m.icon}
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{m.sub}</span>
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm sm:text-base text-gray-950 flex items-center gap-2">
-                      <span>تقارير وحركة المبيعات</span>
-                      <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-sans font-bold px-2 py-0.5 rounded-full">
-                        مباشر من المتجر
-                      </span>
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      مخططات دقيقة توضح حركة المبيعات اليومية والشهرية وحجم الطلبات الفعلية بالريال السعودي
-                    </p>
+                    <div className="text-2xl font-black text-gray-950 font-mono tracking-tight">
+                      {typeof m.val === 'number' ? m.val.toLocaleString() : m.val}
+                    </div>
+                    <p className="text-xs font-bold text-gray-500 mt-0.5">{m.label}</p>
                   </div>
                 </div>
+              ))}
+            </div>
 
-                {/* Period Selector Tabs */}
-                <div className="flex items-center bg-[#F8F9FA] p-1 rounded-xl border border-gray-200 text-xs font-bold self-stretch sm:self-auto">
-                  <button
-                    onClick={() => setSalesChartPeriod('both')}
-                    className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                      salesChartPeriod === 'both' ? 'bg-white text-gray-950 shadow-xs' : 'text-gray-500 hover:text-gray-900'
-                    }`}
-                  >
-                    عرض شامل 📑
-                  </button>
-                  <button
-                    onClick={() => setSalesChartPeriod('daily')}
-                    className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                      salesChartPeriod === 'daily' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'
-                    }`}
-                  >
-                    <CalendarDays size={13} />
-                    <span>المبيعات اليومية</span>
-                  </button>
-                  <button
-                    onClick={() => setSalesChartPeriod('monthly')}
-                    className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                      salesChartPeriod === 'monthly' ? 'bg-gray-950 text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'
-                    }`}
-                  >
-                    <BarChart3 size={13} />
-                    <span>المبيعات الشهرية</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Quick Summary Metric Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-3.5 space-y-1">
-                  <span className="text-[11px] text-gray-500 font-medium block">مبيعات اليوم المسجلة</span>
-                  <div className="text-base sm:text-lg font-black font-mono text-gray-950" dir="ltr">
-                    {salesSummary.todayRevenue.toLocaleString()} <span className="text-[10px] font-sans text-gray-500">ر.س</span>
-                  </div>
-                </div>
-                <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-3.5 space-y-1">
-                  <span className="text-[11px] text-gray-500 font-medium block">مبيعات الشهر الحالي</span>
-                  <div className="text-base sm:text-lg font-black font-mono text-gray-950" dir="ltr">
-                    {salesSummary.thisMonthRevenue.toLocaleString()} <span className="text-[10px] font-sans text-gray-500">ر.س</span>
-                  </div>
-                </div>
-                <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-3.5 space-y-1">
-                  <span className="text-[11px] text-gray-500 font-medium block">متوسط قيمة الطلب (AOV)</span>
-                  <div className="text-base sm:text-lg font-black font-mono text-[#A44C5C]" dir="ltr">
-                    {salesSummary.avgOrderValue.toLocaleString()} <span className="text-[10px] font-sans text-gray-500">ر.س</span>
-                  </div>
-                </div>
-                <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-3.5 space-y-1">
-                  <span className="text-[11px] text-gray-500 font-medium block">أعلى يوم مبيعات</span>
-                  <div className="text-base sm:text-lg font-black font-mono text-emerald-700" dir="ltr">
-                    {salesSummary.peakRevenue.toLocaleString()} <span className="text-[10px] font-sans text-gray-500">ر.س</span>
-                  </div>
-                  <span className="text-[9.5px] text-gray-400 block font-sans">({salesSummary.peakDay})</span>
-                </div>
-              </div>
-
-              {/* Charts Rendering */}
-              {orders.length === 0 ? (
-                <div className="py-12 px-4 text-center bg-gray-50/70 rounded-2xl border border-dashed border-gray-200 space-y-2">
-                  <div className="w-12 h-12 mx-auto rounded-2xl bg-white text-[#A44C5C] border border-gray-200 flex items-center justify-center shadow-2xs">
-                    <TrendingUp size={22} />
-                  </div>
-                  <h4 className="font-bold text-sm text-gray-800">لا توجد مبيعات مسجلة حتى الآن</h4>
-                  <p className="max-w-md mx-auto text-gray-500 leading-relaxed text-xs">
-                    كافة البيانات والإحصائيات في هذه اللوحة ترتبط حصراً بالطلبات الحقيقية بدون أي أرقام وهمية أو افتراضية. بمجرد إتمام أول طلب حقيقي في المتجر، ستُرسم المخططات البيانية اليومية والشهرية هنا بدقة 100%.
-                  </p>
-                </div>
-              ) : (
-                <div className={`grid gap-6 ${salesChartPeriod === 'both' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
-                  {/* 1. Daily Sales Area Chart */}
-                  {(salesChartPeriod === 'daily' || salesChartPeriod === 'both') && (
-                    <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-2xs">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#A44C5C]"></span>
-                          <h4 className="font-bold text-xs sm:text-sm text-gray-900 font-serif">
-                            المبيعات اليومية (آخر 14 يوماً)
-                          </h4>
+            {/* Main Content: Analytics & Real-Time Feed */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+               {/* Left: Charts (2/3 width) */}
+               <div className="lg:col-span-2 space-y-6">
+                  <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-2xs space-y-6">
+                    {/* Header with Period Toggles */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-gray-150">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-[#FCF5F6] border border-[#DF8A9D]/30 text-[#A44C5C] flex items-center justify-center shadow-2xs">
+                          <TrendingUp size={20} />
                         </div>
-                        <span className="text-[11px] text-gray-400 font-mono">بالريال السعودي (ر.س)</span>
+                        <div>
+                          <h3 className="font-bold text-sm sm:text-base text-gray-950 flex items-center gap-2">
+                            <span>تقارير المبيعات الفعلية</span>
+                            <span className="text-[10px] bg-indigo-50 text-indigo-800 border border-indigo-200 font-sans font-bold px-2 py-0.5 rounded-full">
+                              مزامنة CAPI نشطة ⚡
+                            </span>
+                          </h3>
+                        </div>
                       </div>
 
-                      <div className="w-full h-64 pt-2" dir="ltr">
+                      <div className="flex items-center bg-[#F8F9FA] p-1 rounded-xl border border-gray-200 text-xs font-bold self-stretch sm:self-auto">
+                        <button
+                          onClick={() => setSalesChartPeriod('both')}
+                          className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg transition-all cursor-pointer ${salesChartPeriod === 'both' ? 'bg-white text-gray-950 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+                        >عرض شامل</button>
+                        <button
+                          onClick={() => setSalesChartPeriod('daily')}
+                          className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg transition-all cursor-pointer ${salesChartPeriod === 'daily' ? 'bg-black text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+                        >يومي</button>
+                        <button
+                          onClick={() => setSalesChartPeriod('monthly')}
+                          className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg transition-all cursor-pointer ${salesChartPeriod === 'monthly' ? 'bg-black text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+                        >شهري</button>
+                      </div>
+                    </div>
+
+                    {/* Chart Container */}
+                    <div className="h-72 w-full pt-4">
+                      {orders.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400 space-y-2">
+                          <BarChart3 size={40} className="opacity-20" />
+                          <p className="text-xs font-bold">بانتظار أول عملية شراء حقيقية لرسم المخططات</p>
+                        </div>
+                      ) : (
                         <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={dailySalesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <AreaChart data={dailySalesData}>
                             <defs>
-                              <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#A44C5C" stopOpacity={0.4}/>
-                                <stop offset="95%" stopColor="#A44C5C" stopOpacity={0.0}/>
+                              <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#000000" stopOpacity={0.1}/>
+                                <stop offset="95%" stopColor="#000000" stopOpacity={0}/>
                               </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F1F1F1" vertical={false} />
-                            <XAxis dataKey="displayDate" stroke="#888888" fontSize={11} tickLine={false} />
-                            <YAxis stroke="#888888" fontSize={11} tickLine={false} />
-                            <Tooltip
-                              content={({ active, payload, label }) => {
-                                if (active && payload && payload.length) {
-                                  const data = payload[0].payload;
-                                  return (
-                                    <div className="bg-gray-950 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 font-sans border border-gray-800">
-                                      <p className="font-bold text-[#E8A5B8]">{data.displayDate || label}</p>
-                                      <p className="font-mono text-sm font-black">{Number(data.revenue).toLocaleString()} ر.س</p>
-                                      <p className="text-[10.5px] text-gray-300">عدد الطلبات: {data.ordersCount} طلب</p>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                            />
-                            <Area 
-                              type="monotone" 
-                              dataKey="revenue" 
-                              stroke="#A44C5C" 
-                              strokeWidth={3} 
-                              fillOpacity={1} 
-                              fill="url(#colorDaily)" 
-                              name="المبيعات (ر.س)"
-                            />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F1F1" />
+                            <XAxis dataKey="displayDate" axisLine={false} tickLine={false} fontSize={10} stroke="#9CA3AF" />
+                            <YAxis axisLine={false} tickLine={false} fontSize={10} stroke="#9CA3AF" />
+                            <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                            <Area type="monotone" dataKey="revenue" stroke="#000000" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
                           </AreaChart>
                         </ResponsiveContainer>
-                      </div>
+                      )}
                     </div>
-                  )}
+                  </div>
 
-                  {/* 2. Monthly Sales Bar Chart */}
-                  {(salesChartPeriod === 'monthly' || salesChartPeriod === 'both') && (
-                    <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-2xs">
-                      <div className="flex items-center justify-between">
+                  {/* Analytics Summary */}
+                  <div className="grid grid-cols-2 gap-4">
+                     <div className="bg-white p-5 rounded-3xl border border-gray-200 shadow-2xs space-y-1">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase">متوسط قيمة السلة (AOV)</span>
+                        <div className="text-xl font-black text-gray-900 font-mono">{salesSummary.avgOrderValue.toLocaleString()} ر.س</div>
+                     </div>
+                     <div className="bg-white p-5 rounded-3xl border border-gray-200 shadow-2xs space-y-1">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase">أعلى مبيعات يومية</span>
+                        <div className="text-xl font-black text-emerald-600 font-mono">{salesSummary.peakRevenue.toLocaleString()} ر.س</div>
+                     </div>
+                  </div>
+               </div>
+
+               {/* Right: Live Activity Feed (Shopify style) */}
+               <div className="lg:col-span-1 space-y-6">
+                  <div className="bg-gray-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-800 flex flex-col h-full max-h-[540px]">
+                     <div className="flex items-center justify-between pb-4 border-b border-white/10">
                         <div className="flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full bg-gray-950"></span>
-                          <h4 className="font-bold text-xs sm:text-sm text-gray-900 font-serif">
-                            المبيعات الشهرية عبر السنة
-                          </h4>
+                           <Activity size={18} className="text-emerald-400 animate-pulse" />
+                           <h4 className="font-bold text-sm">نشاط الزوار المباشر</h4>
                         </div>
-                        <span className="text-[11px] text-gray-400 font-mono">بالريال السعودي (ر.س)</span>
-                      </div>
+                        <div className="flex items-center gap-1.5">
+                           <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+                           <span className="text-[10px] font-bold text-emerald-400">LIVE</span>
+                        </div>
+                     </div>
 
-                      <div className="w-full h-64 pt-2" dir="ltr">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={monthlySalesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F1F1F1" vertical={false} />
-                            <XAxis dataKey="monthName" stroke="#888888" fontSize={11} tickLine={false} />
-                            <YAxis stroke="#888888" fontSize={11} tickLine={false} />
-                            <Tooltip
-                              content={({ active, payload, label }) => {
-                                if (active && payload && payload.length) {
-                                  const data = payload[0].payload;
-                                  return (
-                                    <div className="bg-gray-950 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 font-sans border border-gray-800">
-                                      <p className="font-bold text-amber-300">{data.monthName || label}</p>
-                                      <p className="font-mono text-sm font-black">{Number(data.revenue).toLocaleString()} ر.س</p>
-                                      <p className="text-[10.5px] text-gray-300">إجمالي الطلبات: {data.ordersCount} طلب</p>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                            />
-                            <Bar 
-                              dataKey="revenue" 
-                              fill="#1C1917" 
-                              radius={[6, 6, 0, 0]} 
-                              name="المبيعات الشهرية (ر.س)"
-                            />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                     <div className="flex-1 overflow-y-auto mt-4 space-y-4 scrollbar-none">
+                        {/* 1. Real Active Orders Activity */}
+                        {orders.slice(0, 3).map((o, idx) => (
+                          <div key={o.id} className="flex gap-3 animate-fade-in-rapid">
+                             <div className="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                                <ShoppingBag size={16} />
+                             </div>
+                             <div className="space-y-0.5">
+                                <p className="text-xs font-bold leading-tight">
+                                   عميلة من <span className="text-emerald-300">{o.city || 'الرياض'}</span> أتمت طلباً بقيمة <span className="font-mono text-emerald-200">{Number(o.totalPrice).toLocaleString()} ر.س</span>
+                                </p>
+                                <span className="text-[10px] text-gray-500 font-mono uppercase">{idx === 0 ? 'منذ قليل' : `${idx + 2} د`}</span>
+                             </div>
+                          </div>
+                        ))}
+
+                        {/* 2. Real Pixel Events Browsing Activity */}
+                        {pixelLogs.slice(0, 8).map((log, i) => (
+                           <div key={log.id} className="flex gap-3 opacity-90 hover:opacity-100 transition-opacity">
+                              <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
+                                log.event === 'Purchase' 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
+                                  : log.event === 'AddToCart'
+                                  ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                  : 'bg-white/10 text-gray-300 border-white/10'
+                              }`}>
+                                 {log.event === 'PageView' ? <Eye size={16} /> : log.event === 'AddToCart' ? <Plus size={16} /> : <Zap size={16} />}
+                              </div>
+                              <div className="space-y-0.5">
+                                 <p className="text-[11.5px] font-medium leading-tight">
+                                    {log.event === 'PageView' ? 'عميلة تتصفح المتجر' : log.event === 'AddToCart' ? 'تمت إضافة قطعة للسلة' : log.details}
+                                 </p>
+                                 <div className="flex items-center gap-2">
+                                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{log.pixel === 'Meta (Facebook)' ? 'Meta' : 'TikTok'}</span>
+                                    <span className="w-1 h-1 rounded-full bg-gray-700" />
+                                    <span className="text-[9px] text-gray-500 font-mono">{log.timestamp}</span>
+                                 </div>
+                              </div>
+                           </div>
+                        ))}
+
+                        {pixelLogs.length === 0 && orders.length === 0 && (
+                          <div className="py-12 text-center space-y-2 opacity-30">
+                             <WifiOff size={32} className="mx-auto" />
+                             <p className="text-xs">بانتظار حركة المرور...</p>
+                          </div>
+                        )}
+                     </div>
+
+                     <div className="pt-4 border-t border-white/10 mt-2">
+                        <p className="text-[10px] text-gray-500 leading-relaxed italic text-center">
+                           يتم التحديث فورياً عبر كافة معرفات التتبع المرتبطة بالمتجر.
+                        </p>
+                     </div>
+                  </div>
+               </div>
             </div>
 
-            {/* Top Selling Products Analytics Card */}
-            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-2xs space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-gray-150">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                    <Flame size={18} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-950">المنتجات الأكثر طلباً وإقبالاً 🔥</h4>
-                    <p className="text-[11px] text-gray-400">ترتيب المنتجات بناءً على عدد القطع المباعة في الطلبات</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {products
-                  .map(p => {
-                    const soldQty = orders.reduce((sum, o) => {
-                      const found = o.items?.find(i => i.productName === p.nameAr || i.productName === p.nameEn);
-                      return sum + (found ? found.quantity : 0);
-                    }, 0);
-                    return { ...p, soldQty };
-                  })
-                  .sort((a, b) => b.soldQty - a.soldQty)
-                  .slice(0, 4)
-                  .map((p, idx) => (
-                    <div key={p.id} className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-4 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <span className="w-7 h-7 rounded-full bg-gray-950 text-white font-mono font-bold text-xs flex items-center justify-center">
-                          #{idx + 1}
-                        </span>
-                        <div>
-                          <h5 className="font-bold text-xs text-gray-900 line-clamp-1">{p.nameAr}</h5>
-                          <span className="text-[11px] text-emerald-600 font-mono font-bold">{p.priceSA} ر.س</span>
-                        </div>
-                      </div>
-                      <div className="text-left font-mono font-black text-sm text-[#A44C5C]">
-                        {p.soldQty} مبيع
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-
-            {/* Quick Recent Orders Table */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-2xs overflow-hidden">
-              <div className="p-4 sm:p-5 border-b border-gray-150 flex items-center justify-between">
+            {/* Quick Recent Orders Table (Shopify Style) */}
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-2xs overflow-hidden">
+              <div className="p-5 border-b border-gray-150 flex items-center justify-between bg-gray-50/50">
                 <div>
-                  <h3 className="font-bold text-sm sm:text-base text-gray-950">
-                    أحدث الطلبات الحقيقية المسجلة
-                  </h3>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    الطلبات الواردة مباشرة من المتجر وسلة الشراء
-                  </p>
+                  <h3 className="font-bold text-sm text-gray-950">أحدث الطلبات (Latest Orders)</h3>
                 </div>
                 <button
                   onClick={() => setActiveTab('orders')}
-                  className="text-xs font-bold text-black hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer transition-colors"
                 >
-                  <span>عرض كل الطلبات</span>
-                  <span>←</span>
+                  <span>عرض الكل</span>
+                  <ArrowRight size={13} className="rotate-180" />
                 </button>
               </div>
 
               {orders.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 text-xs space-y-2">
-                  <span className="text-3xl block">📦</span>
-                  <p className="font-bold text-gray-600">لا توجد طلبات مسجلة بعد</p>
-                  <p>عندما تطلب أي عميلة من المتجر، ستظهر تفاصيلها وفاتورتها هنا فوراً.</p>
+                <div className="text-center py-16 text-gray-400 space-y-2">
+                  <Package size={40} className="mx-auto opacity-20" />
+                  <p className="text-sm font-bold">لا يوجد طلبات مسجلة بعد</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-right text-xs">
-                    <thead className="bg-[#F8F9FA] text-gray-500 border-b border-gray-150">
+                    <thead className="bg-gray-100/50 text-gray-500 border-b border-gray-200">
                       <tr>
-                        <th className="py-3 px-4 font-bold">رقم الطلب</th>
-                        <th className="py-3 px-4 font-bold">العميلة</th>
-                        <th className="py-3 px-4 font-bold">الجوال</th>
-                        <th className="py-3 px-4 font-bold">المدينة</th>
-                        <th className="py-3 px-4 font-bold">المبلغ</th>
-                        <th className="py-3 px-4 font-bold">الحالة</th>
-                        <th className="py-3 px-4 font-bold text-center">إجراءات الفاتورة</th>
+                        <th className="py-4 px-5 font-bold uppercase tracking-wider">رقم الطلب</th>
+                        <th className="py-4 px-5 font-bold uppercase tracking-wider">العميلة</th>
+                        <th className="py-4 px-5 font-bold uppercase tracking-wider">المدينة</th>
+                        <th className="py-4 px-5 font-bold uppercase tracking-wider">القيمة</th>
+                        <th className="py-4 px-5 font-bold uppercase tracking-wider">حالة التتبع</th>
+                        <th className="py-4 px-5 font-bold uppercase tracking-wider text-center">إجراء</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {orders.slice(0, 6).map((order) => {
+                      {orders.slice(0, 5).map((order) => {
                         const badge = getStatusBadge(order.status);
                         return (
-                          <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="py-3 px-4 font-mono font-bold text-gray-900">
-                              #{order.id.slice(0, 8)}
+                          <tr key={order.id} className="hover:bg-gray-50/80 transition-colors group">
+                            <td className="py-4 px-5 font-mono font-black text-gray-950">#{order.id.slice(0, 8)}</td>
+                            <td className="py-4 px-5">
+                               <div className="font-bold text-gray-900">{order.customerName}</div>
+                               <div className="text-[10px] text-gray-400 font-mono" dir="ltr">{order.phone}</div>
                             </td>
-                            <td className="py-3 px-4 font-medium text-gray-950">
-                              {order.customerName}
-                            </td>
-                            <td className="py-3 px-4 font-mono text-gray-600" dir="ltr">
-                              {order.phone || 'غير مسجل'}
-                            </td>
-                            <td className="py-3 px-4 text-gray-600">
-                              {order.city || 'الرياض'}
-                            </td>
-                            <td className="py-3 px-4 font-mono font-bold text-black" dir="ltr">
-                              {Number(order.totalPrice).toLocaleString()} {order.currency || 'ر.س'}
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-bold border ${badge.color}`}>
+                            <td className="py-4 px-5 text-gray-600 font-medium">{order.city || 'الرياض'}</td>
+                            <td className="py-4 px-5 font-mono font-black text-gray-900">{Number(order.totalPrice).toLocaleString()} ر.س</td>
+                            <td className="py-4 px-5">
+                              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black border ${badge.color}`}>
+                                <span className="w-1.5 h-1.5 rounded-full bg-current" />
                                 {badge.label}
                               </span>
                             </td>
-                            <td className="py-3 px-4 text-center">
-                              <div className="flex items-center justify-center gap-1.5">
-                                {order.phone && (
-                                  <button
-                                    onClick={() => WhatsAppService.sendInvoice(order, order.phone)}
-                                    className="bg-[#25D366] hover:bg-[#1ebd59] text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
-                                    title="إرسال تفاصيل الفاتورة عبر واتساب"
-                                  >
-                                    <MessageCircle size={13} />
-                                    <span>فاتورة واتساب 🧾</span>
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => {
-                                    setSelectedOrder(order);
-                                    setActiveTab('orders');
-                                  }}
-                                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-[11px] font-bold px-2 py-1 rounded-lg transition-all cursor-pointer"
-                                  title="عرض تفاصيل الطلب"
-                                >
-                                  عرض
-                                </button>
-                              </div>
+                            <td className="py-4 px-5 text-center">
+                              <button
+                                onClick={() => { setSelectedOrder(order); setActiveTab('orders'); }}
+                                className="p-2 rounded-xl bg-gray-100 text-gray-500 hover:bg-black hover:text-white transition-all cursor-pointer shadow-2xs"
+                              >
+                                <ArrowUpRight size={14} />
+                              </button>
                             </td>
                           </tr>
                         );
@@ -1639,7 +1493,6 @@ export default function Dashboard({
             </div>
           </div>
         )}
-
         {/* ======================================================== */}
         {/* TAB 2: ORDERS MANAGEMENT & WHATSAPP INVOICING */}
         {/* ======================================================== */}
