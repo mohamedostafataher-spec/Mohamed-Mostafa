@@ -42,6 +42,7 @@ import SultaConcierge from './components/SultaConcierge';
 import RoyalSensesSalon from './components/RoyalSensesSalon';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import MobileBottomNav from './components/MobileBottomNav';
+import LiveTrafficMonitor from './components/LiveTrafficMonitor';
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -1479,8 +1480,9 @@ function AppContent() {
 
         {/* Bottom credits */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-sans">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4 flex-wrap">
             <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر SULTA للأزياء الفاخرة</span>
+            <LiveTrafficMonitor compact={true} />
           </div>
           <div className="text-gray-400 text-[11px]">
             <span>تسوق سهل وسريع مع توصيل آمن لكافة مناطق المملكة والخليج ومصر</span>

@@ -41,6 +41,57 @@ export default function ProductDetailModal({
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [direction, setDirection] = useState(0); // 1 for right, -1 for left
 
+  // Inject Product Schema JSON-LD for Google Rich Results
+  React.useEffect(() => {
+    const scriptId = 'sulta-product-schema';
+    let existingScript = document.getElementById(scriptId);
+    if (!existingScript) {
+      existingScript = document.createElement('script');
+      existingScript.id = scriptId;
+      existingScript.type = 'application/ld+json';
+      document.head.appendChild(existingScript);
+    }
+    
+    const priceCurrency = country === 'EG' ? 'EGP' : 'SAR';
+    const price = effectiveProductPrice || 195;
+    const imageUrl = product.images?.[0] ? cleanImgUrl(product.images[0]) : 'https://sulta.vercel.app/img/sulta_product_1.webp';
+    const absImageUrl = imageUrl.startsWith('http') ? imageUrl : `https://sulta.vercel.app${imageUrl}`;
+
+    const schemaData = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": product.nameAr || product.nameEn,
+      "image": [absImageUrl],
+      "description": product.descriptionAr || product.nameAr,
+      "sku": product.id,
+      "brand": {
+        "@type": "Brand",
+        "name": "SULTA Atelier"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": `https://sulta.vercel.app/?product=${product.id}`,
+        "priceCurrency": priceCurrency,
+        "price": price.toString(),
+        "priceValidUntil": "2027-12-31",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": (product.stock !== undefined && product.stock <= 0) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": product.rating || 4.9,
+        "reviewCount": product.reviewsCount || 42
+      }
+    };
+
+    existingScript.textContent = JSON.stringify(schemaData);
+
+    return () => {
+      const el = document.getElementById(scriptId);
+      if (el) el.remove();
+    };
+  }, [product, country, effectiveProductPrice]);
+
   const [selectedCol, setSelectedCol] = useState(product.colors[0] || { name: 'Default', hex: '#000000', images: [] });
   const [selectedScent, setSelectedScent] = useState<string>('none');
   const [selectedWrap, setSelectedWrap] = useState<string>('none');

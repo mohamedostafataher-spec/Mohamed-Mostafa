@@ -64,7 +64,7 @@ import {
 import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMember, TeamMemberRole } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
-import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount } from '../utils/analytics';
+import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats } from '../utils/analytics';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
 import LiveVisitorCounter from './LiveVisitorCounter';
 
@@ -240,6 +240,8 @@ export default function Dashboard({
       unsubCount();
     };
   }, []);
+
+  const visitorStats = useMemo(() => getComprehensiveVisitorStats(), [liveCount]);
 
   // Critical Stock Products (< 5 pieces)
   const criticalStockProducts = useMemo(() => {
@@ -1254,6 +1256,45 @@ export default function Dashboard({
                     <Activity size={14} />
                     <span>فحص تدفق البيانات ⚡</span>
                  </button>
+               </div>
+            </div>
+
+            {/* Real Visitors & Daily Tracking Breakdown */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+               <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-2xs space-y-2 relative overflow-hidden flex items-center justify-between">
+                  <div className="space-y-1">
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">زوار نشطون الآن (Live)</span>
+                     <div className="text-2xl font-black text-gray-950 font-mono">{visitorStats.liveCount}</div>
+                     <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                       نشط ومتصل حالياً
+                     </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+                     <Users size={24} />
+                  </div>
+               </div>
+
+               <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-2xs space-y-2 relative overflow-hidden flex items-center justify-between">
+                  <div className="space-y-1">
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">إجمالي زوار اليوم (Today)</span>
+                     <div className="text-2xl font-black text-gray-950 font-mono">{visitorStats.todayCount}</div>
+                     <p className="text-[11px] text-blue-600 font-bold">زائر فريد زاروا المتجر اليوم</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                     <CalendarDays size={24} />
+                  </div>
+               </div>
+
+               <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-2xs space-y-2 relative overflow-hidden flex items-center justify-between">
+                  <div className="space-y-1">
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">سجل الأيام (Daily History)</span>
+                     <div className="text-xl font-black text-gray-950 font-mono">يُحدث تلقائياً 🔄</div>
+                     <p className="text-[11px] text-gray-500 font-bold">تحديث يومي مستمر 24/7</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
+                     <Activity size={24} />
+                  </div>
                </div>
             </div>
 

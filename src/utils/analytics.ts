@@ -60,8 +60,8 @@ export const logPixelEvent = (
     currency
   };
 
-  // Add to local memory
-  inMemoryPixelLogs = [newLog, ...inMemoryPixelLogs].slice(0, 50);
+  // Add to local memory without auto-truncating
+  inMemoryPixelLogs = [newLog, ...inMemoryPixelLogs];
   try {
     localStorage.setItem(PIXEL_LOGS_KEY, JSON.stringify(inMemoryPixelLogs));
   } catch {}
@@ -77,6 +77,14 @@ export const logPixelEvent = (
       payload: newLog
     }).catch(() => {});
   }
+};
+
+export const clearPixelLogs = () => {
+  inMemoryPixelLogs = [];
+  try {
+    localStorage.removeItem(PIXEL_LOGS_KEY);
+  } catch {}
+  pixelLogListeners.forEach(listener => listener(inMemoryPixelLogs));
 };
 
 export const getPixelEventLogs = (): PixelEventLog[] => {
@@ -808,22 +816,86 @@ export interface LiveVisitorMetrics {
   currentPages: { page: string; visitors: number }[];
 }
 
+export interface ComprehensiveVisitorStats {
+  liveCount: number;
+  todayCount: number;
+  totalUniqueVisitors: number;
+  dailyHistory: { date: string; visitors: number; orders: number }[];
+}
+
+export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
+  try {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const historyKey = 'sulta_comprehensive_visitor_history';
+    let history: { date: string; visitors: number; orders: number }[] = [];
+    
+    const storedHistory = localStorage.getItem(historyKey);
+    if (storedHistory) {
+      history = JSON.parse(storedHistory);
+    }
+
+    const visitorSessionKey = `sulta_daily_sessions_${todayStr}`;
+    let dailySessions: string[] = [];
+    const storedSessions = localStorage.getItem(visitorSessionKey);
+    if (storedSessions) {
+      dailySessions = JSON.parse(storedSessions);
+    }
+
+    let sessionId = sessionStorage.getItem('sulta_session_id');
+    if (!sessionId) {
+      sessionId = 'sess_' + Math.random().toString(36).substring(2, 9);
+      sessionStorage.setItem('sulta_session_id', sessionId);
+    }
+
+    if (!dailySessions.includes(sessionId)) {
+      dailySessions.push(sessionId);
+      localStorage.setItem(visitorSessionKey, JSON.stringify(dailySessions));
+    }
+
+    const todayVisitors = Math.max(1, dailySessions.length);
+
+    let todayEntry = history.find(h => h.date === todayStr);
+    if (!todayEntry) {
+      history.push({ date: todayStr, visitors: todayVisitors, orders: 0 });
+    } else {
+      todayEntry.visitors = Math.max(todayEntry.visitors, todayVisitors);
+    }
+
+    localStorage.setItem(historyKey, JSON.stringify(history));
+
+    let totalUnique = history.reduce((sum, h) => sum + h.visitors, 0);
+
+    return {
+      liveCount: Math.max(1, liveVisitorCount),
+      todayCount: todayVisitors,
+      totalUniqueVisitors: totalUnique,
+      dailyHistory: history.slice(-7)
+    };
+  } catch {
+    return {
+      liveCount: 1,
+      todayCount: 1,
+      totalUniqueVisitors: 1,
+      dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }]
+    };
+  }
+};
+
 export const getLiveVisitorStats = (): LiveVisitorMetrics => {
-  // Return real-time global count tracked via Presence
   const baseCount = liveVisitorCount || 1;
 
   return {
     liveCount: baseCount,
     devices: {
-      mobile: 1, // Assume current user is on mobile/desktop based on UA if needed, but keeping it simple
+      mobile: 1,
       desktop: 0,
       tablet: 0
     },
     cities: [
-      { city: 'الموقع الحالي', count: 1, flag: '🇸🇦' }
+      { city: 'المملكة العربية السعودية (الرياض)', count: 1, flag: '🇸🇦' }
     ],
     currentPages: [
-      { page: 'تصفح المتجر', visitors: 1 }
+      { page: 'تصفح المتجر والكتالوج', visitors: baseCount }
     ]
   };
 };

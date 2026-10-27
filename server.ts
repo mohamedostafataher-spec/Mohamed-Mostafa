@@ -722,13 +722,18 @@ async function startServer() {
         "@type": "ClothingStore",
         "name": "SULTA ATELIER",
         "description": "${baseDescription}",
-        "url": "https://sulta-atelier.com",
-        "logo": "https://sulta-atelier.com/img/sulta_logo.png",
+        "url": "https://sulta.vercel.app",
+        "logo": "https://sulta.vercel.app/img/sulta_logo.png",
+        "sameAs": [
+          "https://www.instagram.com/sultabrand/"
+        ],
         "address": {
           "@type": "PostalAddress",
           "addressLocality": "Riyadh",
           "addressCountry": "SA"
-        }
+        },
+        "areaServed": ["Saudi Arabia", "Egypt", "Riyadh", "Jeddah", "Dammam"],
+        "paymentAccepted": ["Cash on Delivery", "Credit Card", "Apple Pay", "Tabby", "Tamara"]
       }
       </script>
     `;
