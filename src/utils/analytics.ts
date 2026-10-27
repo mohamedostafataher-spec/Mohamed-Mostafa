@@ -816,11 +816,16 @@ export interface LiveVisitorMetrics {
   currentPages: { page: string; visitors: number }[];
 }
 
+// ==========================================
+// REALTIME LIVE VISITORS / SHOPIFY METRICS
+// ==========================================
 export interface ComprehensiveVisitorStats {
   liveCount: number;
   todayCount: number;
   totalUniqueVisitors: number;
   dailyHistory: { date: string; visitors: number; orders: number }[];
+  weeklyVisitors: number;
+  monthlyVisitors: number;
 }
 
 export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
@@ -863,22 +868,37 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
 
     localStorage.setItem(historyKey, JSON.stringify(history));
 
-    let totalUnique = history.reduce((sum, h) => sum + h.visitors, 0);
+    // Keep history trimmed to 30 days
+    if (history.length > 30) history = history.slice(-30);
+
+    const weeklyVisitors = history.slice(-7).reduce((sum, h) => sum + h.visitors, 0);
+    const monthlyVisitors = history.reduce((sum, h) => sum + h.visitors, 0);
 
     return {
       liveCount: Math.max(1, liveVisitorCount),
       todayCount: todayVisitors,
-      totalUniqueVisitors: totalUnique,
-      dailyHistory: history.slice(-7)
+      totalUniqueVisitors: monthlyVisitors,
+      dailyHistory: history.slice(-30),
+      weeklyVisitors,
+      monthlyVisitors
     };
   } catch {
     return {
       liveCount: 1,
       todayCount: 1,
       totalUniqueVisitors: 1,
-      dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }]
+      dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }],
+      weeklyVisitors: 1,
+      monthlyVisitors: 1
     };
   }
+};
+
+/**
+ * Detects traffic spikes based on live count threshold
+ */
+export const isTrafficSpike = (liveCount: number, threshold: number = 20): boolean => {
+  return liveCount >= threshold;
 };
 
 export const getLiveVisitorStats = (): LiveVisitorMetrics => {

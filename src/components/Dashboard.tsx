@@ -234,7 +234,13 @@ export default function Dashboard({
   // Subscribe to real-time pixel events
   React.useEffect(() => {
     const unsubLogs = subscribePixelLogs(setPixelLogs);
-    const unsubCount = subscribeVisitorCount(setLiveCount);
+    const unsubCount = subscribeVisitorCount((count) => {
+        setLiveCount(count);
+        // Alert if spike detected
+        if (count >= 20) {
+            toast(`تنبيه! زيادة مفاجئة في الزوار: ${count} زائر حالياً!`, 'error');
+        }
+    });
     return () => {
       unsubLogs();
       unsubCount();

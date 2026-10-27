@@ -41,6 +41,15 @@ export default function ProductDetailModal({
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [direction, setDirection] = useState(0); // 1 for right, -1 for left
 
+  const effectiveProductPrice = country === 'EG'
+    ? (product.salePriceEG || product.priceEG)
+    : (product.salePriceSA || (product.priceSA <= 120 ? product.priceSA : 99));
+
+  const [selectedCol, setSelectedCol] = useState(product.colors[0] || { name: 'Default', hex: '#000000', images: [] });
+  const [selectedScent, setSelectedScent] = useState<string>('none');
+  const [selectedWrap, setSelectedWrap] = useState<string>('none');
+  const [giftCardMessage, setGiftCardMessage] = useState<string>('');
+
   // Inject Product Schema JSON-LD for Google Rich Results
   React.useEffect(() => {
     const scriptId = 'sulta-product-schema';
@@ -91,15 +100,6 @@ export default function ProductDetailModal({
       if (el) el.remove();
     };
   }, [product, country, effectiveProductPrice]);
-
-  const [selectedCol, setSelectedCol] = useState(product.colors[0] || { name: 'Default', hex: '#000000', images: [] });
-  const [selectedScent, setSelectedScent] = useState<string>('none');
-  const [selectedWrap, setSelectedWrap] = useState<string>('none');
-  const [giftCardMessage, setGiftCardMessage] = useState<string>('');
-
-  const effectiveProductPrice = country === 'EG'
-    ? (product.salePriceEG || product.priceEG)
-    : (product.salePriceSA || (product.priceSA <= 120 ? product.priceSA : 99));
 
   const [bundleItems, setBundleItems] = useState([
     { id: 'b1', name: product.nameAr, price: effectiveProductPrice, image: product.images?.[0] || '', checked: true },
