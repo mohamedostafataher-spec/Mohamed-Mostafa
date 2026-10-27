@@ -147,7 +147,12 @@ function AppContent() {
       const urlParams = new URLSearchParams(window.location.search);
       const prId = urlParams.get('product') || urlParams.get('p');
       if (prId) {
-        const found = products.find(p => p.id === prId || p.id.toLowerCase() === prId.toLowerCase() || p.id.replace('prod_', '') === prId);
+        const found = products.find(p => 
+            p.id === prId || 
+            p.id.toLowerCase() === prId.toLowerCase() || 
+            p.id.replace('prod_', '') === prId ||
+            (p.code && p.code.toLowerCase() === prId.toLowerCase())
+        );
         if (found) {
           setSelectedProduct(found);
         }

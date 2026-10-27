@@ -1946,7 +1946,8 @@ export default function ProductDetailModal({
                   <button
                     type="button"
                     onClick={() => {
-                      const shareUrl = `${window.location.origin}?product=${product.id}`;
+                      const productCode = product.code || product.id;
+                      const shareUrl = `${window.location.origin}?product=${productCode}`;
                       navigator.clipboard.writeText(shareUrl);
                       setCopied(true);
                       toast('تم نسخ رابط المنتج إلى الحافظة بنجاح! 📋', 'success');
@@ -1969,7 +1970,8 @@ export default function ProductDetailModal({
                   <button
                     type="button"
                     onClick={() => {
-                      const shareUrl = `${window.location.origin}?product=${product.id}`;
+                      const productCode = product.code || product.id;
+                      const shareUrl = `${window.location.origin}?product=${productCode}`;
                       navigator.clipboard.writeText(shareUrl);
                       setCopied(true);
                       toast('تم نسخ رابط المنتج إلى الحافظة بنجاح! 📋', 'success');
@@ -1982,7 +1984,7 @@ export default function ProductDetailModal({
                   <input
                     type="text"
                     readOnly
-                    value={`${typeof window !== 'undefined' ? window.location.origin : ''}?product=${product.id}`}
+                    value={`${typeof window !== 'undefined' ? window.location.origin : ''}?product=${product.code || product.id}`}
                     className="text-[10.5px] font-mono text-gray-500 bg-transparent border-0 outline-none w-full text-left truncate select-all"
                   />
                 </div>
