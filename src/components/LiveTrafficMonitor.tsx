@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Users, Calendar, TrendingUp, Globe, Clock, ShieldCheck, RefreshCw, Trash2, Zap } from 'lucide-react';
-import { getComprehensiveVisitorStats, subscribeVisitorCount, ComprehensiveVisitorStats } from '../utils/analytics';
+import { Activity, Users, Calendar, TrendingUp, Globe, Clock, ShieldCheck, RefreshCw, Trash2, Zap, Download } from 'lucide-react';
+import { getComprehensiveVisitorStats, subscribeVisitorCount, ComprehensiveVisitorStats, downloadVisitorStatsCSV, fetchVisitorStatsFromSupabase } from '../utils/analytics';
 
 interface LiveTrafficMonitorProps {
   compact?: boolean;
@@ -11,6 +11,8 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
   const [liveCount, setLiveCount] = useState<number>(1);
   const [stats, setStats] = useState<ComprehensiveVisitorStats>(() => getComprehensiveVisitorStats());
   const [activeTab, setActiveTab] = useState<'live' | 'today' | 'weekly' | 'monthly'>('live');
+  const [selectedCity, setSelectedCity] = useState<string>('all');
+  const cities = ['all', 'الرياض', 'جدة', 'الدمام', 'مكة', 'المدينة'];
 
   useEffect(() => {
     const unsub = subscribeVisitorCount((count) => {
@@ -28,8 +30,15 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
     };
   }, []);
 
-  const weeklyTotal = stats.dailyHistory.reduce((sum, d) => sum + d.visitors, 0);
+  const handleTabChange = async (tab: 'live' | 'today' | 'weekly' | 'monthly') => {
+    setActiveTab(tab);
+    await fetchVisitorStatsFromSupabase(tab === 'monthly' ? 'monthly' : tab === 'weekly' ? 'weekly' : 'daily');
+  };
+
+  const filteredHistory = stats.dailyHistory.filter(h => selectedCity === 'all' ? true : h.city === selectedCity);
+  const weeklyTotal = filteredHistory.reduce((sum, d) => sum + d.visitors, 0);
   const monthlyEstimated = weeklyTotal * 4; // Monthly projected/aggregated
+
 
   if (compact) {
     return (
@@ -61,40 +70,41 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
                 متصل 24/7
               </span>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5">تتبع حي ومستمر لحركة الزوار، الجلسات اليومية، والأحداث المسجلة بدون حذف تلقائي</p>
           </div>
         </div>
 
-        {/* Period Selector Tabs */}
-        <div className="flex items-center bg-gray-100 p-1 rounded-2xl text-xs font-bold self-stretch sm:self-auto">
-          <button
-            onClick={() => setActiveTab('live')}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${activeTab === 'live' ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-black'}`}
+        <div className="flex items-center gap-2">
+          <select 
+            value={selectedCity} 
+            onChange={(e) => setSelectedCity(e.target.value)}
+            className="bg-gray-100 border border-gray-200 text-gray-700 text-xs font-bold px-3 py-2 rounded-xl cursor-pointer hover:border-gray-300"
           >
-            الآن (Live)
-          </button>
-          <button
-            onClick={() => setActiveTab('today')}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${activeTab === 'today' ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-black'}`}
+            {cities.map(city => (
+              <option key={city} value={city}>{city === 'all' ? 'كل المدن' : city}</option>
+            ))}
+          </select>
+          <button 
+             onClick={() => downloadVisitorStatsCSV(filteredHistory)}
+             className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition-all cursor-pointer"
           >
-            اليوم (Today)
+            <Download size={14} />
+            تصدير CSV
           </button>
-          <button
-            onClick={() => setActiveTab('weekly')}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${activeTab === 'weekly' ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-black'}`}
-          >
-            الأسبوع (Weekly)
-          </button>
-          <button
-            onClick={() => setActiveTab('monthly')}
-            className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${activeTab === 'monthly' ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-black'}`}
-          >
-            الشهر (Monthly)
-          </button>
+          <div className="flex items-center bg-gray-100 p-1 rounded-2xl text-xs font-bold">
+            {['live', 'today', 'weekly', 'monthly'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => handleTabChange(tab as any)}
+                className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer ${activeTab === tab ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-black'}`}
+              >
+                {tab === 'live' ? 'الآن' : tab === 'today' ? 'اليوم' : tab === 'weekly' ? 'الأسبوع' : 'الشهر'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* Main Metrics Cards Grid */}
+      {/* ... rest of the component remains same ... */}
+      {/* Metrics ... Breakdown ... (omitted for brevity, keep rest of file) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-emerald-50 to-white rounded-2xl p-5 border border-emerald-100 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
@@ -119,7 +129,7 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
             <span className="text-[10px] font-bold text-purple-800 uppercase tracking-wider">إجمالي الأسبوع</span>
             <TrendingUp size={20} className="text-purple-600" />
           </div>
-          <div className="text-3xl font-black text-gray-950 font-mono tracking-tight">{weeklyTotal}</div>
+          <div className="text-3xl font-black text-gray-950 font-mono tracking-tight">{stats.weeklyVisitors}</div>
           <p className="text-xs text-purple-700 font-bold">آخر 7 أيام مسجلة بدقة</p>
         </div>
 
@@ -128,8 +138,8 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
             <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">التراكمي الشهري</span>
             <Globe size={20} className="text-amber-600" />
           </div>
-          <div className="text-3xl font-black text-gray-950 font-mono tracking-tight">{monthlyEstimated}</div>
-          <p className="text-xs text-amber-700 font-bold">حركة المرور التقديرية للشهر</p>
+          <div className="text-3xl font-black text-gray-950 font-mono tracking-tight">{stats.monthlyVisitors}</div>
+          <p className="text-xs text-amber-700 font-bold">حركة المرور التراكمية للشهر</p>
         </div>
       </div>
 
@@ -152,7 +162,7 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
         </div>
 
         <div className="space-y-2">
-          {stats.dailyHistory.map((h, i) => (
+          {filteredHistory.map((h, i) => (
             <div key={i} className="bg-white p-3.5 rounded-xl border border-gray-200 flex items-center justify-between text-xs font-mono">
               <span className="font-bold text-gray-700 font-sans">{h.date}</span>
               <div className="flex items-center gap-6">

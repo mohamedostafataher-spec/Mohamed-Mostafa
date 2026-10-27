@@ -895,6 +895,33 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
 };
 
 /**
+ * Exports visitor stats to CSV
+ */
+export const downloadVisitorStatsCSV = (history: { date: string; visitors: number; orders: number }[]) => {
+  const csvContent = "data:text/csv;charset=utf-8," 
+    + "Date,Visitors,Orders\n"
+    + history.map(h => `${h.date},${h.visitors},${h.orders}`).join("\n");
+  
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `sulta_traffic_report_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+/**
+ * Fetches grouped traffic data from Supabase
+ * Placeholder for future DB implementation
+ */
+export const fetchVisitorStatsFromSupabase = async (period: 'daily' | 'weekly' | 'monthly'): Promise<any[]> => {
+    console.log(`[Supabase] Fetching grouped data for period: ${period}`);
+    // Simulate DB query
+    return [];
+};
+
+/**
  * Detects traffic spikes based on live count threshold
  */
 export const isTrafficSpike = (liveCount: number, threshold: number = 20): boolean => {
