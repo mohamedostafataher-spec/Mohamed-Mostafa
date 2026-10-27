@@ -710,9 +710,9 @@ async function startServer() {
     const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
     
     // Global defaults (World Class Keywords)
-    const baseKeywords = "سولتة، SULTA، ملابس نوم فاخرة، بيجامات نسائية، لانجري ملكي، قماش كوتور، قمصان نوم، أرواب عرايس، ملابس منزلية راقية، الرياض، جدة، القاهرة، دبي، متجر أزياء إلكتروني، بيجامات ستان، بيجامات حرير، ملابس نوم سعودية، لانجري عرايس، روب نوم عروس، ملابس بيت فخمة، Sulta Atelier, Luxury Sleepwear, Premium Pajamas, Royal Lingerie, Couture Fabric, Nightgowns, Bridal Robes, Elegant Loungewear, Riyadh, Jeddah, Cairo, Dubai, Online Fashion Store, Silk Pajamas, Satin Sleepwear, Saudi Fashion, Bridal Lingerie, Luxury Loungewear, High-end Nightwear";
-    const baseTitle = "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة";
-    const baseDescription = "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من خامات الكوتور الملكية الفاخرة. تصاميم حصرية تناسب ذوقك الرفيع. شحن سريع للسعودية ومصر والخليج.";
+    const baseKeywords = "سولتة، سُلْطَة، SULTA، Sulta Atelier، بيجامات نسائية في السعودية، متجر بيجامات الرياض، أرواب عرايس جدة، ملابس نوم فخمة بالدمام، أزياء سولتة السعودية، تسوق بيجامات اونلاين السعودية، لانجري عروس الرياض، بيجامات ستان فاخرة، ملابس نوم ملكية، بيجامات حرير اصلية، متجر ملابس نسائية راقية بالسعودية، شحن سريع للرياض وجدة، Sulta Luxury Sleepwear Saudi Arabia, Premium Pajamas Riyadh, Royal Lingerie Jeddah, Couture Loungewear Dammam, Bridal Robes Saudi, Silk Pajamas KSA, High-end Nightwear Riyadh";
+    const baseTitle = "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة في السعودية";
+    const baseDescription = "اكتشفي عالم SULTA السعودي الأصيل: أرقى مجموعات البيجامات واللانجري المصنوعة من خامات الكوتور الملكية الفاخرة. تصاميم حصرية تناسب ذوقك الرفيع. توصيل سريع لجميع مناطق المملكة (الرياض، جدة، الدمام) ومصر.";
     const baseImage = "/img/sulta_luxury_pajama_hero_2_1780682794821.webp";
 
     const defaultSchema = `
