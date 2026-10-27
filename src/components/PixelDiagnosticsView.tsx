@@ -284,6 +284,17 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
     return unsub;
   }, []);
 
+  // Clean Vercel Production Domain (never expose internal dev containers)
+  const targetDomain = useMemo(() => {
+    if (settings?.storeDomain && settings.storeDomain.trim()) {
+      return settings.storeDomain.trim();
+    }
+    if (typeof window !== 'undefined' && window.location.host.endsWith('.vercel.app')) {
+      return window.location.host;
+    }
+    return 'sulta.vercel.app';
+  }, [settings?.storeDomain]);
+
   // Diagnostic State Evaluator
   const diagnostics = useMemo(() => {
     if (typeof window === 'undefined') {
@@ -524,7 +535,7 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
   const handleCopyReport = () => {
     const reportText = `=== تقرير تشخيص ربط البيكسلات (SULTA PIXEL REPORT) ===
 تاريخ الفحص: ${new Date().toLocaleString('ar-SA')}
-الرابط المباشر: ${typeof window !== 'undefined' ? window.location.origin : 'https://sulta.vercel.app'}
+الرابط المباشر: https://${targetDomain}
 
 1. META PIXEL (Facebook / Instagram):
 - معرف البيكسل: ${diagnostics.meta.id}
@@ -648,8 +659,11 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
             )}
           </div>
 
-          <div className="text-[11px] text-gray-400">
-            الدومين المفحوص: <span className="text-white font-mono">{typeof window !== 'undefined' ? window.location.host : 'sulta.sa'}</span>
+          <div className="text-[11px] text-gray-300 flex items-center gap-1.5">
+            <span className="text-gray-400">نطاق Vercel:</span>
+            <span className="text-emerald-300 font-mono bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/15 text-[10px] font-bold">
+              {targetDomain}
+            </span>
           </div>
         </div>
       </div>

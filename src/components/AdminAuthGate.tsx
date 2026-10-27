@@ -81,16 +81,16 @@ export default function AdminAuthGate({
       if (authorized && member) {
         const userObj = {
           email: member.email,
-          name: member.name || (member.email === 'mohamedostafataher@gmail.com' ? 'محمد طاهر (المالك)' : member.email.split('@')[0]),
+          name: member.name || (member.role === 'owner' ? 'المالك 👑' : member.email.split('@')[0]),
           role: member.role
         };
         setCurrentUser(userObj);
         localStorage.setItem('sulta_admin_auth_user', JSON.stringify(userObj));
-        setSuccessNotice(`مرحباً بكِ، ${userObj.name}! تم التحقق من الصلاحية بنجاح.`);
+        setSuccessNotice(`مرحباً بكِ! تم التحقق من الصلاحية بنجاح.`);
         onAuthorized(userObj);
       } else {
         setErrorMessage(
-          `عذراً، البريد (${email}) ليس لديه صلاحية الدخول. يرجى التواصل مع مالك المتجر (mohamedostafataher@gmail.com) لإضافتك في قائمة المشرفين المصرح لهم.`
+          `عذراً، البريد (${email}) ليس لديه صلاحية الدخول. يرجى التواصل مع إدارة المتجر لإضافتك في قائمة فريق العمل المصرح لهم.`
         );
       }
     } catch (err: any) {
@@ -148,7 +148,8 @@ export default function AdminAuthGate({
           </p>
         </div>
 
-        {/* Primary Action 1: Sign in with Google / Gmail button */}
+        {/* Hidden: Sign in with Google / Gmail button per privacy request */}
+        {/*
         <div className="space-y-3">
           <button
             type="button"
@@ -156,7 +157,6 @@ export default function AdminAuthGate({
             disabled={isVerifying}
             className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs py-3.5 px-4 rounded-2xl border border-gray-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer disabled:opacity-50"
           >
-            {/* Google G Logo SVG */}
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -179,13 +179,13 @@ export default function AdminAuthGate({
           </button>
         </div>
 
-        {/* Divider */}
         <div className="relative flex items-center justify-center">
           <div className="border-t border-gray-200 w-full" />
           <span className="bg-white px-3 text-[11px] font-bold text-gray-400 absolute">
             أو التحقق عبر بريد Gmail المسجل
           </span>
         </div>
+        */}
 
         {/* Form: Enter authorized Gmail */}
         <form
@@ -197,12 +197,12 @@ export default function AdminAuthGate({
         >
           <div>
             <label className="block text-xs font-bold text-gray-700 mb-1.5">
-              بريد Gmail المصرح له:
+              أدخل بريدك الإلكتروني (Gmail):
             </label>
             <div className="relative">
               <input
                 type="email"
-                placeholder="mohamedostafataher@gmail.com"
+                placeholder="example@gmail.com"
                 value={inputEmail}
                 onChange={(e) => {
                   setInputEmail(e.target.value);
@@ -252,7 +252,8 @@ export default function AdminAuthGate({
           </button>
         </form>
 
-        {/* Quick Access for Main Owner */}
+        {/* Hidden: Quick Access for Main Owner per privacy request */}
+        {/*
         <div className="bg-[#FCF5F6] border border-[#DF8A9D]/30 rounded-2xl p-3 text-center space-y-1.5">
           <span className="text-[11px] font-bold text-gray-700 block">
             حساب المالك الرئيسي المعتمد:
@@ -270,6 +271,7 @@ export default function AdminAuthGate({
             <span className="text-[10px] bg-[#A44C5C] text-white px-1.5 py-0.2 rounded-full font-sans">دخول المالك 👑</span>
           </button>
         </div>
+        */}
 
         {/* Footer: Back to store */}
         <div className="text-center pt-2">

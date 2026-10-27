@@ -204,6 +204,7 @@ export default function Dashboard({
     whatsapp: settings?.whatsappSaudi || settings?.whatsapp || '966552823677',
     contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 55 282 3677',
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
+    storeDomain: settings?.storeDomain || 'sulta.vercel.app',
     facebookPixelId: settings?.facebookPixelId || '1648674350574190',
     metaCapiAccessToken: settings?.metaCapiAccessToken || 'EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD',
     metaTestEventCode: settings?.metaTestEventCode || '',
@@ -815,6 +816,7 @@ export default function Dashboard({
         contactPhone: settingsForm.contactPhone,
         contactPhoneSaudi: settingsForm.contactPhone,
         contactEmail: settingsForm.contactEmail,
+        storeDomain: settingsForm.storeDomain,
         facebookPixelId: settingsForm.facebookPixelId,
         metaCapiAccessToken: settingsForm.metaCapiAccessToken,
         metaTestEventCode: settingsForm.metaTestEventCode,
@@ -967,8 +969,8 @@ export default function Dashboard({
               {activeAdminUser && (
                 <div className="hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl text-xs">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-mono text-gray-700 font-medium" dir="ltr">
-                    {activeAdminUser.email}
+                  <span className="font-bold text-gray-800">
+                    {activeAdminUser.role === 'owner' ? 'مدير النظام' : (activeAdminUser.name || activeAdminUser.email.split('@')[0])}
                   </span>
                   <span className="bg-[#A44C5C]/10 text-[#A44C5C] font-bold px-1.5 py-0.2 rounded text-[10px]">
                     {activeAdminUser.role === 'owner' ? 'المالك 👑' : 'مشرف'}
@@ -1207,7 +1209,7 @@ export default function Dashboard({
                     </span>
                   </div>
                   <p className="text-gray-300 text-xs mt-0.5">
-                    Meta Pixel: <span className="text-emerald-400 font-mono font-bold">1765916517819303</span> | TikTok Pixel: <span className="text-emerald-400 font-mono font-bold">DBESRBJC77U4J2JQDUB0</span> (جميع الأحداث الـ 17 جاهزة)
+                    Meta Pixel: <span className="text-emerald-400 font-mono font-bold">{settings?.facebookPixelId || '1648674350574190'}</span> | TikTok Pixel: <span className="text-emerald-400 font-mono font-bold">{settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0'}</span> (جميع الأحداث الـ 17 جاهزة)
                   </p>
                 </div>
               </div>
@@ -1300,13 +1302,13 @@ export default function Dashboard({
                   </div>
                   <div>
                     <h3 className="font-bold text-sm sm:text-base text-gray-950 flex items-center gap-2">
-                      <span>مخططات المبيعات التفاعلية (Recharts)</span>
+                      <span>تقارير وحركة المبيعات</span>
                       <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-sans font-bold px-2 py-0.5 rounded-full">
-                        توليد مباشر ⚡
+                        مباشر من المتجر
                       </span>
                     </h3>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      توليد رسوم بيانية دقيقة توضح المبيعات اليومية والشهرية وحجم الطلبات بالريال السعودي
+                      مخططات دقيقة توضح حركة المبيعات اليومية والشهرية وحجم الطلبات الفعلية بالريال السعودي
                     </p>
                   </div>
                 </div>
@@ -2749,6 +2751,23 @@ export default function Dashboard({
                       onChange={(e) => setSettingsForm(prev => ({ ...prev, contactEmail: e.target.value }))}
                       className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
                     />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-700 mb-1 flex items-center justify-between">
+                      <span>نطاق المتجر على Vercel (أو النطاق المخصص)</span>
+                      <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-mono font-bold">Vercel Domain</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="sulta.vercel.app"
+                      value={settingsForm.storeDomain}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, storeDomain: e.target.value }))}
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black text-gray-900"
+                    />
+                    <p className="text-[10.5px] text-gray-400 mt-1">
+                      نطاق المتجر المعتمد الذي يظهر في تقارير البيكسل والفواتير وروابط المشاركة.
+                    </p>
                   </div>
                 </div>
               </div>

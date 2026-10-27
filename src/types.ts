@@ -45,6 +45,7 @@ export interface Settings {
   instagram: string;
   facebook: string;
   tiktok: string;
+  storeDomain?: string;
   facebookPixelId?: string;
   metaCapiAccessToken?: string;
   metaTestEventCode?: string;
