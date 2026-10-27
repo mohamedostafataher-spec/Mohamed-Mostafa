@@ -52,6 +52,7 @@ import {
   trackAddToCart,
   trackPurchase,
   initPixels,
+  initGlobalSync,
   trackAddToWishlist,
   trackSearch,
   trackSubscribe,
@@ -136,6 +137,7 @@ function AppContent() {
   // Initialize and synchronize tracking pixels (Meta Pixel 1648674350574190 & TikTok Pixel DBESRBJC77U4J2JQDUB0)
   useEffect(() => {
     initPixels(settings || { facebookPixelId: '1648674350574190', tiktokPixelId: 'DBESRBJC77U4J2JQDUB0' });
+    initGlobalSync(); // Global heartbeat & activity pulse
   }, [settings]);
 
   // Auto-open product detail page when deep-linked with ?product=ID or ?p=ID

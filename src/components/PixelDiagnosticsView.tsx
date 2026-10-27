@@ -303,7 +303,8 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
         tiktok: { name: 'TikTok Pixel', id: tiktokPixelId, isConfigured: true, scriptLoaded: false, objectDefined: false, isReady: false, adBlockDetected: false, eventCount: 0 },
         adBlockOverall: false,
         conflictDetected: false,
-        conflictDetails: [] as string[]
+        conflictDetails: [] as string[],
+        isConnecting: true
       };
     }
 
@@ -329,7 +330,6 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
     const metaEvents = logs.filter(l => l.pixel === 'Meta (Facebook)');
     const tiktokEvents = logs.filter(l => l.pixel === 'TikTok');
 
-    // Conflict detection
     const conflictDetails: string[] = [];
     if (metaScripts.length > 5) {
       conflictDetails.push('تم العثور على تكرار كثيف في كود Meta Pixel؛ قد يسبب تكراراً في إحصائياتك.');
@@ -376,7 +376,8 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
       tiktok: tiktokStatus,
       adBlockOverall: metaAdBlock || tiktokAdBlock,
       conflictDetected: conflictDetails.length > 0,
-      conflictDetails
+      conflictDetails,
+      isConnecting: !isFbqFunction && !metaAdBlock && !!metaPixelId
     };
   }, [metaPixelId, tiktokPixelId, logs]);
 
@@ -588,7 +589,9 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
     } catch {}
   };
 
-  const isAllHealthy = diagnostics.meta.isReady && (!tiktokPixelId || diagnostics.tiktok.isReady) && !diagnostics.conflictDetected && !diagnostics.adBlockOverall;
+  const isAllHealthy = (diagnostics.meta.isReady || diagnostics.meta.adBlockDetected) && 
+                       (!tiktokPixelId || diagnostics.tiktok.isReady || diagnostics.tiktok.adBlockDetected) && 
+                       !diagnostics.conflictDetected;
 
   return (
     <div className="space-y-6 text-right font-sans" dir="rtl">
@@ -651,6 +654,11 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
                 <AlertTriangle size={13} />
                 تم رصد مانع إعلانات (AdBlocker) في المتصفح المحلي
+              </span>
+            ) : diagnostics.isConnecting ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold animate-pulse">
+                <RefreshCw size={13} className="animate-spin" />
+                جاري فحص الاتصال بالبيكسلات...
               </span>
             ) : (
               <div className="flex flex-col gap-1.5">

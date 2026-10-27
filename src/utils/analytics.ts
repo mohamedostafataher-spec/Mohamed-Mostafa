@@ -1,4 +1,5 @@
 import { Product, Order, Settings } from '../types';
+import { supabase } from '../services/db';
 
 export interface ProductMetric {
   id: string;
@@ -33,8 +34,13 @@ interface TelemetryData {
 // Global pixel event memory log for live debugging in Dashboard
 let inMemoryPixelLogs: PixelEventLog[] = [];
 let pixelLogListeners: ((logs: PixelEventLog[]) => void)[] = [];
+let visitorCountListeners: ((count: number) => void)[] = [];
+let liveVisitorCount = 1;
+let activeChannel: any = null;
 
-// Helper to log pixel event
+/**
+ * Helper to log pixel event locally and broadcast to global dashboard feed
+ */
 export const logPixelEvent = (
   pixel: PixelEventLog['pixel'],
   event: string,
@@ -54,12 +60,23 @@ export const logPixelEvent = (
     currency
   };
 
+  // Add to local memory
   inMemoryPixelLogs = [newLog, ...inMemoryPixelLogs].slice(0, 50);
   try {
     localStorage.setItem(PIXEL_LOGS_KEY, JSON.stringify(inMemoryPixelLogs));
   } catch {}
 
+  // Notify local listeners (Dashboard UI)
   pixelLogListeners.forEach(listener => listener(inMemoryPixelLogs));
+
+  // Broadcast to global channel so Admin sees it from ALL users
+  if (status === 'sent' && activeChannel && typeof window !== 'undefined') {
+    activeChannel.send({
+      type: 'broadcast',
+      event: 'pixel-event',
+      payload: newLog
+    }).catch(() => {});
+  }
 };
 
 export const getPixelEventLogs = (): PixelEventLog[] => {
@@ -77,6 +94,59 @@ export const subscribePixelLogs = (cb: (logs: PixelEventLog[]) => void) => {
   cb(getPixelEventLogs());
   return () => {
     pixelLogListeners = pixelLogListeners.filter(l => l !== cb);
+  };
+};
+
+/**
+ * Initializes Global Store Pulse Sync (Supabase Realtime)
+ * Tracks active visitors and broadcasts browsing activity to all admins
+ */
+export const initGlobalSync = () => {
+  if (typeof window === 'undefined' || !supabase || activeChannel) return;
+
+  const channelId = 'sulta-store-pulse';
+  activeChannel = supabase.channel(channelId, {
+    config: {
+      presence: { key: 'user' },
+      broadcast: { self: false }
+    }
+  });
+
+  activeChannel
+    .on('broadcast', { event: 'pixel-event' }, ({ payload }: { payload: PixelEventLog }) => {
+       // Only add if not already in memory (though broadcast.self: false handles this)
+       if (!inMemoryPixelLogs.some(l => l.id === payload.id)) {
+         inMemoryPixelLogs = [payload, ...inMemoryPixelLogs].slice(0, 50);
+         pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
+       }
+    })
+    .on('presence', { event: 'sync' }, () => {
+      const state = activeChannel.presenceState();
+      const count = Object.keys(state).length;
+      liveVisitorCount = Math.max(1, count);
+      visitorCountListeners.forEach(l => l(liveVisitorCount));
+    })
+    .on('presence', { event: 'join' }, ({ key, newPresences }: any) => {
+      // Optional: Log new visitor join in the feed
+      /*
+      logPixelEvent('System', 'VisitorJoined', `عميلة جديدة دخلت المتجر الآن 🛍️`, 'simulated');
+      */
+    })
+    .subscribe(async (status: string) => {
+      if (status === 'SUBSCRIBED') {
+        await activeChannel.track({
+          online_at: new Date().toISOString(),
+          page: window.location.pathname
+        });
+      }
+    });
+};
+
+export const subscribeVisitorCount = (cb: (count: number) => void) => {
+  visitorCountListeners.push(cb);
+  cb(liveVisitorCount);
+  return () => {
+    visitorCountListeners = visitorCountListeners.filter(l => l !== cb);
   };
 };
 
@@ -575,16 +645,20 @@ export const trackAddPaymentInfo = (
 
 export const trackAddToWishlist = (product: Product, currency: string = 'SAR') => {
   const price = product.priceSA || 0;
+  const eventId = generateEventId('wl');
+  const metaData = {
+    content_name: product.nameAr,
+    content_ids: [product.id],
+    content_type: 'product',
+    value: price,
+    currency: currency
+  };
+
   if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'AddToWishlist', {
-      content_name: product.nameAr,
-      content_ids: [product.id],
-      content_type: 'product',
-      value: price,
-      currency: currency
-    });
+    window.fbq('track', 'AddToWishlist', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'AddToWishlist', `إضافة لقائمة الرغبات: ${product.nameAr}`, 'sent', price, currency);
   }
+  dispatchMetaCapi('AddToWishlist', eventId, metaData);
 };
 
 export const trackCompleteRegistration = (method: string = 'البريد الإلكتروني', status: string = 'ناجح') => {
@@ -627,38 +701,50 @@ export const trackCustomizeProduct = (
 };
 
 export const trackSearch = (searchQuery: string, resultsCount: number = 0) => {
+  const eventId = generateEventId('sh');
+  const metaData = {
+    search_string: searchQuery,
+    content_category: 'أزياء وبيجامات حريرية',
+    num_items: resultsCount
+  };
+
   if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'Search', {
-      search_string: searchQuery,
-      content_category: 'أزياء وبيجامات حريرية',
-      num_items: resultsCount
-    });
+    window.fbq('track', 'Search', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'Search', `بحث بالمتجر: "${searchQuery}" (${resultsCount} نتيجة)`, 'sent');
   }
+  dispatchMetaCapi('Search', eventId, metaData);
 };
 
 export const trackLead = (leadType: string = 'طلب استشارة كونسيرج', value: number = 0, currency: string = 'SAR') => {
+  const eventId = generateEventId('ld');
+  const metaData = {
+    content_name: leadType,
+    content_category: 'عميل محتمل',
+    value: value,
+    currency: currency
+  };
+
   if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'Lead', {
-      content_name: leadType,
-      content_category: 'عميل محتمل',
-      value: value,
-      currency: currency
-    });
+    window.fbq('track', 'Lead', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'Lead', `عميل محتمل (Lead): ${leadType}`, 'sent', value, currency);
   }
+  dispatchMetaCapi('Lead', eventId, metaData);
 };
 
 export const trackSubscribe = (subscriberEmail?: string, value: number = 0, currency: string = 'SAR') => {
+  const eventId = generateEventId('sub');
+  const metaData = {
+    value: value,
+    currency: currency,
+    predicted_ltv: value,
+    content_name: 'النشرة البريدية الملكية'
+  };
+
   if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'Subscribe', {
-      value: value,
-      currency: currency,
-      predicted_ltv: value,
-      content_name: 'النشرة البريدية الملكية'
-    });
+    window.fbq('track', 'Subscribe', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'Subscribe', `اشتراك بالنشرة البريدية: ${subscriberEmail || ''}`, 'sent', value, currency);
   }
+  dispatchMetaCapi('Subscribe', eventId, metaData, { email: subscriberEmail });
 };
 
 export const trackSchedule = (scheduleDate?: string, serviceName: string = 'استشارة قياس خاصة') => {
@@ -723,9 +809,8 @@ export interface LiveVisitorMetrics {
 }
 
 export const getLiveVisitorStats = (): LiveVisitorMetrics => {
-  // Return honest stats: 1 live visitor (the current user)
-  // Real-time multi-user tracking requires a persistent server-side socket or heartbeat table
-  const baseCount = 1;
+  // Return real-time global count tracked via Presence
+  const baseCount = liveVisitorCount || 1;
 
   return {
     liveCount: baseCount,

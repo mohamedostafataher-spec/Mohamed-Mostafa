@@ -4,6 +4,7 @@ import fs from "fs";
 import crypto from "crypto";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import { createClient } from '@supabase/supabase-js';
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -703,6 +704,89 @@ async function startServer() {
     res.status(200).send("OK");
   });
 
+  // Helper to fetch dynamic SEO metadata (Supabase Bridge)
+  async function getSeoMetadata(query: any) {
+    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+    
+    // Global defaults (World Class Keywords)
+    const baseKeywords = "سولتة، SULTA، ملابس نوم فاخرة، بيجامات نسائية، لانجري ملكي، قماش كوتور، قمصان نوم، أرواب عرايس، ملابس منزلية راقية، الرياض، جدة، القاهرة، دبي، متجر أزياء إلكتروني، بيجامات ستان، بيجامات حرير، ملابس نوم سعودية، لانجري عرايس، روب نوم عروس، ملابس بيت فخمة، Sulta Atelier, Luxury Sleepwear, Premium Pajamas, Royal Lingerie, Couture Fabric, Nightgowns, Bridal Robes, Elegant Loungewear, Riyadh, Jeddah, Cairo, Dubai, Online Fashion Store, Silk Pajamas, Satin Sleepwear, Saudi Fashion, Bridal Lingerie, Luxury Loungewear, High-end Nightwear";
+    const baseTitle = "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة";
+    const baseDescription = "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من خامات الكوتور الملكية الفاخرة. تصاميم حصرية تناسب ذوقك الرفيع. شحن سريع للسعودية ومصر والخليج.";
+    const baseImage = "/img/sulta_luxury_pajama_hero_2_1780682794821.webp";
+
+    const defaultSchema = `
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ClothingStore",
+        "name": "SULTA ATELIER",
+        "description": "${baseDescription}",
+        "url": "https://sulta-atelier.com",
+        "logo": "https://sulta-atelier.com/img/sulta_logo.png",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Riyadh",
+          "addressCountry": "SA"
+        }
+      }
+      </script>
+    `;
+
+    let result = {
+      title: baseTitle,
+      description: baseDescription,
+      keywords: baseKeywords,
+      image: baseImage,
+      schema: defaultSchema
+    };
+
+    const productId = query.product || query.p;
+    if (productId && supabaseUrl && supabaseKey) {
+      try {
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+        const { data: product } = await supabaseClient
+          .from('products')
+          .select('name_ar, name_en, description_ar, image_url, category_ar, price_sa')
+          .eq('id', productId)
+          .single();
+
+        if (product) {
+          const prodName = product.name_ar || product.name_en;
+          result.title = `${prodName} | دار سولتة الملكية`;
+          result.description = product.description_ar?.substring(0, 160) || baseDescription;
+          result.keywords = `${prodName}، ${product.category_ar || ''}، ${baseKeywords}`;
+          
+          if (product.image_url) {
+             result.image = product.image_url.startsWith('http') ? product.image_url : `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${product.image_url}`;
+          }
+
+          result.schema = `
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "Product",
+              "name": "${prodName}",
+              "description": "${product.description_ar?.replace(/"/g, "'") || ''}",
+              "image": "${result.image}",
+              "offers": {
+                "@type": "Offer",
+                "price": "${product.price_sa || '195'}",
+                "priceCurrency": "SAR",
+                "availability": "https://schema.org/InStock"
+              }
+            }
+            </script>
+          `;
+        }
+      } catch (err) {
+        console.error("[SEO Engine] Supabase fetch error:", err);
+      }
+    }
+
+    return result;
+  }
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -740,16 +824,14 @@ async function startServer() {
         // Transform the index.html for Vite features (client script injection)
         html = await vite.transformIndexHtml(url, html);
         
-        const seo = {
-          title: "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة",
-          description: "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من خامات الكوتور الملكية الفاخرة. تجربة ملكية تبدأ من اختيارك.",
-          image: "/assets/images/hero_sleepwear_luxury_1780620325112.png"
-        };
+        const seo = await getSeoMetadata(req.query);
 
         const finalHtml = html
           .replace(/__TITLE__/g, seo.title)
           .replace(/__DESCRIPTION__/g, seo.description)
-          .replace(/__IMAGE__/g, seo.image);
+          .replace(/__KEYWORDS__/g, seo.keywords)
+          .replace(/__IMAGE__/g, seo.image)
+          .replace(/__SCHEMA__/g, seo.schema);
           
         res.status(200).set({ 'Content-Type': 'text/html' }).end(finalHtml);
       } catch (e) {
@@ -762,7 +844,7 @@ async function startServer() {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath, { index: false }));
     
-    app.get('*', (req, res) => {
+    app.get('*', async (req, res) => {
       try {
         const indexPath = path.join(distPath, 'index.html');
         if (!fs.existsSync(indexPath)) {
@@ -770,16 +852,14 @@ async function startServer() {
         }
         let html = fs.readFileSync(indexPath, 'utf-8');
         
-        const seo = {
-          title: "Sulta | بيت الأزياء الملكي - لانجري وبيجامات فاخرة",
-          description: "اكتشفي عالم SULTA الساحر: أرقى مجموعات البيجامات واللانجري المصنوعة من خامات الكوتور الملكية الفاخرة. تجربة ملكية تبدأ من اختيارك.",
-          image: "/assets/images/hero_sleepwear_luxury_1780620325112.png"
-        };
+        const seo = await getSeoMetadata(req.query);
 
         const finalHtml = html
           .replace(/__TITLE__/g, seo.title)
           .replace(/__DESCRIPTION__/g, seo.description)
-          .replace(/__IMAGE__/g, seo.image);
+          .replace(/__KEYWORDS__/g, seo.keywords)
+          .replace(/__IMAGE__/g, seo.image)
+          .replace(/__SCHEMA__/g, seo.schema);
           
         res.status(200).set({ 'Content-Type': 'text/html' }).send(finalHtml);
       } catch (e) {

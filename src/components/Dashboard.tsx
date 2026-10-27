@@ -64,8 +64,9 @@ import {
 import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMember, TeamMemberRole } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
-import { PixelEventLog, subscribePixelLogs } from '../utils/analytics';
+import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount } from '../utils/analytics';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
+import LiveVisitorCounter from './LiveVisitorCounter';
 
 interface DashboardProps {
   products: Product[];
@@ -126,8 +127,8 @@ export default function Dashboard({
       if (stored) return JSON.parse(stored);
     } catch {}
     return {
-      email: 'mohamedostafataher@gmail.com',
-      name: 'محمد طاهر (المالك)',
+      email: 'owner@sulta.sa',
+      name: 'إدارة SULTA الملكية',
       role: 'owner'
     };
   });
@@ -228,11 +229,16 @@ export default function Dashboard({
 
   // Live Pixel Activity Logs state (Shopify-style Live Feed)
   const [pixelLogs, setPixelLogs] = useState<PixelEventLog[]>([]);
+  const [liveCount, setLiveCount] = useState<number>(1);
 
   // Subscribe to real-time pixel events
   React.useEffect(() => {
-    const unsubscribe = subscribePixelLogs(setPixelLogs);
-    return () => unsubscribe();
+    const unsubLogs = subscribePixelLogs(setPixelLogs);
+    const unsubCount = subscribeVisitorCount(setLiveCount);
+    return () => {
+      unsubLogs();
+      unsubCount();
+    };
   }, []);
 
   // Critical Stock Products (< 5 pieces)
@@ -863,6 +869,7 @@ export default function Dashboard({
   };
 
   return (
+    <>
     <div className="min-h-screen bg-[#FBFBFA] font-sans text-gray-900 pb-20 select-none" dir="rtl">
       {/* 1. Header Bar: Clean, elegant, luxurious */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-2xs">
@@ -1238,7 +1245,7 @@ export default function Dashboard({
                <div className="relative z-10 flex items-center gap-3">
                  <div className="bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 text-center">
                     <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">زوار نشطين الآن</span>
-                    <span className="text-xl font-black text-gray-950 font-mono">1</span>
+                    <span className="text-xl font-black text-gray-950 font-mono">{liveCount}</span>
                  </div>
                  <button
                     onClick={() => setActiveTab('pixel-diagnostics')}
@@ -2456,7 +2463,7 @@ export default function Dashboard({
               ) : (
                 <div className="divide-y divide-gray-150">
                   {teamMembers.map(member => {
-                    const isOwner = member.email.toLowerCase() === 'mohamedostafataher@gmail.com';
+                    const isOwner = member.role === 'owner' || member.email.toLowerCase() === 'mohamedostafataher@gmail.com';
                     const isCurrent = activeAdminUser?.email.toLowerCase() === member.email.toLowerCase();
 
                     return (
@@ -2482,7 +2489,7 @@ export default function Dashboard({
                               )}
                             </div>
                             <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-500">
-                              <span className="font-mono text-gray-700" dir="ltr">{member.email}</span>
+                              <span className="font-mono text-gray-700" dir="ltr">{isOwner ? '********@sulta.sa' : member.email}</span>
                               <span>•</span>
                               <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md text-[10px] font-medium">
                                 {member.role === 'owner' ? 'المالك (وصول شامل)' : member.role === 'manager' ? 'مدير متجر' : member.role === 'orders_agent' ? 'مشرف شحن وطلبيات' : 'مستعرض فقط'}
@@ -3153,5 +3160,7 @@ export default function Dashboard({
         </div>
       )}
     </div>
+    <LiveVisitorCounter />
+    </>
   );
 }
