@@ -331,14 +331,17 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
 
     // Conflict detection
     const conflictDetails: string[] = [];
-    if (metaScripts.length > 2) {
-      conflictDetails.push('تم العثور على أكثر من سكريبت لـ Meta Pixel في الصفحة، مما قد يسبب تكرار إرسال الأحداث.');
+    if (metaScripts.length > 3) {
+      conflictDetails.push('تم العثور على تكرار في كود Meta Pixel (أكثر من ٣ سكريبتات)؛ قد يسبب تكراراً في إحصائياتك.');
     }
-    if (tiktokScripts.length > 2) {
-      conflictDetails.push('تم العثور على أكثر من سكريبت لـ TikTok Pixel في الصفحة.');
+    if (tiktokScripts.length > 3) {
+      conflictDetails.push('تم العثور على تكرار في كود TikTok Pixel.');
+    }
+    if (!metaPixelId || metaPixelId === '1648674350574190') {
+      // It's the default ID, not "missing" but we can note it
     }
     if (!metaPixelId) {
-      conflictDetails.push('معرف Meta Pixel غير محدد أو مفقود في الإعدادات.');
+      conflictDetails.push('معرف Meta Pixel غير محدد في الإعدادات.');
     }
     if (!tiktokPixelId) {
       conflictDetails.push('معرف TikTok Pixel غير محدد أو مفقود في الإعدادات.');
@@ -652,10 +655,34 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
                 تم رصد مانع إعلانات (AdBlocker) في المتصفح المحلي
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">
-                <XCircle size={13} />
-                يوجد تعارض أو نقص في المعرفات يحتاج للمراجعة
-              </span>
+              <div className="flex flex-col gap-1.5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">
+                  <XCircle size={13} />
+                  يوجد تعارض أو نقص في المعرفات يحتاج للمراجعة
+                </span>
+                {diagnostics.conflictDetails.length > 0 && (
+                  <div className="bg-rose-950/40 p-2 rounded-lg border border-rose-500/20 space-y-1">
+                    {diagnostics.conflictDetails.map((err, i) => (
+                      <div key={i} className="flex items-center gap-1.5 text-[10px] text-rose-200">
+                        <span className="w-1 h-1 rounded-full bg-rose-400 shrink-0" />
+                        <span>{err}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!diagnostics.meta.isReady && (
+                  <div className="flex items-center gap-1.5 text-[10px] text-rose-200">
+                    <span className="w-1 h-1 rounded-full bg-rose-400 shrink-0" />
+                    <span>Meta Pixel لم يتم تحميله بالكامل بعد (قد يحتاج لتنشيط أو إيقاف حظر الإعلانات).</span>
+                  </div>
+                )}
+                {!diagnostics.tiktok.isReady && (
+                  <div className="flex items-center gap-1.5 text-[10px] text-rose-200">
+                    <span className="w-1 h-1 rounded-full bg-rose-400 shrink-0" />
+                    <span>TikTok Pixel لم يتم تفعيله بالكامل بعد.</span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 

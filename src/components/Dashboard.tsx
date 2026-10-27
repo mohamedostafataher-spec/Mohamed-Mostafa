@@ -1203,13 +1203,19 @@ export default function Dashboard({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-sm text-white">فاحص اتصال البيكسل في الوقت الفعلي</span>
-                    <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                      متصل ونشط
-                    </span>
+                    {settings?.facebookPixelId && settings?.tiktokPixelId ? (
+                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                        متصل ونشط
+                      </span>
+                    ) : (
+                      <span className="bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
+                        يوجد نقص في المعرفات ⚠️
+                      </span>
+                    )}
                   </div>
                   <p className="text-gray-300 text-xs mt-0.5">
-                    Meta Pixel: <span className="text-emerald-400 font-mono font-bold">{settings?.facebookPixelId || '1648674350574190'}</span> | TikTok Pixel: <span className="text-emerald-400 font-mono font-bold">{settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0'}</span> (جميع الأحداث الـ 17 جاهزة)
+                    Meta Pixel: <span className={settings?.facebookPixelId ? "text-emerald-400 font-mono font-bold" : "text-rose-400"}>{settings?.facebookPixelId || 'غير محدد'}</span> | TikTok Pixel: <span className={settings?.tiktokPixelId ? "text-emerald-400 font-mono font-bold" : "text-rose-400"}>{settings?.tiktokPixelId || 'غير محدد'}</span>
                   </p>
                 </div>
               </div>
