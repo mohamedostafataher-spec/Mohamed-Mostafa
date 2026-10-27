@@ -375,11 +375,19 @@ async function startServer() {
       const clientIp = rawIp.split(",")[0].trim();
       const userAgent = (req.headers["user-agent"] as string) || user_data.client_user_agent || "";
 
+      // Extract Meta cookies if present (Essential for matching browser & server events)
+      const cookies = req.headers.cookie || "";
+      const fbp = cookies.match(/_fbp=([^;]+)/)?.[1];
+      const fbc = cookies.match(/_fbc=([^;]+)/)?.[1];
+
       // Format & Hash user identity fields according to Meta CAPI specification
       const formattedUserData: Record<string, any> = {
         client_ip_address: clientIp,
         client_user_agent: userAgent
       };
+
+      if (fbp) formattedUserData.fbp = fbp;
+      if (fbc) formattedUserData.fbc = fbc;
 
       if (user_data.email) {
         formattedUserData.em = [hashSha256(user_data.email)];
@@ -399,6 +407,12 @@ async function startServer() {
       }
       if (user_data.city) {
         formattedUserData.ct = [hashSha256(user_data.city)];
+      }
+      if (user_data.state) {
+        formattedUserData.st = [hashSha256(user_data.state)];
+      }
+      if (user_data.zip) {
+        formattedUserData.zp = [hashSha256(user_data.zip)];
       }
       if (user_data.country) {
         formattedUserData.country = [hashSha256(user_data.country.toLowerCase())];
