@@ -953,7 +953,7 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
         </div>
 
         <div className="text-[11px] text-gray-400 leading-relaxed bg-black/20 p-3 rounded-xl border border-white/5">
-          💡 <strong className="text-white">كيف يعمل CAPI في متجرك؟</strong> يتم إرسال أحداث (الشراء، السلة، وتصفح المنتجات) مرتين في نفس اللحظة: مرة من متصفح الزائر، ومرة من خادم المتجر مباشرة مع كود موحد (<code className="text-blue-300 font-mono">eventID</code>). يقوم فيسبوك بدمج الحدثين وإلغاء التكرار، مما يضمن تسجيل المبيعات حتى لو كان لدى الزائر مانع إعلانات أو تحديثات iOS 14.5+.
+
         </div>
       </div>
 

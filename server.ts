@@ -835,8 +835,7 @@ async function startServer() {
           .replace(/__TITLE__/g, seo.title)
           .replace(/__DESCRIPTION__/g, seo.description)
           .replace(/__KEYWORDS__/g, seo.keywords)
-          .replace(/__IMAGE__/g, seo.image)
-          .replace(/__SCHEMA__/g, seo.schema);
+          .replace(/__IMAGE__/g, seo.image);
           
         res.status(200).set({ 'Content-Type': 'text/html' }).end(finalHtml);
       } catch (e) {
@@ -863,8 +862,7 @@ async function startServer() {
           .replace(/__TITLE__/g, seo.title)
           .replace(/__DESCRIPTION__/g, seo.description)
           .replace(/__KEYWORDS__/g, seo.keywords)
-          .replace(/__IMAGE__/g, seo.image)
-          .replace(/__SCHEMA__/g, seo.schema);
+          .replace(/__IMAGE__/g, seo.image);
           
         res.status(200).set({ 'Content-Type': 'text/html' }).send(finalHtml);
       } catch (e) {
