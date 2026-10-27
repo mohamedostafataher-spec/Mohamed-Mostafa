@@ -46,8 +46,12 @@ export default function ProductDetailModal({
   const [selectedWrap, setSelectedWrap] = useState<string>('none');
   const [giftCardMessage, setGiftCardMessage] = useState<string>('');
 
+  const effectiveProductPrice = country === 'EG'
+    ? (product.salePriceEG || product.priceEG)
+    : (product.salePriceSA || (product.priceSA <= 120 ? product.priceSA : 99));
+
   const [bundleItems, setBundleItems] = useState([
-    { id: 'b1', name: product.nameAr, price: country === 'EG' ? product.priceEG : product.priceSA, image: product.images?.[0] || '', checked: true },
+    { id: 'b1', name: product.nameAr, price: effectiveProductPrice, image: product.images?.[0] || '', checked: true },
     { id: 'b2', name: 'شمعة SULTA العطرية الملكية للتوليفة الفاخرة', price: country === 'EG' ? 120 : 65, image: '/img/sulta_default_1_1781140865386.png', checked: true },
     { id: 'b3', name: 'علبة هدايا كوتور الفخمة مع الختم الشمعي', price: country === 'EG' ? 150 : 80, image: '/img/sulta_collections_1_1781140831329.png', checked: false }
   ]);
@@ -329,7 +333,11 @@ export default function ProductDetailModal({
 
   // Dynamic outfit pairing matcher
   const matchedPairProduct = products.find(p => p.id !== product.id) || products[0];
-  const matchedPrice = matchedPairProduct ? matchedPairProduct.priceSA : 0;
+  const matchedPrice = matchedPairProduct 
+    ? (country === 'EG' 
+        ? (matchedPairProduct.salePriceEG || matchedPairProduct.priceEG) 
+        : (matchedPairProduct.salePriceSA || (matchedPairProduct.priceSA <= 120 ? matchedPairProduct.priceSA : 99)))
+    : 0;
 
   // Incrementor/Decrementor
   const handleQtyChange = (val: number) => {

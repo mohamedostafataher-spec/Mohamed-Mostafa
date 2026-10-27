@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import crypto from "crypto";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
@@ -324,6 +325,208 @@ async function startServer() {
     } catch (error: any) {
       console.error("Cron Simulation failure:", error);
       res.status(500).json({ error: error.message || "Internal scheduler error" });
+    }
+  });
+
+  // =========================================================================
+  // META CONVERSIONS API (CAPI) SERVER-SIDE TRACKING ENGINE
+  // Sends server-to-server events to Meta Graph API v19.0
+  // Enables maximum Event Match Quality, iOS 14.5+ resilience & browser deduplication
+  // =========================================================================
+  const DEFAULT_META_PIXEL_ID = process.env.META_PIXEL_ID || "1648674350574190";
+  const DEFAULT_META_CAPI_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || "EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD";
+
+  function hashSha256(val: string): string {
+    if (!val || typeof val !== "string") return "";
+    return crypto.createHash("sha256").update(val.trim().toLowerCase()).digest("hex");
+  }
+
+  function normalizePhone(phone: string): string {
+    if (!phone) return "";
+    return phone.replace(/[^\d]/g, "");
+  }
+
+  /**
+   * Endpoint: POST /api/meta/capi
+   * Sends redundant server-side conversion event matching the browser event_id
+   */
+  app.post("/api/meta/capi", async (req, res) => {
+    try {
+      const {
+        event_name,
+        event_id,
+        event_source_url,
+        user_data = {},
+        custom_data = {},
+        test_event_code,
+        pixel_id,
+        access_token
+      } = req.body;
+
+      if (!event_name) {
+        return res.status(400).json({ error: "Missing required event_name" });
+      }
+
+      const activePixelId = (pixel_id || DEFAULT_META_PIXEL_ID).trim();
+      const activeToken = (access_token || DEFAULT_META_CAPI_TOKEN).trim();
+
+      // Extract client network identity
+      const rawIp = (req.headers["x-forwarded-for"] as string) || req.socket.remoteAddress || "127.0.0.1";
+      const clientIp = rawIp.split(",")[0].trim();
+      const userAgent = (req.headers["user-agent"] as string) || user_data.client_user_agent || "";
+
+      // Format & Hash user identity fields according to Meta CAPI specification
+      const formattedUserData: Record<string, any> = {
+        client_ip_address: clientIp,
+        client_user_agent: userAgent
+      };
+
+      if (user_data.email) {
+        formattedUserData.em = [hashSha256(user_data.email)];
+      }
+      if (user_data.phone) {
+        const cleanPhone = normalizePhone(user_data.phone);
+        formattedUserData.ph = [hashSha256(cleanPhone)];
+      }
+      if (user_data.external_id) {
+        formattedUserData.external_id = [hashSha256(String(user_data.external_id))];
+      }
+      if (user_data.first_name) {
+        formattedUserData.fn = [hashSha256(user_data.first_name)];
+      }
+      if (user_data.last_name) {
+        formattedUserData.ln = [hashSha256(user_data.last_name)];
+      }
+      if (user_data.city) {
+        formattedUserData.ct = [hashSha256(user_data.city)];
+      }
+      if (user_data.country) {
+        formattedUserData.country = [hashSha256(user_data.country.toLowerCase())];
+      }
+
+      // Construct Meta Graph API Event Item
+      const eventItem: Record<string, any> = {
+        event_name,
+        event_time: Math.floor(Date.now() / 1000),
+        action_source: "website",
+        event_source_url: event_source_url || "https://sulta-atelier.com",
+        user_data: formattedUserData
+      };
+
+      if (event_id) {
+        eventItem.event_id = event_id; // Vital for Deduplication with Browser Pixel
+      }
+
+      if (custom_data && Object.keys(custom_data).length > 0) {
+        eventItem.custom_data = custom_data;
+      }
+
+      const metaPayload: Record<string, any> = {
+        data: [eventItem]
+      };
+
+      const effectiveTestCode = test_event_code || process.env.META_TEST_EVENT_CODE;
+      if (effectiveTestCode) {
+        metaPayload.test_event_code = effectiveTestCode;
+      }
+
+      const metaUrl = `https://graph.facebook.com/v19.0/${activePixelId}/events?access_token=${activeToken}`;
+
+      const metaRes = await fetch(metaUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(metaPayload)
+      });
+
+      const metaJson = await metaRes.json();
+
+      if (!metaRes.ok) {
+        console.warn(`[Meta CAPI] Error response for ${event_name}:`, metaJson);
+        return res.status(metaRes.status).json({
+          success: false,
+          error: metaJson.error?.message || "Failed to deliver event to Meta CAPI",
+          meta_response: metaJson
+        });
+      }
+
+      console.log(`[Meta CAPI] Event "${event_name}" delivered successfully. fbtrace_id: ${metaJson.fbtrace_id}`);
+      return res.status(200).json({
+        success: true,
+        events_received: metaJson.events_received,
+        fbtrace_id: metaJson.fbtrace_id,
+        event_name,
+        event_id: event_id || null
+      });
+    } catch (err: any) {
+      console.error("[Meta CAPI] Internal server error:", err);
+      return res.status(500).json({
+        success: false,
+        error: err.message || "Internal error dispatching CAPI event"
+      });
+    }
+  });
+
+  /**
+   * Endpoint: POST /api/meta/test-connection
+   * Verifies Pixel ID & Access Token against Meta Graph API
+   */
+  app.post("/api/meta/test-connection", async (req, res) => {
+    try {
+      const { pixel_id, access_token, test_event_code } = req.body || {};
+      const activePixelId = (pixel_id || DEFAULT_META_PIXEL_ID).trim();
+      const activeToken = (access_token || DEFAULT_META_CAPI_TOKEN).trim();
+
+      const testPayload: Record<string, any> = {
+        data: [
+          {
+            event_name: "PageView",
+            event_time: Math.floor(Date.now() / 1000),
+            action_source: "website",
+            event_source_url: "https://sulta-atelier.com/diagnostics",
+            user_data: {
+              client_ip_address: "127.0.0.1",
+              client_user_agent: "SULTA-Diagnostics/1.0"
+            },
+            custom_data: {
+              test: "connection_diagnostic"
+            }
+          }
+        ]
+      };
+
+      if (test_event_code) {
+        testPayload.test_event_code = test_event_code;
+      }
+
+      const metaUrl = `https://graph.facebook.com/v19.0/${activePixelId}/events?access_token=${activeToken}`;
+      const metaRes = await fetch(metaUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(testPayload)
+      });
+
+      const metaJson = await metaRes.json();
+
+      if (!metaRes.ok) {
+        return res.status(metaRes.status).json({
+          success: false,
+          error: metaJson.error?.message || "Invalid token or pixel ID",
+          pixel_id: activePixelId
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "تم التحقق من اتصال Meta Conversions API بنجاح ⚡",
+        pixel_id: activePixelId,
+        events_received: metaJson.events_received,
+        fbtrace_id: metaJson.fbtrace_id
+      });
+    } catch (err: any) {
+      return res.status(500).json({
+        success: false,
+        error: err.message || "Failed to communicate with Meta API"
+      });
     }
   });
 

@@ -101,11 +101,67 @@ let initializedPixels = {
   google: false,
 };
 
+export const DEFAULT_META_PIXEL_ID = '1648674350574190';
+
+/**
+ * Generates unique event ID for hybrid deduplication between Browser Pixel & Server CAPI
+ */
+export const generateEventId = (prefix: string = 'evt'): string => {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+};
+
+/**
+ * Dispatches event to Server-Side Meta Conversions API (CAPI)
+ * Automatically pairs with browser pixel via event_id for deduplication
+ */
+export const dispatchMetaCapi = async (
+  eventName: string,
+  eventId: string,
+  customData: Record<string, any> = {},
+  userData: Record<string, any> = {}
+) => {
+  try {
+    const payload = {
+      event_name: eventName,
+      event_id: eventId,
+      event_source_url: typeof window !== 'undefined' ? window.location.href : 'https://sulta-atelier.com',
+      user_data: userData,
+      custom_data: customData
+    };
+
+    fetch('/api/meta/capi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          logPixelEvent(
+            'Meta (Facebook)',
+            `${eventName} (CAPI ⚡)`,
+            `خادم CAPI: تم التسليم والمطابقة (Trace: ${data.fbtrace_id?.slice(0, 10)}...)`,
+            'sent',
+            customData.value,
+            customData.currency || 'SAR'
+          );
+        } else {
+          console.warn('[CAPI response warning]:', data.error);
+        }
+      })
+      .catch(err => {
+        console.warn('[CAPI network notice]:', err);
+      });
+  } catch (err) {
+    console.warn('[CAPI dispatch notice]:', err);
+  }
+};
+
 export const initPixels = (settings?: Partial<Settings> | null) => {
   if (!settings || typeof window === 'undefined') return;
 
   // 1. META (FACEBOOK) PIXEL
-  const metaId = (settings.facebookPixelId || '1765916517819303').trim();
+  const metaId = (settings.facebookPixelId || DEFAULT_META_PIXEL_ID).trim();
   if (metaId && !initializedPixels.meta) {
     try {
       if (typeof window.fbq === 'function') {
@@ -251,11 +307,15 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
 export const trackPageView = (pageName: string = 'الصفحة الرئيسية') => {
   if (typeof window === 'undefined') return;
 
-  // Meta
+  const eventId = generateEventId('pv');
+
+  // Meta Browser Pixel + Server CAPI (Deduplicated via eventID)
   if (window.fbq) {
-    window.fbq('track', 'PageView');
-    logPixelEvent('Meta (Facebook)', 'PageView', `زيارة صفحة: ${pageName}`);
+    window.fbq('track', 'PageView', {}, { eventID: eventId });
+    logPixelEvent('Meta (Facebook)', 'PageView', `زيارة صفحة: ${pageName} (ID: ${eventId.slice(0, 10)})`);
   }
+  dispatchMetaCapi('PageView', eventId, { page_title: pageName });
+
   // TikTok
   if (window.ttq) {
     window.ttq.page();
@@ -275,17 +335,22 @@ export const trackPageView = (pageName: string = 'الصفحة الرئيسية'
 
 export const trackViewContent = (product: Product, currency: string = 'SAR') => {
   const price = product.priceSA || 0;
+  const eventId = generateEventId('vc');
 
+  const metaData = {
+    content_name: product.nameAr,
+    content_ids: [product.id],
+    content_type: 'product',
+    value: price,
+    currency: currency
+  };
+
+  // Meta Browser + CAPI Hybrid
   if (window.fbq) {
-    window.fbq('track', 'ViewContent', {
-      content_name: product.nameAr,
-      content_ids: [product.id],
-      content_type: 'product',
-      value: price,
-      currency: currency
-    });
+    window.fbq('track', 'ViewContent', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'ViewContent', `مشاهدة قطعة: ${product.nameAr}`, 'sent', price, currency);
   }
+  dispatchMetaCapi('ViewContent', eventId, metaData);
 
   if (window.ttq) {
     window.ttq.track('ViewContent', {
@@ -320,17 +385,22 @@ export const trackViewContent = (product: Product, currency: string = 'SAR') => 
 
 export const trackAddToCart = (product: Product, quantity: number = 1, currency: string = 'SAR') => {
   const price = (product.priceSA || 0) * quantity;
+  const eventId = generateEventId('atc');
 
+  const metaData = {
+    content_name: product.nameAr,
+    content_ids: [product.id],
+    content_type: 'product',
+    value: price,
+    currency: currency
+  };
+
+  // Meta Browser + CAPI Hybrid
   if (window.fbq) {
-    window.fbq('track', 'AddToCart', {
-      content_name: product.nameAr,
-      content_ids: [product.id],
-      content_type: 'product',
-      value: price,
-      currency: currency
-    });
+    window.fbq('track', 'AddToCart', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'AddToCart', `إضافة للسلة: ${product.nameAr} × ${quantity}`, 'sent', price, currency);
   }
+  dispatchMetaCapi('AddToCart', eventId, metaData);
 
   if (window.ttq) {
     window.ttq.track('AddToCart', {
@@ -366,17 +436,22 @@ export const trackAddToCart = (product: Product, quantity: number = 1, currency:
 
 export const trackInitiateCheckout = (items: any[], totalValue: number, currency: string = 'SAR') => {
   const ids = items.map(i => i.product?.id || i.productId);
+  const eventId = generateEventId('ic');
 
+  const metaData = {
+    content_ids: ids,
+    content_type: 'product',
+    num_items: items.length,
+    value: totalValue,
+    currency: currency
+  };
+
+  // Meta Browser + CAPI Hybrid
   if (window.fbq) {
-    window.fbq('track', 'InitiateCheckout', {
-      content_ids: ids,
-      content_type: 'product',
-      num_items: items.length,
-      value: totalValue,
-      currency: currency
-    });
+    window.fbq('track', 'InitiateCheckout', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'InitiateCheckout', `بدء إتمام الطلب (عدد القطع: ${items.length})`, 'sent', totalValue, currency);
   }
+  dispatchMetaCapi('InitiateCheckout', eventId, metaData);
 
   if (window.ttq) {
     window.ttq.track('InitiateCheckout', {
@@ -414,17 +489,30 @@ export const trackPurchase = (order: Order) => {
   const currency = order.currency || 'SAR';
   const total = order.totalPrice || 0;
   const ids = order.items.map(i => i.productId);
+  const eventId = order.id ? `order_${order.id}` : generateEventId('pur');
 
+  const metaData = {
+    content_ids: ids,
+    content_type: 'product',
+    value: total,
+    currency: currency,
+    order_id: order.id
+  };
+
+  const userData = {
+    email: order.email || undefined,
+    phone: order.phone || undefined,
+    first_name: order.customerName,
+    city: order.city,
+    country: 'SA'
+  };
+
+  // Meta Browser + CAPI Hybrid (Deduplicated with order_id)
   if (window.fbq) {
-    window.fbq('track', 'Purchase', {
-      content_ids: ids,
-      content_type: 'product',
-      value: total,
-      currency: currency,
-      order_id: order.id
-    });
+    window.fbq('track', 'Purchase', metaData, { eventID: eventId });
     logPixelEvent('Meta (Facebook)', 'Purchase', `تم الشراء بنجاح! طلب #${order.id.slice(0, 8)}`, 'sent', total, currency);
   }
+  dispatchMetaCapi('Purchase', eventId, metaData, userData);
 
   if (window.ttq) {
     window.ttq.track('CompletePayment', {

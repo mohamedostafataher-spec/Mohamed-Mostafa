@@ -14,6 +14,7 @@ import AboutUs from './components/AboutUs';
 import ContactUs from './components/ContactUs';
 import AccountView from './components/AccountView';
 import Dashboard from './components/Dashboard';
+import AdminAuthGate from './components/AdminAuthGate';
 import Faq from './components/Faq';
 import ReturnsExchanges from './components/ReturnsExchanges';
 import DatabaseTest from './components/DatabaseTest';
@@ -132,9 +133,9 @@ function AppContent() {
   const [homepageSections, setHomepageSections] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
  
-  // Initialize and synchronize tracking pixels (Meta Pixel 1765916517819303 & TikTok Pixel DBESRBJC77U4J2JQDUB0)
+  // Initialize and synchronize tracking pixels (Meta Pixel 1648674350574190 & TikTok Pixel DBESRBJC77U4J2JQDUB0)
   useEffect(() => {
-    initPixels(settings || { facebookPixelId: '1765916517819303', tiktokPixelId: 'DBESRBJC77U4J2JQDUB0' });
+    initPixels(settings || { facebookPixelId: '1648674350574190', tiktokPixelId: 'DBESRBJC77U4J2JQDUB0' });
   }, [settings]);
 
   // Auto-open product detail page when deep-linked with ?product=ID or ?p=ID
@@ -1280,25 +1281,34 @@ function AppContent() {
 
         {/* VIEW 7: DASHBOARD SECURE SCREEN (لوحة الإدارة للبراند) */}
         {currentTab === 'dashboard' && (
-          <Dashboard
+          <AdminAuthGate
             session={session}
-            authLoading={authLoading}
-            products={products}
-            setProducts={syncProducts}
-            orders={orders}
-            setOrders={syncOrders}
-            coupons={coupons}
-            setCoupons={syncCoupons}
-            settings={settings}
-            setSettings={setSettings}
-            categories={categories}
-            setCategories={setCategories}
-            collections={collections}
-            setCollections={setCollections}
-            homepageSections={homepageSections}
-            toast={toast}
-            deleteProduct={deleteProduct}
-          />
+            onAuthorized={(user) => {
+              console.log("[AUTH] Admin access granted to:", user.email);
+            }}
+            onBackToStore={() => setTab('home')}
+          >
+            <Dashboard
+              session={session}
+              authLoading={authLoading}
+              products={products}
+              setProducts={syncProducts}
+              orders={orders}
+              setOrders={syncOrders}
+              coupons={coupons}
+              setCoupons={syncCoupons}
+              settings={settings}
+              setSettings={setSettings}
+              categories={categories}
+              setCategories={setCategories}
+              collections={collections}
+              setCollections={setCollections}
+              homepageSections={homepageSections}
+              toast={toast}
+              deleteProduct={deleteProduct}
+              onBackToStore={() => setTab('home')}
+            />
+          </AdminAuthGate>
         )}
 
           {/* Professional 404 Fallback View */}

@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole } from '../types';
 import { createClient } from '@supabase/supabase-js';
 
 // --- ROBUST CONFIGURATION ---
@@ -319,7 +319,9 @@ function mapSettings(data: any): Settings {
     instagram: data.instagram,
     facebook: data.facebook,
     tiktok: data.tiktok,
-    facebookPixelId: data.facebook_pixel_id,
+    facebookPixelId: data.facebook_pixel_id || '1648674350574190',
+    metaCapiAccessToken: data.metaCapiAccessToken || data.meta_capi_access_token || 'EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD',
+    metaTestEventCode: data.metaTestEventCode || data.meta_test_event_code || '',
     googleAnalyticsId: data.google_analytics_id,
     snapchatPixelId: data.snapchat_pixel_id,
     tiktokPixelId: data.tiktok_pixel_id || 'DBESRBJC77U4J2JQDUB0',
@@ -347,7 +349,11 @@ function mapSettings(data: any): Settings {
     whatsappWelcomeEnabled: data.whatsappWelcomeEnabled ?? data.whatsapp_welcome_enabled ?? true,
     whatsappDiscountCode: data.whatsappDiscountCode || data.whatsapp_discount_code || 'SULTA20',
     whatsappMarketingMessageTemplate: data.whatsappMarketingMessageTemplate || data.whatsapp_marketing_template || '',
-    whatsappCartRecoveryMessageTemplate: data.whatsappCartRecoveryMessageTemplate || data.whatsapp_cart_recovery_template || ''
+    whatsappCartRecoveryMessageTemplate: data.whatsappCartRecoveryMessageTemplate || data.whatsapp_cart_recovery_template || '',
+    // Team Members with Gmail access
+    adminTeamMembers: Array.isArray(data.adminTeamMembers) 
+      ? data.adminTeamMembers 
+      : (data.admin_team_members ? (typeof data.admin_team_members === 'string' ? JSON.parse(data.admin_team_members) : data.admin_team_members) : undefined)
   };
 }
 
@@ -3065,5 +3071,140 @@ export const dbService = {
         diagnosticDetails: "تسبب تشغيل الكود في كود متصفح العميل بعطل أثناء إرسال استعلام Supabase. تحقق من اتصال الشبكة وسرعة الاستجابة."
       };
     }
+  },
+
+  // --- ADMIN TEAM & GMAIL ACCESS CONTROL ---
+  DEFAULT_PRIMARY_OWNER_EMAIL: 'mohamedostafataher@gmail.com',
+
+  getTeamMembers: async (): Promise<TeamMember[]> => {
+    const defaultOwner: TeamMember = {
+      id: 'owner-primary',
+      email: 'mohamedostafataher@gmail.com',
+      name: 'محمد طاهر (المالك)',
+      role: 'owner',
+      addedAt: '2026-01-01T00:00:00.000Z'
+    };
+
+    let members: TeamMember[] = [];
+    
+    // 1. Try fetching from Supabase homepage_sections table
+    try {
+      const { data, error } = await supabase
+        .from('homepage_sections')
+        .select('content_json')
+        .eq('section_key', 'admin_team_members_v1')
+        .single();
+      
+      if (!error && data?.content_json && Array.isArray(data.content_json)) {
+        members = data.content_json;
+      }
+    } catch (e) {
+      console.warn('[SULTA DB] Error fetching team members from cloud:', e);
+    }
+
+    // 2. Try localStorage if empty
+    if (members.length === 0) {
+      try {
+        const stored = localStorage.getItem('sulta_admin_team_members');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            members = parsed;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 3. Guarantee owner is always included and has 'owner' role
+    const hasOwner = members.some(m => m.email.toLowerCase() === 'mohamedostafataher@gmail.com');
+    if (!hasOwner) {
+      members = [defaultOwner, ...members];
+    } else {
+      members = members.map(m => m.email.toLowerCase() === 'mohamedostafataher@gmail.com' ? { ...m, role: 'owner' as const } : m);
+    }
+
+    return members;
+  },
+
+  saveTeamMembers: async (members: TeamMember[]): Promise<void> => {
+    const hasOwner = members.some(m => m.email.toLowerCase() === 'mohamedostafataher@gmail.com');
+    let finalMembers = [...members];
+    if (!hasOwner) {
+      finalMembers.unshift({
+        id: 'owner-primary',
+        email: 'mohamedostafataher@gmail.com',
+        name: 'محمد طاهر (المالك)',
+        role: 'owner',
+        addedAt: '2026-01-01T00:00:00.000Z'
+      });
+    }
+
+    try {
+      localStorage.setItem('sulta_admin_team_members', JSON.stringify(finalMembers));
+    } catch (e) {}
+
+    try {
+      await supabase.from('homepage_sections').upsert([{
+        section_key: 'admin_team_members_v1',
+        content_json: finalMembers,
+        active: true
+      }], { onConflict: 'section_key' });
+    } catch (e) {
+      console.warn('[SULTA DB] Error saving team members to cloud:', e);
+    }
+  },
+
+  addTeamMember: async (email: string, role: TeamMemberRole = 'manager', name?: string): Promise<TeamMember[]> => {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      throw new Error('يرجى إدخال بريد إلكتروني صالح');
+    }
+    const current = await dbService.getTeamMembers();
+    if (current.some(m => m.email.toLowerCase() === cleanEmail)) {
+      throw new Error('هذا البريد الإلكتروني مسجل بالفعل في فريق العمل');
+    }
+    const newMember: TeamMember = {
+      id: 'member-' + Date.now(),
+      email: cleanEmail,
+      name: name?.trim() || cleanEmail.split('@')[0],
+      role,
+      addedAt: new Date().toISOString()
+    };
+    const updated = [...current, newMember];
+    await dbService.saveTeamMembers(updated);
+    return updated;
+  },
+
+  removeTeamMember: async (memberIdOrEmail: string): Promise<TeamMember[]> => {
+    const q = memberIdOrEmail.trim().toLowerCase();
+    if (q === 'mohamedostafataher@gmail.com' || q === 'owner-primary') {
+      throw new Error('لا يمكن حذف المالك الرئيسي للمتجر');
+    }
+    const current = await dbService.getTeamMembers();
+    const updated = current.filter(m => m.id !== memberIdOrEmail && m.email.toLowerCase() !== q);
+    await dbService.saveTeamMembers(updated);
+    return updated;
+  },
+
+  checkIsEmailAuthorized: async (email: string): Promise<{ authorized: boolean; member?: TeamMember }> => {
+    const clean = email.trim().toLowerCase();
+    if (clean === 'mohamedostafataher@gmail.com') {
+      return {
+        authorized: true,
+        member: {
+          id: 'owner-primary',
+          email: 'mohamedostafataher@gmail.com',
+          name: 'محمد طاهر (المالك)',
+          role: 'owner',
+          addedAt: '2026-01-01T00:00:00.000Z'
+        }
+      };
+    }
+    const members = await dbService.getTeamMembers();
+    const match = members.find(m => m.email.toLowerCase() === clean);
+    return {
+      authorized: !!match,
+      member: match
+    };
   },
 };

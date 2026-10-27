@@ -37,7 +37,12 @@ import {
   Calendar,
   Layers,
   ChevronDown,
-  Activity
+  Activity,
+  Users,
+  UserPlus,
+  LogOut,
+  ShieldCheck,
+  Sparkles
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -51,7 +56,7 @@ import {
   Tooltip, 
   Legend 
 } from 'recharts';
-import { Product, Order, DiscountCoupon, Settings, Category, Collection } from '../types';
+import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMember, TeamMemberRole } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
@@ -74,6 +79,8 @@ interface DashboardProps {
   homepageSections?: any[];
   toast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
   deleteProduct?: (id: string, nameAr?: string) => Promise<void>;
+  onBackToStore?: () => void;
+  onSignOut?: () => void;
 }
 
 export default function Dashboard({
@@ -87,19 +94,56 @@ export default function Dashboard({
   setSettings,
   categories,
   toast,
-  deleteProduct
+  deleteProduct,
+  onBackToStore,
+  onSignOut
 }: DashboardProps) {
-  // Navigation tabs: simple, focused on essentials
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'settings' | 'pixel-diagnostics'>(() => {
+  // Navigation tabs: human-focused on essentials
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'team' | 'settings' | 'pixel-diagnostics'>(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search);
       const sub = p.get('subtab') || p.get('tab') || p.get('page') || p.get('section');
       if (sub === 'pixel' || sub === 'pixel-diagnostics' || sub === 'diagnostics') {
         return 'pixel-diagnostics';
       }
+      if (sub === 'team' || sub === 'members') {
+        return 'team';
+      }
     }
     return 'overview';
   });
+
+  // Active Authenticated Admin User
+  const [activeAdminUser, setActiveAdminUser] = useState<{ email: string; name: string; role: string } | null>(() => {
+    try {
+      const stored = localStorage.getItem('sulta_admin_auth_user');
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return {
+      email: 'mohamedostafataher@gmail.com',
+      name: 'محمد طاهر (المالك)',
+      role: 'owner'
+    };
+  });
+
+  // Team Members State & Adding state
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [isLoadingTeam, setIsLoadingTeam] = useState(false);
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberName, setNewMemberName] = useState('');
+  const [newMemberRole, setNewMemberRole] = useState<TeamMemberRole>('manager');
+  const [isAddingMember, setIsAddingMember] = useState(false);
+  const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
+
+  // Load team members on mount
+  React.useEffect(() => {
+    setIsLoadingTeam(true);
+    dbService.getTeamMembers().then(members => {
+      setTeamMembers(members);
+    }).catch(console.warn).finally(() => {
+      setIsLoadingTeam(false);
+    });
+  }, []);
 
   // Search & Filter States
   const [orderSearch, setOrderSearch] = useState('');
@@ -160,7 +204,9 @@ export default function Dashboard({
     whatsapp: settings?.whatsappSaudi || settings?.whatsapp || '966552823677',
     contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 55 282 3677',
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
-    facebookPixelId: settings?.facebookPixelId || '1765916517819303',
+    facebookPixelId: settings?.facebookPixelId || '1648674350574190',
+    metaCapiAccessToken: settings?.metaCapiAccessToken || 'EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD',
+    metaTestEventCode: settings?.metaTestEventCode || '',
     tiktokPixelId: settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0',
     snapchatPixelId: settings?.snapchatPixelId || '',
     googleAnalyticsId: settings?.googleAnalyticsId || '',
@@ -342,44 +388,22 @@ export default function Dashboard({
     const dailyArr = Array.from(dayMap.values()).sort((a, b) => a.date.localeCompare(b.date));
     const slicedDaily = dailyArr.slice(-14);
 
-    const hasEnoughOrders = orders.length >= 3;
-    const finalDaily = slicedDaily.map((item, idx) => {
-      if (!hasEnoughOrders && item.revenue === 0) {
-        const baseline = [380, 560, 420, 780, 620, 950, 840, 1120, 980, 1250, 890, 1400, 1150, 1600][idx] || 600;
-        return {
-          ...item,
-          revenue: baseline,
-          ordersCount: Math.ceil(baseline / 350)
-        };
-      }
-      return item;
-    });
-
+    // 100% Genuine Data: No fake numbers, baselines or synthetic fillers
+    const finalDaily = slicedDaily;
     const monthlyArr = Array.from(monthMap.values()).sort((a, b) => a.monthIndex - b.monthIndex);
-    const finalMonthly = monthlyArr.map((item, idx) => {
-      if (!hasEnoughOrders && item.revenue === 0) {
-        const baseline = [4200, 5800, 6900, 8400, 9200, 11500, 13400, 15600, 17800, 19200, 21500, 24000][idx] || 8000;
-        return {
-          ...item,
-          revenue: baseline,
-          ordersCount: Math.ceil(baseline / 400)
-        };
-      }
-      return item;
-    });
+    const finalMonthly = monthlyArr;
 
     const peakDay = finalDaily.reduce((max, curr) => curr.revenue > max.revenue ? curr : max, finalDaily[0] || { displayDate: '-', revenue: 0 });
-    const totalOrdersCount = orders.length || 1;
-    const avgOrderValue = Math.round((totalRevenueCalculated || 450) / totalOrdersCount);
+    const avgOrderValue = orders.length > 0 ? Math.round(totalRevenueCalculated / orders.length) : 0;
 
     return {
       dailySalesData: finalDaily,
       monthlySalesData: finalMonthly,
       salesSummary: {
-        todayRevenue: todayRevenue || finalDaily[finalDaily.length - 1]?.revenue || 0,
-        thisMonthRevenue: thisMonthRevenue || finalMonthly[currentMonthIdx]?.revenue || 0,
+        todayRevenue,
+        thisMonthRevenue,
         avgOrderValue,
-        peakDay: peakDay.displayDate,
+        peakDay: peakDay.revenue > 0 ? peakDay.displayDate : 'لا توجد مبيعات',
         peakRevenue: peakDay.revenue
       }
     };
@@ -721,6 +745,64 @@ export default function Dashboard({
     }
   };
 
+  // Handle Add Team Member (Gmail)
+  const handleAddTeamMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = newMemberEmail.trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+      toast?.('يرجى إدخال بريد Gmail صالح', 'error');
+      return;
+    }
+    setIsAddingMember(true);
+    try {
+      const updated = await dbService.addTeamMember(email, newMemberRole, newMemberName);
+      setTeamMembers(updated);
+      setNewMemberEmail('');
+      setNewMemberName('');
+      setNewMemberRole('manager');
+      toast?.(`تمت إضافة (${email}) بنجاح! يمكنه الآن فتح اللوحة بحسابه 👥✨`, 'success');
+    } catch (err: any) {
+      toast?.(err?.message || 'فشل إضافة العضو', 'error');
+    } finally {
+      setIsAddingMember(false);
+    }
+  };
+
+  // Handle Remove Team Member
+  const handleRemoveTeamMember = async (member: TeamMember) => {
+    if (member.email.toLowerCase() === 'mohamedostafataher@gmail.com') {
+      toast?.('لا يمكن حذف المالك الرئيسي للمتجر', 'error');
+      return;
+    }
+    if (!confirm(`هل أنتِ متأكدة من إلغاء صلاحية الوصول للحساب: ${member.name || member.email}؟`)) {
+      return;
+    }
+    setRemovingMemberId(member.id);
+    try {
+      const updated = await dbService.removeTeamMember(member.id);
+      setTeamMembers(updated);
+      toast?.(`تم إلغاء صلاحية (${member.email}) بنجاح`, 'success');
+    } catch (err: any) {
+      toast?.(err?.message || 'فشل حذف العضو', 'error');
+    } finally {
+      setRemovingMemberId(null);
+    }
+  };
+
+  // Handle Sign Out from Admin
+  const handleAdminSignOut = () => {
+    localStorage.removeItem('sulta_admin_auth_user');
+    setActiveAdminUser(null);
+    toast?.('تم تسجيل الخروج بنجاح من لوحة التحكم', 'info');
+    if (onSignOut) {
+      onSignOut();
+    } else if (onBackToStore) {
+      onBackToStore();
+    } else {
+      window.location.reload();
+    }
+  };
+
   // Handle Save Settings
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -734,6 +816,8 @@ export default function Dashboard({
         contactPhoneSaudi: settingsForm.contactPhone,
         contactEmail: settingsForm.contactEmail,
         facebookPixelId: settingsForm.facebookPixelId,
+        metaCapiAccessToken: settingsForm.metaCapiAccessToken,
+        metaTestEventCode: settingsForm.metaTestEventCode,
         tiktokPixelId: settingsForm.tiktokPixelId,
         snapchatPixelId: settingsForm.snapchatPixelId,
         googleAnalyticsId: settingsForm.googleAnalyticsId,
@@ -878,10 +962,46 @@ export default function Dashboard({
                 <Plus size={14} />
                 <span>إضافة منتج جديد</span>
               </button>
+
+              {/* Logged in Admin Profile Badge & Logout */}
+              {activeAdminUser && (
+                <div className="hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl text-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-mono text-gray-700 font-medium" dir="ltr">
+                    {activeAdminUser.email}
+                  </span>
+                  <span className="bg-[#A44C5C]/10 text-[#A44C5C] font-bold px-1.5 py-0.2 rounded text-[10px]">
+                    {activeAdminUser.role === 'owner' ? 'المالك 👑' : 'مشرف'}
+                  </span>
+                </div>
+              )}
+
+              {/* Logout button */}
+              <button
+                type="button"
+                onClick={handleAdminSignOut}
+                title="تسجيل الخروج من لوحة التحكم"
+                className="p-2 rounded-xl border border-gray-200 text-gray-500 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer flex items-center gap-1"
+              >
+                <LogOut size={15} />
+                <span className="hidden sm:inline text-[11px] font-bold">خروج</span>
+              </button>
+
+              {/* Back to store */}
+              {onBackToStore && (
+                <button
+                  type="button"
+                  onClick={onBackToStore}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                >
+                  <ArrowUpRight size={13} className="rotate-180" />
+                  <span>المتجر</span>
+                </button>
+              )}
             </div>
           </div>
 
-          {/* 2. Simplified Primary Navigation Tabs (5 clean tabs only) */}
+          {/* 2. Simplified Primary Navigation Tabs (Human Nature & Clean) */}
           <nav className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pt-3 mt-2 border-t border-gray-100 text-xs">
             <button
               onClick={() => setActiveTab('overview')}
@@ -904,7 +1024,7 @@ export default function Dashboard({
               }`}
             >
               <TrendingUp size={15} />
-              <span>إحصائيات المبيعات (Sales Analytics) 📊</span>
+              <span>إحصائيات المبيعات 📊</span>
             </button>
 
             <button
@@ -948,6 +1068,21 @@ export default function Dashboard({
               <Tag size={15} />
               <span>الكوبونات والخصومات</span>
               <span className="text-[10px] text-gray-400 font-mono">({coupons.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('team')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'team'
+                  ? 'bg-[#A44C5C] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <Users size={15} />
+              <span>فريق العمل وGmail</span>
+              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full">
+                {teamMembers.length}
+              </span>
             </button>
 
             <button
@@ -1237,108 +1372,120 @@ export default function Dashboard({
               </div>
 
               {/* Charts Rendering */}
-              <div className={`grid gap-6 ${salesChartPeriod === 'both' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
-                {/* 1. Daily Sales Area Chart */}
-                {(salesChartPeriod === 'daily' || salesChartPeriod === 'both') && (
-                  <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-2xs">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#A44C5C]"></span>
-                        <h4 className="font-bold text-xs sm:text-sm text-gray-900 font-serif">
-                          المبيعات اليومية (آخر 14 يوماً)
-                        </h4>
-                      </div>
-                      <span className="text-[11px] text-gray-400 font-mono">بالريال السعودي (ر.س)</span>
-                    </div>
-
-                    <div className="w-full h-64 pt-2" dir="ltr">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={dailySalesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                          <defs>
-                            <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#A44C5C" stopOpacity={0.4}/>
-                              <stop offset="95%" stopColor="#A44C5C" stopOpacity={0.0}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#F1F1F1" vertical={false} />
-                          <XAxis dataKey="displayDate" stroke="#888888" fontSize={11} tickLine={false} />
-                          <YAxis stroke="#888888" fontSize={11} tickLine={false} />
-                          <Tooltip
-                            content={({ active, payload, label }) => {
-                              if (active && payload && payload.length) {
-                                const data = payload[0].payload;
-                                return (
-                                  <div className="bg-gray-950 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 font-sans border border-gray-800">
-                                    <p className="font-bold text-[#E8A5B8]">{data.displayDate || label}</p>
-                                    <p className="font-mono text-sm font-black">{Number(data.revenue).toLocaleString()} ر.س</p>
-                                    <p className="text-[10.5px] text-gray-300">عدد الطلبات: {data.ordersCount} طلب</p>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }}
-                          />
-                          <Area 
-                            type="monotone" 
-                            dataKey="revenue" 
-                            stroke="#A44C5C" 
-                            strokeWidth={3} 
-                            fillOpacity={1} 
-                            fill="url(#colorDaily)" 
-                            name="المبيعات (ر.س)"
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
+              {orders.length === 0 ? (
+                <div className="py-12 px-4 text-center bg-gray-50/70 rounded-2xl border border-dashed border-gray-200 space-y-2">
+                  <div className="w-12 h-12 mx-auto rounded-2xl bg-white text-[#A44C5C] border border-gray-200 flex items-center justify-center shadow-2xs">
+                    <TrendingUp size={22} />
                   </div>
-                )}
-
-                {/* 2. Monthly Sales Bar Chart */}
-                {(salesChartPeriod === 'monthly' || salesChartPeriod === 'both') && (
-                  <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-2xs">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-gray-950"></span>
-                        <h4 className="font-bold text-xs sm:text-sm text-gray-900 font-serif">
-                          المبيعات الشهرية عبر السنة
-                        </h4>
+                  <h4 className="font-bold text-sm text-gray-800">لا توجد مبيعات مسجلة حتى الآن</h4>
+                  <p className="max-w-md mx-auto text-gray-500 leading-relaxed text-xs">
+                    كافة البيانات والإحصائيات في هذه اللوحة ترتبط حصراً بالطلبات الحقيقية بدون أي أرقام وهمية أو افتراضية. بمجرد إتمام أول طلب حقيقي في المتجر، ستُرسم المخططات البيانية اليومية والشهرية هنا بدقة 100%.
+                  </p>
+                </div>
+              ) : (
+                <div className={`grid gap-6 ${salesChartPeriod === 'both' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
+                  {/* 1. Daily Sales Area Chart */}
+                  {(salesChartPeriod === 'daily' || salesChartPeriod === 'both') && (
+                    <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#A44C5C]"></span>
+                          <h4 className="font-bold text-xs sm:text-sm text-gray-900 font-serif">
+                            المبيعات اليومية (آخر 14 يوماً)
+                          </h4>
+                        </div>
+                        <span className="text-[11px] text-gray-400 font-mono">بالريال السعودي (ر.س)</span>
                       </div>
-                      <span className="text-[11px] text-gray-400 font-mono">بالريال السعودي (ر.س)</span>
-                    </div>
 
-                    <div className="w-full h-64 pt-2" dir="ltr">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={monthlySalesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#F1F1F1" vertical={false} />
-                          <XAxis dataKey="monthName" stroke="#888888" fontSize={11} tickLine={false} />
-                          <YAxis stroke="#888888" fontSize={11} tickLine={false} />
-                          <Tooltip
-                            content={({ active, payload, label }) => {
-                              if (active && payload && payload.length) {
-                                const data = payload[0].payload;
-                                return (
-                                  <div className="bg-gray-950 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 font-sans border border-gray-800">
-                                    <p className="font-bold text-amber-300">{data.monthName || label}</p>
-                                    <p className="font-mono text-sm font-black">{Number(data.revenue).toLocaleString()} ر.س</p>
-                                    <p className="text-[10.5px] text-gray-300">إجمالي الطلبات: {data.ordersCount} طلب</p>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }}
-                          />
-                          <Bar 
-                            dataKey="revenue" 
-                            fill="#1C1917" 
-                            radius={[6, 6, 0, 0]} 
-                            name="المبيعات الشهرية (ر.س)"
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
+                      <div className="w-full h-64 pt-2" dir="ltr">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={dailySalesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <defs>
+                              <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#A44C5C" stopOpacity={0.4}/>
+                                <stop offset="95%" stopColor="#A44C5C" stopOpacity={0.0}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#F1F1F1" vertical={false} />
+                            <XAxis dataKey="displayDate" stroke="#888888" fontSize={11} tickLine={false} />
+                            <YAxis stroke="#888888" fontSize={11} tickLine={false} />
+                            <Tooltip
+                              content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                  const data = payload[0].payload;
+                                  return (
+                                    <div className="bg-gray-950 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 font-sans border border-gray-800">
+                                      <p className="font-bold text-[#E8A5B8]">{data.displayDate || label}</p>
+                                      <p className="font-mono text-sm font-black">{Number(data.revenue).toLocaleString()} ر.س</p>
+                                      <p className="text-[10.5px] text-gray-300">عدد الطلبات: {data.ordersCount} طلب</p>
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              }}
+                            />
+                            <Area 
+                              type="monotone" 
+                              dataKey="revenue" 
+                              stroke="#A44C5C" 
+                              strokeWidth={3} 
+                              fillOpacity={1} 
+                              fill="url(#colorDaily)" 
+                              name="المبيعات (ر.س)"
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+
+                  {/* 2. Monthly Sales Bar Chart */}
+                  {(salesChartPeriod === 'monthly' || salesChartPeriod === 'both') && (
+                    <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-gray-950"></span>
+                          <h4 className="font-bold text-xs sm:text-sm text-gray-900 font-serif">
+                            المبيعات الشهرية عبر السنة
+                          </h4>
+                        </div>
+                        <span className="text-[11px] text-gray-400 font-mono">بالريال السعودي (ر.س)</span>
+                      </div>
+
+                      <div className="w-full h-64 pt-2" dir="ltr">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={monthlySalesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#F1F1F1" vertical={false} />
+                            <XAxis dataKey="monthName" stroke="#888888" fontSize={11} tickLine={false} />
+                            <YAxis stroke="#888888" fontSize={11} tickLine={false} />
+                            <Tooltip
+                              content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                  const data = payload[0].payload;
+                                  return (
+                                    <div className="bg-gray-950 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 font-sans border border-gray-800">
+                                      <p className="font-bold text-amber-300">{data.monthName || label}</p>
+                                      <p className="font-mono text-sm font-black">{Number(data.revenue).toLocaleString()} ر.س</p>
+                                      <p className="text-[10.5px] text-gray-300">إجمالي الطلبات: {data.ordersCount} طلب</p>
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              }}
+                            />
+                            <Bar 
+                              dataKey="revenue" 
+                              fill="#1C1917" 
+                              radius={[6, 6, 0, 0]} 
+                              name="المبيعات الشهرية (ر.س)"
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Top Selling Products Analytics Card */}
@@ -2319,7 +2466,229 @@ export default function Dashboard({
         )}
 
         {/* ======================================================== */}
-        {/* TAB 5: STORE SETTINGS & PIXELS */}
+        {/* TAB 5: TEAM MEMBERS & GMAIL ACCESS (فريق العمل وصلاحيات Gmail) */}
+        {/* ======================================================== */}
+        {activeTab === 'team' && (
+          <div className="space-y-6 animate-fade-in-rapid">
+            {/* Intro Header */}
+            <div className="bg-white rounded-3xl p-6 border border-gray-200/90 shadow-2xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-150">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-[#FCF5F6] border border-[#DF8A9D]/30 text-[#A44C5C] flex items-center justify-center shrink-0">
+                    <Users size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-gray-950 flex items-center gap-2">
+                      <span>إدارة فريق العمل والمشرفين (Gmail Access)</span>
+                      <span className="text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold px-2.5 py-0.5 rounded-full font-mono">
+                        {teamMembers.length} أعضاء مصرح لهم
+                      </span>
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      أضيفي الأشخاص المصرح لهم بالدخول للوحة التحكم عن طريق بريدهم في Gmail. بمجرد إضافتهم، يمكنهم فتح اللوحة بحسابهم مباشرة.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Current Active User Badge */}
+                {activeAdminUser && (
+                  <div className="bg-[#FAF8F8] border border-gray-200 px-3.5 py-2 rounded-2xl flex items-center gap-2 text-xs shrink-0 self-start sm:self-auto">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-gray-500 text-[11px]">حسابك الحالي:</span>
+                    <span className="font-mono font-bold text-gray-900" dir="ltr">{activeAdminUser.email}</span>
+                    <span className="bg-[#A44C5C] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {activeAdminUser.role === 'owner' ? 'المالك 👑' : 'مشرف'}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Add New Team Member Form */}
+              <div className="pt-1">
+                <h4 className="font-bold text-sm text-gray-900 mb-3 flex items-center gap-2">
+                  <UserPlus size={16} className="text-[#A44C5C]" />
+                  <span>إضافة شخص جديد لفريق العمل عبر Gmail</span>
+                </h4>
+
+                <form onSubmit={handleAddTeamMember} className="bg-[#FAF9F6] border border-gray-200 rounded-2xl p-4 sm:p-5 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    {/* Gmail input */}
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                        بريد Gmail للشخص <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="example@gmail.com"
+                        value={newMemberEmail}
+                        onChange={(e) => setNewMemberEmail(e.target.value)}
+                        className="w-full bg-white border border-gray-300 focus:border-[#A44C5C] focus:ring-2 focus:ring-[#A44C5C]/20 rounded-xl px-3.5 py-2.5 text-xs font-mono text-left outline-hidden transition-all"
+                        dir="ltr"
+                        required
+                      />
+                    </div>
+
+                    {/* Name input */}
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                        الاسم أو المسمى الوظيفي
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="مثال: سارة - مسؤولة الطلبيات"
+                        value={newMemberName}
+                        onChange={(e) => setNewMemberName(e.target.value)}
+                        className="w-full bg-white border border-gray-300 focus:border-[#A44C5C] focus:ring-2 focus:ring-[#A44C5C]/20 rounded-xl px-3.5 py-2.5 text-xs text-right outline-hidden transition-all"
+                      />
+                    </div>
+
+                    {/* Role selector */}
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                        مستوى الصلاحية
+                      </label>
+                      <select
+                        value={newMemberRole}
+                        onChange={(e) => setNewMemberRole(e.target.value as TeamMemberRole)}
+                        className="w-full bg-white border border-gray-300 focus:border-[#A44C5C] focus:ring-2 focus:ring-[#A44C5C]/20 rounded-xl px-3.5 py-2.5 text-xs text-right outline-hidden transition-all cursor-pointer"
+                      >
+                        <option value="manager">مدير متجر (إدارة الطلبات والمنتجات والكوبونات)</option>
+                        <option value="orders_agent">مشرف طلبيات وشحن (متابعة وتحديث الشحنات فقط)</option>
+                        <option value="viewer">مستعرض (مشاهدة المبيعات والطلبات دون تعديل)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+                    <p className="text-[11px] text-gray-500">
+                      💡 فور الحفظ، يستطيع هذا الشخص فتح لوحة التحكم بالدخول ببريده الـ Gmail.
+                    </p>
+                    <button
+                      type="submit"
+                      disabled={isAddingMember}
+                      className="bg-[#1C1917] hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all cursor-pointer shadow-sm flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <UserPlus size={14} />
+                      <span>{isAddingMember ? 'جاري الإضافة...' : 'إضافة وتفعيل الصلاحية ⚡'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            {/* Team Members List Table / Cards */}
+            <div className="bg-white rounded-3xl border border-gray-200/90 shadow-2xs overflow-hidden">
+              <div className="p-5 border-b border-gray-150 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-sm text-gray-950">قائمة المشرفين المصرح لهم حالياً</h4>
+                  <p className="text-xs text-gray-400 mt-0.5">الحسابات التي تمتلك إذن الدخول والوصول لبيانات المتجر</p>
+                </div>
+                <span className="text-xs font-bold text-gray-500 font-mono">
+                  {teamMembers.length} حساب
+                </span>
+              </div>
+
+              {isLoadingTeam ? (
+                <div className="p-8 text-center text-xs text-gray-400">
+                  جاري تحميل فريق العمل...
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-150">
+                  {teamMembers.map(member => {
+                    const isOwner = member.email.toLowerCase() === 'mohamedostafataher@gmail.com';
+                    const isCurrent = activeAdminUser?.email.toLowerCase() === member.email.toLowerCase();
+
+                    return (
+                      <div key={member.id} className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-gray-50/70 transition-colors">
+                        <div className="flex items-center gap-3.5">
+                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm shrink-0 ${
+                            isOwner ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-gray-100 text-gray-700 border border-gray-200'
+                          }`}>
+                            {isOwner ? '👑' : member.name ? member.name.charAt(0) : member.email.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-xs sm:text-sm text-gray-900">{member.name || member.email.split('@')[0]}</span>
+                              {isOwner && (
+                                <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold px-2 py-0.2 rounded-full">
+                                  المالك الرئيسي للمتجر
+                                </span>
+                              )}
+                              {isCurrent && (
+                                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.2 rounded-full">
+                                  أنتِ الآن
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-500">
+                              <span className="font-mono text-gray-700" dir="ltr">{member.email}</span>
+                              <span>•</span>
+                              <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md text-[10px] font-medium">
+                                {member.role === 'owner' ? 'المالك (وصول شامل)' : member.role === 'manager' ? 'مدير متجر' : member.role === 'orders_agent' ? 'مشرف شحن وطلبيات' : 'مستعرض فقط'}
+                              </span>
+                              <span>•</span>
+                              <span className="text-gray-400">
+                                مضاف: {new Date(member.addedAt).toLocaleDateString('ar-SA')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                          <span className="inline-flex items-center gap-1 text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-xl font-bold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            مصرح له بالدخول
+                          </span>
+
+                          {!isOwner ? (
+                            <button
+                              onClick={() => handleRemoveTeamMember(member)}
+                              disabled={removingMemberId === member.id}
+                              className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all cursor-pointer border border-transparent hover:border-rose-200"
+                              title="إلغاء صلاحية الوصول"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg font-medium">
+                              محمي دائم
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Guide on how it works */}
+            <div className="bg-[#FAF9F6] border border-gray-200/80 rounded-3xl p-5 sm:p-6 space-y-3">
+              <h4 className="font-bold text-xs sm:text-sm text-gray-900 flex items-center gap-2">
+                <Sparkles size={16} className="text-[#A44C5C]" />
+                <span>كيف يقوم الشخص المضاف بالدخول إلى لوحة التحكم؟</span>
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-gray-600 leading-relaxed font-sans">
+                <div className="bg-white p-3.5 rounded-2xl border border-gray-150 space-y-1">
+                  <span className="font-bold text-gray-900 block font-mono text-sm text-[#A44C5C]">١. مشاركة الرابط</span>
+                  <p>أرسل للشخص رابط لوحة التحكم مباشرة من المتجر (أو الرابط: <code>?tab=dashboard</code>).</p>
+                </div>
+                <div className="bg-white p-3.5 rounded-2xl border border-gray-150 space-y-1">
+                  <span className="font-bold text-gray-900 block font-mono text-sm text-[#A44C5C]">٢. التحقق بـ Gmail</span>
+                  <p>يضغط على "الدخول بحساب Google" أو يكتب بريد الـ Gmail المعتمد في خانة الدخول.</p>
+                </div>
+                <div className="bg-white p-3.5 rounded-2xl border border-gray-150 space-y-1">
+                  <span className="font-bold text-gray-900 block font-mono text-sm text-[#A44C5C]">٣. فتح اللوحة فوراً</span>
+                  <p>يتحقق النظام من مطابقة بريده في قائمتك ويمنحه الدخول مباشرة بصلاحيته المحددة.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB 6: STORE SETTINGS & PIXELS */}
         {/* ======================================================== */}
         {activeTab === 'settings' && (
           <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-2xs space-y-6 animate-fade-in-rapid">
@@ -2424,10 +2793,37 @@ export default function Dashboard({
                     </label>
                     <input
                       type="text"
-                      placeholder="مثال: 123456789012345"
+                      placeholder="مثال: 1648674350574190"
                       value={settingsForm.facebookPixelId}
                       onChange={(e) => setSettingsForm(prev => ({ ...prev, facebookPixelId: e.target.value }))}
-                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black font-bold text-gray-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1 flex items-center justify-between">
+                      <span>Meta CAPI Access Token (Conversions API)</span>
+                      <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">نشط 🟢</span>
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="EABD..."
+                      value={settingsForm.metaCapiAccessToken}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, metaCapiAccessToken: e.target.value }))}
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black text-gray-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      Meta Test Event Code (اختياري لاختبار الأحداث في Events Manager)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="مثال: TEST12345"
+                      value={settingsForm.metaTestEventCode}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, metaTestEventCode: e.target.value }))}
+                      className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black text-gray-900"
                     />
                   </div>
 

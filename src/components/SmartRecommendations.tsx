@@ -2,6 +2,7 @@ import SultaImage from "./SultaImage";
 import React, { useMemo } from 'react';
 import { Sparkles, Heart, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Product, Country } from '../types';
+import { ProductPrice } from './ProductPrice';
 
 interface SmartRecommendationsProps {
   product: Product;
@@ -38,10 +39,7 @@ export default function SmartRecommendations({
     };
   }, [product, products]);
 
-  const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
-
   const ProductCard = ({ prod }: { prod: Product }) => {
-    const price = country === 'EG' ? prod.priceEG : prod.priceSA;
     const isFav = favorites.includes(prod.id);
 
     return (
@@ -75,15 +73,13 @@ export default function SmartRecommendations({
           </button>
         </div>
 
-        <div className="mt-2.5 space-y-1">
+        <div className="mt-2.5 space-y-1.5">
           <h5 className="font-serif text-[11.5px] text-gray-950 truncate font-bold leading-normal">
             {prod.nameAr}
           </h5>
-          <div className="flex justify-between items-center text-[10px] flex-row-reverse">
-            <span className="text-[#A44C5C] font-mono font-extrabold">
-              {price.toLocaleString()} {currencyLabel}
-            </span>
-            <span className="text-gray-400 font-sans text-[9px]">
+          <div className="flex justify-between items-end text-[10px] flex-row-reverse">
+            <ProductPrice product={prod} country={country} size="sm" showBadge={false} />
+            <span className="text-gray-400 font-sans text-[9px] shrink-0">
               {prod.categoryAr || 'كوتور'}
             </span>
           </div>

@@ -46,6 +46,8 @@ export interface Settings {
   facebook: string;
   tiktok: string;
   facebookPixelId?: string;
+  metaCapiAccessToken?: string;
+  metaTestEventCode?: string;
   googleAnalyticsId?: string;
   snapchatPixelId?: string;
   tiktokPixelId?: string;
@@ -75,6 +77,19 @@ export interface Settings {
   whatsappDiscountCode?: string;
   whatsappMarketingMessageTemplate?: string;
   whatsappCartRecoveryMessageTemplate?: string;
+  // Team Management & Gmail Access
+  adminTeamMembers?: TeamMember[];
+}
+
+export type TeamMemberRole = 'owner' | 'manager' | 'orders_agent' | 'viewer';
+
+export interface TeamMember {
+  id: string;
+  email: string;
+  name?: string;
+  role: TeamMemberRole;
+  addedAt: string;
+  lastLoginAt?: string;
 }
 
 export interface Product {
