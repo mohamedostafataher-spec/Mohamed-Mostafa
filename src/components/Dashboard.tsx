@@ -66,6 +66,8 @@ import { dbService, cleanImgUrl } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
 import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats } from '../utils/analytics';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
+import PixelHealthIndicator from './PixelHealthIndicator';
+import TrafficHeatmap from './TrafficHeatmap';
 
 interface DashboardProps {
   products: Product[];
@@ -1277,6 +1279,9 @@ export default function Dashboard({
                </div>
             </div>
 
+            {/* Pixel Health Indicator (Direct check for browser tracking status) */}
+            <PixelHealthIndicator />
+
             {/* Real Visitors & Daily Tracking Breakdown */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-2xs space-y-2 relative overflow-hidden flex items-center justify-between">
@@ -1418,8 +1423,10 @@ export default function Dashboard({
                   </div>
                </div>
 
-               {/* Right: Live Activity Feed (Shopify style) */}
+               {/* Right: Live Activity & Traffic Sources */}
                <div className="lg:col-span-1 space-y-6">
+                  <TrafficHeatmap />
+                  
                   <div className="bg-gray-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-800 flex flex-col h-full max-h-[540px]">
                      <div className="flex items-center justify-between pb-4 border-b border-white/10">
                         <div className="flex items-center gap-2">

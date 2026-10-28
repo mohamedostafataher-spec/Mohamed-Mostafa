@@ -553,4 +553,67 @@ BEGIN
 END $$;
 
 
+-- 28. User Sessions Table (سجلات جلسات الزوار ومصادر الحركة)
+CREATE TABLE IF NOT EXISTS public.user_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id TEXT NOT NULL,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    utm_content TEXT,
+    utm_term TEXT,
+    referrer TEXT,
+    landing_page TEXT,
+    device TEXT,
+    user_agent TEXT,
+    city TEXT,
+    country TEXT,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
+-- 29. Visitors Table (Alternative naming supported by analytics engine)
+CREATE TABLE IF NOT EXISTS public.visitors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id TEXT NOT NULL,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    utm_content TEXT,
+    utm_term TEXT,
+    referrer TEXT,
+    landing_page TEXT,
+    device TEXT,
+    user_agent TEXT,
+    city TEXT,
+    country TEXT,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable RLS for tracking tables
+ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.visitors ENABLE ROW LEVEL SECURITY;
+
+-- Allow anonymous inserts for tracking (CRITICAL for data to appear)
+CREATE POLICY "Allow anonymous insert into user_sessions" ON public.user_sessions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anonymous insert into visitors" ON public.visitors FOR INSERT WITH CHECK (true);
+
+-- Allow public select for dashboard visibility
+CREATE POLICY "Allow public select of user_sessions" ON public.user_sessions FOR SELECT USING (true);
+CREATE POLICY "Allow public select of visitors" ON public.visitors FOR SELECT USING (true);
+
+-- Allow full control for admin/everyone in development mode
+CREATE POLICY "Allow full control of user_sessions" ON public.user_sessions FOR ALL USING (true);
+CREATE POLICY "Allow full control of visitors" ON public.visitors FOR ALL USING (true);
+
+-- Add to Realtime Publication for live updates
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'user_sessions') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.user_sessions;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'visitors') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.visitors;
+    END IF;
+END $$;

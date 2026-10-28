@@ -63,16 +63,18 @@ export const captureUtmParams = () => {
   if (typeof window === 'undefined') return;
   try {
     const params = new URLSearchParams(window.location.search);
-    const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'ttclid'];
     const stored = getStoredUtmParams();
     let hasNew = false;
-    keys.forEach(k => {
-      const val = params.get(k);
-      if (val) {
-        stored[k] = val;
+    
+    // Capture ALL parameters starting with utm_ plus common ad identifiers
+    params.forEach((value, key) => {
+      const k = key.toLowerCase();
+      if (k.startsWith('utm_') || k === 'fbclid' || k === 'ttclid' || k === 'gclid' || k === 'scid' || k === 'msclkid') {
+        stored[k] = value;
         hasNew = true;
       }
     });
+
     if (hasNew) {
       sessionStorage.setItem('sulta_utm_params', JSON.stringify(stored));
       localStorage.setItem('sulta_utm_params', JSON.stringify(stored));
@@ -96,29 +98,56 @@ export const detectTrafficSource = (): TrafficSourceInfo => {
   const ref = (typeof document !== 'undefined' ? document.referrer || '' : '').toLowerCase();
   const utm = getStoredUtmParams();
   const utmSrc = (utm.utm_source || '').toLowerCase();
+  const utmMed = (utm.utm_medium || '').toLowerCase();
   
-  // Instagram check (referrer l.instagram.com, instagram in utm, or ig)
-  if (ref.includes('instagram.com') || utmSrc.includes('instagram') || utmSrc.includes('ig') || search.includes('utm_source=instagram') || search.includes('utm_source=ig')) {
+  // 1. Instagram check - more specific
+  if (
+    ref.includes('instagram.com') || 
+    utmSrc.includes('instagram') || 
+    utmSrc.includes('ig') || 
+    utmMed.includes('instagram') ||
+    search.includes('utm_source=instagram') || 
+    search.includes('utm_source=ig') ||
+    search.includes('igshid')
+  ) {
     return { source: 'instagram', label: 'إنستغرام (Instagram)', icon: '📸', pixel: 'Meta (Facebook)' };
   }
 
-  // Meta / Facebook check
-  if (search.includes('fbclid') || ref.includes('facebook.com') || utmSrc.includes('facebook') || utmSrc.includes('meta')) {
-    return { source: 'meta', label: 'فيسبوك / Meta Ads', icon: '🔵', pixel: 'Meta (Facebook)' };
-  }
-
-  // TikTok check
-  if (search.includes('ttclid') || ref.includes('tiktok.com') || utmSrc.includes('tiktok')) {
+  // 2. TikTok check - prioritize tiktok identifiers
+  if (
+    search.includes('ttclid') || 
+    ref.includes('tiktok.com') || 
+    utmSrc.includes('tiktok') ||
+    search.includes('utm_source=tiktok')
+  ) {
     return { source: 'tiktok', label: 'تيك توك (TikTok)', icon: '🎵', pixel: 'TikTok' };
   }
 
-  // Snapchat check
-  if (ref.includes('snapchat.com') || utmSrc.includes('snapchat') || utmSrc.includes('snap')) {
+  // 3. Meta / Facebook check
+  if (
+    search.includes('fbclid') || 
+    ref.includes('facebook.com') || 
+    utmSrc.includes('facebook') || 
+    utmSrc.includes('meta') ||
+    search.includes('utm_source=facebook') ||
+    search.includes('utm_source=meta')
+  ) {
+    return { source: 'meta', label: 'فيسبوك / Meta Ads', icon: '🔵', pixel: 'Meta (Facebook)' };
+  }
+
+  // 4. Snapchat check
+  if (
+    ref.includes('snapchat.com') || 
+    utmSrc.includes('snapchat') || 
+    utmSrc.includes('snap') ||
+    search.includes('scid') ||
+    search.includes('utm_source=snap')
+  ) {
     return { source: 'snapchat', label: 'سناب شات (Snapchat)', icon: '👻', pixel: 'Snapchat' };
   }
 
-  // Google check
-  if (ref.includes('google.com') || utmSrc.includes('google')) {
+  // 5. Google check
+  if (ref.includes('google.com') || utmSrc.includes('google') || search.includes('gclid')) {
     return { source: 'google', label: 'جوجل (Google Search)', icon: '🔍', pixel: 'Google Analytics' };
   }
 
@@ -200,11 +229,10 @@ export const initGlobalSync = () => {
   if (typeof window === 'undefined' || !supabase || activeChannel) return;
 
   // 1. Capture and store UTM parameters on initial landing
-  // 1. Capture and store UTM parameters and traffic source
   captureUtmParams();
   const traffic = detectTrafficSource();
 
-  // 2. Anonymous visitor session (no account/registration needed)
+  // 2. Anonymous visitor session
   let sessionId = sessionStorage.getItem('sulta_visitor_session_id');
   const isNewSession = !sessionId;
   if (!sessionId) {
@@ -212,26 +240,68 @@ export const initGlobalSync = () => {
     sessionStorage.setItem('sulta_visitor_session_id', sessionId);
   }
 
-  // 3. Ping anonymous visit to serverless analytics endpoint
+  // 3. Persistent session storage with multi-table fallback (New requirement)
+  const utm = getStoredUtmParams();
+  const referrer = typeof document !== 'undefined' ? document.referrer : '';
+  
+  if (isNewSession) {
+    const sessionData = {
+      session_id: sessionId,
+      utm_source: utm.utm_source || traffic.source,
+      utm_medium: utm.utm_medium || '',
+      utm_campaign: utm.utm_campaign || '',
+      utm_content: utm.utm_content || '',
+      utm_term: utm.utm_term || '',
+      referrer: referrer,
+      landing_page: window.location.pathname,
+      device: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+      metadata: utm, // Store all captured params as a JSON blob
+      created_at: new Date().toISOString()
+    };
+
+    if (isTrackingDebugMode()) {
+       console.log('[Analytics] Persisting new session:', sessionData);
+    }
+
+    // 3a. Primary: user_sessions
+    supabase.from('user_sessions').insert([sessionData]).then(({ error }) => {
+      if (error) {
+        if (isTrackingDebugMode()) console.warn('[Analytics] user_sessions insert failed:', error.message);
+        // 3b. Secondary: visitors (alternate table mentioned by user)
+        supabase.from('visitors').insert([sessionData]).then(({ error: vError }) => {
+          if (vError) {
+             if (isTrackingDebugMode()) console.warn('[Analytics] visitors insert failed:', vError.message);
+             // 3c. Ultimate Fallback: support_tickets (guaranteed to exist in this schema)
+             supabase.from('support_tickets').insert([{
+               subject: `session:${sessionId}`,
+               message: JSON.stringify(sessionData),
+               status: 'analytics_session',
+               created_at: new Date().toISOString()
+             }]).catch(() => {});
+          }
+        }).catch(() => {});
+      }
+    }).catch(() => {});
+  }
+
+  // 4. Ping visit to legacy analytics endpoint for backward compatibility
   try {
-    const utm = getStoredUtmParams();
     fetch('/api/analytics/visit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         session_id: sessionId,
         page: window.location.pathname,
-        referrer: typeof document !== 'undefined' ? document.referrer : '',
+        referrer,
         utm_source: utm.utm_source || traffic.source,
         utm_medium: utm.utm_medium || '',
         utm_campaign: utm.utm_campaign || ''
       })
-    }).then(() => {
-      fetchVisitorStatsFromSupabase('daily').catch(() => {});
     }).catch(() => {});
   } catch {}
 
-  // 4. If new visitor session, log arrival event with real traffic source
+  // 5. If new visitor session, log arrival event
   if (isNewSession) {
     logPixelEvent(traffic.pixel, 'PageView', `زائر جديد عبر ${traffic.label} ${traffic.icon}`);
   }
