@@ -112,33 +112,34 @@ export const subscribePixelLogs = (cb: (logs: PixelEventLog[]) => void) => {
 export const initGlobalSync = () => {
   if (typeof window === 'undefined' || !supabase || activeChannel) return;
 
+  // Generate or retrieve unique session ID for this visitor
+  let sessionId = sessionStorage.getItem('sulta_visitor_session_id');
+  if (!sessionId) {
+    sessionId = 'visitor_' + Math.random().toString(36).substring(2, 15);
+    sessionStorage.setItem('sulta_visitor_session_id', sessionId);
+  }
+
   const channelId = 'sulta-store-pulse';
   activeChannel = supabase.channel(channelId, {
     config: {
-      presence: { key: 'user' },
+      presence: { key: sessionId }, // Use unique ID here
       broadcast: { self: false }
     }
   });
 
   activeChannel
     .on('broadcast', { event: 'pixel-event' }, ({ payload }: { payload: PixelEventLog }) => {
-       // Only add if not already in memory (though broadcast.self: false handles this)
        if (!inMemoryPixelLogs.some(l => l.id === payload.id)) {
-         inMemoryPixelLogs = [payload, ...inMemoryPixelLogs].slice(0, 50);
+         inMemoryPixelLogs = [payload, ...inMemoryPixelLogs];
          pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
        }
     })
     .on('presence', { event: 'sync' }, () => {
       const state = activeChannel.presenceState();
+      // Supabase returns an object where keys are the presence keys
       const count = Object.keys(state).length;
       liveVisitorCount = Math.max(1, count);
       visitorCountListeners.forEach(l => l(liveVisitorCount));
-    })
-    .on('presence', { event: 'join' }, ({ key, newPresences }: any) => {
-      // Optional: Log new visitor join in the feed
-      /*
-      logPixelEvent('System', 'VisitorJoined', `عميلة جديدة دخلت المتجر الآن 🛍️`, 'simulated');
-      */
     })
     .subscribe(async (status: string) => {
       if (status === 'SUBSCRIBED') {
