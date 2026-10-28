@@ -767,7 +767,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     featured: true,
     status: 'active',
     rating: 5,
-    reviewsCount: 38,
+    reviewsCount: 0,
     stock: 12
   },
   {
@@ -806,8 +806,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     isBestSeller: true,
     featured: true,
     status: 'active',
-    rating: 4.9,
-    reviewsCount: 42,
+    rating: 5,
+    reviewsCount: 0,
     stock: 15
   },
   {
@@ -847,7 +847,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     featured: true,
     status: 'active',
     rating: 5,
-    reviewsCount: 51,
+    reviewsCount: 0,
     stock: 14
   },
   {
@@ -885,8 +885,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     isBestSeller: false,
     featured: true,
     status: 'active',
-    rating: 4.8,
-    reviewsCount: 29,
+    rating: 5,
+    reviewsCount: 0,
     stock: 11
   },
   {
@@ -924,8 +924,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     isBestSeller: true,
     featured: true,
     status: 'active',
-    rating: 4.9,
-    reviewsCount: 36,
+    rating: 5,
+    reviewsCount: 0,
     stock: 9
   },
   {
@@ -964,8 +964,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     isBestSeller: false,
     featured: true,
     status: 'active',
-    rating: 4.9,
-    reviewsCount: 22,
+    rating: 5,
+    reviewsCount: 0,
     stock: 10
   },
   {
@@ -1004,7 +1004,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     featured: true,
     status: 'active',
     rating: 5,
-    reviewsCount: 47,
+    reviewsCount: 0,
     stock: 13
   }
 ];

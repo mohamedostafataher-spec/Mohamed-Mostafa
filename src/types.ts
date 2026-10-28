@@ -114,6 +114,7 @@ export interface Product {
   featured?: boolean;
   status?: 'active' | 'draft' | 'archived';
   sku?: string;
+  code?: string;
   salePriceEG?: number;
   salePriceSA?: number;
   rating: number;

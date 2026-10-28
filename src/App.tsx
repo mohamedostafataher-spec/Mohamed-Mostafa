@@ -89,6 +89,29 @@ function AppContent() {
   const [country, setCountry] = useState<Country>('SA');
   const [autoTrackId, setAutoTrackId] = useState<string | null>(null);
 
+  // Admin status check (Only authorized admins see live visitor counter badge)
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return !!localStorage.getItem('sulta_admin_auth_user');
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    const syncAdminStatus = () => {
+      try {
+        setIsAdmin(!!localStorage.getItem('sulta_admin_auth_user'));
+      } catch {
+        setIsAdmin(false);
+      }
+    };
+    syncAdminStatus();
+    window.addEventListener('storage', syncAdminStatus);
+    return () => window.removeEventListener('storage', syncAdminStatus);
+  }, [session]);
+
   // High-precision geographic country detector
   useEffect(() => {
     // Synchronise manually chosen country changes to localStorage
@@ -1292,6 +1315,7 @@ function AppContent() {
           <AdminAuthGate
             session={session}
             onAuthorized={(user) => {
+              setIsAdmin(true);
               console.log("[AUTH] Admin access granted to:", user.email);
             }}
             onBackToStore={() => setTab('home')}
@@ -1487,7 +1511,7 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-sans">
           <div className="flex items-center gap-4 flex-wrap">
             <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر SULTA للأزياء الفاخرة</span>
-            {session && <LiveTrafficMonitor compact={true} />}
+            {isAdmin && <LiveTrafficMonitor compact={true} />}
           </div>
           <div className="text-gray-400 text-[11px]">
             <span>تسوق سهل وسريع مع توصيل آمن لكافة مناطق المملكة والخليج ومصر</span>

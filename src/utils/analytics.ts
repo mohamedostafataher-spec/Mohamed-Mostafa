@@ -39,6 +39,48 @@ let liveVisitorCount = 1;
 let activeChannel: any = null;
 
 /**
+ * Check if debug mode is active (?debug_tracking=1)
+ */
+export const isTrackingDebugMode = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('debug_tracking') === '1';
+};
+
+/**
+ * First-party UTM parameters capture and storage
+ */
+export const getStoredUtmParams = (): Record<string, string> => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = sessionStorage.getItem('sulta_utm_params') || localStorage.getItem('sulta_utm_params');
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+};
+
+export const captureUtmParams = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'ttclid'];
+    const stored = getStoredUtmParams();
+    let hasNew = false;
+    keys.forEach(k => {
+      const val = params.get(k);
+      if (val) {
+        stored[k] = val;
+        hasNew = true;
+      }
+    });
+    if (hasNew) {
+      sessionStorage.setItem('sulta_utm_params', JSON.stringify(stored));
+      localStorage.setItem('sulta_utm_params', JSON.stringify(stored));
+    }
+  } catch {}
+};
+
+/**
  * Helper to log pixel event locally and broadcast to global dashboard feed
  */
 export const logPixelEvent = (
@@ -112,24 +154,45 @@ export const subscribePixelLogs = (cb: (logs: PixelEventLog[]) => void) => {
 export const initGlobalSync = () => {
   if (typeof window === 'undefined' || !supabase || activeChannel) return;
 
-  // Generate or retrieve unique session ID
+  // 1. Capture and store UTM parameters on initial landing
+  captureUtmParams();
+
+  // 2. Anonymous visitor session (no account/registration needed)
   let sessionId = sessionStorage.getItem('sulta_visitor_session_id');
   if (!sessionId) {
-    sessionId = 'visitor_' + Math.random().toString(36).substring(2, 15);
+    sessionId = 'guest_' + Math.random().toString(36).substring(2, 12);
     sessionStorage.setItem('sulta_visitor_session_id', sessionId);
   }
+
+  // 3. Ping anonymous visit to serverless analytics endpoint
+  try {
+    const utm = getStoredUtmParams();
+    fetch('/api/analytics/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: sessionId,
+        page: window.location.pathname,
+        referrer: typeof document !== 'undefined' ? document.referrer : '',
+        utm_source: utm.utm_source || '',
+        utm_medium: utm.utm_medium || '',
+        utm_campaign: utm.utm_campaign || ''
+      })
+    }).then(() => {
+      fetchVisitorStatsFromSupabase('daily').catch(() => {});
+    }).catch(() => {});
+  } catch {}
 
   const channelId = 'sulta-store-pulse';
   activeChannel = supabase.channel(channelId, {
     config: {
       presence: { key: sessionId },
-      broadcast: { self: true } // Broadcast to everyone including self for testing
+      broadcast: { self: true }
     }
   });
 
   activeChannel
     .on('broadcast', { event: 'pixel-event' }, ({ payload }: { payload: PixelEventLog }) => {
-       // Update UI for all admins
        inMemoryPixelLogs = [payload, ...inMemoryPixelLogs];
        pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
     })
@@ -144,12 +207,6 @@ export const initGlobalSync = () => {
         await activeChannel.track({
           online_at: new Date().toISOString(),
           page: window.location.pathname
-        });
-        // Force sync for Admin Dashboards
-        activeChannel.send({
-          type: 'broadcast',
-          event: 'pixel-event',
-          payload: { id: 'sys-' + Date.now(), event: 'System', details: 'زائر جديد انضم للمتجر 🛍️', status: 'sent', pixel: 'System', timestamp: new Date().toLocaleTimeString() }
         });
       }
     });
@@ -226,10 +283,14 @@ export const dispatchMetaCapi = async (
     const payload = {
       event_name: eventName,
       event_id: eventId,
-      event_source_url: typeof window !== 'undefined' ? window.location.href : 'https://sulta-atelier.com',
+      event_source_url: typeof window !== 'undefined' ? window.location.href : 'https://sulta.vercel.app',
       user_data: userData,
       custom_data: customData
     };
+
+    if (isTrackingDebugMode()) {
+      console.log(`%c[TRACKING DEBUG] CAPI Dispatch: ${eventName}`, 'color: #10b981; font-weight: bold;', payload);
+    }
 
     fetch('/api/meta/capi', {
       method: 'POST',
@@ -588,6 +649,22 @@ export const trackInitiateCheckout = (items: any[], totalValue: number, currency
 };
 
 export const trackPurchase = (order: Order) => {
+  if (!order || !order.id) return;
+
+  // Deduplication check: Purchase must fire exactly once per order
+  try {
+    const firedOrdersKey = 'sulta_fired_purchases_v2';
+    const firedOrders = JSON.parse(sessionStorage.getItem(firedOrdersKey) || '[]');
+    if (firedOrders.includes(order.id)) {
+      if (isTrackingDebugMode()) {
+        console.log(`[TRACKING DEBUG] Purchase event already fired for order #${order.id}. Skipping duplicate.`);
+      }
+      return;
+    }
+    firedOrders.push(order.id);
+    sessionStorage.setItem(firedOrdersKey, JSON.stringify(firedOrders));
+  } catch {}
+
   const currency = order.currency || 'SAR';
   const total = order.totalPrice || 0;
   const ids = order.items.map(i => i.productId);
@@ -895,14 +972,15 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
     // Keep history trimmed to 30 days
     if (history.length > 30) history = history.slice(-30);
 
-    const weeklyVisitors = history.slice(-7).reduce((sum, h) => sum + h.visitors, 0);
-    const monthlyVisitors = history.reduce((sum, h) => sum + h.visitors, 0);
+    const weeklyVisitors = cachedServerStats?.weeklyCount || history.slice(-7).reduce((sum, h) => sum + h.visitors, 0);
+    const monthlyVisitors = cachedServerStats?.total30Days || history.reduce((sum, h) => sum + h.visitors, 0);
+    const effectiveToday = cachedServerStats ? Math.max(cachedServerStats.todayCount, todayVisitors) : todayVisitors;
 
     return {
       liveCount: Math.max(1, liveVisitorCount),
-      todayCount: todayVisitors,
+      todayCount: effectiveToday,
       totalUniqueVisitors: monthlyVisitors,
-      dailyHistory: history.slice(-30),
+      dailyHistory: cachedServerStats?.dailyHistory || history.slice(-30),
       weeklyVisitors,
       monthlyVisitors
     };
@@ -935,14 +1013,35 @@ export const downloadVisitorStatsCSV = (history: { date: string; visitors: numbe
   document.body.removeChild(link);
 };
 
+// Global cache for aggregated stats from serverless Supabase sync
+let cachedServerStats: {
+  todayCount: number;
+  total30Days: number;
+  weeklyCount: number;
+  dailyHistory: { date: string; visitors: number; orders: number }[];
+} | null = null;
+
 /**
- * Fetches grouped traffic data from Supabase
- * Placeholder for future DB implementation
+ * Fetches real grouped traffic data from Supabase backend endpoint
  */
 export const fetchVisitorStatsFromSupabase = async (period: 'daily' | 'weekly' | 'monthly'): Promise<any[]> => {
-    console.log(`[Supabase] Fetching grouped data for period: ${period}`);
-    // Simulate DB query
+  try {
+    const res = await fetch('/api/analytics/visit');
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (data && data.dailyHistory) {
+      cachedServerStats = {
+        todayCount: data.todayCount || 1,
+        total30Days: data.total30Days || 1,
+        weeklyCount: data.weeklyCount || 1,
+        dailyHistory: data.dailyHistory || []
+      };
+      return data.dailyHistory;
+    }
     return [];
+  } catch (err) {
+    return [];
+  }
 };
 
 /**

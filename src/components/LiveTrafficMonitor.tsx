@@ -35,9 +35,9 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
     await fetchVisitorStatsFromSupabase(tab === 'monthly' ? 'monthly' : tab === 'weekly' ? 'weekly' : 'daily');
   };
 
-  const filteredHistory = stats.dailyHistory.filter(h => selectedCity === 'all' ? true : h.city === selectedCity);
+  const filteredHistory = stats.dailyHistory.filter(h => selectedCity === 'all' ? true : (h as any).city === selectedCity);
   const weeklyTotal = filteredHistory.reduce((sum, d) => sum + d.visitors, 0);
-  const monthlyEstimated = weeklyTotal * 4; // Monthly projected/aggregated
+  const monthlyActual = stats.monthlyVisitors || weeklyTotal;
 
 
   if (compact) {

@@ -53,7 +53,7 @@ export default function ProductDetailModal({
   // Inject Product Schema JSON-LD for Google Rich Results
   React.useEffect(() => {
     const scriptId = 'sulta-product-schema';
-    let existingScript = document.getElementById(scriptId);
+    let existingScript = document.getElementById(scriptId) as HTMLScriptElement | null;
     if (!existingScript) {
       existingScript = document.createElement('script');
       existingScript.id = scriptId;
@@ -86,11 +86,13 @@ export default function ProductDetailModal({
         "itemCondition": "https://schema.org/NewCondition",
         "availability": (product.stock !== undefined && product.stock <= 0) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": product.rating || 4.9,
-        "reviewCount": product.reviewsCount || 42
-      }
+      ...(product.reviewsCount && product.reviewsCount > 0 ? {
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": product.rating || 5,
+          "reviewCount": product.reviewsCount
+        }
+      } : {})
     };
 
     existingScript.textContent = JSON.stringify(schemaData);
