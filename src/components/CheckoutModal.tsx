@@ -97,23 +97,23 @@ export default function CheckoutModal({
     // Check if device supports specific features if needed
   }, []);
 
-  // Subtotal and Calculations (99 SAR after discount)
+  // Subtotal and Calculations: Use real database prices (sale price or original price)
+  // No hardcoded "99 SAR" logic to ensure coordination with Admin Dashboard settings.
   const subtotal = cart.reduce((sum, item) => {
     const itemPrice = country === 'EG' 
-      ? (item.product.salePriceEG || item.product.priceEG) 
-      : (item.product.salePriceSA || (item.product.priceSA <= 120 ? item.product.priceSA : 99));
+      ? (item.product.salePriceEG || item.product.priceEG || 0) 
+      : (item.product.salePriceSA || item.product.priceSA || 0);
     return sum + itemPrice * item.quantity;
   }, 0);
 
-  // Dynamic Shipping calculation:
-  // Free shipping for orders >= 800 SAR (Saudi) or 1500 EGP (Egypt).
+  // Unified Dynamic Shipping calculation:
+  // Reachable threshold coordinated with Boutique marketing (299 SAR / 1000 EGP)
   const getDynamicShippingCost = () => {
-    const freeThreshold = country === 'SA' ? 800 : 1500;
+    const freeThreshold = country === 'SA' ? 299 : 1000;
     const standardFee = country === 'SA' ? 40 : 75;
 
     if (subtotal >= freeThreshold) return 0;
 
-    // Check if there are city-specific rates in settings (mostly for EG if added, or special SA regions)
     if (settings && settings.shippingRates && settings.shippingRates.length > 0) {
       const userCity = city.trim().toLowerCase();
       if (userCity) {
@@ -127,7 +127,6 @@ export default function CheckoutModal({
       }
     }
     
-    // Default to unified standard fee
     return standardFee;
   };
 

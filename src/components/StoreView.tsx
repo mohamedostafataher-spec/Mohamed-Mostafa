@@ -60,7 +60,7 @@ export default function StoreView({
   // Dynamic Catalog Price Range Calculation
   const { minPriceCatalog, maxPriceCatalog } = useMemo(() => {
     if (!products || products.length === 0) {
-      return { minPriceCatalog: 0, maxPriceCatalog: country === 'EG' ? 2000 : 800 };
+      return { minPriceCatalog: 0, maxPriceCatalog: country === 'EG' ? 2000 : 1000 };
     }
     let min = Infinity;
     let max = 0;
@@ -237,8 +237,8 @@ export default function StoreView({
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
                 {selectedCategory === 'offers' 
-                  ? 'اكتشفي أقوى عروض التوفير بخصومات تصل إلى 30% مع شحن سريع وتوصيل لباب بيتكِ في كافة مناطق المملكة ومصر.'
-                  : 'اكتشفي تشكيلة بيجامات وأرواب النوم الفاخرة بخصومات فورية وتوصيل سريع لباب بيتكِ في كافة مناطق المملكة ومصر.'}
+                  ? 'اكتشفي أقوى عروض التوفير بخصومات تصل إلى 30% مع شحن مجاني للطلبات فوق 299 ر.س وتوصيل لباب بيتكِ.'
+                  : 'اكتشفي تشكيلة بيجامات وأرواب النوم الفاخرة بخصومات فورية وشحن مجاني للطلبات فوق 299 ر.س.'}
               </p>
 
               {/* Mobile Quick Promo Code Pill */}
@@ -571,7 +571,7 @@ export default function StoreView({
               const safeIdx = (activeImgIdx >= 0 && activeImgIdx < productImgs.length) ? activeImgIdx : 0;
               const currentImg = cleanImgUrl(productImgs[safeIdx], product.category);
 
-              // Calculate price & discount for Salla badge (200 before -> 99 after = 50% off)
+              // Calculate price & discount for Salla badge
               const currentPrice = country === 'EG' ? product.priceEG : product.priceSA;
               const salePrice = country === 'EG' ? product.salePriceEG : product.salePriceSA;
               const hasSale = !!salePrice && salePrice < currentPrice;

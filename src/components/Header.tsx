@@ -91,7 +91,9 @@ export default function Header({
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' ? item.product?.priceEG : item.product?.priceSA;
+    const itemPrice = country === 'EG' 
+      ? (item.product?.salePriceEG || item.product?.priceEG || 0) 
+      : (item.product?.salePriceSA || item.product?.priceSA || 0);
     return sum + (itemPrice * item.quantity);
   }, 0);
   const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
@@ -128,11 +130,11 @@ export default function Header({
             <Truck size={13} className="text-black shrink-0" />
             <span className="hidden sm:inline">
               {country === 'SA' 
-                ? 'شحن مجاني لكافة مدن ومناطق المملكة للطلبات بقيمة 800 ر.س فأكثر 🇸🇦 | شحن قياسي موحد 40 ر.س' 
-                : 'شحن مجاني داخل مصر للطلبات بقيمة 1500 ج.م فأكثر 🇪🇬 | شحن قياسي موحد 75 ج.م'} | كود: <strong className="font-mono text-black">SULTA20</strong>
+                ? 'شحن مجاني لكافة مدن ومناطق المملكة للطلبات بقيمة 299 ر.س فأكثر 🇸🇦 | شحن قياسي 40 ر.س' 
+                : 'شحن مجاني داخل مصر للطلبات بقيمة 1000 ج.م فأكثر 🇪🇬 | شحن قياسي 75 ج.م'} | كود: <strong className="font-mono text-black">SULTA20</strong>
             </span>
             <span className="sm:hidden font-semibold truncate text-[9px]">
-              {country === 'SA' ? 'شحن مجاني فوق 800 ر.س (قياسي 40 ر.س)' : 'شحن مجاني فوق 1500 ج.م (قياسي 75 ج.م)'} • كود: <strong className="text-black">SULTA20</strong>
+              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س (قياسي 40 ر.س)' : 'شحن مجاني فوق 1000 ج.م (قياسي 75 ج.م)'} • كود: <strong className="text-black">SULTA20</strong>
             </span>
           </div>
 

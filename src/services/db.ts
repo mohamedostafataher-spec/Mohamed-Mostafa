@@ -538,21 +538,9 @@ function mapProduct(data: any): Product {
     ? metaSalePriceSA 
     : (data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined));
 
-  // Store owner campaign: 200 SAR before discount -> 99 SAR after discount (50% off)
-  if (resolvedSalePriceSA === undefined) {
-    if (resolvedPriceSA === 99 || resolvedPriceSA <= 120) {
-      resolvedPriceSA = 200;
-      resolvedSalePriceSA = 99;
-    } else if (resolvedPriceSA >= 180 && resolvedPriceSA <= 220) {
-      resolvedPriceSA = 200;
-      resolvedSalePriceSA = 99;
-    } else {
-      resolvedSalePriceSA = 99;
-      resolvedPriceSA = Math.max(200, resolvedPriceSA);
-    }
-  } else if (resolvedSalePriceSA === resolvedPriceSA) {
-    resolvedPriceSA = 200;
-    resolvedSalePriceSA = 99;
+  // Use values directly from DB without forced magic fallbacks to ensure coordination with Admin Dashboard
+  if (resolvedSalePriceSA === resolvedPriceSA) {
+    resolvedSalePriceSA = undefined;
   }
 
   const resolvedPriceEG = metaPriceEG !== undefined 

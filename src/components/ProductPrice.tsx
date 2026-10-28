@@ -17,36 +17,29 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
   const currencySymbolAr = country === 'EG' ? 'ج.م' : 'ر.س';
 
   const isSaudi = country === 'SA';
-  let beforePrice = 200;
-  let afterPrice = 99;
-  let discountPercent = 50;
+  let afterPrice = isSaudi ? (product.priceSA || 195) : (product.priceEG || 899);
+  let beforePrice = isSaudi ? (Math.max(afterPrice, 200)) : (Math.max(afterPrice, 1000));
+  let discountPercent = 0;
 
   if (isSaudi) {
     if (product.salePriceSA && product.priceSA && product.salePriceSA < product.priceSA) {
       beforePrice = product.priceSA;
       afterPrice = product.salePriceSA;
-      discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
-    } else if (product.priceSA === 99 || !product.priceSA || product.priceSA <= 120) {
-      beforePrice = 200;
-      afterPrice = 99;
-      discountPercent = 50;
     } else {
-      afterPrice = product.priceSA;
-      beforePrice = Math.max(200, Math.round(afterPrice * 1.5));
-      discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
+      afterPrice = product.priceSA || 195;
+      beforePrice = Math.max(afterPrice, 200);
     }
   } else {
-    // Egyptian Pounds (EGP)
     if (product.salePriceEG && product.priceEG && product.salePriceEG < product.priceEG) {
       beforePrice = product.priceEG;
       afterPrice = product.salePriceEG;
-      discountPercent = Math.round(((beforePrice - afterPrice) / beforePrice) * 100);
     } else {
-      afterPrice = product.priceEG || 499;
-      beforePrice = Math.round(afterPrice * 1.5);
-      discountPercent = 50;
+      afterPrice = product.priceEG || 899;
+      beforePrice = Math.max(afterPrice, 1000);
     }
   }
+
+  discountPercent = beforePrice > afterPrice ? Math.round(((beforePrice - afterPrice) / beforePrice) * 100) : 0;
 
   // Adaptive font scaling
   const fontAfter = size === 'sm' 

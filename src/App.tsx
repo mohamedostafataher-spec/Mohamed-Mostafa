@@ -598,7 +598,12 @@ function AppContent() {
 
     // TikTok Pixel InitiateCheckout event
     try {
-      const cartTotal = cart.reduce((sum, item) => sum + (item.product.priceSA || 99) * item.quantity, 0);
+      const cartTotal = cart.reduce((sum, item) => {
+        const itemPrice = country === 'EG' 
+          ? (item.product.salePriceEG || item.product.priceEG || 0) 
+          : (item.product.salePriceSA || item.product.priceSA || 0);
+        return sum + itemPrice * item.quantity;
+      }, 0);
       trackTikTokInitiateCheckout(cart, cartTotal, 'SAR');
     } catch (err) {
       console.warn('[TikTok Pixel] InitiateCheckout error:', err);
@@ -1046,7 +1051,7 @@ function AppContent() {
                   </div>
                   <div className="text-right">
                     <span className="block font-bold text-gray-950 text-xs sm:text-sm">شحن سريع ومجاني</span>
-                    <span className="text-[10px] sm:text-[11px] text-gray-500">لكافة مدن المملكة للطلبات فوق 800 ر.س (قياسي 40 ر.س) 🇸🇦</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">لكافة مدن المملكة للطلبات فوق 299 ر.س (قياسي 40 ر.س) 🇸🇦</span>
                   </div>
                 </div>
 
@@ -1730,7 +1735,7 @@ function AppContent() {
                               <span>{p.categoryAr}</span>
                               <span>•</span>
                               <span className="text-gray-400 line-through text-[10px] font-mono">200 ر.س</span>
-                              <span className="text-black font-bold font-mono text-xs">{p.priceSA || 99} ر.س</span>
+                              <span className="text-black font-bold font-mono text-xs">{(p.salePriceSA || p.priceSA || 195)} ر.س</span>
                             </div>
                           </div>
                         </div>

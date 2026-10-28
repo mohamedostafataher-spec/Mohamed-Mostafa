@@ -74,7 +74,7 @@ function trackTikTok(event: string, payload: Record<string, any>, label: string,
  * 1. ViewContent
  */
 export function trackTikTokViewContent(product: Product, currency: string = 'SAR') {
-  const val = Number(product.priceSA) || 99;
+  const val = Number(product.salePriceSA || product.priceSA || 195);
   trackTikTok('ViewContent', {
     contents: [
       {
@@ -92,7 +92,7 @@ export function trackTikTokViewContent(product: Product, currency: string = 'SAR
  * 2. AddToWishlist
  */
 export function trackTikTokAddToWishlist(product: Product, currency: string = 'SAR') {
-  const val = Number(product.priceSA) || 99;
+  const val = Number(product.salePriceSA || product.priceSA || 195);
   trackTikTok('AddToWishlist', {
     contents: [
       {
@@ -131,7 +131,7 @@ export function trackTikTokSearch(query: string, matchedProducts: Product[] = []
  * 4. AddToCart
  */
 export function trackTikTokAddToCart(product: Product, quantity: number = 1, currency: string = 'SAR') {
-  const unitPrice = Number(product.priceSA) || 99;
+  const unitPrice = Number(product.salePriceSA || product.priceSA || 195);
   const totalVal = unitPrice * quantity;
   trackTikTok('AddToCart', {
     contents: [

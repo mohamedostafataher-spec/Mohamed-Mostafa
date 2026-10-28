@@ -2007,8 +2007,8 @@ export default function Dashboard({
                               : 200;
                             const afterPrice = (p.salePriceSA && p.priceSA && p.salePriceSA < p.priceSA)
                               ? p.salePriceSA
-                              : (p.priceSA === 99 || p.priceSA <= 120 ? p.priceSA : (p.salePriceSA || 99));
-                            const discountPct = Math.round(((beforePrice - afterPrice) / beforePrice) * 100) || 50;
+                              : (p.priceSA || 195);
+                            const discountPct = Math.round(((beforePrice - afterPrice) / beforePrice) * 100) || 0;
 
                             return (
                               <div className="flex flex-col items-start gap-1" dir="rtl">
