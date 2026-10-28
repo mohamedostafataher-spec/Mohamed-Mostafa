@@ -1487,7 +1487,7 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-sans">
           <div className="flex items-center gap-4 flex-wrap">
             <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر SULTA للأزياء الفاخرة</span>
-            <LiveTrafficMonitor compact={true} />
+            {session && <LiveTrafficMonitor compact={true} />}
           </div>
           <div className="text-gray-400 text-[11px]">
             <span>تسوق سهل وسريع مع توصيل آمن لكافة مناطق المملكة والخليج ومصر</span>
