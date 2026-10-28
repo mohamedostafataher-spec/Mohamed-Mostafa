@@ -112,7 +112,7 @@ export const subscribePixelLogs = (cb: (logs: PixelEventLog[]) => void) => {
 export const initGlobalSync = () => {
   if (typeof window === 'undefined' || !supabase || activeChannel) return;
 
-  // Generate or retrieve unique session ID for this visitor
+  // Generate or retrieve unique session ID
   let sessionId = sessionStorage.getItem('sulta_visitor_session_id');
   if (!sessionId) {
     sessionId = 'visitor_' + Math.random().toString(36).substring(2, 15);
@@ -122,21 +122,19 @@ export const initGlobalSync = () => {
   const channelId = 'sulta-store-pulse';
   activeChannel = supabase.channel(channelId, {
     config: {
-      presence: { key: sessionId }, // Use unique ID here
-      broadcast: { self: false }
+      presence: { key: sessionId },
+      broadcast: { self: true } // Broadcast to everyone including self for testing
     }
   });
 
   activeChannel
     .on('broadcast', { event: 'pixel-event' }, ({ payload }: { payload: PixelEventLog }) => {
-       if (!inMemoryPixelLogs.some(l => l.id === payload.id)) {
-         inMemoryPixelLogs = [payload, ...inMemoryPixelLogs];
-         pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
-       }
+       // Update UI for all admins
+       inMemoryPixelLogs = [payload, ...inMemoryPixelLogs];
+       pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
     })
     .on('presence', { event: 'sync' }, () => {
       const state = activeChannel.presenceState();
-      // Supabase returns an object where keys are the presence keys
       const count = Object.keys(state).length;
       liveVisitorCount = Math.max(1, count);
       visitorCountListeners.forEach(l => l(liveVisitorCount));
@@ -147,8 +145,33 @@ export const initGlobalSync = () => {
           online_at: new Date().toISOString(),
           page: window.location.pathname
         });
+        // Force sync for Admin Dashboards
+        activeChannel.send({
+          type: 'broadcast',
+          event: 'pixel-event',
+          payload: { id: 'sys-' + Date.now(), event: 'System', details: 'زائر جديد انضم للمتجر 🛍️', status: 'sent', pixel: 'System', timestamp: new Date().toLocaleTimeString() }
+        });
       }
     });
+};
+
+/**
+ * Tracks element interaction/click and broadcasts it instantly
+ */
+export const trackClick = (elementId: string, elementText: string) => {
+  const details = `تفاعل مع: ${elementText} (ID: ${elementId})`;
+  
+  // Log locally and broadcast
+  logPixelEvent('System', 'Click', details, 'sent');
+  
+  // Also send to Supabase for persistent history
+  if (supabase) {
+    supabase.from('click_events').insert([{ 
+      element_id: elementId, 
+      element_text: elementText,
+      created_at: new Date().toISOString()
+    }]).catch(err => console.error("Error saving click to DB:", err));
+  }
 };
 
 export const subscribeVisitorCount = (cb: (count: number) => void) => {
