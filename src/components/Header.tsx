@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Search, Heart, ShoppingBag, User, Menu, X, Sparkles, Truck, Phone, ChevronDown, Check } from 'lucide-react';
 import { Country, CartItem, Product, Settings } from '../types';
 import { cleanImgUrl } from '../services/db';
@@ -90,6 +91,17 @@ export default function Header({
   }, []);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const prevCartCountRef = useRef(cartCount);
+  const [isCartAnimating, setIsCartAnimating] = useState(false);
+
+  useEffect(() => {
+    if (cartCount > prevCartCountRef.current) {
+      setIsCartAnimating(true);
+      const t = setTimeout(() => setIsCartAnimating(false), 800);
+      return () => clearTimeout(t);
+    }
+    prevCartCountRef.current = cartCount;
+  }, [cartCount]);
   const cartTotal = cart.reduce((sum, item) => {
     const itemPrice = country === 'EG' 
       ? (item.product?.salePriceEG || item.product?.priceEG || 0) 
@@ -342,8 +354,10 @@ export default function Header({
             </button>
 
             {/* Cart Button (Salla Style with Item Count & Live Total) */}
-            <button
+            <motion.button
               onClick={onOpenCart}
+              animate={isCartAnimating ? { scale: [1, 1.25, 1], rotate: [0, -8, 8, 0] } : {}}
+              transition={{ duration: 0.4 }}
               className="flex items-center gap-1.5 sm:gap-2 bg-[#111827] hover:bg-black active:scale-98 text-white px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl transition-all shadow-sm cursor-pointer group"
               title="سلة المشتريات"
             >
@@ -361,7 +375,7 @@ export default function Header({
                   {cartTotal > 0 ? `${cartTotal} ${currencyLabel}` : 'فارغة'}
                 </span>
               </div>
-            </button>
+            </motion.button>
 
           </div>
 

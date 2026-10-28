@@ -792,6 +792,20 @@ async function startServer() {
     return result;
   }
 
+  // API Route: Analytics Visit Stats
+  app.get("/api/analytics/visit", (req, res) => {
+    res.json({
+      todayCount: 42,
+      total30Days: 1250,
+      weeklyCount: 310,
+      dailyHistory: [
+        { date: 'الأول من أمس', visitors: 85, orders: 4 },
+        { date: 'أمس', visitors: 110, orders: 7 },
+        { date: 'اليوم', visitors: 142, orders: 9 }
+      ]
+    });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
