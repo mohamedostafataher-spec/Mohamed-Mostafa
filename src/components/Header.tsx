@@ -125,27 +125,23 @@ export default function Header({
       <div className="bg-[#F8F9FA] text-gray-700 text-[10px] sm:text-[11px] py-1.5 px-3 sm:px-4 border-b border-gray-200/80">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
-          {/* Shipping & Promo Notification */}
+          {/* Shipping & Luxury Hook Notification */}
           <div className="flex items-center gap-1.5 text-gray-700 font-medium truncate">
             <Truck size={13} className="text-black shrink-0" />
             <span className="hidden sm:inline">
               {country === 'SA' 
-                ? 'شحن مجاني لكافة مدن ومناطق المملكة للطلبات بقيمة 299 ر.س فأكثر 🇸🇦 | شحن قياسي 40 ر.س' 
-                : 'شحن مجاني داخل مصر للطلبات بقيمة 1000 ج.م فأكثر 🇪🇬 | شحن قياسي 75 ج.م'} | كود: <strong className="font-mono text-black">SULTA20</strong>
+                ? 'شحن مجاني لكافة مدن ومناطق المملكة للطلبات بقيمة 299 ر.س فأكثر 🇸🇦 | أزياء النوم والقطع الملكية الفاخرة' 
+                : 'شحن مجاني داخل مصر للطلبات بقيمة 1000 ج.م فأكثر 🇪🇬 | أزياء النوم والقطع الفاخرة'}
             </span>
             <span className="sm:hidden font-semibold truncate text-[9px]">
-              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س (قياسي 40 ر.س)' : 'شحن مجاني فوق 1000 ج.م (قياسي 75 ج.م)'} • كود: <strong className="text-black">SULTA20</strong>
+              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س (شحن قياسي 40 ر.س)' : 'شحن مجاني فوق 1000 ج.م (شحن قياسي 75 ج.م)'}
             </span>
           </div>
 
-          {/* Genuine Promo Code Badge (Desktop) */}
-          <div className="hidden md:flex items-center gap-1.5 text-[10.5px] font-bold text-gray-600 shrink-0">
+          {/* Luxury Boutique Hook Badge (Desktop) */}
+          <div className="hidden md:flex items-center gap-1.5 text-[10.5px] font-bold text-gray-700 shrink-0">
             <Sparkles size={12} className="text-[#A44C5C]" />
-            <span>كود الخصم الفوري:</span>
-            <span className="font-mono bg-white px-2 py-0.5 rounded border border-gray-300 text-gray-900 font-bold tracking-wider" dir="ltr">
-              SULTA20
-            </span>
-            <span className="text-[10px] text-emerald-700 font-semibold">(خصم 20% يجمع مع العروض)</span>
+            <span>تغليف ملكي فاخر لجميع الطلبات ✨</span>
           </div>
 
           {/* Right Controls: Instagram, TikTok & Country Switcher */}

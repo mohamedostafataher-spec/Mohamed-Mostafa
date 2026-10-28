@@ -1,6 +1,6 @@
 import SultaImage from "./SultaImage";
 import React, { useState } from 'react';
-import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check, Truck } from 'lucide-react';
+import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check, Truck, Plus } from 'lucide-react';
 import { CartItem, Country, Product, DiscountCoupon } from '../types';
 
 interface CartDrawerProps {
@@ -268,26 +268,39 @@ export default function CartDrawer({
               </div>
             )}
 
-            {/* Upsealing Recommended Section */}
+            {/* High-Impact Upselling: Frequently Bought Together */}
             {suggestions.length > 0 && cart.length > 0 && (
-              <div className="pt-6 border-t border-gray-100 mt-6 bg-[#F6E7A6]/10 p-4 rounded-2xl border border-[#F6E7A6]/30">
-                <h5 className="text-[11px] font-bold text-gray-700 tracking-wider mb-3 uppercase flex items-center gap-1">
-                  <Sparkles size={11} className="text-[#F4B6C2]" />
-                  إكمال الهيئة (توصيات تناسب ذوقك):
-                </h5>
-                <div className="grid grid-cols-2 gap-3.5">
+              <div className="pt-6 border-t border-gray-100 mt-6 bg-[#FCF5F6] p-4 rounded-2xl border border-[#DF8A9D]/20 animate-fade-in-rapid">
+                <div className="flex items-center justify-between mb-3">
+                  <h5 className="text-[11px] font-bold text-gray-800 tracking-wider uppercase flex items-center gap-1.5">
+                    <Sparkles size={12} className="text-[#A44C5C]" />
+                    <span>تنسيقات ملكية مقترحة لكِ:</span>
+                  </h5>
+                  <span className="text-[9px] bg-white text-[#A44C5C] px-2 py-0.5 rounded-full font-bold border border-[#DF8A9D]/20">
+                    وفر شحن إضافي 🚚
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
                   {suggestions.map((p) => {
                     const recPrice = country === 'EG' ? p.priceEG : p.priceSA;
                     return (
                       <div
                         key={p.id}
                         onClick={() => { onSelectProduct(p); onClose(); }}
-                        className="bg-white rounded-xl p-2 cursor-pointer border border-transparent hover:border-[#F4B6C2]/40 transition-all flex flex-col justify-between"
+                        className="bg-white rounded-xl p-2.5 cursor-pointer border border-transparent hover:border-[#DF8A9D]/40 transition-all flex flex-col justify-between shadow-4xs group"
                       >
-                        <SultaImage src={p.images[0]} alt="Recommended" className="w-full aspect-[4/5] object-cover rounded-lg mb-1.5" />
+                        <div className="relative aspect-[4/5] mb-2 overflow-hidden rounded-lg">
+                          <SultaImage src={p.images[0]} alt="Recommended" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+                        </div>
                         <div>
-                          <span className="text-[9px] font-semibold text-gray-800 line-clamp-1 block">{p.nameAr}</span>
-                          <span className="text-[9px] font-sans text-gray-400">{recPrice.toLocaleString()} {currencyLabel}</span>
+                          <span className="text-[10px] font-bold text-gray-900 line-clamp-1 block mb-0.5 group-hover:text-[#A44C5C] transition-colors">{p.nameAr}</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-[#A44C5C] font-mono">{recPrice.toLocaleString()} {currencyLabel}</span>
+                            <button className="w-5 h-5 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-black transition-colors">
+                              <Plus size={12} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -327,39 +340,48 @@ export default function CartDrawer({
                 </p>
               )}
 
-              {/* Invoice lines */}
-              <div className="space-y-2 text-xs font-sans text-gray-600 border-b border-gray-100 pb-3">
-                <div className="flex justify-between">
-                  <span>المجموع الفرعي للحقيبة</span>
-                  <span className="text-gray-900 font-semibold">{subtotal.toLocaleString()} {currencyLabel}</span>
+              {/* Unified Invoice breakdown Section */}
+              <div className="bg-gray-50 rounded-2xl p-4 border border-gray-150 space-y-3">
+                <div className="flex justify-between text-xs font-semibold text-gray-500">
+                  <span>المجموع الفرعي (قبل الخصم)</span>
+                  <span className="font-mono">{subtotal.toLocaleString()} {currencyLabel}</span>
                 </div>
+                
                 {appliedCoupon && (
-                  <div className="flex justify-between text-[#25D366]">
-                    <span>قيمة الخصم ({appliedCoupon.discountPercent}%)</span>
-                    <span>- {discountAmount.toLocaleString()} {currencyLabel}</span>
+                  <div className="flex justify-between items-center bg-emerald-50/50 p-2 rounded-lg border border-emerald-100/50">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-emerald-800 font-bold">كود الخصم المطبق ({appliedCoupon.code})</span>
+                      <span className="text-[9px] text-emerald-600 font-medium">{appliedCoupon.description}</span>
+                    </div>
+                    <span className="text-emerald-700 font-bold font-mono">- {discountAmount.toLocaleString()} {currencyLabel}</span>
                   </div>
                 )}
-                <div className="flex justify-between">
-                  <span className="flex items-center gap-1">
-                    <span>الشحن والتوصيل للمنزل</span>
+                
+                <div className="flex justify-between items-center text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-500 font-semibold">الشحن والتوصيل الفاخر</span>
                     {shippingFee === 0 ? (
-                      <span className="bg-emerald-50 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-200">مجاني 🇸🇦</span>
+                      <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.5 rounded font-black border border-emerald-200">مجاني 🇸🇦</span>
                     ) : (
-                      <span className="bg-gray-100 text-gray-700 text-[9px] px-1.5 py-0.5 rounded font-bold">قياسي</span>
+                      <span className="bg-gray-200 text-gray-700 text-[9px] px-1.5 py-0.5 rounded font-bold">رسوم ثابتة</span>
                     )}
-                  </span>
-                  <span className="text-gray-900 font-semibold">
-                    {shippingFee === 0 ? 'مجاني' : `${shippingFee.toLocaleString()} ${currencyLabel}`}
+                  </div>
+                  <span className={`font-mono font-bold ${shippingFee === 0 ? 'text-emerald-600' : 'text-gray-900'}`}>
+                    {shippingFee === 0 ? '0.00 ر.س' : `${shippingFee.toLocaleString()} ${currencyLabel}`}
                   </span>
                 </div>
-              </div>
 
-              {/* Net total amount */}
-              <div className="flex justify-between items-center text-sm font-sans mb-4">
-                <span className="font-serif font-bold text-[#0B0B0B]">الإجمالي الكلي النهائي</span>
-                <span className="text-[#0B0B0B] font-bold text-lg md:text-xl tracking-tight">
-                  {totalAmount.toLocaleString()} {currencyLabel}
-                </span>
+                <div className="h-px bg-gray-200 my-1" />
+
+                <div className="flex justify-between items-center pt-1">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-serif font-black text-gray-950">الإجمالي النهائي</span>
+                    <span className="text-[9px] text-gray-400 font-medium">شامل ضريبة القيمة المضافة 15%</span>
+                  </div>
+                  <span className="text-xl font-black text-gray-950 tracking-tight font-mono">
+                    {totalAmount.toLocaleString()} {currencyLabel}
+                  </span>
+                </div>
               </div>
 
               {/* Check out buttons */}

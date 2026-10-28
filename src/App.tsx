@@ -43,6 +43,7 @@ import RoyalSensesSalon from './components/RoyalSensesSalon';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import MobileBottomNav from './components/MobileBottomNav';
 import LiveTrafficMonitor from './components/LiveTrafficMonitor';
+import LivePurchaseToasts from './components/LivePurchaseToasts';
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -839,6 +840,8 @@ function AppContent() {
         {currentTab === 'home' && (
           <div className="space-y-0">
             
+
+            
             {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}
             {[
               { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
@@ -972,28 +975,28 @@ function AppContent() {
                   </div>
                 </section>
 
-                {/* SALLA FLASH OFFERS PROMO RIBBON (Placed between sections seamlessly) */}
+                {/* SALLA LUXURY BOUTIQUE HOOK RIBBON (Placed between sections seamlessly) */}
                 {sectionIdx === 0 && (
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-                    <div className="rounded-2xl bg-gray-50 border border-gray-200 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
-                      <div className="text-right space-y-1 max-w-xl">
-                        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black text-white font-bold text-[11px]">
+                    <div className="rounded-2xl bg-gradient-to-r from-gray-900 to-black text-white p-5 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+                      <div className="text-right space-y-1.5 max-w-xl">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-black font-bold text-[11px]">
                           <Sparkles size={11} />
-                          <span>خصم إضافي وشحن مجاني 🏷️</span>
+                          <span>تغليف ملكي وتوصيل فوري لجميع مدن المملكة 🇸🇦</span>
                         </div>
-                        <h4 className="text-base sm:text-xl font-black text-gray-950">
-                          وفري حتى 30% على تشكيلات النوم والقطع الملكية
+                        <h4 className="text-base sm:text-xl font-black tracking-tight text-white font-serif">
+                          تشكيلة السلطانة الحصرية - فخامة تليق بأميرات السعودية
                         </h4>
-                        <p className="text-gray-600 text-[11px] sm:text-xs">
-                          استخدمي كود الخصم الترحيبي <strong className="font-mono text-black bg-white px-2 py-0.5 rounded border border-gray-300">SULTA20</strong> عند إتمام الطلب للحصول على خصم فوري وشحن مجاني!
+                        <p className="text-gray-300 text-xs leading-relaxed">
+                          أجود خامات الحرير والدانتيل الفرنسي مع خصومات مباشرة على كافة القطع الملكية. تسوقي الآن بضمان الجودة والاستبدال السهل.
                         </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                         <button
                           onClick={() => setTab('offers')}
-                          className="w-full sm:w-auto bg-[#111827] hover:bg-black text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-2"
+                          className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-6 py-3 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
                         >
-                          <span>تسوقي العروض الآن</span>
+                          <span>استكشفي التشكيلة الملكية</span>
                           <ArrowLeft size={13} />
                         </button>
                       </div>
@@ -1753,6 +1756,7 @@ function AppContent() {
         saudiNumber="966552823677" 
         country={country} 
       />
+      <LivePurchaseToasts />
     </div>
   );
 }

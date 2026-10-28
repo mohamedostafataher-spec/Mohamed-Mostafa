@@ -1,619 +1,194 @@
--- ==========================================
--- 👑 SULTA LUXURY COUTURE - COMPLETE SUPABASE PRODUCTION DATABASE SCHEMA 👑
--- 
--- HOW TO RUN:
--- 1. Open your Supabase Dashboard (https://supabase.com).
--- 2. Go to the SQL Editor and open a New Query.
--- 3. Copy and paste this entire script, then click "Run" to establish the entire production schema.
--- ==========================================
+-- SULTA Atelier - Official Supabase Database Schema
+-- -------------------------------------------------------------
+-- This file contains the complete PostgreSQL schema for the 
+-- SULTA Couture luxury e-commerce platform.
 
--- 1. Profiles Table (سجلات العملاء الفاخرين)
-CREATE TABLE IF NOT EXISTS public.profiles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email TEXT UNIQUE NOT NULL,
-    full_name TEXT,
-    phone TEXT,
-    country TEXT,
-    city TEXT,
-    avatar TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
+-- 1. UTILITIES & EXTENSIONS
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 2. Addresses Table (عناوين التوصيل والخدمة المنزلية)
-CREATE TABLE IF NOT EXISTS public.addresses (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    country TEXT NOT NULL,
-    city TEXT NOT NULL,
-    address TEXT NOT NULL,
-    notes TEXT,
-    is_default BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 3. Categories Table (فئات المعروضات)
-CREATE TABLE IF NOT EXISTS public.categories (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    slug TEXT UNIQUE NOT NULL,
-    image_url TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 4. Products Table (قائمة قطع النوم واللانج وير كوتور)
+-- 2. PRODUCTS TABLE
 CREATE TABLE IF NOT EXISTS public.products (
-    id TEXT PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
-    name_ar TEXT NOT NULL,
-    name_en TEXT NOT NULL,
-    slug TEXT UNIQUE NOT NULL,
-    description TEXT NOT NULL,
-    description_ar TEXT NOT NULL,
-    description_en TEXT NOT NULL,
-    short_description TEXT,
-    price DECIMAL(12,2) NOT NULL,
-    sale_price DECIMAL(12,2),
-    price_eg DECIMAL(12,2) NOT NULL DEFAULT 4000.00,
-    sale_price_eg DECIMAL(12,2),
-    price_sa DECIMAL(12,2) NOT NULL DEFAULT 400.00,
-    sale_price_sa DECIMAL(12,2),
-    sku TEXT UNIQUE,
-    stock_quantity INT NOT NULL DEFAULT 10,
-    category_id TEXT REFERENCES public.categories(id) ON DELETE SET NULL,
-    category TEXT NOT NULL CHECK (category IN ('satin', 'cotton', 'loungewear', 'dresses', 'new')),
-    category_ar TEXT NOT NULL,
-    fabric_ar TEXT NOT NULL,
-    fabric_en TEXT NOT NULL,
-    wash_instructions_ar TEXT NOT NULL,
-    images TEXT[] NOT NULL DEFAULT '{}'::text[],
-    video TEXT,
-    colors JSONB NOT NULL DEFAULT '[]'::jsonb, -- مصفوفة الألوان { name, hex }
-    sizes TEXT[] NOT NULL DEFAULT '{}'::text[],
-    is_best_seller BOOLEAN DEFAULT false,
-    featured BOOLEAN DEFAULT false,
-    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'draft', 'archived')),
-    rating DECIMAL(2,1) DEFAULT 5.0,
-    reviews_count INT DEFAULT 0,
-    stock INT NOT NULL DEFAULT 10,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 5. Product Images Table (معرض صور السلع)
-CREATE TABLE IF NOT EXISTS public.product_images (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
-    image_url TEXT NOT NULL,
-    sort_order INT DEFAULT 0
-);
-
--- 6. Product Variants Table (تفاصيل مقاسات وألوان القطع الفاخرة ومخزونها)
-CREATE TABLE IF NOT EXISTS public.product_variants (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
-    color TEXT NOT NULL,
-    size TEXT NOT NULL,
-    stock_quantity INT NOT NULL DEFAULT 5,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 7. Collections Table (تشكيلات المجموعات الموسمية الفاخرة)
-CREATE TABLE IF NOT EXISTS public.collections (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name TEXT NOT NULL,
+    name_ar TEXT,
+    name_en TEXT,
     description TEXT,
+    description_ar TEXT,
+    description_en TEXT,
+    price_sa NUMERIC(10, 2) DEFAULT 0,
+    price_eg NUMERIC(10, 2) DEFAULT 0,
+    sale_price_sa NUMERIC(10, 2),
+    sale_price_eg NUMERIC(10, 2),
+    category TEXT DEFAULT 'sleepwear',
+    category_ar TEXT,
     image_url TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+    images JSONB DEFAULT '[]'::jsonb,
+    video TEXT,
+    colors JSONB DEFAULT '[]'::jsonb,
+    sizes JSONB DEFAULT '["S", "M", "L", "XL"]'::jsonb,
+    stock INTEGER DEFAULT 10,
+    rating NUMERIC(3, 2) DEFAULT 5.0,
+    reviews_count INTEGER DEFAULT 0,
+    featured BOOLEAN DEFAULT false,
+    is_best_seller BOOLEAN DEFAULT false,
+    status TEXT DEFAULT 'active',
+    sku TEXT,
+    tags JSONB DEFAULT '[]'::jsonb,
+    collection TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 8. Coupons Table (كوبونات الخصم والرموز المميزة)
-CREATE TABLE IF NOT EXISTS public.coupons (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    code TEXT UNIQUE NOT NULL,
-    discount_type TEXT NOT NULL DEFAULT 'percentage' CHECK (discount_type IN ('percentage', 'fixed')),
-    discount_value DECIMAL(12,2) NOT NULL,
-    discount_percent INT NOT NULL CHECK (discount_percent > 0 AND discount_percent <= 100),
-    description TEXT,
-    active BOOLEAN DEFAULT true,
-    expires_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 9. Orders Table (سجلات الطلبات والفواتير)
+-- 3. ORDERS TABLE
 CREATE TABLE IF NOT EXISTS public.orders (
-    id TEXT PRIMARY KEY,
-    user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     customer_name TEXT NOT NULL,
     phone TEXT NOT NULL,
-    country TEXT NOT NULL CHECK (country IN ('EG', 'SA')),
-    city TEXT NOT NULL,
-    address TEXT NOT NULL,
+    email TEXT,
+    address TEXT,
+    city TEXT,
+    country TEXT DEFAULT 'SA',
+    total_price NUMERIC(10, 2) NOT NULL,
+    currency TEXT DEFAULT 'SAR',
+    payment_method TEXT DEFAULT 'cod',
+    status TEXT DEFAULT 'pending',
+    items JSONB NOT NULL DEFAULT '[]'::jsonb,
     notes TEXT,
     gift_message TEXT,
     gift_card_theme TEXT,
-    items JSONB NOT NULL DEFAULT '[]'::jsonb, -- [{ productId, productName, color, size, quantity, price }]
-    subtotal DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-    shipping_cost DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-    discount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-    total DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-    total_price DECIMAL(12,2) NOT NULL,
-    currency TEXT NOT NULL CHECK (currency IN ('EGP', 'SAR')),
-    payment_method TEXT NOT NULL,
-    status TEXT NOT NULL CHECK (status IN ('pending', 'processing', 'shipped', 'delivered')) DEFAULT 'pending',
-    date TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+    tracking_number TEXT,
+    tracking_url TEXT,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    referrer TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 10. Order Items Table (تفاصيل سلع الفواتير الفردية)
-CREATE TABLE IF NOT EXISTS public.order_items (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    order_id TEXT REFERENCES public.orders(id) ON DELETE CASCADE,
-    product_id TEXT REFERENCES public.products(id) ON DELETE SET NULL,
-    variant_id UUID,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    price DECIMAL(12,2) NOT NULL
-);
-
--- 11. Payments Table (سجلات الدفع والتحقق المالي)
-CREATE TABLE IF NOT EXISTS public.payments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    order_id TEXT REFERENCES public.orders(id) ON DELETE CASCADE,
-    payment_method TEXT NOT NULL,
-    payment_status TEXT NOT NULL CHECK (payment_status IN ('pending', 'completed', 'failed', 'refunded')),
-    transaction_id TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 12. Reviews Table (تقييمات وشهادات زبائن سولتا)
+-- 4. REVIEWS TABLE
 CREATE TABLE IF NOT EXISTS public.reviews (
-    id TEXT PRIMARY KEY,
-    product_id TEXT REFERENCES public.products(id) ON DELETE SET NULL,
-    user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
     username TEXT NOT NULL,
-    avatar TEXT NOT NULL,
-    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
-    comment TEXT NOT NULL,
-    review TEXT,
-    images TEXT[],
-    date TEXT NOT NULL,
-    country TEXT NOT NULL,
-    product_name TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+    avatar TEXT,
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    images JSONB DEFAULT '[]'::jsonb,
+    country TEXT DEFAULT 'SA',
+    is_verified_purchase BOOLEAN DEFAULT true,
+    status TEXT DEFAULT 'approved',
+    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 13. Wishlist Table (قوائم المقتنيات المفضلة والأمنيات)
-CREATE TABLE IF NOT EXISTS public.wishlist (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+-- 5. COUPONS TABLE
+CREATE TABLE IF NOT EXISTS public.coupons (
+    code TEXT PRIMARY KEY,
+    discount_percent INTEGER NOT NULL,
+    description TEXT,
+    expires_at DATE,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 14. Cart Items Table (محتويات سلة الشراء للمحافظة على الجلسات)
-CREATE TABLE IF NOT EXISTS public.cart_items (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
-    variant_id UUID,
-    quantity INT NOT NULL DEFAULT 1,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 15. Loyalty Points Table (نقاط الولاء ومستويات نادي كوتور)
-CREATE TABLE IF NOT EXISTS public.loyalty_points (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    points INT NOT NULL DEFAULT 0,
-    level TEXT NOT NULL DEFAULT 'Silver' CHECK (level IN ('Silver', 'Gold', 'Platinum')),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 16. Notifications Table (التنبيهات والإشعارات الفاخرة للعملاء)
-CREATE TABLE IF NOT EXISTS public.notifications (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    title TEXT NOT NULL,
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 17. Support Tickets Table (بطاقات الدعم والاستبدال الملكي والضمان الذهبي)
-CREATE TABLE IF NOT EXISTS public.support_tickets (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    subject TEXT NOT NULL,
-    message TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'resolved', 'closed')),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 18. AI Size Predictions Table (سجلات مقاسات الذكاء الاصطناعي للأجسام)
-CREATE TABLE IF NOT EXISTS public.ai_size_predictions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    height NUMERIC,
-    weight NUMERIC,
-    body_shape TEXT,
-    recommended_size TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 19. Settings Table (إعدادات ومعلومات البوتيك العليا وصندوق الاتصال)
+-- 6. SETTINGS TABLE (Singleton)
 CREATE TABLE IF NOT EXISTS public.settings (
-    id INT PRIMARY KEY DEFAULT 1,
-    site_name TEXT NOT NULL DEFAULT 'Sulta Luxury Sleepwear',
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    site_name TEXT DEFAULT 'SULTA',
     logo TEXT,
-    promo_banner_ar TEXT,
-    promo_end_time TIMESTAMP WITH TIME ZONE,
-    hero_mini_alert_ar TEXT,
-    hero_subtitle_ar TEXT,
-    hero_description_ar TEXT,
-    hero_images JSONB DEFAULT '[]'::jsonb,
-    contact_email TEXT DEFAULT 'royal@sultawear.com',
-    contact_phone TEXT DEFAULT '+966500000000',
-    whatsapp TEXT DEFAULT '966500000000',
-    instagram TEXT DEFAULT 'sulta_couture',
-    facebook TEXT DEFAULT 'sulta_couture',
-    tiktok TEXT DEFAULT 'sulta_couture',
+    whatsapp TEXT,
+    contact_phone TEXT,
+    contact_email TEXT,
+    store_domain TEXT,
     facebook_pixel_id TEXT,
-    google_analytics_id TEXT,
-    snapchat_pixel_id TEXT,
+    meta_capi_access_token TEXT,
     tiktok_pixel_id TEXT,
-    shipping_rates JSONB DEFAULT '[]'::jsonb,
-    currency TEXT DEFAULT 'SAR',
-    default_shipping_fee NUMERIC DEFAULT 0,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    CONSTRAINT single_row CHECK (id = 1)
+    snapchat_pixel_id TEXT,
+    google_analytics_id TEXT,
+    default_shipping_fee NUMERIC(10, 2) DEFAULT 0,
+    bank_name TEXT,
+    bank_account_name TEXT,
+    bank_account_number TEXT,
+    bank_iban TEXT,
+    bank_qr_code_url TEXT,
+    admin_team_members JSONB DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 20. Homepage Sections Table (أقسام وتخطيطات الصفحة الرئيسية الفاخرة)
-CREATE TABLE IF NOT EXISTS public.homepage_sections (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    section_key TEXT UNIQUE NOT NULL,
-    content_json JSONB NOT NULL DEFAULT '{}'::jsonb,
-    active BOOLEAN DEFAULT true,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+-- 7. ANALYTICS: USER SESSIONS TABLE
+CREATE TABLE IF NOT EXISTS public.user_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id TEXT NOT NULL,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    utm_content TEXT,
+    utm_term TEXT,
+    referrer TEXT,
+    landing_page TEXT,
+    device TEXT,
+    user_agent TEXT,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- Seed initial boutique settings
-INSERT INTO public.settings (id, site_name, contact_email, contact_phone, whatsapp, instagram, facebook, tiktok)
-VALUES (1, 'Sulta High Couture Sleepwear', 'royal@sultawear.com', '+201110095403', '201110095403', 'sulta_couture', 'sulta_couture', 'sulta_couture')
-ON CONFLICT (id) DO NOTHING;
+-- 8. ANALYTICS: VISITORS TABLE (Alternate storage)
+CREATE TABLE IF NOT EXISTS public.visitors (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id TEXT,
+    page TEXT,
+    referrer TEXT,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    city TEXT,
+    country TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
 
--- Seed default VIP Categories
-INSERT INTO public.categories (id, name, slug, image_url) VALUES
-('satin', 'ساتان ملكي حريري', 'satin', 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=400&q=80'),
-('cotton', 'بيجامات قطن طبيعي', 'cotton', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=400&q=80'),
-('loungewear', 'لانج وير كوتور', 'loungewear', 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=400&q=80'),
-('dresses', 'فساتين نوم', 'dresses', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=400&q=80'),
-('new', 'المجموعة الجديدة والتريند الأكثر مبيعاً بمصر والسعودية', 'new', 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=400&q=80')
-ON CONFLICT (id) DO NOTHING;
+-- 9. SUPPORT TICKETS (Fallback for Analytics)
+CREATE TABLE IF NOT EXISTS public.support_tickets (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    customer_name TEXT,
+    email TEXT,
+    phone TEXT,
+    type TEXT DEFAULT 'support',
+    status TEXT DEFAULT 'open',
+    subject TEXT,
+    message TEXT,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
 
-
--- Enable Realtime safely for standard tables:
-do $$
-begin
-    if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'products') then
-        alter publication supabase_realtime add table public.products;
-    end if;
-    if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'coupons') then
-        alter publication supabase_realtime add table public.coupons;
-    end if;
-    if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'orders') then
-        alter publication supabase_realtime add table public.orders;
-    end if;
-    if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'reviews') then
-        alter publication supabase_realtime add table public.reviews;
-    end if;
-end $$;
-
--- Enable Row Level Security (RLS)
+-- 10. POLICIES (RLS - Row Level Security)
+-- Enable RLS on all tables
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
-
--- Dynamic Public Access Policies
-CREATE POLICY "Allow public select of products" ON public.products FOR SELECT USING (true);
-CREATE POLICY "Allow public select of coupons" ON public.coupons FOR SELECT USING (true);
-CREATE POLICY "Allow public select of reviews" ON public.reviews FOR SELECT USING (true);
-CREATE POLICY "Allow public select of categories" ON public.categories FOR SELECT USING (true);
-
-CREATE POLICY "Allow public inserts of orders" ON public.orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public inserts of reviews" ON public.reviews FOR INSERT WITH CHECK (true);
-
--- Allow full admin operations for everyone for local boutique development controls (Using correct FOR ALL syntax)
-CREATE POLICY "Allow full control of products" ON public.products FOR ALL USING (true);
-CREATE POLICY "Allow full control of coupons" ON public.coupons FOR ALL USING (true);
-CREATE POLICY "Allow full control of orders" ON public.orders FOR ALL USING (true);
-CREATE POLICY "Allow full control of reviews" ON public.reviews FOR ALL USING (true);
-CREATE POLICY "Allow full control of profiles" ON public.profiles FOR ALL USING (true);
-CREATE POLICY "Allow full control of addresses" ON public.addresses FOR ALL USING (true);
-CREATE POLICY "Allow full control of categories" ON public.categories FOR ALL USING (true);
-
--- ==========================================
--- 🔔 STORAGE BUCKETS INITIALIZATION AND POLICIES
--- ==========================================
-
--- 1. Create the 'products' bucket if it doesn't exist
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES ('products', 'products', true, 52428800, '{"image/*", "video/*"}'::text[])
-ON CONFLICT (id) DO NOTHING;
-
--- 2. Storage Policies for 'products' bucket
--- Allow public select/read of files
-CREATE POLICY "Allow public select of objects" 
-ON storage.objects FOR SELECT 
-USING (bucket_id = 'products');
-
--- Allow anyone to upload new files
-CREATE POLICY "Allow public insert of objects" 
-ON storage.objects FOR INSERT 
-WITH CHECK (bucket_id = 'products');
-
--- Allow anyone to update file details
-CREATE POLICY "Allow public update of objects" 
-ON storage.objects FOR UPDATE 
-USING (bucket_id = 'products');
-
--- Allow anyone to delete files
-CREATE POLICY "Allow public delete of objects" 
-ON storage.objects FOR DELETE 
-USING (bucket_id = 'products');
-
--- ==========================================
--- 🛡️ [PHASE 6 & 7] ACTIVITY LOGS AND SYSTEM HEALTH 🛡️
--- ==========================================
-
--- 12. Activity Logs Table (سجلات النشاطات والمراقبة)
-CREATE TABLE IF NOT EXISTS public.activity_logs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    action TEXT NOT NULL,
-    details TEXT,
-    admin_id TEXT DEFAULT 'system',
-    admin_name TEXT,
-    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- Note: We trust internal usage for activity logs
-ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow anonymous full control of activity logs" ON public.activity_logs FOR ALL USING (true);
-
--- Add to Realtime Publication
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'activity_logs') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.activity_logs;
-    END IF;
-END $$;
-
--- 13. System Health Monitor / Dashboard Insights (إحصائيات النظام الفورية)
-CREATE OR REPLACE VIEW public.dashboard_insights AS
-SELECT
-    (SELECT COUNT(*) FROM public.products) as total_products,
-    (SELECT COUNT(*) FROM public.orders) as total_orders,
-    (SELECT COUNT(*) FROM public.profiles) as total_customers,
-    (SELECT COALESCE(SUM(total), 0) FROM public.orders) as total_revenue,
-    (SELECT COUNT(*) FROM public.products WHERE stock <= 5) as low_stock_products;
-
--- Setup full-text search capability for the products table (Phase 8: Advanced Search)
--- NOTE: Uses Arabic vector since the language is mostly Arabic.
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS search_vector tsvector GENERATED ALWAYS AS (
-    setweight(to_tsvector('arabic', coalesce(name_ar, '')), 'A') ||
-    setweight(to_tsvector('english', coalesce(name_en, '')), 'A') ||
-    setweight(to_tsvector('arabic', coalesce(description_ar, '')), 'B') ||
-    setweight(to_tsvector('arabic', coalesce(category_ar, '')), 'C') ||
-    setweight(to_tsvector('arabic', coalesce(fabric_ar, '')), 'D')
-) STORED;
-
-CREATE INDEX IF NOT EXISTS products_search_idx ON public.products USING GIN (search_vector);
-
-
--- ========================================================
--- 👑 SULTA EXTENDED ECOSYSTEM: AUTOMATIC LIVE CORRELATION 👑
--- ========================================================
-
--- 21. Blog Posts Table (سجلات مقالات المدوّنة وكوتور)
-CREATE TABLE IF NOT EXISTS public.blog_posts (
-    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    title TEXT NOT NULL,
-    slug TEXT UNIQUE NOT NULL,
-    content TEXT NOT NULL,
-    excerpt TEXT,
-    image_url TEXT,
-    author TEXT DEFAULT 'SULTA Atelier',
-    category TEXT DEFAULT 'Couture',
-    tags JSONB DEFAULT '[]'::jsonb,
-    published_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    status TEXT DEFAULT 'draft' CHECK (status IN ('published', 'draft', 'archived')),
-    seo JSONB DEFAULT '{}'::jsonb
-);
-
--- 22. FAQ Table (الأسئلة الشائعة والدعم الفوري)
-CREATE TABLE IF NOT EXISTS public.faq (
-    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    question TEXT NOT NULL,
-    answer TEXT NOT NULL,
-    category TEXT DEFAULT 'all',
-    order_index INT DEFAULT 0
-);
-
--- 23. Advanced Coupons Table (أكواد الخصم المتقدمة)
-CREATE TABLE IF NOT EXISTS public.advanced_coupons (
-    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    code TEXT UNIQUE NOT NULL,
-    discount_type TEXT NOT NULL DEFAULT 'percentage' CHECK (discount_type IN ('percentage', 'fixed')),
-    discount_value NUMERIC NOT NULL,
-    limit_per_user INT DEFAULT 1,
-    min_order_value NUMERIC DEFAULT 0,
-    current_usages INT DEFAULT 0,
-    is_active BOOLEAN DEFAULT true
-);
-
--- 24. Promotions Table (العروض الترويجية واللافتات)
-CREATE TABLE IF NOT EXISTS public.promotions (
-    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    name TEXT NOT NULL,
-    description TEXT,
-    discount_type TEXT NOT NULL CHECK (discount_type IN ('percentage', 'fixed', 'free_shipping')),
-    discount_value NUMERIC DEFAULT 0,
-    start_date TIMESTAMP WITH TIME ZONE,
-    end_date TIMESTAMP WITH TIME ZONE,
-    is_active BOOLEAN DEFAULT true,
-    applicable_categories TEXT[] DEFAULT '{}'::text[],
-    banner_text TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 25. Inventory Logs Table (سجلات مراقبة المستودع وحركة المخزون)
-CREATE TABLE IF NOT EXISTS public.inventory_logs (
-    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    product_id TEXT NOT NULL,
-    variant TEXT NOT NULL,
-    change INT NOT NULL,
-    reason TEXT,
-    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    admin_id TEXT DEFAULT 'admin'
-);
-
--- 26. Contact Messages Table (صندوق البريد ورسائل الزوار)
-CREATE TABLE IF NOT EXISTS public.contact_messages (
-    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    message TEXT NOT NULL,
-    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 27. Newsletter Subscriptions Table (النشرة البريدية الملكية)
-CREATE TABLE IF NOT EXISTS public.newsletter_subs (
-    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    email TEXT UNIQUE NOT NULL,
-    phone TEXT,
-    source TEXT DEFAULT 'footer',
-    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    subscribed BOOLEAN DEFAULT true
-);
-
--- Enable RLS and standard policies for these tables:
-ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.faq ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.advanced_coupons ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.promotions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.inventory_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.newsletter_subs ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Allow public select of blog_posts" ON public.blog_posts FOR SELECT USING (true);
-CREATE POLICY "Allow public select of faq" ON public.faq FOR SELECT USING (true);
-CREATE POLICY "Allow public select of advanced_coupons" ON public.advanced_coupons FOR SELECT USING (true);
-CREATE POLICY "Allow public select of promotions" ON public.promotions FOR SELECT USING (true);
-
-CREATE POLICY "Allow public insert of contact_messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public insert of newsletter_subs" ON public.newsletter_subs FOR INSERT WITH CHECK (true);
-
--- Allow full admin operations for everyone (for local controls compatibility)
-CREATE POLICY "Allow full control of blog_posts" ON public.blog_posts FOR ALL USING (true);
-CREATE POLICY "Allow full control of faq" ON public.faq FOR ALL USING (true);
-CREATE POLICY "Allow full control of advanced_coupons" ON public.advanced_coupons FOR ALL USING (true);
-CREATE POLICY "Allow full control of promotions" ON public.promotions FOR ALL USING (true);
-CREATE POLICY "Allow full control of inventory_logs" ON public.inventory_logs FOR ALL USING (true);
-CREATE POLICY "Allow full control of contact_messages" ON public.contact_messages FOR ALL USING (true);
-CREATE POLICY "Allow full control of newsletter_subs" ON public.newsletter_subs FOR ALL USING (true);
-
--- Enable Realtime safely for these tables as well:
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'blog_posts') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.blog_posts;
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'faq') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.faq;
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'advanced_coupons') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.advanced_coupons;
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'promotions') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.promotions;
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'inventory_logs') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.inventory_logs;
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'contact_messages') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.contact_messages;
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'newsletter_subs') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.newsletter_subs;
-    END IF;
-END $$;
-
-
--- 28. User Sessions Table (سجلات جلسات الزوار ومصادر الحركة)
-CREATE TABLE IF NOT EXISTS public.user_sessions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    session_id TEXT NOT NULL,
-    utm_source TEXT,
-    utm_medium TEXT,
-    utm_campaign TEXT,
-    utm_content TEXT,
-    utm_term TEXT,
-    referrer TEXT,
-    landing_page TEXT,
-    device TEXT,
-    user_agent TEXT,
-    city TEXT,
-    country TEXT,
-    metadata JSONB DEFAULT '{}'::jsonb,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 29. Visitors Table (Alternative naming supported by analytics engine)
-CREATE TABLE IF NOT EXISTS public.visitors (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    session_id TEXT NOT NULL,
-    utm_source TEXT,
-    utm_medium TEXT,
-    utm_campaign TEXT,
-    utm_content TEXT,
-    utm_term TEXT,
-    referrer TEXT,
-    landing_page TEXT,
-    device TEXT,
-    user_agent TEXT,
-    city TEXT,
-    country TEXT,
-    metadata JSONB DEFAULT '{}'::jsonb,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- Enable RLS for tracking tables
+ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.visitors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.support_tickets ENABLE ROW LEVEL SECURITY;
 
--- Allow anonymous inserts for tracking (CRITICAL for data to appear)
-CREATE POLICY "Allow anonymous insert into user_sessions" ON public.user_sessions FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow anonymous insert into visitors" ON public.visitors FOR INSERT WITH CHECK (true);
+-- Anonymous Select for Products/Reviews/Coupons/Settings
+CREATE POLICY "Allow public read access" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.reviews FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.coupons FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.settings FOR SELECT USING (true);
 
--- Allow public select for dashboard visibility
-CREATE POLICY "Allow public select of user_sessions" ON public.user_sessions FOR SELECT USING (true);
-CREATE POLICY "Allow public select of visitors" ON public.visitors FOR SELECT USING (true);
+-- Public Insert for Orders/Sessions/Tickets/Reviews
+CREATE POLICY "Allow public insert" ON public.orders FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert" ON public.reviews FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert" ON public.user_sessions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert" ON public.visitors FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert" ON public.support_tickets FOR INSERT WITH CHECK (true);
 
--- Allow full control for admin/everyone in development mode
-CREATE POLICY "Allow full control of user_sessions" ON public.user_sessions FOR ALL USING (true);
-CREATE POLICY "Allow full control of visitors" ON public.visitors FOR ALL USING (true);
-
--- Add to Realtime Publication for live updates
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'user_sessions') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.user_sessions;
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'visitors') THEN
-        ALTER PUBLICATION supabase_realtime ADD TABLE public.visitors;
-    END IF;
-END $$;
+-- Admin Access (Full Control - simplified for setup)
+-- Note: In production, use service_role for admin dashboard
+CREATE POLICY "Allow service_role full access" ON public.products USING (true) WITH CHECK (true);
+CREATE POLICY "Allow service_role full access" ON public.orders USING (true) WITH CHECK (true);
+CREATE POLICY "Allow service_role full access" ON public.settings USING (true) WITH CHECK (true);

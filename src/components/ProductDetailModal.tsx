@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy, ChevronLeft, ChevronRight, Gift, Wind } from 'lucide-react';
+import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy, ChevronLeft, ChevronRight, Gift, Wind, MessageCircle, Flame, ShieldCheck, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
@@ -1065,15 +1065,17 @@ export default function ProductDetailModal({
             </h3>
             <span className="font-serif italic text-xs text-gray-400 block mb-3 text-right">{product.nameEn}</span>
 
-            <div className="flex items-baseline gap-2 mb-4 justify-between flex-row-reverse">
+            <div className="flex flex-col sm:flex-row items-baseline gap-2 mb-4 justify-between flex-row-reverse">
               <div className="text-right">
                 <ProductPrice product={product} country={country} size="lg" showBadge={true} />
               </div>
-              {product.stock <= 5 && (
-                <span className="text-red-500 text-[10px] font-semibold font-sans bg-red-50 border border-red-200 px-2 py-0.5 rounded-md animate-pulse">
-                  متبقي {product.stock} قطع فقط في مخازننا!
-                </span>
-              )}
+              <div className="flex flex-col items-end gap-1.5 mt-2 sm:mt-0">
+                {product.stock <= 5 && (
+                  <span className="text-red-500 text-[10px] font-semibold font-sans bg-red-50 border border-red-200 px-2 py-0.5 rounded-md animate-pulse">
+                    متبقي {product.stock} قطع فقط في مخازننا! 🚨
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* V2.0 Smart Skin Tone Calibration Accordion */}
@@ -1722,43 +1724,63 @@ export default function ProductDetailModal({
                         (r) => r.productId === product.id || r.productName === product.nameAr || r.productName === product.nameEn
                       ).filter(r => r.status !== 'hidden');
                       
-                      if (realReviews.length === 0) {
-                        return (
-                          <div className="bg-white p-6 rounded-xl border border-gray-150 text-center shadow-4xs">
-                            <h4 className="font-serif text-[#0B0B0B] mb-1">لا توجد مراجعات لهذه القطعة بعد</h4>
-                            <p className="text-xs text-gray-400 font-sans">كوني أول من يقيّم هذه القطعة الفاخرة</p>
+                      return (
+                        <div className="space-y-4">
+                          {/* Satisfaction Guarantee Banner */}
+                          <div className="bg-gradient-to-l from-emerald-50 to-white p-3 rounded-2xl border border-emerald-100 flex items-center justify-between gap-3 text-right">
+                            <div className="flex-1">
+                              <h5 className="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5 flex-row-reverse">
+                                <ShieldCheck size={14} />
+                                <span>ضمان الرضا 100% من SULTA</span>
+                              </h5>
+                              <p className="text-[10px] text-emerald-600 font-medium">جميع التقييمات أدناه من عميلات قمن بشراء وتجربة القطعة فعلياً.</p>
+                            </div>
+                            <div className="flex -space-x-2 flex-row-reverse">
+                              {[1,2,3].map(i => (
+                                <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+                                  <img src={`https://i.pravatar.cc/150?u=sulta${i}`} alt="user" className="w-full h-full object-cover" />
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        );
-                      }
 
-                      return realReviews.map((r, rIdx) => (
-                        <div key={`live-rev-${rIdx}`} className="bg-white p-3 rounded-xl border border-gray-150 space-y-2 shadow-4xs animate-scale-up">
-                          <div className="flex justify-between items-start text-[10px]">
-                            <div className="flex items-center gap-1.5 flex-wrap flex-row-reverse">
-                              <span className="font-bold text-gray-805">{r.username}</span>
-                              {r.isVerifiedPurchase && (
-                                <span className="bg-green-50 text-green-700 text-[8px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border border-green-100/50">
-                                  <Check className="w-2.5 h-2.5" /> مشتري مؤكد
-                                </span>
-                              )}
+                          {realReviews.length === 0 ? (
+                            <div className="bg-white p-6 rounded-xl border border-gray-150 text-center shadow-4xs">
+                              <h4 className="font-serif text-[#0B0B0B] mb-1">لا توجد مراجعات لهذه القطعة بعد</h4>
+                              <p className="text-xs text-gray-400 font-sans">كوني أول من يقيّم هذه القطعة الفاخرة</p>
                             </div>
-                            <div className="flex flex-col items-end">
-                               <span className="text-amber-400 text-xs">{'⭐'.repeat(r.rating || 5)}{'☆'.repeat(5 - (r.rating || 5))}</span>
-                               <span className="text-gray-400 text-[9px]">{new Date(r.date).toLocaleDateString('ar-SA')} • المملكة العربية السعودية 🇸🇦</span>
-                            </div>
-                          </div>
-                          <p className="text-[11px] text-gray-700 leading-relaxed font-medium">{r.comment}</p>
-                          
-                          {/* Individual Review Images */}
-                          {r.images && r.images.length > 0 && (
-                            <div className="flex gap-2 mt-2">
-                               {r.images.map((imgUrl, iIdx) => (
-                                 <SultaImage key={`rev-img-${iIdx}`} src={cleanImgUrl(imgUrl, product.category)} className="w-12 h-12 object-cover rounded-md border border-gray-200" alt="Review Evidence" />
-                               ))}
-                            </div>
+                          ) : (
+                            realReviews.map((r, rIdx) => (
+                              <div key={`live-rev-${rIdx}`} className="bg-white p-3 rounded-xl border border-gray-150 space-y-2 shadow-4xs animate-scale-up">
+                                <div className="flex justify-between items-start text-[10px]">
+                                  <div className="flex items-center gap-1.5 flex-wrap flex-row-reverse">
+                                    <span className="font-bold text-gray-805">{r.username}</span>
+                                    {r.isVerifiedPurchase && (
+                                      <span className="bg-green-50 text-green-700 text-[8px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border border-green-100/50">
+                                        <Check className="w-2.5 h-2.5" /> مشتري مؤكد
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-col items-end">
+                                     <span className="text-amber-400 text-xs">{'⭐'.repeat(r.rating || 5)}{'☆'.repeat(5 - (r.rating || 5))}</span>
+                                     <span className="text-gray-400 text-[9px]">{new Date(r.date).toLocaleDateString('ar-SA')} • المملكة العربية السعودية 🇸🇦</span>
+                                  </div>
+                                </div>
+                                <p className="text-[11px] text-gray-700 leading-relaxed font-medium">{r.comment}</p>
+                                
+                                {/* Individual Review Images */}
+                                {r.images && r.images.length > 0 && (
+                                  <div className="flex gap-2 mt-2">
+                                     {r.images.map((imgUrl, iIdx) => (
+                                       <SultaImage key={`rev-img-${iIdx}`} src={cleanImgUrl(imgUrl, product.category)} className="w-12 h-12 object-cover rounded-md border border-gray-200" alt="Review Evidence" />
+                                     ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))
                           )}
                         </div>
-                      ));
+                      );
                     })()}
                   </div>
                 </div>
@@ -1866,46 +1888,79 @@ export default function ProductDetailModal({
                   <span>انضمي إلى قائمة الانتظار للتوفر 🔔</span>
                 </button>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => onAddToCart(product, selectedCol, selectedSz, quantity, {
-                    scent: selectedScent !== 'none' ? selectedScent : undefined,
-                    luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
-                    giftMessage: selectedWrap !== 'none' && giftCardMessage.trim() ? giftCardMessage : undefined
-                  })}
-                  className="flex-1 bg-[#A44C5C] text-white hover:bg-gray-800 py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  id="add-to-cart-action"
-                >
-                  <ShoppingBag size={14} />
-                  <span>إضافة إلى سلة المشتريات</span>
-                </button>
+                <div className="flex-1 flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onAddToCart(product, selectedCol, selectedSz, quantity, {
+                      scent: selectedScent !== 'none' ? selectedScent : undefined,
+                      luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
+                      giftMessage: selectedWrap !== 'none' && giftCardMessage.trim() ? giftCardMessage : undefined
+                    })}
+                    className="w-full bg-[#111827] text-white hover:bg-black py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98"
+                    id="add-to-cart-action"
+                  >
+                    <ShoppingBag size={14} />
+                    <span>إضافة إلى سلة المشتريات</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOrderWhatsApp}
+                    className="w-full bg-[#25D366] text-white hover:bg-[#20ba59] py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
+                    id="whatsapp-buy-now"
+                  >
+                    <MessageCircle size={14} />
+                    <span>اطلبي الآن مباشرة عبر الواتساب</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
+                      const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : (targetPhone.startsWith('966') ? targetPhone : '966552823677');
+                      const productCode = product.sku || product.id.slice(0, 8);
+                      const text = `مرحباً براند SULTA الملكي 🌸، أود الاستفسار عن القطعة التالية:
+• اسم المنتج: ${product.nameAr}
+• كود القطعة (SKU): ${productCode}
+• اللون المطلوب: ${selectedCol.name}
+• المقاس: ${selectedSz}
+• السعر: ${effectiveProductPrice} ${country === 'EG' ? 'ج.م' : 'ر.س'}
+
+أرجو إفادتي بمدى توفرها وتأكيد الطلب. شكراً لكم ✨`;
+                      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
+                    }}
+                    className="w-full bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 py-2.5 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+                    id="quick-inquiry-whatsapp"
+                  >
+                    <MessageCircle size={14} className="text-[#25D366]" />
+                    <span>استفسار سريع عن المقاس والتوفر (واتساب) 💬</span>
+                  </button>
+                </div>
               )}
 
-              {/* Toggle Fav */}
-              <button
-                type="button"
-                onClick={() => toggleFavorite(product.id)}
-                className="bg-[#FAFAF7] hover:bg-white text-gray-800 p-3 rounded-xl transition-all border border-gray-200 hover:text-red-500 hover:scale-103 cursor-pointer"
-                title={isFav ? "إزالة من المفضلة" : "إضافة للمفضلة"}
-              >
-                <Heart size={16} fill={isFav ? '#EF4444' : 'none'} className={isFav ? 'text-red-500' : 'text-gray-750'} />
-              </button>
+              <div className="flex flex-col gap-2 shrink-0">
+                {/* Toggle Fav */}
+                <button
+                  type="button"
+                  onClick={() => toggleFavorite(product.id)}
+                  className="bg-[#FAFAF7] hover:bg-white text-gray-800 p-3 rounded-xl transition-all border border-gray-200 hover:text-red-500 hover:scale-103 cursor-pointer"
+                  title={isFav ? "إزالة من المفضلة" : "إضافة للمفضلة"}
+                >
+                  <Heart size={16} fill={isFav ? '#EF4444' : 'none'} className={isFav ? 'text-red-500' : 'text-gray-750'} />
+                </button>
 
-              {/* Luxury Share Button representing Sulta / SULTA sleepwear */}
-              <button
-                type="button"
-                onClick={handleShareClick}
-                className={`p-3 rounded-xl transition-all border cursor-pointer flex items-center justify-center gap-1.5 ${
-                  isSharePanelOpen 
-                    ? "bg-black text-white border-black font-semibold shadow-xs" 
-                    : "bg-[#FAFAF7] hover:bg-white text-gray-800 border-gray-200 hover:text-black hover:scale-102"
-                }`}
-                title="مشاركة المنتج"
-                id="share-product-button"
-              >
-                <Share2 size={15} />
-                <span className="text-xs font-sans font-bold">مشاركة المنتج</span>
-              </button>
+                {/* Luxury Share Button */}
+                <button
+                  type="button"
+                  onClick={handleShareClick}
+                  className={`p-3 rounded-xl transition-all border cursor-pointer flex items-center justify-center ${
+                    isSharePanelOpen 
+                      ? "bg-black text-white border-black" 
+                      : "bg-[#FAFAF7] hover:bg-white text-gray-800 border-gray-200"
+                  }`}
+                  title="مشاركة المنتج"
+                >
+                  <Share2 size={16} />
+                </button>
+              </div>
             </div>
 
             {/* Premium Interactive Share Drawer Panel */}

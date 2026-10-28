@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Filter, Search, Heart, ShoppingBag, Eye, X, ChevronDown, 
   Sparkles, SlidersHorizontal, ArrowLeft, Play, Info, 
-  Volume2, VolumeX, Check, Grid, RefreshCw, Star, ArrowUpDown, Wand2, Tag, Truck, ShieldCheck
+  Volume2, VolumeX, Check, Grid, RefreshCw, Star, ArrowUpDown, Wand2, Tag, Truck, ShieldCheck, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Country, Category } from '../types';
@@ -241,10 +241,10 @@ export default function StoreView({
                   : 'اكتشفي تشكيلة بيجامات وأرواب النوم الفاخرة بخصومات فورية وشحن مجاني للطلبات فوق 299 ر.س.'}
               </p>
 
-              {/* Mobile Quick Promo Code Pill */}
+              {/* Mobile Luxury Hook Badge */}
               <div className="sm:hidden pt-1 flex items-center gap-2">
-                <span className="text-[10px] bg-white border border-gray-300 text-black font-bold px-2 py-0.5 rounded-lg shadow-2xs">
-                  كود الخصم: <strong className="font-mono text-black">SULTA20</strong> (خصم 20%)
+                <span className="text-[10px] bg-amber-50 border border-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg shadow-2xs">
+                  ✨ تصاميم ملكية حصرية وأقمشة حريرية فاخرة
                 </span>
               </div>
               
@@ -267,15 +267,14 @@ export default function StoreView({
               </div>
             </div>
 
-            {/* Quick Promo Action Card (Desktop / Tablet) */}
-            <div className="hidden sm:block shrink-0 bg-white border border-gray-200 p-4 sm:p-5 rounded-2xl shadow-xs text-center space-y-2.5 w-full md:w-72">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">كود خصم ترحيبي إضافي</span>
-              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl py-2 px-3 flex items-center justify-between">
-                <span className="font-mono text-sm font-black text-black tracking-wider" dir="ltr">SULTA20</span>
-                <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-md font-bold">خصم 20%</span>
-              </div>
-              <p className="text-[10px] text-gray-500 leading-normal">
-                خصم 20% يجمع مع أسعار التخفيض لجميع قطع التشكيلة الملكية! 🌸
+            {/* Luxury Brand Hook Card (Desktop / Tablet) */}
+            <div className="hidden sm:block shrink-0 bg-[#111827] text-white p-4 sm:p-5 rounded-2xl shadow-sm text-center space-y-2.5 w-full md:w-72">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300 block">✨ Haute Couture Sleepwear</span>
+              <h3 className="text-xs font-bold leading-relaxed text-gray-100">
+                تصاميم حصرية وأرواب عرايس ملكية مصممة لأميرات السعودية
+              </h3>
+              <p className="text-[9.5px] text-gray-400 leading-normal">
+                أقمشة حريرية فاخرة، نعومة فائقة وتغليف ملكي يليق بذوقكِ الرفيع.
               </p>
             </div>
           </div>
@@ -836,9 +835,12 @@ export default function StoreView({
                     {/* Price tag */}
                     <div className="flex items-baseline gap-4">
                       <ProductPrice product={quickViewProduct} country={country} size="md" showBadge={true} />
-                      <span className="text-[10px] text-black bg-gray-100 border border-gray-300 px-2 py-0.5 font-bold rounded-md">
-                        متوفر للشحن الفوري ⚡
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] text-black bg-gray-100 border border-gray-300 px-2 py-0.5 font-bold rounded-md flex items-center gap-1">
+                          <Zap size={10} className="fill-yellow-400 text-yellow-400" />
+                          <span>متوفر للشحن الفوري ⚡</span>
+                        </span>
+                      </div>
                     </div>
 
                     <p className="text-gray-500 text-xs leading-relaxed select-text">

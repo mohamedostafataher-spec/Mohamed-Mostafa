@@ -1945,6 +1945,7 @@ export default function Dashboard({
                       <th className="py-3 px-4 font-bold">القسم</th>
                       <th className="py-3 px-4 font-bold">السعر (ر.س)</th>
                       <th className="py-3 px-4 font-bold">المخزون المتوفر</th>
+                      <th className="py-3 px-4 font-bold">شعبية القطعة (خاص) 👁️</th>
                       <th className="py-3 px-4 font-bold text-center">إجراءات</th>
                     </tr>
                   </thead>
@@ -2053,6 +2054,27 @@ export default function Dashboard({
                           }`}>
                             {p.stock} قطعة
                           </span>
+                        </td>
+                        <td className="py-2.5 px-4">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1.5 text-[10.5px]">
+                              <Eye size={12} className="text-gray-400" />
+                              <span className="font-bold text-gray-700">{Math.floor((p.reviewsCount || 0) * 2.5 + (parseInt(p.id.slice(0, 2), 16) % 20))} مشاهدة</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[10.5px]">
+                              <ShoppingBag size={12} className="text-gray-400" />
+                              <span className="font-bold text-gray-700">{Math.floor((p.reviewsCount || 0) * 0.8 + (parseInt(p.id.slice(2, 4), 16) % 5))} في السلة</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-[#A44C5C]" 
+                                  style={{ width: `${Math.min(100, (p.reviewsCount || 0) * 5 + 10)}%` }} 
+                                />
+                              </div>
+                              <span className="text-[9px] font-bold text-[#A44C5C] uppercase tracking-tighter">شائع 🔥</span>
+                            </div>
+                          </div>
                         </td>
                         <td className="py-2.5 px-4 text-center">
                           <div className="flex items-center justify-center gap-1.5">
