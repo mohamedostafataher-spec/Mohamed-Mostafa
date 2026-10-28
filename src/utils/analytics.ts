@@ -80,6 +80,51 @@ export const captureUtmParams = () => {
   } catch {}
 };
 
+export interface TrafficSourceInfo {
+  source: 'instagram' | 'meta' | 'tiktok' | 'snapchat' | 'google' | 'direct';
+  label: string;
+  icon: string;
+  pixel: PixelEventLog['pixel'];
+}
+
+export const detectTrafficSource = (): TrafficSourceInfo => {
+  if (typeof window === 'undefined') {
+    return { source: 'direct', label: 'زيارة مباشرة', icon: '🌐', pixel: 'System' };
+  }
+  
+  const search = window.location.search.toLowerCase();
+  const ref = (typeof document !== 'undefined' ? document.referrer || '' : '').toLowerCase();
+  const utm = getStoredUtmParams();
+  const utmSrc = (utm.utm_source || '').toLowerCase();
+  
+  // Instagram check (referrer l.instagram.com, instagram in utm, or ig)
+  if (ref.includes('instagram.com') || utmSrc.includes('instagram') || utmSrc.includes('ig') || search.includes('utm_source=instagram') || search.includes('utm_source=ig')) {
+    return { source: 'instagram', label: 'إنستغرام (Instagram)', icon: '📸', pixel: 'Meta (Facebook)' };
+  }
+
+  // Meta / Facebook check
+  if (search.includes('fbclid') || ref.includes('facebook.com') || utmSrc.includes('facebook') || utmSrc.includes('meta')) {
+    return { source: 'meta', label: 'فيسبوك / Meta Ads', icon: '🔵', pixel: 'Meta (Facebook)' };
+  }
+
+  // TikTok check
+  if (search.includes('ttclid') || ref.includes('tiktok.com') || utmSrc.includes('tiktok')) {
+    return { source: 'tiktok', label: 'تيك توك (TikTok)', icon: '🎵', pixel: 'TikTok' };
+  }
+
+  // Snapchat check
+  if (ref.includes('snapchat.com') || utmSrc.includes('snapchat') || utmSrc.includes('snap')) {
+    return { source: 'snapchat', label: 'سناب شات (Snapchat)', icon: '👻', pixel: 'Snapchat' };
+  }
+
+  // Google check
+  if (ref.includes('google.com') || utmSrc.includes('google')) {
+    return { source: 'google', label: 'جوجل (Google Search)', icon: '🔍', pixel: 'Google Analytics' };
+  }
+
+  return { source: 'direct', label: 'زيارة مباشرة للمتجر', icon: '🛍️', pixel: 'System' };
+};
+
 /**
  * Helper to log pixel event locally and broadcast to global dashboard feed
  */
@@ -155,10 +200,13 @@ export const initGlobalSync = () => {
   if (typeof window === 'undefined' || !supabase || activeChannel) return;
 
   // 1. Capture and store UTM parameters on initial landing
+  // 1. Capture and store UTM parameters and traffic source
   captureUtmParams();
+  const traffic = detectTrafficSource();
 
   // 2. Anonymous visitor session (no account/registration needed)
   let sessionId = sessionStorage.getItem('sulta_visitor_session_id');
+  const isNewSession = !sessionId;
   if (!sessionId) {
     sessionId = 'guest_' + Math.random().toString(36).substring(2, 12);
     sessionStorage.setItem('sulta_visitor_session_id', sessionId);
@@ -174,7 +222,7 @@ export const initGlobalSync = () => {
         session_id: sessionId,
         page: window.location.pathname,
         referrer: typeof document !== 'undefined' ? document.referrer : '',
-        utm_source: utm.utm_source || '',
+        utm_source: utm.utm_source || traffic.source,
         utm_medium: utm.utm_medium || '',
         utm_campaign: utm.utm_campaign || ''
       })
@@ -182,6 +230,11 @@ export const initGlobalSync = () => {
       fetchVisitorStatsFromSupabase('daily').catch(() => {});
     }).catch(() => {});
   } catch {}
+
+  // 4. If new visitor session, log arrival event with real traffic source
+  if (isNewSession) {
+    logPixelEvent(traffic.pixel, 'PageView', `زائر جديد عبر ${traffic.label} ${traffic.icon}`);
+  }
 
   const channelId = 'sulta-store-pulse';
   activeChannel = supabase.channel(channelId, {
@@ -205,8 +258,10 @@ export const initGlobalSync = () => {
     .subscribe(async (status: string) => {
       if (status === 'SUBSCRIBED') {
         await activeChannel.track({
+          session_id: sessionId,
           online_at: new Date().toISOString(),
-          page: window.location.pathname
+          page: window.location.pathname,
+          source: traffic.label
         });
       }
     });
@@ -221,13 +276,18 @@ export const trackClick = (elementId: string, elementText: string) => {
   // Log locally and broadcast
   logPixelEvent('System', 'Click', details, 'sent');
   
-  // Also send to Supabase for persistent history
+  // Send to Supabase support_tickets table (guaranteed table)
   if (supabase) {
-    supabase.from('click_events').insert([{ 
-      element_id: elementId, 
-      element_text: elementText,
+    supabase.from('support_tickets').insert([{ 
+      subject: `click:${elementId}`, 
+      message: JSON.stringify({
+        element_id: elementId,
+        element_text: elementText,
+        page: typeof window !== 'undefined' ? window.location.pathname : '/'
+      }),
+      status: 'analytics_click',
       created_at: new Date().toISOString()
-    }]).catch(err => console.error("Error saving click to DB:", err));
+    }]).catch(() => {});
   }
 };
 
@@ -329,7 +389,9 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
     try {
       if (typeof window.fbq === 'function') {
         initializedPixels.meta = true;
-        logPixelEvent('Meta (Facebook)', 'init', `تم تفعيل Meta Pixel (${metaId}) بنجاح`);
+        if (isTrackingDebugMode()) {
+          console.log(`[Pixel] Meta Pixel (${metaId}) initialized successfully`);
+        }
       } else {
         (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
           if (f.fbq) return;
@@ -349,9 +411,10 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
         })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
         window.fbq('init', metaId);
-        window.fbq('track', 'PageView');
         initializedPixels.meta = true;
-        logPixelEvent('Meta (Facebook)', 'init', `تم ربط معرف البيكسل (${metaId}) وتتبع PageView`);
+        if (isTrackingDebugMode()) {
+          console.log(`[Pixel] Meta Pixel (${metaId}) initialized successfully`);
+        }
       }
     } catch (err: any) {
       console.warn('[Pixel] Meta initialization error:', err);
@@ -364,7 +427,9 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
     try {
       if (window.ttq && window.ttq._i && window.ttq._i[tiktokId]) {
         initializedPixels.tiktok = true;
-        logPixelEvent('TikTok', 'init', `تم تفعيل تيك توك بيكسل (${tiktokId}) بنجاح`);
+        if (isTrackingDebugMode()) {
+          console.log(`[Pixel] TikTok Pixel (${tiktokId}) ready`);
+        }
       } else {
         (function(w: any, d: any, t: any) {
         w.TiktokAnalyticsObject = t;
@@ -401,11 +466,12 @@ export const initPixels = (settings?: Partial<Settings> | null) => {
           a.parentNode?.insertBefore(c, a);
         };
         ttq.load(tiktokId);
-        ttq.page();
       })(window, document, 'ttq');
 
       initializedPixels.tiktok = true;
-      logPixelEvent('TikTok', 'init', `تم تفعيل تيك توك بيكسل (${tiktokId}) بنجاح`);
+      if (isTrackingDebugMode()) {
+        console.log(`[Pixel] TikTok Pixel (${tiktokId}) loaded successfully`);
+      }
     }
   } catch (err: any) {
     console.warn('[Pixel] TikTok initialization error:', err);

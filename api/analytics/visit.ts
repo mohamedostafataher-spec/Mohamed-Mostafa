@@ -105,7 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Read from support_tickets table where status is analytics_visit
       const { data: tickets, error: ticketErr } = await supabase
         .from('support_tickets')
-        .select('subject, created_at, message')
+        .select('id, subject, created_at, message')
         .eq('status', 'analytics_visit')
         .gte('created_at', thirtyDaysAgo);
 
@@ -142,18 +142,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
 
+      const recentVisits = tickets.slice(0, 15).map(t => {
+        let meta: any = {};
+        try { meta = JSON.parse(t.message || '{}'); } catch {}
+        return {
+          id: t.id,
+          sessionId: t.subject?.replace('visit:', '') || 'guest',
+          page: meta.page || '/',
+          referrer: meta.referrer || '',
+          utm_source: meta.utm_source || '',
+          utm_campaign: meta.utm_campaign || '',
+          city: meta.city || 'الرياض',
+          country: meta.country || 'SA',
+          created_at: t.created_at
+        };
+      });
+
       return res.status(200).json({
         todayCount: Math.max(1, uniqueToday),
         total30Days: Math.max(1, unique30Days),
         weeklyCount: Math.max(1, uniqueWeek),
-        dailyHistory
+        dailyHistory,
+        recentVisits
       });
     } catch (err: any) {
       return res.status(200).json({
         todayCount: 1,
         total30Days: 1,
         weeklyCount: 1,
-        dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }]
+        dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }],
+        recentVisits: []
       });
     }
   }

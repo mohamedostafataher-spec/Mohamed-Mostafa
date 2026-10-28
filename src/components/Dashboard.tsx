@@ -66,7 +66,6 @@ import { dbService, cleanImgUrl } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
 import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats } from '../utils/analytics';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
-import LiveVisitorCounter from './LiveVisitorCounter';
 
 interface DashboardProps {
   products: Product[];
@@ -230,6 +229,19 @@ export default function Dashboard({
   // Live Pixel Activity Logs state (Shopify-style Live Feed)
   const [pixelLogs, setPixelLogs] = useState<PixelEventLog[]>([]);
   const [liveCount, setLiveCount] = useState<number>(1);
+  const [recentVisits, setRecentVisits] = useState<any[]>([]);
+
+  // Load real visits history from database
+  React.useEffect(() => {
+    fetch('/api/analytics/visit')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.recentVisits) {
+          setRecentVisits(data.recentVisits);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Subscribe to real-time pixel events
   React.useEffect(() => {
@@ -1436,8 +1448,48 @@ export default function Dashboard({
                           </div>
                         ))}
 
-                        {/* 2. Real Pixel Events Browsing Activity */}
-                        {pixelLogs.slice(0, 8).map((log, i) => (
+                        {/* 2. Real Visitors Recorded from Ads & Organic Traffic */}
+                        {recentVisits.slice(0, 4).map((v) => {
+                          const isInstagram = v.referrer?.includes('instagram.com') || v.utm_source?.includes('instagram') || v.utm_source?.includes('ig');
+                          const isTikTok = v.referrer?.includes('tiktok.com') || v.utm_source?.includes('tiktok');
+                          const isSnapchat = v.referrer?.includes('snapchat.com') || v.utm_source?.includes('snapchat');
+                          const platformLabel = isInstagram ? 'Instagram' : isTikTok ? 'TikTok' : isSnapchat ? 'Snapchat' : 'Direct';
+                          const timeStr = v.created_at ? new Date(v.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }) : 'مباشر';
+
+                          return (
+                            <div key={v.id} className="flex gap-3 opacity-95 hover:opacity-100 transition-opacity">
+                               <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
+                                 isInstagram ? 'bg-pink-500/20 text-pink-400 border-pink-500/30' :
+                                 isTikTok ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' :
+                                 'bg-white/10 text-gray-300 border-white/10'
+                               }`}>
+                                  <Eye size={16} />
+                               </div>
+                               <div className="space-y-0.5">
+                                  <p className="text-[11.5px] font-medium leading-tight">
+                                     زائر حقيقي من <span className="text-emerald-300 font-bold">{v.city || 'الرياض'}</span> عبر {platformLabel}
+                                  </p>
+                                  <div className="flex items-center gap-2">
+                                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{platformLabel}</span>
+                                     <span className="w-1 h-1 rounded-full bg-gray-700" />
+                                     <span className="text-[9px] text-gray-500 font-mono">{timeStr}</span>
+                                  </div>
+                               </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* 3. Real Pixel & Browsing Events (excluding technical init logs) */}
+                        {pixelLogs.filter(l => l.event !== 'init' && l.event !== 'config').slice(0, 6).map((log, i) => {
+                           const isInstagram = log.details.includes('إنستغرام') || log.details.includes('Instagram');
+                           const platform = log.pixel === 'Meta (Facebook)' 
+                             ? (isInstagram ? 'Instagram' : 'Meta')
+                             : log.pixel === 'TikTok' ? 'TikTok'
+                             : log.pixel === 'Snapchat' ? 'Snapchat'
+                             : log.pixel === 'Google Analytics' ? 'Google'
+                             : 'Direct';
+
+                           return (
                            <div key={log.id} className="flex gap-3 opacity-90 hover:opacity-100 transition-opacity">
                               <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
                                 log.event === 'Purchase' 
@@ -1446,22 +1498,23 @@ export default function Dashboard({
                                   ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
                                   : 'bg-white/10 text-gray-300 border-white/10'
                               }`}>
-                                 {log.event === 'PageView' ? <Eye size={16} /> : log.event === 'AddToCart' ? <Plus size={16} /> : <Zap size={16} />}
+                                 {log.event === 'Purchase' ? <ShoppingBag size={16} /> : log.event === 'AddToCart' ? <Plus size={16} /> : <Zap size={16} />}
                               </div>
                               <div className="space-y-0.5">
                                  <p className="text-[11.5px] font-medium leading-tight">
-                                    {log.event === 'PageView' ? 'عميلة تتصفح المتجر' : log.event === 'AddToCart' ? 'تمت إضافة قطعة للسلة' : log.details}
+                                    {log.event === 'PageView' ? (log.details || 'عميلة تتصفح المتجر') : log.event === 'AddToCart' ? 'تمت إضافة قطعة للسلة' : log.details}
                                  </p>
                                  <div className="flex items-center gap-2">
-                                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{log.pixel === 'Meta (Facebook)' ? 'Meta' : 'TikTok'}</span>
+                                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{platform}</span>
                                     <span className="w-1 h-1 rounded-full bg-gray-700" />
                                     <span className="text-[9px] text-gray-500 font-mono">{log.timestamp}</span>
                                  </div>
                               </div>
                            </div>
-                        ))}
+                           );
+                        })}
 
-                        {pixelLogs.length === 0 && orders.length === 0 && (
+                        {pixelLogs.filter(l => l.event !== 'init').length === 0 && orders.length === 0 && recentVisits.length === 0 && (
                           <div className="py-12 text-center space-y-2 opacity-30">
                              <WifiOff size={32} className="mx-auto" />
                              <p className="text-xs">بانتظار حركة المرور...</p>
@@ -3207,7 +3260,6 @@ export default function Dashboard({
         </div>
       )}
     </div>
-    <LiveVisitorCounter />
     </>
   );
 }
