@@ -141,7 +141,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto">
               {aboutData.pillars.map((pillar: any, idx: number) => (
                 <div key={idx} className="flex flex-col items-center space-y-4 bg-white p-6 rounded-2xl shadow-xs border border-pink-50">
-                  <Sparkles size={24} className="text-[#A44C5C]" strokeWidth={1.5} />
+                  <Feather size={24} className="text-[#A44C5C]" strokeWidth={1.5} />
                   <h5 className="font-serif font-semibold text-sm tracking-widest uppercase text-[#0B0B0B]">{pillar.title}</h5>
                   <p className="text-xs text-gray-500 font-sans leading-relaxed">
                     {pillar.description}
@@ -151,6 +151,27 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
             </div>
           </div>
         )}
+
+        {/* 🌍 Regions Served (GEO SEO Enhancement) */}
+        <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-stone-100 shadow-sm text-center space-y-6">
+          <div className="flex justify-center">
+            <div className="w-12 h-12 bg-pink-50 rounded-full flex items-center justify-center text-[#A44C5C]">
+              <Feather size={24} />
+            </div>
+          </div>
+          <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-light">نصل إليكِ أينما كنتِ 🌍</h4>
+          <p className="text-xs md:text-sm text-gray-500 max-w-2xl mx-auto leading-relaxed font-sans">
+            نفخر في **SULTA** بخدمة سيداتنا في كافة أنحاء **المملكة العربية السعودية** (الرياض، جدة، مكة المكرمة، المدينة المنورة، الدمام، الخبر، القصيم، وكافة المناطق) ودول **الخليج العربي** (الإمارات العربية المتحدة، الكويت، قطر، البحرين) بالإضافة إلى **مصر**. 
+            نوفر شحناً سريعاً ومؤمناً بالكامل لضمان وصول قطعكِ الفاخرة بأبهى صورة.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 pt-4">
+             {['🇸🇦 السعودية', '🇦🇪 الإمارات', '🇰🇼 الكويت', '🇶🇦 قطر', '🇧🇭 البحرين', '🇪🇬 مصر'].map(region => (
+               <span key={region} className="px-4 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-[10px] font-bold text-gray-600">
+                 {region}
+               </span>
+             ))}
+          </div>
+        </div>
 
         {/* 🎀 SULTA BRAND STRATEGY & VISUAL IDENTITY SYSTEM 🎀 */}
         <div className="mt-20 border-t border-[#DF8A9D]/20 pt-16">

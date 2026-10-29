@@ -242,6 +242,33 @@ function AppContent() {
     };
   }, []);
 
+  // 👑 SULTA Dynamic SEO Title Manager
+  useEffect(() => {
+    const brandName = "سولتة | SULTA Atelier";
+    let suffix = "أزياء النوم والبيجامات الفاخرة";
+    
+    if (country === 'SA') suffix += " 🇸🇦";
+    else if (country === 'EG') suffix += " 🇪🇬";
+
+    const titles: Record<string, string> = {
+      'home': "الرئيسية",
+      'store': "المتجر والكتالوج",
+      'best-sellers': "الأكثر طلباً ومبيعاً",
+      'offers': "العروض والتخفيضات",
+      'new-arrivals': "وصل حديثاً",
+      'collections': "التشكيلات الملكية",
+      'about': "من نحن - قصة سولتة",
+      'contact': "تواصل معنا",
+      'account': "حسابي والطلبات",
+      'track-order': "تتبع طلبيتك",
+      'faq': "الأسئلة الشائعة",
+      'dashboard': "لوحة الإدارة"
+    };
+
+    const sectionTitle = titles[currentTab] || "بوتيك الفخامة";
+    document.title = `${sectionTitle} - ${brandName} - ${suffix}`;
+  }, [currentTab, country]);
+
   // Live database synchronization via dbService
   useEffect(() => {
     let subscription: { unsubscribe: () => void } | null = null;

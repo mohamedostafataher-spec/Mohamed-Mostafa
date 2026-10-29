@@ -1,6 +1,6 @@
 {
-  "name": "Sulta Premium Sleepwear",
-  "description": "Sulta - Premium Sleepwear & Lounge Boutique. Featuring the SULTA ORDER AI AGENT SYSTEM for fully automated order tracking, delivery predictions, delayed alerts, customer satisfaction surveys, and AI-powered boutique customer assistance.",
+  "name": "سولتة | SULTA Atelier - أزياء النوم والبيجامات الفاخرة",
+  "description": "SULTA Atelier (سولتة) - البوتيك الأول لأزياء النوم والبيجامات النسائية الفاخرة في السعودية والخليج. اكتشفي مجموعتنا المترفة من ملابس المنزل المصممة بأعلى معايير الجودة والأناقة.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
