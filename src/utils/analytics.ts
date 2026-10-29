@@ -876,15 +876,26 @@ export const trackAddPaymentInfo = (
   paymentType: string = 'الدفع عند الاستلام'
 ) => {
   const ids = items.map(i => i.product?.id || i.productId || i.id || 'item');
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'AddPaymentInfo', {
-      content_ids: ids,
-      content_type: 'product',
-      value: totalValue,
-      currency: currency,
-      payment_type: paymentType
-    });
-    logPixelEvent('Meta (Facebook)', 'AddPaymentInfo', `إضافة بيانات الدفع (${paymentType}) بقيمة ${totalValue} ${currency}`, 'sent', totalValue, currency);
+  if (typeof window !== 'undefined') {
+    if (window.fbq) {
+      window.fbq('track', 'AddPaymentInfo', {
+        content_ids: ids,
+        content_type: 'product',
+        value: totalValue,
+        currency: currency,
+        payment_type: paymentType
+      });
+      logPixelEvent('Meta (Facebook)', 'AddPaymentInfo', `إضافة بيانات الدفع (${paymentType}) بقيمة ${totalValue} ${currency}`, 'sent', totalValue, currency);
+    }
+    
+    if (window.ttq) {
+      window.ttq.track('AddPaymentInfo', {
+        content_id: ids[0],
+        value: totalValue,
+        currency: currency
+      });
+      logPixelEvent('TikTok', 'AddPaymentInfo', `إضافة بيانات الدفع (${paymentType}) بقيمة ${totalValue} ${currency}`, 'sent', totalValue, currency);
+    }
   }
 };
 

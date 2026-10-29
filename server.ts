@@ -709,31 +709,44 @@ async function startServer() {
     const supabaseUrl = process.env.VITE_SUPABASE_URL;
     const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
     
-    // Global defaults (World Class Keywords)
-    const baseKeywords = "سولتة، سُلْطَة، سلتا، SULTA، Sulta Atelier، بيجامات نسائية، بيجامة نسائية السعودية، ملابس نوم نسائي، منامات نسائية، بيجامات اونلاين السعودية، بيجامات حلوة، منامات ساتان، بيجامات قطن، بيجامات نسائية مودرن، بيجامات ساتان نسائي فخمة، بيجامة قطن مريحة للنوم، أطقم بيجامات نسائية قطعتين، بيجامات شتوي نسائي، بيجامات صيفي قطن خفيف، قمصان نوم نسائي طويل، فساتين منزلية نسائية، بيجامات عرايس ساتان، بيجامات بكم طويل، بيجامة مريحة للبشره، بيجامات بسعر مناسب توصيل سريع، بيجامات الرياض، بيجامات نسائية جدة، ملابس نوم الدمام، بيجامات توصيل السعودية، منامات توصيل الرياض جدة الدمام، بيجامات اونلاين توصيل لكل مدن السعودية، متجر بيجامات سعودي، بيجامات شحن سريع السعودية، بيجامات نسائي، بيجامات رجالي، ملابس نوم رجالي، منامات أطفال، بيجامات بنات، بيجامات أولاد، ملابس نوم عائلي، بيجامات كتان، بيجامات بامبو، بيجامات مطبوعة، pajamas Saudi Arabia, women pajamas KSA, sleepwear online Saudi, satin pajamas delivery Riyadh, nightwear Jeddah, cotton pajamas KSA";
-    const baseTitle = "سلتا | بيجامات نسائية ومنامات ساتان وقطن - توصيل لكل السعودية";
-    const baseDescription = "اكتشفي تشكيلة SULTA (سلتا) الأرقى من بيجامات نسائية، منامات ساتان، ملابس نوم نسائي، وأطقم عرايس. توصيل سريع ومجاني لجميع مدن السعودية (الرياض، جدة، الدمام).";
-    const baseImage = "/img/sulta_luxury_pajama_hero_2_1780682794821.webp";
+    // Global defaults (World Class Keywords & GCC Specific LSI)
+    const baseKeywords = "سولتة، سُلْطَة، سلتا، SULTA، Sulta Atelier، بيجامات نسائية، بيجامة نسائية السعودية، ملابس نوم نسائي، منامات نسائية، بيجامات اونلاين السعودية، بيجامات حلوة، منامات ساتان، بيجامات قطن، بيجامات نسائية مودرن، بيجامات ساتان نسائي فخمة، بيجامة قطن مريحة للنوم، أطقم بيجامات نسائية قطعتين، بيجامات شتوي نسائي، بيجامات صيفي قطن خفيف، قمصان نوم نسائي طويل، فساتين منزلية نسائية، بيجامات عرايس ساتان، بيجامات بكم طويل، بيجامة مريحة للبشره، بيجامات بسعر مناسب توصيل سريع، بيجامات الرياض، بيجامات نسائية جدة، ملابس نوم الدمام، بيجامات مكة، ملابس نوم المدينة المنورة، بيجامات القصيم، بيجامات أبها، ملابس نوم تبوك، بيجامات حائل، بيجامات الخبر، بيجامات توصيل السعودية، منامات توصيل الرياض جدة الدمام، بيجامات اونلاين توصيل لكل مدن السعودية، متجر بيجامات سعودي، بيجامات شحن سريع السعودية، بيجامات الإمارات، ملابس نوم دبي، بيجامات الكويت، بيجامات قطر، بيجامات البحرين، بيجامات مصر، pajamas Saudi Arabia, women pajamas KSA, sleepwear online Saudi, luxury loungewear Riyadh, satin pajamas delivery Jeddah, nightwear Dammam, cotton pajamas KSA, Sulta Brand Saudi";
+    const baseTitle = "سولتة | SULTA Atelier - البوتيك الأول لملابس النوم والبيجامات الفاخرة";
+    const baseDescription = "اكتشفي عالم سولتة (SULTA Atelier) - الوجهة الرائدة للبيجامات النسائية الفاخرة، ملابس المنزل المترفة، وأطقم العرائس في السعودية والخليج. جودة استثنائية، تغليف ملكي، وشحن سريع لكافة مناطق المملكة والخليج ومصر.";
+    const baseImage = "https://sulta.vercel.app/img/sulta_hero_banner.webp";
 
     const defaultSchema = `
       <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "ClothingStore",
-        "name": "SULTA ATELIER",
+        "name": "SULTA ATELIER (سولتة)",
         "description": "${baseDescription}",
         "url": "https://sulta.vercel.app",
-        "logo": "https://sulta.vercel.app/img/sulta_logo.png",
+        "logo": "https://sulta.vercel.app/img/sulta_default_1_1781140865386.webp",
+        "telephone": "+966552823677",
+        "priceRange": "$$",
         "sameAs": [
-          "https://www.instagram.com/sultabrand/"
+          "https://www.instagram.com/sultabrand/",
+          "https://tiktok.com/@sulta.brand"
         ],
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "Olaya",
           "addressLocality": "Riyadh",
+          "addressRegion": "Riyadh",
           "addressCountry": "SA"
         },
-        "areaServed": ["Saudi Arabia", "Egypt", "Riyadh", "Jeddah", "Dammam"],
-        "paymentAccepted": ["Cash on Delivery", "Credit Card", "Apple Pay", "Tabby", "Tamara"]
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 24.7136,
+          "longitude": 46.6753
+        },
+        "areaServed": [
+          "Saudi Arabia", "United Arab Emirates", "Kuwait", "Qatar", "Bahrain", "Egypt",
+          "Riyadh", "Jeddah", "Dammam", "Mecca", "Medina", "Khobar", "Dhahran", "Buraydah", "Abha"
+        ],
+        "paymentAccepted": ["Cash on Delivery", "Bank Transfer", "Mada", "Visa", "Mastercard", "Apple Pay"]
       }
       </script>
     `;

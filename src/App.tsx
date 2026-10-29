@@ -1638,18 +1638,20 @@ function AppContent() {
                   <span className="text-[10px] text-gray-400 text-left">تابع شحنتك</span>
                 </button>
 
-                <button
-                  onClick={() => {
-                    setTab('dashboard');
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
-                    currentTab === 'dashboard' ? 'bg-[#A44C5C] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
-                  }`}
-                >
-                  <span>لوحة تحكم الإدارة والطلبيات ⚙️</span>
-                  <span className="bg-black text-white px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => {
+                      setTab('dashboard');
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                      currentTab === 'dashboard' ? 'bg-[#A44C5C] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span>لوحة تحكم الإدارة والطلبيات ⚙️</span>
+                    <span className="bg-black text-white px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
+                  </button>
+                )}
               </div>
             </div>
 
