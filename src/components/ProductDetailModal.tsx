@@ -489,11 +489,55 @@ export default function ProductDetailModal({
                 ))}
               </div>
             )}
-            
             {videoPlaying ? (
               <div className="absolute inset-0 bg-[#A44C5C] text-white flex flex-col items-center justify-center text-center">
                 <div className="relative w-full h-full">
-                  {product.video ? (
+                  {/* Cinematic Motion Showcase Fallback for products without real videos */}
+                  {!product.video && (
+                    <div className="absolute inset-0 bg-neutral-900 overflow-hidden flex items-center justify-center">
+                      <motion.div 
+                        className="w-full h-full relative"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
+                      >
+                        {/* Ken Burns Animated Layer 1 */}
+                        <motion.div
+                          key={`kb-1-${activeImageIdx}`}
+                          className="absolute inset-0"
+                          initial={{ scale: 1.3, x: -20, opacity: 0 }}
+                          animate={{ scale: 1, x: 0, opacity: 1 }}
+                          transition={{ duration: 6, ease: "linear" }}
+                        >
+                          <SultaImage 
+                            src={displayImages[activeImageIdx]} 
+                            className="w-full h-full object-cover opacity-60" 
+                          />
+                        </motion.div>
+
+                        {/* Floating Marketing Texts */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-10 pointer-events-none">
+                          <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.5, duration: 0.8 }}
+                            className="space-y-2"
+                          >
+                            <span className="text-[10px] text-[#F4B6C2] font-black tracking-[0.3em] uppercase block">SULTA HAUTE COUTURE</span>
+                            <h4 className="text-xl font-serif text-white leading-tight">أناقة ملكية تتنفس الرقي</h4>
+                            <div className="w-12 h-0.5 bg-[#F4B6C2] mx-auto my-3" />
+                            <p className="text-[10px] text-gray-300 max-w-[200px] mx-auto leading-relaxed">أقمشة فاخرة، حياكة يدوية دقيقة، وراحة تدوم طوال الليل 🌸</p>
+                          </motion.div>
+                        </div>
+
+                        {/* Visual Overlays */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none" />
+                      </motion.div>
+                    </div>
+                  )}
+
+                  {product.video && (
                     (() => {
                       const isYouTube = product.video.includes('youtube.com') || product.video.includes('youtu.be');
                       const isVimeo = product.video.includes('vimeo.com');
@@ -543,24 +587,15 @@ export default function ProductDetailModal({
                         />
                       );
                     })()
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full p-6">
-                      <span className="text-4xl mb-4">🎥</span>
-                      <span className="font-serif italic text-lg text-[#FFFFFF]">SULTA Haute-Couture Showcase</span>
-                      <div className="w-16 h-1 rounded bg-[#F4B6C2] my-3 animate-pulse" />
-                      <p className="text-xs text-gray-400 max-w-xs mb-6 leading-relaxed">
-                        فيديو حركي قصير يوضح انسيابية ونعومة الدانتيل الفاخر والمنسوجات الفاخرة على العارضة عند الحركة الطبيعية.
-                      </p>
-                    </div>
                   )}
                   
-                  {/* Floating Back Button over video */}
+                  {/* Floating Back Button over video/showcase */}
                   <button
                     type="button"
                     onClick={() => setVideoPlaying(false)}
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 hover:bg-[#A44C5C] border border-white/20 px-6 py-2 rounded-full text-[10px] text-white transition-all cursor-pointer backdrop-blur-sm z-10"
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 hover:bg-[#A44C5C] border border-white/20 px-6 py-2 rounded-full text-[10px] text-white transition-all cursor-pointer backdrop-blur-sm z-10 font-bold"
                   >
-                    العودة لصور القطعة ↩️
+                    {product.video ? 'العودة لصور القطعة ↩️' : 'تصفح صور القطعة الثابتة ↩️'}
                   </button>
                 </div>
               </div>
@@ -1888,36 +1923,39 @@ export default function ProductDetailModal({
                   <span>انضمي إلى قائمة الانتظار للتوفر 🔔</span>
                 </button>
               ) : (
-                <div className="flex-1 flex flex-col gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onAddToCart(product, selectedCol, selectedSz, quantity, {
-                      scent: selectedScent !== 'none' ? selectedScent : undefined,
-                      luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
-                      giftMessage: selectedWrap !== 'none' && giftCardMessage.trim() ? giftCardMessage : undefined
-                    })}
-                    className="w-full bg-[#111827] text-white hover:bg-black py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98"
-                    id="add-to-cart-action"
-                  >
-                    <ShoppingBag size={14} />
-                    <span>إضافة إلى سلة المشتريات</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleOrderWhatsApp}
-                    className="w-full bg-[#25D366] text-white hover:bg-[#20ba59] py-3 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
-                    id="whatsapp-buy-now"
-                  >
-                    <MessageCircle size={14} />
-                    <span>اطلبي الآن مباشرة عبر الواتساب</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
-                      const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : (targetPhone.startsWith('966') ? targetPhone : '966552823677');
-                      const productCode = product.sku || product.id.slice(0, 8);
-                      const text = `مرحباً براند SULTA الملكي 🌸، أود الاستفسار عن القطعة التالية:
+                  <div className="flex-1 flex flex-col gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => onAddToCart(product, selectedCol, selectedSz, quantity, {
+                          scent: selectedScent !== 'none' ? selectedScent : undefined,
+                          luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
+                          giftMessage: selectedWrap !== 'none' && giftCardMessage.trim() ? giftCardMessage : undefined
+                        })}
+                        className="w-full bg-[#111827] text-white hover:bg-black py-4 rounded-2xl text-[13px] font-sans font-black tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 order-2 sm:order-1"
+                        id="add-to-cart-action"
+                      >
+                        <ShoppingBag size={18} />
+                        <span>إضافة للسلة المتروفة</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleOrderWhatsApp}
+                        className="w-full bg-[#25D366] text-white hover:bg-[#20ba59] py-4 rounded-2xl text-[13px] font-sans font-black tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98 order-1 sm:order-2 ring-4 ring-emerald-50"
+                        id="whatsapp-buy-now"
+                      >
+                        <MessageCircle size={18} />
+                        <span>اطلبي فوراً عبر واتساب</span>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
+                        const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : (targetPhone.startsWith('966') ? targetPhone : '966552823677');
+                        const productCode = product.sku || product.id.slice(0, 8);
+                        const text = `مرحباً براند SULTA الملكي 🌸، أود الاستفسار عن القطعة التالية:
 • اسم المنتج: ${product.nameAr}
 • كود القطعة (SKU): ${productCode}
 • اللون المطلوب: ${selectedCol.name}
@@ -1925,15 +1963,15 @@ export default function ProductDetailModal({
 • السعر: ${effectiveProductPrice} ${country === 'EG' ? 'ج.م' : 'ر.س'}
 
 أرجو إفادتي بمدى توفرها وتأكيد الطلب. شكراً لكم ✨`;
-                      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
-                    }}
-                    className="w-full bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 py-2.5 rounded-xl text-xs font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-                    id="quick-inquiry-whatsapp"
-                  >
-                    <MessageCircle size={14} className="text-[#25D366]" />
-                    <span>استفسار سريع عن المقاس والتوفر (واتساب) 💬</span>
-                  </button>
-                </div>
+                        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
+                      }}
+                      className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-3 rounded-2xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+                      id="quick-inquiry-whatsapp"
+                    >
+                      <MessageCircle size={15} className="text-[#25D366]" />
+                      <span>هل لديكِ استفسار عن المقاس أو التوفر؟ (واتساب) 💬</span>
+                    </button>
+                  </div>
               )}
 
               <div className="flex flex-col gap-2 shrink-0">

@@ -516,8 +516,53 @@ export default function CheckoutModal({
                 <span>المبلغ المطلوب تحويله:</span>
                 <span className="font-mono text-sm text-emerald-800 font-black">{activeOrder.totalPrice.toLocaleString()} {currencyLabel}</span>
               </div>
+
+              {/* Upload Receipt in Confirmation (Feature 2 - Post Submit) */}
+              <div className="bg-white p-3 rounded-xl border border-blue-200 text-right space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black text-gray-900 flex items-center gap-1.5">
+                    <Upload size={13} className="text-blue-600" />
+                    <span>إرفاق إشعار التحويل لتأكيد الشحن فوراً:</span>
+                  </label>
+                  {receiptImage && (
+                    <button
+                      type="button"
+                      onClick={() => setReceiptImage(null)}
+                      className="text-[9px] text-red-500 hover:text-red-700 font-bold cursor-pointer"
+                    >
+                      تغيير الصورة ×
+                    </button>
+                  )}
+                </div>
+                
+                {receiptImage ? (
+                  <div className="relative rounded-xl overflow-hidden border border-emerald-300 max-h-32 bg-gray-50 flex items-center justify-center p-1 animate-scale-up">
+                    <img src={receiptImage} alt="إشعار التحويل" className="max-h-28 object-contain rounded-lg" />
+                    <div className="absolute top-2 right-2 bg-emerald-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 shadow-xs">
+                      <Check size={10} />
+                      <span>تم الإرفاق - جاهز للإرسال</span>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="border-2 border-dashed border-blue-200 hover:border-blue-400 bg-blue-50/40 hover:bg-blue-50/80 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 cursor-pointer transition-colors group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleReceiptUpload}
+                      className="hidden"
+                    />
+                    <div className="w-7 h-7 rounded-full bg-blue-100 group-hover:bg-blue-200 text-blue-700 flex items-center justify-center transition-colors">
+                      {isUploadingReceipt ? <RefreshCw size={12} className="animate-spin" /> : <Upload size={12} />}
+                    </div>
+                    <span className="text-[10px] font-bold text-blue-900">
+                      {isUploadingReceipt ? 'جاري التحميل...' : 'ارفعي صورة إيصال التحويل هنا 📸'}
+                    </span>
+                  </label>
+                )}
+              </div>
+
               <p className="text-[10px] text-blue-900 font-bold bg-white/90 p-2.5 rounded-xl border border-blue-100 text-center">
-                📸 يرجى إرسال صورة أو لقطة شاشة لإشعار التحويل عبر زر الواتساب أدناه لتأكيد حجز طلبكِ وبدء التجهيز والشحن فوراً.
+                ✨ بعد إرفاق الصورة، اضغطي على زر الواتساب الأخضر أدناه لإرسال الإشعار والتواصل مع فريق SULTA لتأكيد طلبكِ فوراً.
               </p>
             </div>
           )}

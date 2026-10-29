@@ -800,6 +800,16 @@ export default function AccountView({
               <Clock size={16} />
               <span>سجل النشاط</span>
             </button>
+
+            {isAdmin && (
+              <button
+                onClick={() => onNavigateToDashboard?.()}
+                className="flex-1 lg:flex-none text-right text-xs md:text-sm px-4 py-3 rounded-xl transition-luxury flex items-center gap-2.5 shrink-0 cursor-pointer bg-black text-[#F6E7A6] hover:bg-gray-800 mt-2 shadow-md border border-gray-700"
+              >
+                <Zap size={16} className="text-yellow-400" />
+                <span className="font-bold">لوحة تحكم الإدارة ⚙️</span>
+              </button>
+            )}
           </div>
         </aside>
 

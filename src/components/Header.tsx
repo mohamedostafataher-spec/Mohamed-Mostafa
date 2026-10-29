@@ -126,8 +126,7 @@ export default function Header({
     { id: 'home', label: 'الرئيسية 🏠' },
     { id: 'store', label: 'المتجر 🛍️' },
     { id: 'best-sellers', label: 'الأكثر طلباً 🔥' },
-    { id: 'offers', label: 'العروض 🏷️' },
-    { id: 'dashboard', label: '📊 لوحة التحكم (الإدارة)', adminOnly: true }
+    { id: 'offers', label: 'العروض 🏷️' }
   ].filter(cat => !cat.adminOnly || isAdmin);
 
   const activeWhatsApp = settings?.whatsappSaudi || '966552823677';
