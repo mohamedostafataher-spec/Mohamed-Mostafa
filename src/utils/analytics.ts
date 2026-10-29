@@ -264,21 +264,18 @@ export const initGlobalSync = () => {
        console.log('[Analytics] Persisting new session:', sessionData);
     }
 
-    // 3a. Primary: user_sessions
-    supabase.from('user_sessions').insert([sessionData]).then(({ error }) => {
+    // 3a. Primary: traffic_logs (New high-fidelity tracking table)
+    supabase.from('traffic_logs').insert([sessionData]).then(({ error }) => {
       if (error) {
-        if (isTrackingDebugMode()) console.warn('[Analytics] user_sessions insert failed:', error.message);
-        // 3b. Secondary: visitors (alternate table mentioned by user)
-        supabase.from('visitors').insert([sessionData]).then(({ error: vError }) => {
-          if (vError) {
-             if (isTrackingDebugMode()) console.warn('[Analytics] visitors insert failed:', vError.message);
-             // 3c. Ultimate Fallback: support_tickets (guaranteed to exist in this schema)
-             supabase.from('support_tickets').insert([{
-               subject: `session:${sessionId}`,
-               message: JSON.stringify(sessionData),
-               status: 'analytics_session',
-               created_at: new Date().toISOString()
-             }]).catch(() => {});
+        if (isTrackingDebugMode()) console.warn('[Analytics] traffic_logs insert failed, trying user_sessions:', error.message);
+        supabase.from('user_sessions').insert([sessionData]).then(({ error: uError }) => {
+          if (uError) {
+            supabase.from('support_tickets').insert([{
+              subject: `traffic_log:${sessionId}`,
+              message: JSON.stringify(sessionData),
+              status: 'analytics_session',
+              created_at: new Date().toISOString()
+            }]).catch(() => {});
           }
         }).catch(() => {});
       }
