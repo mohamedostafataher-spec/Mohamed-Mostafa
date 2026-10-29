@@ -68,6 +68,7 @@ import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehens
 import PixelDiagnosticsView from './PixelDiagnosticsView';
 import PixelHealthIndicator from './PixelHealthIndicator';
 import TrafficHeatmap from './TrafficHeatmap';
+import SmartOrderStatusManager from './SmartOrderStatusManager';
 
 interface DashboardProps {
   products: Product[];
@@ -2062,22 +2063,7 @@ export default function Dashboard({
                               <span>شحن فوري 🚚</span>
                             </button>
                           )}
-                          <span className="text-xs text-gray-400 font-medium">تغيير الحالة:</span>
-                          <select
-                            value={order.status || 'pending'}
-                            disabled={updatingOrderId === order.id}
-                            onChange={(e) => handleUpdateOrderStatus(order, e.target.value as any)}
-                            className="bg-[#F8F9FA] border border-gray-300 rounded-xl px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-black cursor-pointer"
-                          >
-                            <option value="pending">طلب جديد (معلق) ⏳</option>
-                            <option value="paid">مدفوع إلكترونياً 💳</option>
-                            <option value="cod">دفع عند الاستلام 📦</option>
-                            <option value="processing">جاري التجهيز 📦</option>
-                            <option value="shipped">تم الشحن 🚚</option>
-                            <option value="delivered">مكتمل بنجاح ✨</option>
-                            <option value="failed">فشل الدفع ⚠️</option>
-                            <option value="cancelled">إلغاء الطلب ❌</option>
-                          </select>
+
 
                           <button
                             onClick={() => setOrderToDelete(order.id)}
@@ -2148,8 +2134,19 @@ export default function Dashboard({
                         </div>
                       </div>
 
+                      {/* Automated Status Workflow Manager */}
+                      <div className="pt-2">
+                        <SmartOrderStatusManager 
+                          order={order} 
+                          onStatusUpdated={(updated) => {
+                            setOrders(prev => prev.map(o => o.id === updated.id ? updated : o));
+                          }}
+                          toast={toast}
+                        />
+                      </div>
+
                       {/* Order Action Buttons */}
-                      <div className="pt-2 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+                      <div className="pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           {order.phone && (
                             <>

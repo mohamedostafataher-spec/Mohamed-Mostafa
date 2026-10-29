@@ -609,34 +609,10 @@ export default function AccountView({
               : "لديكِ حساب بالفعل؟ سجلي الدخول"}
           </button>
         </div>
-
-        {/* Foolproof redundant Admin Gateway card */}
-        {isAdmin && (
-          <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-            <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-300/30 text-right space-y-2">
-              <h4 className="text-xs font-serif font-black text-amber-900 flex items-center gap-1.5 justify-end">
-                <span>بوابة الإدارة والطلبيات المباشرة ⚙️</span>
-              </h4>
-              <p className="text-[10px] text-gray-500 leading-normal">
-                إذا كنتِ مالكة بوتيك SULTA أو مديرة نظام المتجر، تفضلي بالدخول مباشرة إلى لوحة التحكم والتقارير وإدارة الطلبيات الفاخرة:
-              </p>
-              <button
-                onClick={() => {
-                  if (onNavigateToDashboard) {
-                    onNavigateToDashboard();
-                  }
-                }}
-                type="button"
-                className="w-full mt-1.5 bg-gradient-to-r from-amber-600 to-[#c5a059] text-white font-bold py-2.5 rounded-xl text-[11px] transition-all cursor-pointer shadow-xs hover:opacity-95"
-              >
-                🔐 فتح لوحة الإدارة الفاخرة (Admin Core)
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -653,22 +629,7 @@ export default function AccountView({
               <span>{session.user.email}</span>
             </span>
 
-            {/* Quick Go to Admin Dashboard Link to prevent layout navigation confusion */}
-            {isAdmin && (
-              <button
-                onClick={() => {
-                  if (onNavigateToDashboard) {
-                    onNavigateToDashboard();
-                  } else {
-                    // Fallback dispatcher
-                    window.location.reload();
-                  }
-                }}
-                className="bg-amber-100 hover:bg-[#FAF4F5] text-amber-900 border border-amber-300 hover:border-[#DF8A9C] text-[10px] font-bold px-3 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1 shrink-0 shadow-xs"
-              >
-                <span>👑 بوابة الإدارة والطلبيات (مسؤول)</span>
-              </button>
-            )}
+
 
             <button
               onClick={handleLogout}

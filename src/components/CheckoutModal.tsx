@@ -989,12 +989,19 @@ export default function CheckoutModal({
                   {isSubmitting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>جاري تسجيل الطلب وتجهيز بيانات التحويل...</span>
+                      <span>
+                        {selectedPayment === 'cod' 
+                          ? 'جاري تسجيل طلب الدفع عند الاستلام...' 
+                          : 'جاري تسجيل الطلب وتجهيز بيانات التحويل...'}
+                      </span>
                     </>
                   ) : (
                     <>
-                      <Check size={15} />
-                      <span>إتمام طلب التحويل البنكي ({totalAmount.toLocaleString()} {currencyLabel})</span>
+                      <span>
+                        {selectedPayment === 'cod' 
+                          ? `إتمام طلب الدفع عند الاستلام (${totalAmount.toLocaleString()} ${currencyLabel})`
+                          : `إتمام طلب التحويل البنكي (${totalAmount.toLocaleString()} ${currencyLabel})`}
+                      </span>
                     </>
                   )}
                 </button>
