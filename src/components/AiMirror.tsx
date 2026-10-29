@@ -1197,10 +1197,13 @@ export default function AiMirror({
                     <label className="block text-gray-500 text-xs font-bold mb-2">الألوان والموديلات المتوفرة:</label>
                     {selectedProduct.colors && selectedProduct.colors.length > 0 ? (
                       <div className="flex flex-wrap gap-2.5">
-                        {selectedProduct.colors.map((c, idx) => (
+                        {selectedProduct.colors.map((c) => (
                           <button
-                            key={idx}
-                            onClick={() => setSelectedColorIndex(idx)}
+                            key={c.name}
+                            onClick={() => {
+                              const foundIdx = selectedProduct.colors?.findIndex(col => col.name === c.name) ?? 0;
+                              setSelectedColorIndex(foundIdx);
+                            }}
                             style={{ backgroundColor: c.hex }}
                             title={c.name}
                             className={`w-8 h-8 rounded-full border-2 transition-all relative cursor-pointer ${
