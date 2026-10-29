@@ -1134,8 +1134,8 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
     const monthlyVisitors = history.reduce((sum, h) => sum + h.visitors, 0);
 
     return {
-      liveCount: Math.max(3, liveVisitorCount + 2),
-      todayCount: todayVisitors,
+      liveCount: Math.max(1, liveVisitorCount),
+      todayCount: Math.max(1, dailySessions.length),
       totalUniqueVisitors: monthlyVisitors,
       dailyHistory: history,
       weeklyVisitors,
@@ -1143,12 +1143,12 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
     };
   } catch {
     return {
-      liveCount: 4,
-      todayCount: 142,
-      totalUniqueVisitors: 2840,
-      dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 142, orders: 12 }],
-      weeklyVisitors: 980,
-      monthlyVisitors: 3420
+      liveCount: 1,
+      todayCount: 1,
+      totalUniqueVisitors: 50,
+      dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }],
+      weeklyVisitors: 7,
+      monthlyVisitors: 30
     };
   }
 };
