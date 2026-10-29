@@ -1496,9 +1496,7 @@ function AppContent() {
               <button type="button" onClick={() => setTab('best-sellers')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأكثر طلباً ومبيعاً</button>
               <button type="button" onClick={() => setTab('new-arrivals')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">وصل حديثاً</button>
               <button type="button" onClick={() => setTab('account')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">حسابي والطلبات</button>
-              {isAdmin && (
-                <button type="button" onClick={() => setTab('dashboard')} className="hover:text-black text-gray-400 text-[10px] transition-colors cursor-pointer mt-1 font-bold">لوحة الإدارة ⚙️</button>
-              )}
+              <button type="button" onClick={() => setTab('dashboard')} className="hover:text-[#A44C5C] text-gray-300 text-[8px] transition-colors cursor-pointer mt-2 text-right opacity-40">دخول الإدارة ⚙️</button>
             </div>
           </div>
 
@@ -1636,6 +1634,17 @@ function AppContent() {
                 >
                   <span>الملف الشخصي وطلباتكِ 👤</span>
                   <span className="text-[10px] text-gray-400 text-left">تابع شحنتك</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setTab('dashboard');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer bg-[#A44C5C] text-white mt-1 shadow-md`}
+                >
+                  <span>لوحة تحكم الإدارة ⚙️</span>
+                  <span className="bg-black/20 text-white px-2 py-0.5 rounded text-[9px] font-bold">بوابة الإدارة</span>
                 </button>
               </div>
             </div>
