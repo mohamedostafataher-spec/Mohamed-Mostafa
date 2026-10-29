@@ -25,6 +25,7 @@ export interface CreateOrderParams {
   paymentMethodType: PaymentMethodType;
   couponCode?: string;
   notes?: string;
+  receiptImageUrl?: string;
   whatsappOptIn?: boolean;
 }
 
@@ -83,6 +84,7 @@ export const orderService = {
       status: initialStatus as any,
       whatsappOptIn: params.whatsappOptIn || false,
       whatsappOptInDate: params.whatsappOptIn ? new Date().toISOString() : undefined,
+      receiptImageUrl: params.receiptImageUrl,
       date: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString()
     };

@@ -62,9 +62,9 @@ import {
   Legend 
 } from 'recharts';
 import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMember, TeamMemberRole } from '../types';
-import { dbService, cleanImgUrl } from '../services/db';
+import { dbService, cleanImgUrl, supabase } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
-import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats } from '../utils/analytics';
+import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats, getProductAnalytics, ProductMetric } from '../utils/analytics';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
 import PixelHealthIndicator from './PixelHealthIndicator';
 import TrafficHeatmap from './TrafficHeatmap';
@@ -214,7 +214,7 @@ export default function Dashboard({
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
     storeDomain: settings?.storeDomain || 'sulta.vercel.app',
     facebookPixelId: settings?.facebookPixelId || '1648674350574190',
-    metaCapiAccessToken: settings?.metaCapiAccessToken || 'EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD',
+    metaCapiAccessToken: settings?.metaCapiAccessToken || '',
     metaTestEventCode: settings?.metaTestEventCode || '',
     tiktokPixelId: settings?.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0',
     snapchatPixelId: settings?.snapchatPixelId || '',
@@ -245,6 +245,14 @@ export default function Dashboard({
       .catch(() => {});
   }, []);
 
+  // Real product analytics map from actual orders and telemetry
+  const productAnalyticsMap = useMemo(() => {
+    return getProductAnalytics(products, orders).reduce((acc, curr) => {
+      acc[curr.id] = curr;
+      return acc;
+    }, {} as Record<string, ProductMetric>);
+  }, [products, orders]);
+
   // Subscribe to real-time pixel events
   React.useEffect(() => {
     const unsubLogs = subscribePixelLogs(setPixelLogs);
@@ -262,6 +270,108 @@ export default function Dashboard({
   }, []);
 
   const visitorStats = useMemo(() => getComprehensiveVisitorStats(), [liveCount]);
+
+  // Real Abandoned Cart Leads captured from CheckoutModal step 1
+  const [abandonedLeads, setAbandonedLeads] = useState<any[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  // Sync leads from cloud and localStorage
+  React.useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        const { data } = await supabase
+          .from('support_tickets')
+          .select('*')
+          .like('subject', 'LEAD:%')
+          .order('created_at', { ascending: false })
+          .limit(30);
+
+        if (data && data.length > 0) {
+          const cloudLeads = data.map((d: any) => {
+            try {
+              return typeof d.message === 'string' ? JSON.parse(d.message) : d.message;
+            } catch {
+              return null;
+            }
+          }).filter(Boolean);
+
+          setAbandonedLeads(prev => {
+            const map = new Map<string, any>();
+            prev.forEach(l => map.set(l.phone || l.id, l));
+            cloudLeads.forEach(cl => {
+              if (cl.phone && !map.has(cl.phone)) {
+                map.set(cl.phone, cl);
+              }
+            });
+            return Array.from(map.values()).sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+          });
+        }
+      } catch (err) {
+        console.warn("Cloud leads fetch notice:", err);
+      }
+    };
+
+    fetchLeads();
+    const interval = setInterval(fetchLeads, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Handler to mark lead as contacted or converted
+  const handleUpdateLeadStatus = (leadId: string, isConverted: boolean) => {
+    setAbandonedLeads(prev => {
+      const updated = prev.map(l => l.id === leadId ? { ...l, converted: isConverted, contacted: true } : l);
+      try {
+        localStorage.setItem('sulta_abandoned_checkouts', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    toast?.(isConverted ? 'تم تحويل السلة المتروكة إلى طلب ناجح 🎉' : 'تم تحديد العميل كـ تم التواصل معه بنجاح 📞', 'success');
+  };
+
+  // Instant Audio Chime & Notification for new leads and orders (Feature 4)
+  const prevLeadsCountRef = React.useRef<number>(abandonedLeads.length);
+  const prevOrdersCountRef = React.useRef<number>(orders.length);
+
+  const playChimeSound = () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const audioCtx = new AudioContextClass();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+      osc.frequency.exponentialRampToValueAtTime(1174.66, audioCtx.currentTime + 0.35); // D6
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.6);
+    } catch {}
+  };
+
+  React.useEffect(() => {
+    if (abandonedLeads.length > prevLeadsCountRef.current && prevLeadsCountRef.current > 0) {
+      playChimeSound();
+      toast?.('🔔 تنبيه فوري: عميلة جديدة تركت سلتها بانتظار التواصل عبر الواتساب!', 'info');
+    }
+    prevLeadsCountRef.current = abandonedLeads.length;
+  }, [abandonedLeads.length]);
+
+  React.useEffect(() => {
+    if (orders.length > prevOrdersCountRef.current && prevOrdersCountRef.current > 0) {
+      playChimeSound();
+      toast?.('🎉 مبروك! تم تسجيل طلب تحويل بنكي جديد بالمتجر!', 'success');
+    }
+    prevOrdersCountRef.current = orders.length;
+  }, [orders.length]);
 
   // Critical Stock Products (< 5 pieces)
   const criticalStockProducts = useMemo(() => {
@@ -608,6 +718,7 @@ export default function Dashboard({
         fabricEn: productForm.fabricEn || editingProduct?.fabricEn || 'Premium Couture blend',
         washInstructionsAr: productForm.washInstructionsAr || editingProduct?.washInstructionsAr || 'غسيل يدوي بماء بارد أو غسيل جاف لطيف',
         images: productForm.images && productForm.images.length > 0 ? productForm.images : (editingProduct?.images || ['/img/sulta_product_1.png']),
+        video: productForm.video?.trim() || editingProduct?.video || undefined,
         colors: productForm.colors && productForm.colors.length > 0 ? productForm.colors : (editingProduct?.colors || [{ name: 'وردي كوتور', hex: '#E8A5B8' }]),
         sizes: productForm.sizes && productForm.sizes.length > 0 ? productForm.sizes : (editingProduct?.sizes || ['S', 'M', 'L', 'XL']),
         status: productForm.status || editingProduct?.status || 'active',
@@ -1427,39 +1538,201 @@ export default function Dashboard({
                <div className="lg:col-span-1 space-y-6">
                   <TrafficHeatmap />
                   
-                  {/* Pixel vs Orders Gap Analysis */}
-                  <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm">
-                    <h4 className="font-bold text-sm text-gray-950 mb-4 flex items-center gap-2">
-                       <ShieldCheck size={16} className="text-[#A44C5C]" />
-                       فجوة التحويل (Pixel vs Actual)
-                    </h4>
+                  {/* Channels ROI & Conversion Matrix */}
+                  <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
+                    <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-[#A44C5C]/10 text-[#A44C5C] flex items-center justify-center">
+                          <TrendingUp size={16} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-gray-950">مصفوفة أداء القنوات الإعلانية (ROI Matrix)</h4>
+                          <p className="text-[10px] text-gray-400">معدل التحويل والمبيعات الفعلية لكل حملة إعلانية</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">
+                        محدث لحظياً
+                      </span>
+                    </div>
+
                     <div className="overflow-x-auto">
-                      <table className="w-full text-right text-[10px] text-gray-600">
+                      <table className="w-full text-right text-[11px] text-gray-600">
                         <thead>
-                          <tr className="border-b border-gray-100">
-                            <th className="pb-2 font-bold">المصدر</th>
-                            <th className="pb-2 font-bold text-center">إضافة للسلة</th>
-                            <th className="pb-2 font-bold text-center">طلبات فعلية</th>
-                            <th className="pb-2 font-bold text-center">الفجوة</th>
+                          <tr className="border-b border-gray-150 text-gray-400 font-bold text-[10px]">
+                            <th className="pb-2.5 font-bold">القناة الإعلانية</th>
+                            <th className="pb-2.5 font-bold text-center">الزيارات</th>
+                            <th className="pb-2.5 font-bold text-center">إضافة للسلة</th>
+                            <th className="pb-2.5 font-bold text-center">الطلبات</th>
+                            <th className="pb-2.5 font-bold text-center">التحويل</th>
+                            <th className="pb-2.5 font-bold text-center">الحالة</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          {['Instagram', 'TikTok', 'Meta / FB'].map(source => {
-                             const carts = pixelLogs.filter(l => l.pixel === (source === 'Meta / FB' ? 'Meta (Facebook)' : source) && l.event === 'AddToCart').length;
-                             const actualOrders = orders.filter(o => o.id.includes(source.toLowerCase().slice(0, 3))).length;
-                             const gap = carts > 0 ? Math.round(((carts - actualOrders) / carts) * 100) : 0;
-                             return (
-                               <tr key={source} className="border-b border-gray-50">
-                                 <td className="py-2.5 font-bold text-gray-900">{source}</td>
-                                 <td className="py-2.5 text-center font-mono">{carts}</td>
-                                 <td className="py-2.5 text-center font-mono">{actualOrders}</td>
-                                 <td className={`py-2.5 text-center font-black ${gap > 70 ? 'text-rose-600' : 'text-amber-600'}`}>{gap}%</td>
-                               </tr>
-                             );
+                        <tbody className="divide-y divide-gray-100 font-sans">
+                          {[
+                            { name: 'إنستقرام (Instagram)', key: 'instagram', icon: '📸', color: 'text-pink-600' },
+                            { name: 'تيك توك (TikTok)', key: 'tiktok', icon: '🎵', color: 'text-black' },
+                            { name: 'فيسبوك / Meta', key: 'meta', icon: '🔵', color: 'text-blue-600' },
+                            { name: 'سناب شات (Snapchat)', key: 'snapchat', icon: '👻', color: 'text-amber-500' },
+                            { name: 'زيارة مباشرة (Direct)', key: 'direct', icon: '🛍️', color: 'text-[#A44C5C]' },
+                          ].map(ch => {
+                            const visitsCount = recentVisits.filter(v => {
+                              const src = ((v.utm_source || '') + (v.referrer || '')).toLowerCase();
+                              if (ch.key === 'direct') return !src.includes('instagram') && !src.includes('tiktok') && !src.includes('facebook') && !src.includes('meta') && !src.includes('snapchat');
+                              return src.includes(ch.key) || (ch.key === 'meta' && src.includes('facebook'));
+                            }).length;
+
+                            const carts = pixelLogs.filter(l => {
+                              const p = l.pixel.toLowerCase();
+                              if (ch.key === 'instagram') return p.includes('facebook') && l.details.includes('إنستغرام') && l.event === 'AddToCart';
+                              if (ch.key === 'tiktok') return p.includes('tiktok') && l.event === 'AddToCart';
+                              if (ch.key === 'meta') return p.includes('facebook') && !l.details.includes('إنستغرام') && l.event === 'AddToCart';
+                              if (ch.key === 'snapchat') return p.includes('snapchat') && l.event.toLowerCase().includes('cart');
+                              return l.event === 'AddToCart';
+                            }).length;
+
+                            const chOrders = orders.filter(o => o.notes?.toLowerCase().includes(ch.key) || o.id.toLowerCase().includes(ch.key.slice(0, 3))).length;
+                            const convRate = visitsCount > 0 ? ((chOrders / visitsCount) * 100).toFixed(1) : (carts > 0 ? ((chOrders / carts) * 100).toFixed(1) : '0.0');
+
+                            return (
+                              <tr key={ch.key} className="hover:bg-gray-50/80 transition-colors">
+                                <td className="py-2.5 font-bold text-gray-900 flex items-center gap-1.5">
+                                  <span>{ch.icon}</span>
+                                  <span className="truncate max-w-[120px]">{ch.name}</span>
+                                </td>
+                                <td className="py-2.5 text-center font-mono font-bold text-gray-700">{visitsCount}</td>
+                                <td className="py-2.5 text-center font-mono text-amber-600 font-bold">{carts}</td>
+                                <td className="py-2.5 text-center font-mono text-emerald-600 font-bold">{chOrders}</td>
+                                <td className="py-2.5 text-center font-mono font-black text-gray-900">{convRate}%</td>
+                                <td className="py-2.5 text-center">
+                                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                                    Number(convRate) > 3 
+                                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                      : carts > 0 
+                                      ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                                      : 'bg-gray-100 text-gray-500'
+                                  }`}>
+                                    {Number(convRate) > 3 ? '🔥 ممتاز' : carts > 0 ? '⚡ نشط' : 'هادئ'}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
                           })}
                         </tbody>
                       </table>
                     </div>
+                  </div>
+
+                  {/* Abandoned Cart Quick Recovery Card */}
+                  <div className="bg-gradient-to-br from-amber-50/70 to-orange-50/40 rounded-3xl p-5 border border-amber-200/70 shadow-sm space-y-3.5">
+                    <div className="flex items-center justify-between pb-2 border-b border-amber-200/60">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                          <ShoppingBag size={16} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-xs text-amber-950">استعادة السلات المتروكة (Cart Recovery)</h4>
+                          <p className="text-[10px] text-amber-800">بيانات وتواصل مباشر مع العميلات المترددات</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-200">
+                        {abandonedLeads.filter(l => !l.converted).length} عميلة بانتظار التواصل
+                      </span>
+                    </div>
+
+                    {/* Active leads list if any exist */}
+                    {abandonedLeads.filter(l => !l.converted).length > 0 ? (
+                      <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                        {abandonedLeads.filter(l => !l.converted).map((lead) => {
+                          const cleanPhone = (lead.phone || '').replace(/\D/g, '');
+                          const itemsSummary = lead.items?.map((it: any) => `${it.productName || 'قطعة كوتور'} (${it.size || ''})`).join('، ') || 'منتجات كوتور فاخرة';
+                          const leadMsg = `يا هلا بالسلطانة ${lead.customerName || 'الكريمة'} 🌸👑، معكِ خدمة عملاء متجر SULTA للأزياء وملابس النوم الملكية.
+
+لاحظنا وصولكِ لخطوة إتمام الطلب والتحويل البنكي لحساب الراجحي ولم يتم تأكيد التحويل بعد:
+📦 القطع المختارة: ${itemsSummary}
+💰 المبلغ الإجمالي: ${lead.totalAmount || 0} ر.س
+
+هل نساعدكِ في تزويدك ببيانات الحساب البنكي أو تقديم كود خصم خاص (SULTA20 بخصم 20%) لتأكيد شحن طلبكِ الملكي فوراً؟ يسعدنا خدمتكِ دائماً ✨`;
+
+                          return (
+                            <div key={lead.id} className="bg-white p-3 rounded-2xl border border-amber-200 shadow-2xs space-y-2 text-right">
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <span className="font-black text-xs text-gray-950 block">{lead.customerName || 'عميلة بدون اسم'}</span>
+                                  <span className="text-[10.5px] font-mono text-gray-500 font-bold" dir="ltr">{lead.phone}</span>
+                                </div>
+                                <div className="text-left">
+                                  <span className="font-mono font-black text-xs text-[#A44C5C] block">{lead.totalAmount || 0} ر.س</span>
+                                  <span className="text-[9.5px] text-gray-400 font-medium">{lead.city || 'السعودية'}</span>
+                                </div>
+                              </div>
+
+                              <p className="text-[10px] text-gray-600 line-clamp-1 bg-gray-50 p-1.5 rounded-lg border border-gray-150">
+                                🛍️ {itemsSummary}
+                              </p>
+
+                              <div className="flex items-center gap-1.5 pt-1">
+                                <button
+                                  type="button"
+                                  onClick={() => window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(leadMsg)}`, '_blank')}
+                                  className="flex-1 bg-[#25D366] hover:bg-[#20ba59] active:scale-95 text-white py-2 px-3 rounded-xl text-[10.5px] font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                                >
+                                  <MessageCircle size={14} />
+                                  <span>مراسلة واتساب فوراً 💬</span>
+                                </button>
+                                
+                                {lead.phone && (
+                                  <a
+                                    href={`tel:${lead.phone}`}
+                                    className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 cursor-pointer transition-colors shadow-xs"
+                                    title="اتصال هاتفي مباشر"
+                                  >
+                                    <Phone size={14} />
+                                  </a>
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateLeadStatus(lead.id, true)}
+                                  className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl border border-emerald-200 cursor-pointer transition-colors text-[10px] font-bold"
+                                  title="تحديد كـ تم الشراء"
+                                >
+                                  <Check size={13} />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="bg-white/80 p-3.5 rounded-2xl border border-amber-250 text-right space-y-2">
+                        <p className="text-[11px] text-amber-950 leading-relaxed font-sans font-medium">
+                          💡 <strong>كيف يتم تسجيل بيانات العميلات هنا؟</strong>
+                        </p>
+                        <p className="text-[10px] text-amber-900 leading-relaxed font-sans">
+                          بسبب قيود المتصفحات وأنظمة حماية الخصوصية (Apple & Google)، لا يمكن معرفة رقم هاتف العميل بمجرد ضغطه على "إضافة للسلة".
+                          بمجرد أن تبدأ أي عميلة بكتابة اسمها ورقم جوالها في صفحة إتمام الطلب وتصل لخطوة التحويل البنكي، تُحفظ بياناتها هنا فوراً للتواصل معها ومساعدتها في إتمام التحويل!
+                        </p>
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const msg = `يا هلا بالسلطانة 👑🌸، لاحظنا أنكِ اخترتِ قطع كوتور مميزة في سلة مشترياتكِ من SULTA ولم تكملي التحويل البنكي بعد.
+
+يسعدنا تقديم كود خصم إضافي وشحن مجاني لإتمام طلبكِ الآن:
+🎁 كود الخصم: SULTA20 (خصم 20%)
+🚚 شحن مجاني وسريع لكافة مدن المملكة.
+🏦 تحويل مباشر لحساب الراجحي عبر الآيبان أو رقم الحساب.
+
+هل نساعدكِ في اختيار المقاس وتأكيد الطلب؟`;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+                      }}
+                      className="w-full bg-[#111827] hover:bg-black text-white py-2 px-3 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <MessageCircle size={14} className="text-[#25D366]" />
+                      <span>إرسال رسالة ترويجية عامة عبر واتساب 📢</span>
+                    </button>
                   </div>
 
                   <div className="bg-gray-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-800 flex flex-col h-full max-h-[540px]">
@@ -1831,6 +2104,17 @@ export default function Dashboard({
                           </p>
                           <p><strong className="text-gray-600">المدينة:</strong> {order.city || 'الرياض'}</p>
                           <p><strong className="text-gray-600">العنوان:</strong> {order.address || 'غير محدد'}</p>
+                          {order.receiptImageUrl && (
+                            <div className="mt-2 pt-2 border-t border-gray-200">
+                              <span className="font-bold text-gray-800 text-[11px] block mb-1">📸 إشعار التحويل البنكي المرفق:</span>
+                              <a href={order.receiptImageUrl} target="_blank" rel="noopener noreferrer" className="block relative group overflow-hidden rounded-xl border border-blue-200 max-w-[130px] shadow-2xs">
+                                <img src={order.receiptImageUrl} alt="إشعار التحويل" className="h-16 w-full object-cover group-hover:scale-105 transition-transform" />
+                                <span className="absolute inset-0 bg-black/40 text-white text-[9.5px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  عرض بالحجم الكامل 🔍
+                                </span>
+                              </a>
+                            </div>
+                          )}
                           {order.notes && (
                             <p className="text-amber-800 bg-amber-50 p-1.5 rounded-lg border border-amber-200 mt-1">
                               <strong>ملاحظة العميلة:</strong> {order.notes}
@@ -1872,10 +2156,10 @@ export default function Dashboard({
                               {/* 1. Official WhatsApp Invoice Button */}
                               <button
                                 onClick={() => WhatsAppService.sendInvoice(order, order.phone)}
-                                className="bg-[#25D366] hover:bg-[#20ba5a] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer active:scale-95"
+                                className="bg-[#25D366] hover:bg-[#20ba5a] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer active:scale-95"
                               >
-                                <MessageCircle size={14} />
-                                <span>إرسال الفاتورة للعميلة على الواتساب 🧾</span>
+                                <MessageCircle size={15} />
+                                <span>مراسلة واتساب فوراً 💬</span>
                               </button>
 
                               {/* 1.1 Copy WhatsApp Message Text Button */}
@@ -1896,15 +2180,25 @@ export default function Dashboard({
                                 <span>نسخ نص الواتساب 📋</span>
                               </button>
 
-                              {/* 2. Direct Chat Button */}
+                              {/* 2. Direct WhatsApp Chat Button */}
                               <a
                                 href={`https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً أستاذة ${order.customerName}، معك خدمة عملاء بوتيك SULTA 👑 بخصوص طلبكِ رقم #${order.id.slice(0, 8)}...`)}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="bg-gray-100 hover:bg-gray-200 text-gray-900 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
                               >
-                                <Phone size={13} />
+                                <MessageCircle size={13} />
                                 <span>محادثة العميلة</span>
+                              </a>
+
+                              {/* 3. Direct Call Button */}
+                              <a
+                                href={`tel:${order.phone}`}
+                                className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                                title="اتصال هاتفي مباشر"
+                              >
+                                <Phone size={13} />
+                                <span>اتصال مباشر 📞</span>
                               </a>
                             </>
                           )}
@@ -2091,25 +2385,39 @@ export default function Dashboard({
                           </span>
                         </td>
                         <td className="py-2.5 px-4">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1.5 text-[10.5px]">
-                              <Eye size={12} className="text-gray-400" />
-                              <span className="font-bold text-gray-700">{Math.floor((p.reviewsCount || 0) * 2.5 + (parseInt(p.id.slice(0, 2), 16) % 20))} مشاهدة</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[10.5px]">
-                              <ShoppingBag size={12} className="text-gray-400" />
-                              <span className="font-bold text-gray-700">{Math.floor((p.reviewsCount || 0) * 0.8 + (parseInt(p.id.slice(2, 4), 16) % 5))} في السلة</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
-                                <div 
-                                  className="h-full bg-[#A44C5C]" 
-                                  style={{ width: `${Math.min(100, (p.reviewsCount || 0) * 5 + 10)}%` }} 
-                                />
+                          {(() => {
+                            const pMetric = productAnalyticsMap[p.id];
+                            const pViews = pMetric?.views || 0;
+                            const pCarts = pMetric?.cartAdditions || 0;
+                            const pOrders = pMetric?.ordersCount || 0;
+                            return (
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-1.5 text-[10.5px]">
+                                  <Eye size={12} className="text-gray-400" />
+                                  <span className="font-bold text-gray-700">{pViews} مشاهدة</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[10.5px]">
+                                  <ShoppingBag size={12} className="text-gray-400" />
+                                  <span className="font-bold text-gray-700">{pCarts} في السلة</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  {pOrders > 0 ? (
+                                    <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200">
+                                      {pOrders} طلب حقيقي ✓
+                                    </span>
+                                  ) : pCarts > 0 ? (
+                                    <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-200">
+                                      {pCarts} سلة قيد الانتظار ⏳
+                                    </span>
+                                  ) : (
+                                    <span className="text-[9px] font-bold text-gray-400 text-[9.5px]">
+                                      بانتظار تفاعل الزوار
+                                    </span>
+                                  )}
+                                </div>
                               </div>
-                              <span className="text-[9px] font-bold text-[#A44C5C] uppercase tracking-tighter">شائع 🔥</span>
-                            </div>
-                          </div>
+                            );
+                          })()}
                         </td>
                         <td className="py-2.5 px-4 text-center">
                           <div className="flex items-center justify-center gap-1.5">
@@ -3198,6 +3506,19 @@ export default function Dashboard({
                   placeholder="/img/sulta_product_1.png"
                   value={productForm.images?.[0] || ''}
                   onChange={(e) => setProductForm(prev => ({ ...prev, images: [e.target.value] }))}
+                  className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  رابط الفيديو التسويقي (YouTube أو TikTok أو ملف MP4) 🎬
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://... رابط ريلز أو يوتيوب، أو اتركيه فارغاً للعرض السينمائي التلقائي لصور القطعة"
+                  value={productForm.video || ''}
+                  onChange={(e) => setProductForm(prev => ({ ...prev, video: e.target.value }))}
                   className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
                 />
               </div>

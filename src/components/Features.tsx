@@ -19,8 +19,8 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
     },
     {
       icon: <ShieldCheck size={22} className="text-black" />,
-      title: 'خيارات دفع مريحة ومباشرة',
-      desc: 'الدفع عند الاستلام نقداً عند باب منزلك، أو تحويل بنكي مباشر مع تأكيد عبر الواتساب.',
+      title: 'تحويل بنكي مباشر وسريع',
+      desc: 'تحويل فوري لحساب مصرف الراجحي عبر الآيبان ورقم الحساب مع تأكيد الشحن الفوري.',
     },
     {
       icon: <Sparkles size={22} className="text-black" />,

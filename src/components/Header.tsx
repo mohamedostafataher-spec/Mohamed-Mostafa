@@ -20,6 +20,7 @@ interface HeaderProps {
   settings?: Settings;
   session: any;
   products?: Product[];
+  isAdmin?: boolean;
 }
 
 export default function Header({
@@ -37,6 +38,7 @@ export default function Header({
   settings,
   session,
   products = [],
+  isAdmin = false,
 }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localQuery, setLocalQuery] = useState('');
@@ -125,8 +127,8 @@ export default function Header({
     { id: 'store', label: 'المتجر 🛍️' },
     { id: 'best-sellers', label: 'الأكثر طلباً 🔥' },
     { id: 'offers', label: 'العروض 🏷️' },
-    { id: 'dashboard', label: '📊 لوحة التحكم (الإدارة)' }
-  ];
+    { id: 'dashboard', label: '📊 لوحة التحكم (الإدارة)', adminOnly: true }
+  ].filter(cat => !cat.adminOnly || isAdmin);
 
   const activeWhatsApp = settings?.whatsappSaudi || '966552823677';
   const activeWhatsAppClean = activeWhatsApp.replace(/\D/g, '');

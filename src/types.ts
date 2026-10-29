@@ -255,6 +255,7 @@ export interface Order {
   status: OrderStatus;
   whatsappOptIn?: boolean;
   whatsappOptInDate?: string;
+  receiptImageUrl?: string;
   date: string;
   createdAt?: string;
 }

@@ -44,6 +44,7 @@ import WhatsAppFloat from './components/WhatsAppFloat';
 import MobileBottomNav from './components/MobileBottomNav';
 import LiveTrafficMonitor from './components/LiveTrafficMonitor';
 import LivePurchaseToasts from './components/LivePurchaseToasts';
+import ReelsShowcase from './components/ReelsShowcase';
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -809,6 +810,7 @@ function AppContent() {
         favorites={favorites}
         settings={settings}
         products={products}
+        isAdmin={isAdmin}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenFavorites={() => {
           setTab('account');
@@ -848,6 +850,13 @@ function AppContent() {
               { title: 'وصل حديثاً من تشكيلة البيجامات الملكية ✨', label: 'أحدث تصاميم أزياء النوم والقطع الفاخرة', data: newArrivals },
             ].map((section, sectionIdx) => (
               <React.Fragment key={section.title}>
+                {sectionIdx === 1 && (
+                  <ReelsShowcase 
+                    products={products} 
+                    onSelectProduct={handleSelectProduct} 
+                    onAddToCart={handleAddToCart}
+                  />
+                )}
                 <section className={`${sectionIdx === 0 ? 'pt-3 sm:pt-5 pb-8 sm:pb-12' : 'py-8 sm:py-12'} ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     
@@ -1063,8 +1072,8 @@ function AppContent() {
                     <ShieldCheck size={18} />
                   </div>
                   <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">سداد مريح ومباشر</span>
-                    <span className="text-[10px] sm:text-[11px] text-gray-500">الدفع عند الاستلام أو تحويل بنكي مباشر</span>
+                    <span className="block font-bold text-gray-950 text-xs sm:text-sm">سداد بنكي مباشر وسريع</span>
+                    <span className="text-[10px] sm:text-[11px] text-gray-500">تحويل فوري لمصرف الراجحي عبر IBAN</span>
                   </div>
                 </div>
 
@@ -1267,6 +1276,7 @@ function AppContent() {
             onReorder={handleReorder}
             onNavigateToDashboard={() => setTab('dashboard')}
             onAddToCart={handleAddToCart}
+            isAdmin={isAdmin}
           />
         )}
 
@@ -1459,7 +1469,9 @@ function AppContent() {
               <button type="button" onClick={() => setTab('best-sellers')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأكثر طلباً ومبيعاً</button>
               <button type="button" onClick={() => setTab('new-arrivals')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">وصل حديثاً</button>
               <button type="button" onClick={() => setTab('account')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">حسابي والطلبات</button>
-              <button type="button" onClick={() => setTab('dashboard')} className="hover:text-black text-gray-400 text-[10px] transition-colors cursor-pointer mt-1">لوحة الإدارة للبراند</button>
+              {isAdmin && (
+                <button type="button" onClick={() => setTab('dashboard')} className="hover:text-black text-gray-400 text-[10px] transition-colors cursor-pointer mt-1 font-bold">لوحة الإدارة ⚙️</button>
+              )}
             </div>
           </div>
 
@@ -1504,13 +1516,10 @@ function AppContent() {
               </a>
             </div>
 
-            <div className="pt-2">
-              <h5 className="font-bold text-[11px] text-gray-900 mb-2">طرق الدفع المتاحة بالمتجر</h5>
+              <h5 className="font-bold text-[11px] text-gray-900 mb-2">طريقة السداد المعتمدة</h5>
               <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="bg-gray-100 text-gray-900 border border-gray-250 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">الدفع عند الاستلام (COD)</span>
-                <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (الراجحي)</span>
+                <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (مصرف الراجحي عبر IBAN ورقم الحساب) 🇸🇦</span>
               </div>
-            </div>
           </div>
 
         </div>
@@ -1586,7 +1595,7 @@ function AppContent() {
               {/* Extra Account section for quick access */}
               <div className="border-t border-gray-100 pt-3 mt-1 space-y-1.5">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1 px-1">
-                  حسابكِ الملكي والإدارة:
+                  حسابكِ الملكي:
                 </span>
                 
                 <button
@@ -1602,18 +1611,20 @@ function AppContent() {
                   <span className="text-[10px] text-gray-400 text-left">تابع شحنتك</span>
                 </button>
 
-                <button
-                  onClick={() => {
-                    setTab('dashboard');
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
-                    currentTab === 'dashboard' ? 'bg-[#A44C5C] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
-                  }`}
-                >
-                  <span>لوحة تحكم الإدارة والطلبيات ⚙️</span>
-                  <span className="bg-black text-white px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => {
+                      setTab('dashboard');
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                      currentTab === 'dashboard' ? 'bg-[#A44C5C] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span>لوحة تحكم الإدارة والطلبيات ⚙️</span>
+                    <span className="bg-black text-white px-1.5 py-0.5 rounded text-[9px] font-bold text-left">بوابة الإدارة</span>
+                  </button>
+                )}
               </div>
             </div>
 

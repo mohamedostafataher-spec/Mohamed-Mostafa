@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy, ChevronLeft, ChevronRight, Gift, Wind, MessageCircle, Flame, ShieldCheck, Plus } from 'lucide-react';
+import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy, ChevronLeft, ChevronRight, Gift, Wind, MessageCircle, Flame, ShieldCheck, Plus, Truck, RefreshCw, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
@@ -1960,6 +1960,51 @@ export default function ProductDetailModal({
                 >
                   <Share2 size={16} />
                 </button>
+              </div>
+            </div>
+
+            {/* Salla & Gulf Luxury Conversion Trust Guarantee Box */}
+            <div className="bg-[#FAF9F6] border border-gray-200/90 rounded-2xl p-3.5 space-y-2.5 text-right mt-1 shadow-2xs">
+              <div className="grid grid-cols-2 gap-2 text-[11px] font-medium text-gray-700">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
+                    <Truck size={14} />
+                  </div>
+                  <div>
+                    <span className="block font-bold text-gray-900 leading-tight">توصيل سريع 24-48 ساعة</span>
+                    <span className="block text-[9.5px] text-gray-400">سمسا وأرامكس لكافة مدن المملكة 🇸🇦</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100">
+                    <ShieldCheck size={14} />
+                  </div>
+                  <div>
+                    <span className="block font-bold text-gray-900 leading-tight">ضمان كوتور 100%</span>
+                    <span className="block text-[9.5px] text-gray-400">أقمشة فاخرة مختارة بعناية فائقة</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-100">
+                    <CreditCard size={14} />
+                  </div>
+                  <div>
+                    <span className="block font-bold text-gray-900 leading-tight">تحويل بنكي مباشر (الراجحي)</span>
+                    <span className="block text-[9.5px] text-gray-400">تحويل فوري عبر الآيبان ورقم الحساب</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
+                    <RefreshCw size={14} />
+                  </div>
+                  <div>
+                    <span className="block font-bold text-gray-900 leading-tight">استبدال واسترجاع سهل</span>
+                    <span className="block text-[9.5px] text-gray-400">خلال 14 يوماً مع الحفاظ على القطعة</span>
+                  </div>
+                </div>
               </div>
             </div>
 

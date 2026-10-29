@@ -16,11 +16,14 @@ import {
   ExternalLink,
   RefreshCw,
   Globe,
-  PackageSearch
+  PackageSearch,
+  Upload,
+  Image as ImageIcon
 } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { WhatsAppService } from '../services/whatsappService';
 import { agentSystem } from '../services/agentSystem';
+import { supabase } from '../services/db';
 import { trackInitiateCheckout, trackPurchase, trackAddPaymentInfo } from '../utils/analytics';
 import { 
   ttqIdentify, 
@@ -65,8 +68,8 @@ export default function CheckoutModal({
   const [address, setAddress] = useState('');
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
 
-  // Selected Payment Method: 'cod' | 'bank_transfer'
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('cod');
+  // Selected Payment Method: 'bank_transfer' (Saudi Bank Transfer via Al Rajhi IBAN & Account Number)
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('bank_transfer');
 
   // Processing & Verification States
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,6 +80,28 @@ export default function CheckoutModal({
   const [copiedIban, setCopiedIban] = useState(false);
   const [copiedAccNum, setCopiedAccNum] = useState(false);
   const [iframePaymentUrl, setIframePaymentUrl] = useState<string | null>(null);
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
+
+  const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      setErrorMsg('حجم الصورة كبير جداً، يرجى اختيار صورة أقل من 8 ميجابايت.');
+      return;
+    }
+    setIsUploadingReceipt(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setReceiptImage(event.target?.result as string);
+      setIsUploadingReceipt(false);
+    };
+    reader.onerror = () => {
+      setErrorMsg('تعذر قراءة ملف الصورة، يرجى المحاولة مجدداً.');
+      setIsUploadingReceipt(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleCopyIban = (ibanText: string = 'SA6580000108608016396260') => {
     navigator.clipboard.writeText(ibanText.replace(/\s+/g, ''));
@@ -187,6 +212,45 @@ export default function CheckoutModal({
       trackAddPaymentInfo(cart, totalAmount, 'SAR', selectedPayment);
     } catch {}
 
+    // Save lead data immediately so abandoned carts can be recovered via WhatsApp
+    try {
+      const leadData = {
+        id: `lead_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        customerName: name.trim(),
+        phone: normalizedPhone,
+        city: city.trim(),
+        address: address.trim(),
+        totalAmount,
+        currency: 'SAR',
+        date: new Date().toISOString(),
+        items: cart.map(i => ({
+          productId: i.product.id,
+          productName: i.product.nameAr,
+          color: i.selectedColor.name,
+          size: i.selectedSize,
+          quantity: i.quantity,
+          price: country === 'EG' 
+            ? (i.product.salePriceEG || i.product.priceEG || 0) 
+            : (i.product.salePriceSA || i.product.priceSA || 0)
+        })),
+        converted: false
+      };
+
+      const existingLeads = JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
+      const filtered = existingLeads.filter((l: any) => l.phone !== normalizedPhone);
+      filtered.unshift(leadData);
+      localStorage.setItem('sulta_abandoned_checkouts', JSON.stringify(filtered.slice(0, 50)));
+
+      // Sync lead to Supabase for multi-device admin visibility
+      supabase.from('support_tickets').insert([{
+        subject: `LEAD:${normalizedPhone}`,
+        message: JSON.stringify(leadData),
+        status: 'open'
+      }]).then(() => {}).catch(() => {});
+    } catch (e) {
+      console.warn("Abandoned checkout lead save notice:", e);
+    }
+
     setStep(2);
   };
 
@@ -211,30 +275,12 @@ export default function CheckoutModal({
       totalPrice: totalAmount,
       paymentMethodType: selectedPayment,
       couponCode: appliedCoupon?.code,
+      receiptImageUrl: receiptImage || undefined,
       whatsappOptIn
     };
 
     try {
-      // 1. CASH ON DELIVERY (COD)
-      if (selectedPayment === 'cod') {
-        const { order } = await paymentService.processCashOnDelivery(orderParams);
-        setActiveOrder(order);
-        setPaymentStatus('cod');
-
-        // Analytics tracking & TikTok Pixel
-        try { trackPurchase(order); } catch (e) {}
-        try { trackTikTokPurchase(order, 'SAR'); } catch (e) {}
-        try { await agentSystem.onOrderCreated(order); } catch (e) {}
-
-        // WhatsApp invoice notification
-        try {
-          WhatsAppService.sendInvoice(order, order.phone);
-        } catch (e) {}
-
-        return;
-      }
-
-      // 2. DIRECT BANK TRANSFER
+      // DIRECT BANK TRANSFER (AL RAJHI BANK)
       if (selectedPayment === 'bank_transfer') {
         const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
           orderParams,
@@ -249,6 +295,18 @@ export default function CheckoutModal({
           return;
         }
 
+        // Mark abandoned lead as converted
+        try {
+          const existingLeads = JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
+          const updated = existingLeads.map((l: any) => {
+            if (l.phone === normalizedPhone) {
+              return { ...l, converted: true, orderId: order.id };
+            }
+            return l;
+          });
+          localStorage.setItem('sulta_abandoned_checkouts', JSON.stringify(updated));
+        } catch {}
+
         // Track order and notify systems & TikTok Pixel
         try { trackPurchase(order); } catch (e) {}
         try { trackTikTokPurchase(order, 'SAR'); } catch (e) {}
@@ -256,6 +314,33 @@ export default function CheckoutModal({
         try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
 
         setPaymentStatus('pending');
+        return;
+      }
+
+      // CASH ON DELIVERY
+      if (selectedPayment === 'cod') {
+        const { order } = await paymentService.processCashOnDelivery(orderParams);
+        setActiveOrder(order);
+        setPaymentStatus('cod');
+
+        // Mark abandoned lead as converted
+        try {
+          const existingLeads = JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
+          const updated = existingLeads.map((l: any) => {
+            if (l.phone === normalizedPhone) {
+              return { ...l, converted: true, orderId: order.id };
+            }
+            return l;
+          });
+          localStorage.setItem('sulta_abandoned_checkouts', JSON.stringify(updated));
+        } catch {}
+
+        // Track order
+        try { trackPurchase(order); } catch (e) {}
+        try { trackTikTokPurchase(order, 'SAR'); } catch (e) {}
+        try { await agentSystem.onOrderCreated(order); } catch (e) {}
+        try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
+        
         return;
       }
 
@@ -455,11 +540,17 @@ export default function CheckoutModal({
 
             <div className="flex flex-col sm:flex-row gap-2.5 items-center justify-center">
               <button
-                onClick={() => WhatsAppService.sendInvoice(activeOrder, activeOrder.phone)}
+                onClick={() => {
+                  const targetWhatsapp = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
+                  const cleanWhatsapp = targetWhatsapp.startsWith('05') 
+                    ? ('966' + targetWhatsapp.slice(1)) 
+                    : (targetWhatsapp.startsWith('966') ? targetWhatsapp : '966552823677');
+                  WhatsAppService.sendInvoice(activeOrder, cleanWhatsapp);
+                }}
                 className="w-full sm:flex-1 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold py-3.5 px-4 rounded-xl cursor-pointer transition-all shadow-sm flex items-center justify-center gap-2"
               >
                 <Send size={15} />
-                <span>متابعة الطلب عبر واتساب</span>
+                <span>إرسال إشعار التحويل وتأكيد الطلب عبر واتساب 💬</span>
               </button>
               <button
                 onClick={handleCopyInvoice}
@@ -623,8 +714,8 @@ export default function CheckoutModal({
                     <span className="text-[10px] text-gray-400">خيارات مرنة ومباشرة</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[9.5px] font-bold">الدفع عند الاستلام (COD)</span>
-                    <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[9.5px] font-bold">تحويل بنكي مباشر (الراجحي)</span>
+                    <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-0.5 rounded text-[10px] font-bold">تحويل بنكي مباشر (مصرف الراجحي عبر IBAN ورقم الحساب) 🇸🇦</span>
+                    <span className="bg-emerald-50 text-emerald-850 border border-emerald-200 px-2.5 py-0.5 rounded text-[10px] font-bold text-emerald-700">الدفع عند الاستلام (COD) 📦</span>
                   </div>
                 </div>
 
@@ -642,7 +733,7 @@ export default function CheckoutModal({
                   <div className="flex-1 space-y-0.5">
                     <p className="text-xs font-bold text-gray-950">أوافق على استلام رسائل واتساب من SULTA 🌸</p>
                     <p className="text-[10px] text-gray-500 leading-relaxed">
-                      سأستلم تحديثات الطلب، عروض حصرية، وتذكيرات السلة. يمكنني إلغاء الاشتراك في أي وقت بكتابة "إيقاف".
+                      سأستلم تفاصيل الحساب البنكي لتأكيد الدفع، تحديثات الشحن، ومتابعة الطلب.
                     </p>
                   </div>
                 </label>
@@ -654,17 +745,16 @@ export default function CheckoutModal({
               <div className="space-y-4 text-right animate-fade-in">
                 
                 <p className="text-xs text-gray-600 mb-2 font-medium">
-                  اختر طريقة الدفع المناسبة لكِ:
+                  طريقة السداد المعتمدة للمتجر:
                 </p>
 
                 <div className="space-y-3">
-                  
-                  {/* OPTION 1: CASH ON DELIVERY (COD) */}
+                  {/* OPTION 1: CASH ON DELIVERY */}
                   <div
                     onClick={() => setSelectedPayment('cod')}
                     className={`w-full text-right p-4 rounded-2xl transition-all border cursor-pointer ${
                       selectedPayment === 'cod'
-                        ? 'border-emerald-600 bg-emerald-50/50 shadow-xs ring-1 ring-emerald-600'
+                        ? 'border-emerald-600 bg-emerald-50 shadow-xs ring-1 ring-emerald-600'
                         : 'border-gray-200 bg-white hover:bg-gray-50/60'
                     }`}
                   >
@@ -676,14 +766,14 @@ export default function CheckoutModal({
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-black text-xs text-gray-950">
-                              الدفع عند الاستلام (Cash on Delivery)
+                              الدفع عند الاستلام (Cash On Delivery)
                             </span>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                              معاينة قبل الدفع 📦
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800">
+                              متاح حالياً ✅
                             </span>
                           </div>
                           <p className="text-[10px] text-gray-500 mt-0.5">
-                            سداد قيمة الطلبية نقداً لمندوب الشحن فور وصولها لباب منزلكِ
+                            ادفعي نقداً أو عبر مدى عند وصول المندوب لباب منزلك
                           </p>
                         </div>
                       </div>
@@ -694,17 +784,6 @@ export default function CheckoutModal({
                         {selectedPayment === 'cod' && <span className="w-2 h-2 bg-emerald-600 rounded-full" />}
                       </span>
                     </div>
-
-                    {selectedPayment === 'cod' && (
-                      <div className="mt-3 pt-3 border-t border-emerald-200/60 text-right">
-                        <div className="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 text-xs space-y-1">
-                          <span className="font-bold text-emerald-950 block">✓ راحة وأمان:</span>
-                          <p className="text-[11px] text-emerald-900 leading-relaxed">
-                            استلمي طلبيتكِ مفحوصة ومغلفة بعناية، وسددي المبلغ ({totalAmount.toLocaleString()} {currencyLabel}) نقداً للمندوب عند الاستلام.
-                          </p>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* OPTION 2: DIRECT BANK TRANSFER (SAUDI BANK ACCOUNT) */}
@@ -811,8 +890,62 @@ export default function CheckoutModal({
                             </div>
                           </div>
 
-                          <div className="p-2 bg-amber-50 rounded-lg border border-amber-200 text-[10.5px] text-amber-900 font-medium">
-                            📸 عند الضغط على إتمام الطلب، سيتم إرسال بيانات الحساب ورقم الطلب لرسائل الواتساب، يرجى إرسال صورة أو سكرين شوت لإشعار التحويل لتأكيد الشحن فوراً.
+                          {/* Bank Trust Guarantee (Feature 5) */}
+                          <div className="bg-emerald-50/95 border border-emerald-250 rounded-xl p-3 text-right flex items-start gap-2.5 shadow-2xs">
+                            <ShieldCheck size={18} className="text-emerald-700 shrink-0 mt-0.5" />
+                            <div className="text-[11px] text-emerald-950 font-medium leading-relaxed">
+                              <span className="font-black block text-emerald-900 mb-0.5">ضمان الدفع والشحن المعتمد لدى Sulta 🛡️</span>
+                              حساب رسمي موثق لدى مصرف الراجحي • شحن سريع ومؤمن لكافة مناطق المملكة خلال 24-48 ساعة عبر سمسا وأرامكس • استبدال واسترجاع مضمون خلال 14 يوماً.
+                            </div>
+                          </div>
+
+                          {/* Upload Transfer Receipt (Feature 2) */}
+                          <div className="bg-white p-3 rounded-xl border border-blue-200 text-right space-y-2">
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                                <Upload size={14} className="text-blue-600" />
+                                <span>إرفاق إشعار التحويل البنكي (اختياري / يُسرّع الشحن فوراً):</span>
+                              </label>
+                              {receiptImage && (
+                                <button
+                                  type="button"
+                                  onClick={() => setReceiptImage(null)}
+                                  className="text-[10.5px] text-red-500 hover:text-red-700 font-bold cursor-pointer"
+                                >
+                                  إلغاء الصورة ×
+                                </button>
+                              )}
+                            </div>
+                            
+                            {receiptImage ? (
+                              <div className="relative rounded-xl overflow-hidden border border-emerald-300 max-h-36 bg-gray-50 flex items-center justify-center p-1">
+                                <img src={receiptImage} alt="إشعار التحويل" className="max-h-32 object-contain rounded-lg" />
+                                <div className="absolute top-2 right-2 bg-emerald-600 text-white text-[9.5px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 shadow-xs">
+                                  <Check size={11} />
+                                  <span>تم إرفاق الإشعار بنجاح</span>
+                                </div>
+                              </div>
+                            ) : (
+                              <label className="border-2 border-dashed border-blue-200 hover:border-blue-400 bg-blue-50/40 hover:bg-blue-50/80 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors group">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleReceiptUpload}
+                                  className="hidden"
+                                />
+                                <div className="w-8 h-8 rounded-full bg-blue-100 group-hover:bg-blue-200 text-blue-700 flex items-center justify-center transition-colors">
+                                  {isUploadingReceipt ? <RefreshCw size={14} className="animate-spin" /> : <Upload size={14} />}
+                                </div>
+                                <span className="text-[11px] font-bold text-blue-900">
+                                  {isUploadingReceipt ? 'جاري قراءة الصورة...' : 'اضغطي هنا لرفع سكرين شوت أو صورة إشعار التحويل 📎'}
+                                </span>
+                                <span className="text-[9.5px] text-gray-400">JPG, PNG (أو يمكنكِ إرسالها لاحقاً عبر الواتساب لتأكيد الطلب)</span>
+                              </label>
+                            )}
+                          </div>
+
+                          <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-[10.5px] text-amber-900 font-medium">
+                            📸 عند الضغط على إتمام الطلب، سيتم إرسال بيانات الحساب ورقم الطلب لرسائل الواتساب، كما يتواجد فريق الدعم معكِ لتأكيد الاستلام والشحن فوراً.
                           </div>
                         </div>
                       </div>
@@ -847,45 +980,24 @@ export default function CheckoutModal({
                   <span>تعديل العنوان</span>
                 </button>
                 
-                {selectedPayment === 'bank_transfer' ? (
-                  <button
-                    type="button"
-                    onClick={() => handleSubmitOrder()}
-                    disabled={isSubmitting}
-                    className="flex-1 bg-gray-900 hover:bg-black active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>جاري تسجيل الطلب وتجهيز بيانات التحويل...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Check size={15} />
-                        <span>إتمام طلب التحويل البنكي ({totalAmount.toLocaleString()} {currencyLabel})</span>
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleSubmitOrder()}
-                    disabled={isSubmitting}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>جاري تسجيل الطلب...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Truck size={15} />
-                        <span>تأكيد الطلب والدفع عند الاستلام ({totalAmount.toLocaleString()} {currencyLabel})</span>
-                      </>
-                    )}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => handleSubmitOrder()}
+                  disabled={isSubmitting}
+                  className="flex-1 bg-gray-950 hover:bg-black active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>جاري تسجيل الطلب وتجهيز بيانات التحويل...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check size={15} />
+                      <span>إتمام طلب التحويل البنكي ({totalAmount.toLocaleString()} {currencyLabel})</span>
+                    </>
+                  )}
+                </button>
               </div>
             )}
           </div>

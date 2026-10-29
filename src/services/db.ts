@@ -655,6 +655,7 @@ function mapOrder(data: any): Order {
     currency: data.currency || 'SAR',
     paymentMethod: data.paymentMethod || data.payment_method || 'الدفع عند الاستلام',
     status: data.status || 'pending',
+    receiptImageUrl: data.receiptImageUrl || data.receipt_image_url || undefined,
     date: data.date || (data.created_at ? data.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
     trackingNumber: data.trackingNumber || data.tracking_number || undefined,
     trackingUrl: data.trackingUrl || data.tracking_url || (typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/?tab=track-order&id=${data.id}` : `/?tab=track-order&id=${data.id}`)
