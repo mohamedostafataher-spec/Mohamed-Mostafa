@@ -1522,6 +1522,45 @@ export default function Dashboard({
                     </div>
                   </div>
 
+                  {/* ================= VISITOR TRENDS CHART (RECHARTS) ================= */}
+                  <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-2xs space-y-6">
+                    <div className="flex items-center justify-between pb-4 border-b border-gray-150">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shadow-2xs">
+                          <Users size={20} />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-sm sm:text-base text-gray-950 flex items-center gap-2">
+                            <span>مخطط اتجاهات الزوار ونمو المتجر (Visitor Trends)</span>
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 font-sans font-bold px-2.5 py-0.5 rounded-full">
+                              مباشر 24/7 📈
+                            </span>
+                          </h3>
+                          <p className="text-[11px] text-gray-500">حركة المرور والزوار الفريدين على مدار الشهر والأسبوع</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="h-64 w-full pt-2">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={visitorStats.dailyHistory}>
+                          <defs>
+                            <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#10B981" stopOpacity={0.25}/>
+                              <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F1F1" />
+                          <XAxis dataKey="date" axisLine={false} tickLine={false} fontSize={10} stroke="#9CA3AF" />
+                          <YAxis axisLine={false} tickLine={false} fontSize={10} stroke="#9CA3AF" />
+                          <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                          <Area type="monotone" dataKey="visitors" name="الزوار" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorVisitors)" />
+                          <Area type="monotone" dataKey="orders" name="الطلبات" stroke="#6366F1" strokeWidth={2} fillOpacity={0.1} fill="#6366F1" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
                   {/* Analytics Summary */}
                   <div className="grid grid-cols-2 gap-4">
                      <div className="bg-white p-5 rounded-3xl border border-gray-200 shadow-2xs space-y-1">
