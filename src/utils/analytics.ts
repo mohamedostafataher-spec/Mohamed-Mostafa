@@ -166,7 +166,7 @@ export const logPixelEvent = (
   currency: string = 'SAR'
 ) => {
   const newLog: PixelEventLog = {
-    id: 'px-' + Math.random().toString(36).substring(2, 9),
+    id: 'px-' + Math.random().toString(36).substring(2, 9) + '-' + Date.now(),
     timestamp: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     pixel,
     event,

@@ -1427,6 +1427,41 @@ export default function Dashboard({
                <div className="lg:col-span-1 space-y-6">
                   <TrafficHeatmap />
                   
+                  {/* Pixel vs Orders Gap Analysis */}
+                  <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm">
+                    <h4 className="font-bold text-sm text-gray-950 mb-4 flex items-center gap-2">
+                       <ShieldCheck size={16} className="text-[#A44C5C]" />
+                       فجوة التحويل (Pixel vs Actual)
+                    </h4>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-right text-[10px] text-gray-600">
+                        <thead>
+                          <tr className="border-b border-gray-100">
+                            <th className="pb-2 font-bold">المصدر</th>
+                            <th className="pb-2 font-bold text-center">إضافة للسلة</th>
+                            <th className="pb-2 font-bold text-center">طلبات فعلية</th>
+                            <th className="pb-2 font-bold text-center">الفجوة</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {['Instagram', 'TikTok', 'Meta / FB'].map(source => {
+                             const carts = pixelLogs.filter(l => l.pixel === (source === 'Meta / FB' ? 'Meta (Facebook)' : source) && l.event === 'AddToCart').length;
+                             const actualOrders = orders.filter(o => o.id.includes(source.toLowerCase().slice(0, 3))).length;
+                             const gap = carts > 0 ? Math.round(((carts - actualOrders) / carts) * 100) : 0;
+                             return (
+                               <tr key={source} className="border-b border-gray-50">
+                                 <td className="py-2.5 font-bold text-gray-900">{source}</td>
+                                 <td className="py-2.5 text-center font-mono">{carts}</td>
+                                 <td className="py-2.5 text-center font-mono">{actualOrders}</td>
+                                 <td className={`py-2.5 text-center font-black ${gap > 70 ? 'text-rose-600' : 'text-amber-600'}`}>{gap}%</td>
+                               </tr>
+                             );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
                   <div className="bg-gray-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-800 flex flex-col h-full max-h-[540px]">
                      <div className="flex items-center justify-between pb-4 border-b border-white/10">
                         <div className="flex items-center gap-2">
