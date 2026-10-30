@@ -214,7 +214,7 @@ export function cleanText(text: any): any {
 
 export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
   if (!url || typeof url !== 'string' || url.trim() === '' || url.trim() === 'null' || url.trim() === 'undefined') {
-    return '/img/sulta_default_1_1781140865386.png';
+    return '/img/sulta_default_1_1781140865386.webp';
   }
 
   const cleaned = url.trim();

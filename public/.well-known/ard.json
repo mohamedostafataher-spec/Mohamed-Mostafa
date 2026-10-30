@@ -1,10 +1,17 @@
 {
-  "name": "SULTA Atelier AI Discovery",
-  "description": "Agentic Resource Discovery manifest for SULTA Atelier luxury sleepwear e-commerce boutique.",
-  "version": "1.0.0",
-  "url": "https://sulta.vercel.app/",
-  "endpoints": {
-    "llms": "https://sulta.vercel.app/llms.txt",
-    "sitemap": "https://sulta.vercel.app/sitemap.xml"
-  }
+  "version": "1.0",
+  "entries": [
+    {
+      "name": "SULTA Atelier Agent Documentation",
+      "type": "llms-txt",
+      "url": "https://sulta.vercel.app/llms.txt",
+      "description": "Information and guidelines for AI browsing agents about SULTA Atelier luxury sleepwear."
+    },
+    {
+      "name": "Sitemap Catalog",
+      "type": "sitemap",
+      "url": "https://sulta.vercel.app/sitemap.xml",
+      "description": "Product catalog and store sitemap."
+    }
+  ]
 }

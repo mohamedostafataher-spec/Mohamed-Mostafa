@@ -30,11 +30,19 @@ async function startServer() {
     next(err);
   });
 
-  // Middleware to disable caching during development/updates
+  // Intelligent Caching Middleware: Long-term cache for static assets, no-cache for API
   app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
+    const isStaticAsset = req.path.startsWith('/img/') || 
+                          req.path.startsWith('/assets/') || 
+                          req.path.startsWith('/dist/') ||
+                          /\.(webp|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|css|js)$/i.test(req.path);
+    if (isStaticAsset) {
+      res.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (req.path.startsWith('/api/')) {
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    } else {
+      res.set('Cache-Control', 'no-cache, must-revalidate');
+    }
     next();
   });
 
