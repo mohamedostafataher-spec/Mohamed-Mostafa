@@ -34,14 +34,17 @@ img {
 }
 
 /* Improve text contrast for accessibility (WCAG AA compliance) */
-.text-gray-400 {
-  color: #4B5563 !important; /* Shifting 400 to 600 for safe contrast on white */
+.text-gray-300, .text-gray-400, .text-gray-450 {
+  color: #374151 !important; /* Dark gray for high contrast on white */
 }
 .text-gray-500 {
-  color: #374151 !important; /* Shifting 500 to 700 */
+  color: #1F2937 !important;
 }
-.text-gray-600 {
-  color: #1F2937 !important; /* Shifting 600 to 800 */
+.text-gray-600, .text-gray-700 {
+  color: #0B0B0B !important;
+}
+.text-red-500, .text-red-600, .text-rose-600, .text-rose-700 {
+  color: #991B1B !important; /* Darker red for contrast */
 }
 
 /* Shift pink/burgundy/yellow accents to crisp black & white */

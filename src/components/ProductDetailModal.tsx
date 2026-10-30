@@ -1169,13 +1169,7 @@ export default function ProductDetailModal({
             {/* Sizes picker selection */}
             <div className="mb-4 border-b border-gray-100 pb-4">
               <div className="flex justify-between items-center mb-2.5">
-                <h5 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">حددي مقاسك</h5>
-                <button
-                  onClick={() => setActiveTab('size')}
-                  className="text-[10px] font-sans text-[#F4B6C2] hover:underline cursor-pointer"
-                >
-                  دليل المقاسات في المتجر
-                </button>
+                <h3 className="text-[11px] font-bold text-gray-800 uppercase tracking-widest">المقاس (One Size / مقاس موحد مريح)</h3>
               </div>
               <div className="flex gap-2 select-none justify-start flex-wrap">
                 {product.sizes.map(sz => {

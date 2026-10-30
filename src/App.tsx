@@ -1551,7 +1551,7 @@ function AppContent() {
               </a>
             </div>
 
-              <h5 className="font-bold text-[11px] text-gray-900 mb-2">طريقة السداد المعتمدة</h5>
+              <h4 className="font-bold text-[11px] text-gray-900 mb-2">طريقة السداد المعتمدة</h4>
               <div className="flex flex-wrap gap-1.5 items-center">
                 <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (مصرف الراجحي عبر IBAN ورقم الحساب) 🇸🇦</span>
               </div>
