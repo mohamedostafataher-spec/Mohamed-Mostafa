@@ -653,7 +653,8 @@ function AppContent() {
       console.warn('[TikTok Pixel] Purchase track error:', err);
     }
 
-    // Reset shopping state
+    // Reset shopping state & update local orders state immediately
+    setOrders(prev => [newOrder, ...prev.filter(o => o.id !== newOrder.id)]);
     setCart([]);
     setAppliedCoupon(null);
     setIsCheckoutOpen(false);

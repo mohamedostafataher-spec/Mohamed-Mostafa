@@ -117,71 +117,125 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
     try {
       const todayStr = new Date().toISOString().split('T')[0];
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+
+      // 0. Fetch from traffic_logs (Highest fidelity UTM & session logs)
+      let { data: trafficLogs } = await supabase
+        .from('traffic_logs')
+        .select('*')
+        .gte('created_at', ninetyDaysAgo)
+        .order('created_at', { ascending: false })
+        .limit(50000);
 
       // 1. Try to fetch from user_sessions (Primary source)
-      let { data: sessions, error: sessionErr } = await supabase
+      let { data: sessions } = await supabase
         .from('user_sessions')
         .select('*')
-        .gte('created_at', thirtyDaysAgo)
-        .order('created_at', { ascending: false });
+        .gte('created_at', ninetyDaysAgo)
+        .order('created_at', { ascending: false })
+        .limit(50000);
 
       // 2. Try to fetch from visitors (Secondary source)
       let { data: visitors } = await supabase
         .from('visitors')
         .select('*')
-        .gte('created_at', thirtyDaysAgo);
+        .gte('created_at', ninetyDaysAgo)
+        .limit(50000);
 
       // 3. Fetch from support_tickets (Legacy/Fallback source)
       const { data: tickets } = await supabase
         .from('support_tickets')
         .select('id, subject, created_at, message')
         .eq('status', 'analytics_visit')
-        .gte('created_at', thirtyDaysAgo);
+        .gte('created_at', ninetyDaysAgo)
+        .limit(50000);
+
+      // Helper to clean city names (e.g. San%20Jose -> San Jose)
+      const cleanCity = (c?: string) => {
+        if (!c) return 'الرياض';
+        try {
+          let decoded = decodeURIComponent(c.replace(/\+/g, ' '));
+          if (decoded.toLowerCase() === 'san jose' || decoded.toLowerCase() === 'sanjose') return 'سان خوسيه (خوادم Vercel)';
+          if (decoded.toLowerCase() === 'riyadh') return 'الرياض';
+          if (decoded.toLowerCase() === 'jeddah') return 'جدة';
+          if (decoded.toLowerCase() === 'dammam') return 'الدمام';
+          if (decoded.toLowerCase() === 'mecca' || decoded.toLowerCase() === 'makkah') return 'مكة المكرمة';
+          if (decoded.toLowerCase() === 'medina' || decoded.toLowerCase() === 'madinah') return 'المدينة المنورة';
+          if (decoded.toLowerCase() === 'khobar' || decoded.toLowerCase() === 'al khobar') return 'الخبر';
+          if (decoded.toLowerCase() === 'cairo') return 'القاهرة';
+          if (decoded.toLowerCase() === 'alexandria') return 'الإسكندرية';
+          if (decoded.toLowerCase() === 'dubai') return 'دبي';
+          return decoded;
+        } catch {
+          return c;
+        }
+      };
 
       // Merge and normalize data
       const allVisits: any[] = [];
       const sessionIds = new Set<string>();
 
+      if (trafficLogs) {
+        trafficLogs.forEach(t => {
+          const sid = t.session_id || t.id;
+          allVisits.push({
+            id: t.id || sid,
+            sessionId: sid,
+            page: t.landing_page || t.page || '/',
+            referrer: t.referrer || '',
+            utm_source: t.utm_source || '',
+            utm_campaign: t.utm_campaign || '',
+            city: cleanCity(t.city),
+            country: t.country || 'SA',
+            created_at: t.created_at || new Date().toISOString()
+          });
+          sessionIds.add(sid);
+        });
+      }
+
       if (sessions) {
         sessions.forEach(s => {
-          allVisits.push({
-            id: s.id,
-            sessionId: s.session_id,
-            page: s.landing_page || '/',
-            referrer: s.referrer || '',
-            utm_source: s.utm_source || '',
-            utm_campaign: s.utm_campaign || '',
-            city: s.city || 'الرياض',
-            country: s.country || 'SA',
-            created_at: s.created_at
-          });
-          sessionIds.add(s.session_id);
+          const sid = s.session_id || s.id;
+          if (!sessionIds.has(sid)) {
+            allVisits.push({
+              id: s.id || sid,
+              sessionId: sid,
+              page: s.landing_page || '/',
+              referrer: s.referrer || '',
+              utm_source: s.utm_source || '',
+              utm_campaign: s.utm_campaign || '',
+              city: cleanCity(s.city),
+              country: s.country || 'SA',
+              created_at: s.created_at || new Date().toISOString()
+            });
+            sessionIds.add(sid);
+          }
         });
       }
 
       if (visitors) {
         visitors.forEach(v => {
-          if (!sessionIds.has(v.session_id)) {
+          const sid = v.session_id || v.id;
+          if (!sessionIds.has(sid)) {
             allVisits.push({
-              id: v.id,
-              sessionId: v.session_id,
+              id: v.id || sid,
+              sessionId: sid,
               page: v.landing_page || '/',
               referrer: v.referrer || '',
               utm_source: v.utm_source || '',
               utm_campaign: v.utm_campaign || '',
-              city: v.city || 'الرياض',
+              city: cleanCity(v.city),
               country: v.country || 'SA',
-              created_at: v.created_at
+              created_at: v.created_at || new Date().toISOString()
             });
-            sessionIds.add(v.session_id);
+            sessionIds.add(sid);
           }
         });
       }
 
       if (tickets) {
         tickets.forEach(t => {
-          const sid = t.subject?.replace('visit:', '') || 'guest';
+          const sid = t.subject?.replace('visit:', '') || 'guest_' + t.id;
           if (!sessionIds.has(sid)) {
             let meta: any = {};
             try { meta = JSON.parse(t.message || '{}'); } catch {}
@@ -192,9 +246,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               referrer: meta.referrer || '',
               utm_source: meta.utm_source || '',
               utm_campaign: meta.utm_campaign || '',
-              city: meta.city || 'الرياض',
+              city: cleanCity(meta.city),
               country: meta.country || 'SA',
-              created_at: t.created_at
+              created_at: t.created_at || new Date().toISOString()
             });
             sessionIds.add(sid);
           }
@@ -206,6 +260,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           todayCount: 1,
           total30Days: 1,
           weeklyCount: 1,
+          totalHits: 1,
+          uniqueCount: 1,
           dailyHistory: [{ date: todayStr, visitors: 1, orders: 0 }],
           recentVisits: []
         });
@@ -242,14 +298,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         todayCount: Math.max(1, uniqueToday),
         total30Days: Math.max(1, unique30Days),
         weeklyCount: Math.max(1, uniqueWeek),
+        totalHits: allVisits.length,
+        uniqueCount: sessionIds.size,
         dailyHistory,
-        recentVisits: allVisits.slice(0, 50) // Return more for the heatmap
+        recentVisits: allVisits.slice(0, 50000) // Supports up to 50,000 real visits!
       });
     } catch (err: any) {
       return res.status(200).json({
         todayCount: 1,
         total30Days: 1,
         weeklyCount: 1,
+        totalHits: 1,
+        uniqueCount: 1,
         dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }],
         recentVisits: []
       });

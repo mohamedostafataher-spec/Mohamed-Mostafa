@@ -159,20 +159,32 @@ export default function CheckoutModal({
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
   const totalAmount = Math.max(0, subtotal - discountAmount + shippingCost);
 
-  // Saudi Mobile Phone Validator: accepts 05xxxxxxxx or +9665xxxxxxxx
+  // Convert Eastern Arabic-Indic numerals (٠-٩) to Western standard (0-9)
+  const normalizeDigits = (str: string): string => {
+    return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
+  };
+
+  // Saudi & Regional Mobile Phone Validator: accepts 05xxxxxxxx, +9665xxxxxxxx, Arabic digits, etc.
   const validateSaudiPhone = (inputPhone: string): boolean => {
-    const cleanPhone = inputPhone.replace(/[\s-]/g, '');
-    const saudiRegex = /^(?:\+?966|0)?5[0-9]{8}$/;
-    return saudiRegex.test(cleanPhone);
+    const cleanPhone = normalizeDigits(inputPhone).replace(/[\s\-().+]/g, '');
+    const digits = cleanPhone.replace(/\D/g, '');
+    // Accept Saudi formats: 05xxxxxxxx (10 digits), 5xxxxxxxx (9 digits), 9665xxxxxxxx (12 digits), 009665xxxxxxxx (14 digits)
+    if (digits.length === 9 && digits.startsWith('5')) return true;
+    if (digits.length === 10 && digits.startsWith('05')) return true;
+    if (digits.length === 12 && digits.startsWith('9665')) return true;
+    if (digits.length === 14 && digits.startsWith('009665')) return true;
+    // Accept any standard mobile phone with 9-15 digits
+    return digits.length >= 9 && digits.length <= 15;
   };
 
   // Formats phone to normalized Saudi standard (+9665XXXXXXXX)
   const formatSaudiPhone = (inputPhone: string): string => {
-    const digits = inputPhone.replace(/\D/g, '');
-    if (digits.startsWith('9665') && digits.length === 12) return `+${digits}`;
-    if (digits.startsWith('05') && digits.length === 10) return `+966${digits.slice(1)}`;
-    if (digits.startsWith('5') && digits.length === 9) return `+966${digits}`;
-    return inputPhone.trim();
+    const cleanDigits = normalizeDigits(inputPhone).replace(/\D/g, '');
+    if (cleanDigits.startsWith('009665') && cleanDigits.length === 14) return `+966${cleanDigits.slice(5)}`;
+    if (cleanDigits.startsWith('9665') && cleanDigits.length === 12) return `+${cleanDigits}`;
+    if (cleanDigits.startsWith('05') && cleanDigits.length === 10) return `+966${cleanDigits.slice(1)}`;
+    if (cleanDigits.startsWith('5') && cleanDigits.length === 9) return `+966${cleanDigits}`;
+    return cleanDigits.length > 0 ? `+${cleanDigits}` : inputPhone.trim();
   };
 
   // Step 1 Validation Handler
@@ -182,10 +194,10 @@ export default function CheckoutModal({
       return setErrorMsg('الرجاء إدخال اسم المستلمة بالكامل.');
     }
     if (!phone.trim()) {
-      return setErrorMsg('الرجاء إدخال رقم الجوال السعودي للتواصل والشحن.');
+      return setErrorMsg('الرجاء إدخال رقم الجوال للتواصل والشحن.');
     }
     if (!validateSaudiPhone(phone)) {
-      return setErrorMsg('الرجاء كتابة رقم جوال سعودي صحيح يبدأ بـ 05 أو 9665+ (مثال: 0552823677).');
+      return setErrorMsg('الرجاء كتابة رقم جوال صحيح (مثال: 0552823677 أو +966552823677).');
     }
     if (!city.trim()) {
       return setErrorMsg('الرجاء تحديد المدينة في المملكة العربية السعودية (مثال: الرياض، جدة، الدمام).');

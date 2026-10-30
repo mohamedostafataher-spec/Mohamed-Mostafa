@@ -1197,9 +1197,9 @@ export default function AiMirror({
                     <label className="block text-gray-500 text-xs font-bold mb-2">الألوان والموديلات المتوفرة:</label>
                     {selectedProduct.colors && selectedProduct.colors.length > 0 ? (
                       <div className="flex flex-wrap gap-2.5">
-                        {selectedProduct.colors.map((c) => (
+                        {selectedProduct.colors.map((c, idx) => (
                           <button
-                            key={c.name}
+                            key={`${c.name}-${idx}`}
                             onClick={() => {
                               const foundIdx = selectedProduct.colors?.findIndex(col => col.name === c.name) ?? 0;
                               setSelectedColorIndex(foundIdx);
