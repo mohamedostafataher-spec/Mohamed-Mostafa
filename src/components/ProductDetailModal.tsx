@@ -1301,13 +1301,6 @@ export default function ProductDetailModal({
               </button>
 
               <button
-                onClick={() => setActiveTab('size')}
-                className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'size' ? 'border-b-2 border-black text-[#0B0B0B] font-bold' : 'text-gray-400'}`}
-              >
-                دليل القياس
-              </button>
-
-              <button
                 onClick={() => setActiveTab('reviews')}
                 className={`pb-1 px-1.5 transition-colors whitespace-nowrap cursor-pointer ${activeTab === 'reviews' ? 'border-b-2 border-black text-[#0B0B0B] font-bold' : 'text-gray-400'}`}
               >
@@ -1360,7 +1353,7 @@ export default function ProductDetailModal({
                 </div>
               )}
 
-              {activeTab === 'size' && (
+              {false && activeTab === 'size' && (
                 <div className="bg-white p-3 rounded-xl border border-gray-150 text-right space-y-3">
                   {isQuizMode ? (
                     <div className="space-y-3">

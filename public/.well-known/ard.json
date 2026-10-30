@@ -1,0 +1,10 @@
+{
+  "name": "SULTA Atelier AI Discovery",
+  "description": "Agentic Resource Discovery manifest for SULTA Atelier luxury sleepwear e-commerce boutique.",
+  "version": "1.0.0",
+  "url": "https://sulta.vercel.app/",
+  "endpoints": {
+    "llms": "https://sulta.vercel.app/llms.txt",
+    "sitemap": "https://sulta.vercel.app/sitemap.xml"
+  }
+}
