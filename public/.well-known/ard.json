@@ -1,17 +1,31 @@
 {
-  "version": "1.0",
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "SULTA Atelier",
+    "identifier": "urn:air:sulta.vercel.app:host:sulta"
+  },
   "entries": [
     {
-      "name": "SULTA Atelier Agent Documentation",
-      "type": "llms-txt",
+      "identifier": "urn:air:sulta.vercel.app:doc:llms",
+      "displayName": "SULTA Atelier Agent Documentation",
+      "type": "text/markdown",
       "url": "https://sulta.vercel.app/llms.txt",
-      "description": "Information and guidelines for AI browsing agents about SULTA Atelier luxury sleepwear."
+      "description": "Information and guidelines for AI browsing agents about SULTA Atelier luxury sleepwear.",
+      "representativeQueries": [
+        "What sleepwear and pajamas does SULTA Atelier sell?",
+        "Find luxury silk pajamas and bridal robes in Saudi Arabia"
+      ]
     },
     {
-      "name": "Sitemap Catalog",
-      "type": "sitemap",
+      "identifier": "urn:air:sulta.vercel.app:catalog:sitemap",
+      "displayName": "Product Catalog Sitemap",
+      "type": "application/xml",
       "url": "https://sulta.vercel.app/sitemap.xml",
-      "description": "Product catalog and store sitemap."
+      "description": "Product catalog and store pages sitemap.",
+      "representativeQueries": [
+        "SULTA Atelier product list and categories",
+        "Pajamas store links in Riyadh"
+      ]
     }
   ]
 }
