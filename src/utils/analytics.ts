@@ -245,6 +245,23 @@ export const initGlobalSync = () => {
   const referrer = typeof document !== 'undefined' ? document.referrer : '';
   
   if (isNewSession) {
+    const tz = typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '';
+    let clientCity = 'الرياض';
+    let clientCountry = 'SA';
+    if (tz.includes('Cairo') || tz.includes('Egypt') || tz.includes('Africa/Cairo')) {
+      clientCity = 'القاهرة';
+      clientCountry = 'EG';
+    } else if (tz.includes('Dubai') || tz.includes('Asia/Dubai')) {
+      clientCity = 'دبي';
+      clientCountry = 'AE';
+    } else if (tz.includes('Kuwait')) {
+      clientCity = 'الكويت';
+      clientCountry = 'KW';
+    } else if (tz.includes('Qatar')) {
+      clientCity = 'الدوحة';
+      clientCountry = 'QA';
+    }
+
     const sessionData = {
       session_id: sessionId,
       utm_source: utm.utm_source || traffic.source,
@@ -254,6 +271,8 @@ export const initGlobalSync = () => {
       utm_term: utm.utm_term || '',
       referrer: referrer,
       landing_page: window.location.pathname,
+      city: clientCity,
+      country: clientCountry,
       device: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
       metadata: utm, // Store all captured params as a JSON blob
@@ -284,6 +303,11 @@ export const initGlobalSync = () => {
 
   // 4. Ping visit to legacy analytics endpoint for backward compatibility
   try {
+    const tz = typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '';
+    let pingCity = 'الرياض';
+    if (tz.includes('Cairo')) pingCity = 'القاهرة';
+    else if (tz.includes('Dubai')) pingCity = 'دبي';
+
     fetch('/api/analytics/visit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -293,7 +317,8 @@ export const initGlobalSync = () => {
         referrer,
         utm_source: utm.utm_source || traffic.source,
         utm_medium: utm.utm_medium || '',
-        utm_campaign: utm.utm_campaign || ''
+        utm_campaign: utm.utm_campaign || '',
+        city: pingCity
       })
     }).catch(() => {});
   } catch {}

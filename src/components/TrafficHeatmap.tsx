@@ -39,9 +39,14 @@ const cleanCityName = (c?: string): string => {
       lower.includes('vercel') || 
       lower.includes('washington') || 
       lower.includes('ashburn') ||
-      lower.includes('frankfurt')
+      lower.includes('frankfurt') ||
+      lower.includes('brussels') ||
+      lower.includes('belgium') ||
+      lower.includes('amsterdam') ||
+      lower.includes('dublin') ||
+      lower.includes('london')
     ) {
-      return 'فحص واستعراض سحابي (Vercel Cloud)';
+      return 'فحص خوادم Vercel السحابية';
     }
     if (lower.includes('riyadh') || lower.includes('al riyadh') || lower.includes('ar riyad')) return 'الرياض';
     if (lower.includes('jeddah') || lower.includes('jiddah')) return 'جدة';
@@ -68,6 +73,22 @@ const cleanCityName = (c?: string): string => {
     return text;
   } catch {
     return c || 'الرياض';
+  }
+};
+
+const formatRelativeTime = (isoString?: string): string => {
+  if (!isoString) return 'الآن';
+  try {
+    const diffMs = Date.now() - new Date(isoString).getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    if (diffSec < 45) return 'الآن ⚡';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `منذ ${diffMin} د`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `منذ ${diffHour} س`;
+    return new Date(isoString).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return 'الآن';
   }
 };
 
@@ -233,8 +254,8 @@ export default function TrafficHeatmap() {
   useEffect(() => {
     fetchTrafficData();
 
-    // Auto refresh every 20 seconds
-    const interval = setInterval(fetchTrafficData, 20000);
+    // Auto refresh every 8 seconds for true real-time store pulse
+    const interval = setInterval(fetchTrafficData, 8000);
 
     // Also subscribe to realtime broadcast if available
     let channel: any = null;
@@ -264,11 +285,11 @@ export default function TrafficHeatmap() {
       const vDate = new Date(v.created_at);
 
       if (timeFilter === 'hourly') {
-        // Last 24 hours
-        return (now.getTime() - vTime) <= 24 * 60 * 60 * 1000;
+        // Last 60 minutes (Always subset of today)
+        return (now.getTime() - vTime) <= 60 * 60 * 1000;
       }
       if (timeFilter === 'daily') {
-        // Today (since midnight)
+        // Today (since midnight 00:00)
         return vTime >= todayMidnight;
       }
       if (timeFilter === 'weekly') {
@@ -383,13 +404,13 @@ export default function TrafficHeatmap() {
             onClick={() => setTimeFilter('hourly')}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'hourly' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
           >
-            بالساعة
+            آخر ساعة ⚡
           </button>
           <button
             onClick={() => setTimeFilter('daily')}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'daily' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
           >
-            يومياً
+            اليوم (Day)
           </button>
           <button
             onClick={() => setTimeFilter('weekly')}
@@ -517,25 +538,43 @@ export default function TrafficHeatmap() {
               </span>
               <span className="text-[10px] font-mono text-gray-400">{filteredVisits.length} جلسة</span>
             </h4>
-            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-              {filteredVisits.slice(0, 5).map((v: any, i) => (
-                <div key={v.id || i} className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-gray-200/60 shadow-2xs">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <div>
-                      <p className="text-xs font-bold text-gray-800">
-                        {v.page === '/' ? 'الصفحة الرئيسية' : v.page.replace(/^\//, 'تصفح / ')}
-                      </p>
-                      <p className="text-[10px] text-gray-500">
-                        مصدر: <span className="font-bold text-gray-700">{v.utm_source ? v.utm_source.toUpperCase() : 'زيارة مباشرة'}</span> • {v.city || 'الرياض'}
-                      </p>
+            <div className="space-y-2 max-h-56 overflow-y-auto pr-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {filteredVisits.slice(0, 10).map((v: any, i) => {
+                const srcLower = (v.utm_source || v.referrer || '').toLowerCase();
+                let srcBadge = '🛍️ مباشر';
+                if (srcLower.includes('tiktok') || srcLower.includes('tt')) srcBadge = '🎵 تيك توك';
+                else if (srcLower.includes('instagram') || srcLower.includes('ig')) srcBadge = '📸 إنستقرام';
+                else if (srcLower.includes('facebook') || srcLower.includes('fb') || srcLower.includes('meta')) srcBadge = '🔵 فيسبوك';
+                else if (srcLower.includes('snapchat')) srcBadge = '👻 سناب';
+                else if (srcLower.includes('google')) srcBadge = '🔍 جوجل';
+
+                const cityLabel = cleanCityName(v.city);
+                const isCloud = cityLabel.includes('خوادم') || cityLabel.includes('Vercel');
+
+                return (
+                  <div key={v.id || i} className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-gray-200/60 shadow-2xs hover:border-gray-300 transition-all">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${isCloud ? 'bg-indigo-400' : 'bg-emerald-500 animate-pulse'}`} />
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-gray-800 truncate">
+                          {v.page === '/' ? 'الصفحة الرئيسية' : v.page.replace(/^\//, 'تصفح / ')}
+                        </p>
+                        <p className="text-[10px] text-gray-500 truncate">
+                          <span className="font-bold text-gray-700">{srcBadge}</span> • <span className={isCloud ? 'text-gray-400 font-normal' : 'text-emerald-800 font-bold'}>{cityLabel}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end shrink-0 pl-1">
+                      <span className="text-[10.5px] font-bold text-[#A44C5C] font-mono">
+                        {formatRelativeTime(v.created_at)}
+                      </span>
+                      <span className="text-[9px] font-mono text-gray-400">
+                        {new Date(v.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-mono text-gray-400">
-                    {new Date(v.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
               {filteredVisits.length === 0 && (
                 <div className="p-4 text-center text-xs text-gray-400">
                   لا توجد جلسات في هذا النطاق الزمني حالياً
