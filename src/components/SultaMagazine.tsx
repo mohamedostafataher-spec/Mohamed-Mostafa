@@ -177,7 +177,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
                     </div>
                     <div className="text-right space-y-2 flex-1">
                       <span className="text-[8.5px] uppercase text-[#A44C5C] tracking-wider font-bold block">{post.category}</span>
-                      <h4 className="font-serif text-sm font-semibold text-gray-900 line-clamp-2 leading-relaxed group-hover:text-[#A44C5C] transition-colors">{post.title}</h4>
+                      <h3 className="font-serif text-sm font-semibold text-gray-900 line-clamp-2 leading-relaxed group-hover:text-[#A44C5C] transition-colors">{post.title}</h3>
                       <p className="text-[10px] text-gray-400 line-clamp-2 font-sans">{post.excerpt}</p>
                     </div>
                   </div>
@@ -210,9 +210,9 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
                         <span className="uppercase text-[#A44C5C] text-[8px] tracking-[0.2s] font-bold mb-2 block">
                           {post.category}
                         </span>
-                        <h4 className="font-serif text-sm font-semibold text-[#0B0B0B] leading-snug mb-2 group-hover:text-[#A44C5C] transition-colors line-clamp-2">
+                        <h3 className="font-serif text-sm font-semibold text-[#0B0B0B] leading-snug mb-2 group-hover:text-[#A44C5C] transition-colors line-clamp-2">
                           {post.title}
-                        </h4>
+                        </h3>
                         <p className="text-gray-400 font-sans text-[10px] leading-relaxed flex-1 line-clamp-3 mb-4">
                           {post.excerpt}
                         </p>

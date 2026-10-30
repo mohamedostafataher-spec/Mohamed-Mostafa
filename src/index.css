@@ -33,6 +33,17 @@ img {
   background-color: #FFFFFF !important;
 }
 
+/* Improve text contrast for accessibility (WCAG AA compliance) */
+.text-gray-400 {
+  color: #4B5563 !important; /* Shifting 400 to 600 for safe contrast on white */
+}
+.text-gray-500 {
+  color: #374151 !important; /* Shifting 500 to 700 */
+}
+.text-gray-600 {
+  color: #1F2937 !important; /* Shifting 600 to 800 */
+}
+
 /* Shift pink/burgundy/yellow accents to crisp black & white */
 .text-\[\#F4B6C2\], .text-\[\#DF8A9C\], .text-\[\#DF8A9D\], .text-\[\#A44C5C\], .text-\[\#F6E7A6\],
 .text-emerald-500, .text-emerald-600, .text-emerald-700, .text-emerald-800, .text-green-600, .text-green-700,

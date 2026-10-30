@@ -118,9 +118,9 @@ export default function NewArrivals({
                   <span className="text-[7.5px] uppercase tracking-widest font-sans font-bold text-gray-400 block">
                     {prod.category === 'sleepwear' ? 'Sleepwear' : prod.category === 'loungewear' ? 'Loungewear' : 'Couture'}
                   </span>
-                  <h4 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
+                  <h3 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
                     {prod.nameAr}
-                  </h4>
+                  </h3>
                   <div className="mt-1.5 flex flex-col items-center">
                     <ProductPrice product={prod} country={country} size="sm" showBadge={true} />
                   </div>

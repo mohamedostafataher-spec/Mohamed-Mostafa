@@ -96,6 +96,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
                   alt={slide.alt}
                   className="w-full h-full"
                   imgClassName="object-cover object-center"
+                  priority={idx === 0}
                 />
               )}
               {/* Clean Salla style gradient overlay */}
@@ -108,9 +109,9 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
       {/* Content overlay - Clean & Minimal Salla style without intrusive buttons or descriptions */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pointer-events-none" dir="rtl">
         <div className="max-w-md text-right space-y-1 sm:space-y-2">
-          <h2 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-[#111827] font-bold leading-tight drop-shadow-2xs">
+          <h1 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-[#111827] font-bold leading-tight drop-shadow-2xs">
             {currentSlideData.title}
-          </h2>
+          </h1>
 
           {currentSlideData.subtitle && (
             <p className="font-sans text-xs sm:text-sm md:text-base text-gray-700 font-medium">

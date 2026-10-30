@@ -77,6 +77,7 @@ export default function MobileBottomNav({
               key={tab.id}
               type="button"
               onClick={tab.action}
+              aria-label={tab.label}
               className={`flex flex-col items-center justify-center h-full py-1 transition-all relative cursor-pointer active:scale-95 ${
                 isActive
                   ? 'text-[#111827] font-bold'

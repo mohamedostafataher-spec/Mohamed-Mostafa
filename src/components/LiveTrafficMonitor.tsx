@@ -19,10 +19,18 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
       setLiveCount(count);
       setStats(getComprehensiveVisitorStats());
     });
-    // Interval refresh to keep historical tracking live
+    
+    // Initial fetch from server to sync historical baseline
+    fetchVisitorStatsFromSupabase('daily').then(() => {
+       setStats(getComprehensiveVisitorStats());
+    }).catch(() => {});
+
+    // Interval refresh to keep historical tracking live and sync with server-side aggregation
     const interval = setInterval(() => {
       setStats(getComprehensiveVisitorStats());
-    }, 5000);
+      // Periodically refresh from server for accurate daily/weekly totals
+      fetchVisitorStatsFromSupabase('daily').catch(() => {});
+    }, 10000);
 
     return () => {
       unsub();

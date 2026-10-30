@@ -42,6 +42,7 @@ export default function SocialLinksView({ className = "flex gap-3", settings }: 
           rel="noopener noreferrer"
           className="w-10 h-10 rounded-full border border-gray-800 bg-black/40 flex items-center justify-center text-gray-300 hover:text-[#F6E7A6] hover:border-[#F6E7A6] transition-all"
           title={soc.label}
+          aria-label={soc.label}
         >
           {getPlatformIcon(soc.platform)}
         </a>

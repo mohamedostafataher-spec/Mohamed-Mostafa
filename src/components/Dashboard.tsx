@@ -255,7 +255,7 @@ export default function Dashboard({
             .from('traffic_logs')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(1000);
+            .limit(5000);
           if (logs && logs.length > 0) {
             setRecentVisits(logs.map(l => ({
               id: l.id,
@@ -271,6 +271,8 @@ export default function Dashboard({
       }
     };
     loadVisits();
+    const interval = setInterval(loadVisits, 15000); // Auto refresh every 15s
+    return () => clearInterval(interval);
   }, []);
 
   // Real product analytics map from actual orders and telemetry
@@ -286,9 +288,9 @@ export default function Dashboard({
     const unsubLogs = subscribePixelLogs(setPixelLogs);
     const unsubCount = subscribeVisitorCount((count) => {
         setLiveCount(count);
-        // Alert if spike detected
-        if (count >= 20) {
-            toast(`تنبيه! زيادة مفاجئة في الزوار: ${count} زائر حالياً!`, 'error');
+        // Alert if extreme spike detected (Increased threshold for 50k capacity)
+        if (count >= 1000) {
+            toast?.(`تنبيه! زيادة هائلة في الزوار: ${count} زائر حالياً!`, 'info');
         }
     });
     return () => {

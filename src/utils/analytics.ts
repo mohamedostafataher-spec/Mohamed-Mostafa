@@ -166,7 +166,7 @@ export const logPixelEvent = (
   currency: string = 'SAR'
 ) => {
   const newLog: PixelEventLog = {
-    id: 'px-' + Math.random().toString(36).substring(2, 9) + '-' + Date.now(),
+    id: 'px-' + Math.random().toString(36).substring(2, 10) + '-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
     timestamp: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     pixel,
     event,
@@ -176,16 +176,18 @@ export const logPixelEvent = (
     currency
   };
 
-  // Add to local memory without auto-truncating
-  inMemoryPixelLogs = [newLog, ...inMemoryPixelLogs];
-  try {
-    localStorage.setItem(PIXEL_LOGS_KEY, JSON.stringify(inMemoryPixelLogs));
-  } catch {}
+  // Add to local memory with duplicate check
+  if (!inMemoryPixelLogs.some(l => l.id === newLog.id)) {
+    inMemoryPixelLogs = [newLog, ...inMemoryPixelLogs];
+    try {
+      localStorage.setItem(PIXEL_LOGS_KEY, JSON.stringify(inMemoryPixelLogs.slice(0, 100))); // Limit storage size
+    } catch {}
+  }
 
   // Notify local listeners (Dashboard UI)
   pixelLogListeners.forEach(listener => listener(inMemoryPixelLogs));
 
-  // Broadcast to global channel so Admin sees it from ALL users
+  // Broadcast to global channel so Admin sees it from ALL users (Others only, to avoid local duplicates)
   if (status === 'sent' && activeChannel && typeof window !== 'undefined') {
     activeChannel.send({
       type: 'broadcast',
@@ -207,7 +209,18 @@ export const getPixelEventLogs = (): PixelEventLog[] => {
   if (inMemoryPixelLogs.length === 0) {
     try {
       const stored = localStorage.getItem(PIXEL_LOGS_KEY);
-      if (stored) inMemoryPixelLogs = JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          // De-duplicate by ID
+          const seen = new Set();
+          inMemoryPixelLogs = parsed.filter(log => {
+            if (!log || !log.id || seen.has(log.id)) return false;
+            seen.add(log.id);
+            return true;
+          });
+        }
+      }
     } catch {}
   }
   return inMemoryPixelLogs;
@@ -287,16 +300,7 @@ export const initGlobalSync = () => {
     supabase.from('traffic_logs').insert([sessionData]).then(({ error }) => {
       if (error) {
         if (isTrackingDebugMode()) console.warn('[Analytics] traffic_logs insert failed, trying user_sessions:', error.message);
-        supabase.from('user_sessions').insert([sessionData]).then(({ error: uError }) => {
-          if (uError) {
-            supabase.from('support_tickets').insert([{
-              subject: `traffic_log:${sessionId}`,
-              message: JSON.stringify(sessionData),
-              status: 'analytics_session',
-              created_at: new Date().toISOString()
-            }]).catch(() => {});
-          }
-        }).catch(() => {});
+        supabase.from('user_sessions').insert([sessionData]).catch(() => {});
       }
     }).catch(() => {});
   }
@@ -332,14 +336,16 @@ export const initGlobalSync = () => {
   activeChannel = supabase.channel(channelId, {
     config: {
       presence: { key: sessionId },
-      broadcast: { self: true }
+      broadcast: { self: false }
     }
   });
 
   activeChannel
     .on('broadcast', { event: 'pixel-event' }, ({ payload }: { payload: PixelEventLog }) => {
-       inMemoryPixelLogs = [payload, ...inMemoryPixelLogs];
-       pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
+       if (payload && payload.id && !inMemoryPixelLogs.some(l => l.id === payload.id)) {
+          inMemoryPixelLogs = [payload, ...inMemoryPixelLogs].slice(0, 100);
+          pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
+       }
     })
     .on('presence', { event: 'sync' }, () => {
       const state = activeChannel.presenceState();
@@ -1107,18 +1113,20 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
     const storedHistory = localStorage.getItem(historyKey);
     if (storedHistory) {
       history = JSON.parse(storedHistory);
-    } else {
-      // Seed initial realistic daily growth history over the past 30 days
-      const now = new Date();
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-        const dStr = d.toISOString().split('T')[0];
-        // Realistic organic growth per day between 45 and 125 visitors
-        const randomVisitors = 45 + Math.floor(Math.sin(i) * 20 + Math.random() * 40);
-        const randomOrders = Math.floor(randomVisitors * 0.12);
-        history.push({ date: dStr, visitors: randomVisitors, orders: randomOrders });
+      // Migration/Cleanup: If history contains suspiciously high seeded data (>1000), purge it for real start
+      if (history.some(h => h.visitors > 1000)) {
+         history = [];
+         localStorage.setItem(historyKey, JSON.stringify(history));
       }
+    } else {
+      // Empty history for fresh start with real data
+      history = [];
       localStorage.setItem(historyKey, JSON.stringify(history));
+    }
+
+    // Sync with REAL server data if available (Fetched by LiveTrafficMonitor periodically)
+    if (cachedServerStats && cachedServerStats.dailyHistory && cachedServerStats.dailyHistory.length > 0) {
+      history = cachedServerStats.dailyHistory;
     }
 
     const visitorSessionKey = `sulta_daily_sessions_${todayStr}`;
@@ -1139,38 +1147,40 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
       localStorage.setItem(visitorSessionKey, JSON.stringify(dailySessions));
     }
 
-    const todayVisitors = Math.max(85, dailySessions.length * 14 + 70);
+    // Use cached server todayCount if available, otherwise fallback to local session count
+    const serverToday = cachedServerStats?.todayCount || 0;
+    const localToday = dailySessions.length;
+    const todayVisitors = Math.max(localToday, serverToday); 
 
     let todayEntry = history.find(h => h.date === todayStr);
     if (!todayEntry) {
-      history.push({ date: todayStr, visitors: todayVisitors, orders: 3 });
+      history.push({ date: todayStr, visitors: todayVisitors, orders: 0 });
     } else {
       todayEntry.visitors = Math.max(todayEntry.visitors, todayVisitors);
     }
 
     localStorage.setItem(historyKey, JSON.stringify(history));
-
-    if (history.length > 30) history = history.slice(-30);
+    if (history.length > 90) history = history.slice(-90);
 
     const weeklyVisitors = history.slice(-7).reduce((sum, h) => sum + h.visitors, 0);
     const monthlyVisitors = history.reduce((sum, h) => sum + h.visitors, 0);
 
     return {
       liveCount: Math.max(1, liveVisitorCount),
-      todayCount: Math.max(1, dailySessions.length),
+      todayCount: todayVisitors,
       totalUniqueVisitors: monthlyVisitors,
       dailyHistory: history,
-      weeklyVisitors,
-      monthlyVisitors
+      weeklyVisitors: Math.max(weeklyVisitors, todayVisitors),
+      monthlyVisitors: Math.max(monthlyVisitors, weeklyVisitors)
     };
   } catch {
     return {
       liveCount: 1,
       todayCount: 1,
-      totalUniqueVisitors: 50,
+      totalUniqueVisitors: 1,
       dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }],
-      weeklyVisitors: 7,
-      monthlyVisitors: 30
+      weeklyVisitors: 1,
+      monthlyVisitors: 1
     };
   }
 };
@@ -1235,13 +1245,13 @@ export const fetchVisitorStatsFromSupabase = async (period: 'daily' | 'weekly' |
 
         const history = Object.keys(dateMap).sort().map(date => ({
           date,
-          visitors: Math.max(45, dateMap[date] * 12 + 30),
-          orders: Math.floor(dateMap[date] * 2)
+          visitors: dateMap[date],
+          orders: 0 // Orders should be fetched from orders table for true accuracy
         }));
 
         if (history.length > 0) {
           const todayStr = new Date().toISOString().split('T')[0];
-          const todayHits = dateMap[todayStr] ? Math.max(120, dateMap[todayStr] * 15 + 40) : 142;
+          const todayHits = dateMap[todayStr] || 0;
           const weeklySum = history.slice(-7).reduce((acc, h) => acc + h.visitors, 0);
           const monthlySum = history.reduce((acc, h) => acc + h.visitors, 0);
 
@@ -1268,12 +1278,12 @@ export const fetchVisitorStatsFromSupabase = async (period: 'daily' | 'weekly' |
 
     const history = Object.keys(dateMap).sort().map(date => ({
       date,
-      visitors: Math.max(50, dateMap[date] * 10 + 25),
-      orders: Math.floor(dateMap[date] * 1.5)
+      visitors: dateMap[date],
+      orders: 0
     }));
 
     const todayStr = new Date().toISOString().split('T')[0];
-    const todayHits = dateMap[todayStr] ? Math.max(130, dateMap[todayStr] * 12 + 50) : 156;
+    const todayHits = dateMap[todayStr] || 0;
     const weeklySum = history.slice(-7).reduce((acc, h) => acc + h.visitors, 0);
     const monthlySum = history.reduce((acc, h) => acc + h.visitors, 0);
 

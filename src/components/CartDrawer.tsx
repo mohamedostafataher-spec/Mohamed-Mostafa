@@ -102,7 +102,11 @@ export default function CartDrawer({
               </span>
             </div>
             
-            <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-black hover:bg-gray-100 flex items-center gap-1 text-xs cursor-pointer">
+            <button 
+              onClick={onClose} 
+              aria-label="إغلاق"
+              className="p-1.5 rounded-lg text-gray-400 hover:text-black hover:bg-gray-100 flex items-center gap-1 text-xs cursor-pointer"
+            >
               <span>إغلاق</span>
               <X size={16} />
             </button>

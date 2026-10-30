@@ -85,7 +85,9 @@ export default function SultaImage({
         onError={handleError}
         onLoad={handleLoad}
         loading={priority ? 'eager' : (props.loading || 'lazy')}
-        decoding="async"
+        // @ts-ignore - fetchPriority is the React-compliant name for LCP optimization
+        fetchPriority={priority ? 'high' : 'auto'}
+        decoding={priority ? 'sync' : 'async'}
         referrerPolicy="no-referrer"
         {...props}
       />

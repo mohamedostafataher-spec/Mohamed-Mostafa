@@ -448,6 +448,7 @@ export default function ProductDetailModal({
         {/* Close Button top-left */}
         <button
           onClick={onClose}
+          aria-label="إغلاق"
           className="absolute top-5 left-5 z-40 bg-white/80 hover:bg-[#A44C5C] text-[#0B0B0B] hover:text-white p-2.5 rounded-full transition-colors border border-gray-150 shadow-md cursor-pointer"
           id="close-detail-modal"
         >
@@ -1095,9 +1096,9 @@ export default function ProductDetailModal({
               </span>
             </div>
 
-            <h3 className="font-serif text-lg sm:text-2xl font-light text-[#0B0B0B] mb-1.5 leading-relaxed text-right">
+            <h2 className="font-serif text-lg sm:text-2xl font-light text-[#0B0B0B] mb-1.5 leading-relaxed text-right">
               {product.nameAr}
-            </h3>
+            </h2>
             <span className="font-serif italic text-xs text-gray-400 block mb-3 text-right">{product.nameEn}</span>
 
             <div className="flex flex-col sm:flex-row items-baseline gap-2 mb-4 justify-between flex-row-reverse">

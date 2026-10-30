@@ -1,50 +1,51 @@
 import { motion, AnimatePresence } from 'motion/react';
 import SultaImage from "./components/SultaImage";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe, Search, Truck, RefreshCw, Tag } from 'lucide-react';
 import { WhatsAppService } from './services/whatsappService';
 import { ToastProvider, useToast } from './components/Toast';
 import Header from './components/Header';
 import Features from './components/Features';
 import StoreView from './components/StoreView';
-import ProductDetailModal from './components/ProductDetailModal';
-import CartDrawer from './components/CartDrawer';
-import CheckoutModal from './components/CheckoutModal';
-import AboutUs from './components/AboutUs';
-import ContactUs from './components/ContactUs';
-import AccountView from './components/AccountView';
-import Dashboard from './components/Dashboard';
-import AdminAuthGate from './components/AdminAuthGate';
-import Faq from './components/Faq';
-import ReturnsExchanges from './components/ReturnsExchanges';
-import DatabaseTest from './components/DatabaseTest';
-import BlogView from './components/BlogView';
-import BlogPostView from './components/BlogPostView';
-import TrackOrder from './components/TrackOrder';
-import SystemStatus from './components/SystemStatus';
-import RibbonBowDivider from './components/RibbonBowDivider';
-import SocialLinksView from './components/SocialLinksView';
-import PremiumLuxuryExperience from './components/PremiumLuxuryExperience';
-import FabricGuide from './components/FabricGuide';
-import { ProductPrice } from './components/ProductPrice';
-
-// Luxury Add-on views
-import SultaCollections from './components/SultaCollections';
-import BestSellers from './components/BestSellers';
-import NewArrivals from './components/NewArrivals';
-import TrendingNow from './components/TrendingNow';
-import LuxuryGifts from './components/LuxuryGifts';
-import LimitedPieces from './components/LimitedPieces';
-import SleepExperience from './components/SleepExperience';
-import SultaMagazine from './components/SultaMagazine';
-import SultaConcierge from './components/SultaConcierge';
-
-import RoyalSensesSalon from './components/RoyalSensesSalon';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import MobileBottomNav from './components/MobileBottomNav';
-import LiveTrafficMonitor from './components/LiveTrafficMonitor';
-import LivePurchaseToasts from './components/LivePurchaseToasts';
-import ReelsShowcase from './components/ReelsShowcase';
+import RibbonBowDivider from './components/RibbonBowDivider';
+import { ProductPrice } from './components/ProductPrice';
+// Lazy load non-critical components to reduce initial bundle size and improve performance
+const ProductDetailModal = React.lazy(() => import('./components/ProductDetailModal'));
+const CartDrawer = React.lazy(() => import('./components/CartDrawer'));
+const CheckoutModal = React.lazy(() => import('./components/CheckoutModal'));
+const AboutUs = React.lazy(() => import('./components/AboutUs'));
+const ContactUs = React.lazy(() => import('./components/ContactUs'));
+const AccountView = React.lazy(() => import('./components/AccountView'));
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const AdminAuthGate = React.lazy(() => import('./components/AdminAuthGate'));
+const Faq = React.lazy(() => import('./components/Faq'));
+const ReturnsExchanges = React.lazy(() => import('./components/ReturnsExchanges'));
+const DatabaseTest = React.lazy(() => import('./components/DatabaseTest'));
+const BlogView = React.lazy(() => import('./components/BlogView'));
+const BlogPostView = React.lazy(() => import('./components/BlogPostView'));
+const TrackOrder = React.lazy(() => import('./components/TrackOrder'));
+const SystemStatus = React.lazy(() => import('./components/SystemStatus'));
+const SocialLinksView = React.lazy(() => import('./components/SocialLinksView'));
+const PremiumLuxuryExperience = React.lazy(() => import('./components/PremiumLuxuryExperience'));
+const FabricGuide = React.lazy(() => import('./components/FabricGuide'));
+
+// Luxury Add-on views
+const SultaCollections = React.lazy(() => import('./components/SultaCollections'));
+const BestSellers = React.lazy(() => import('./components/BestSellers'));
+const NewArrivals = React.lazy(() => import('./components/NewArrivals'));
+const TrendingNow = React.lazy(() => import('./components/TrendingNow'));
+const LuxuryGifts = React.lazy(() => import('./components/LuxuryGifts'));
+const LimitedPieces = React.lazy(() => import('./components/LimitedPieces'));
+const SleepExperience = React.lazy(() => import('./components/SleepExperience'));
+const SultaMagazine = React.lazy(() => import('./components/SultaMagazine'));
+const SultaConcierge = React.lazy(() => import('./components/SultaConcierge'));
+
+const RoyalSensesSalon = React.lazy(() => import('./components/RoyalSensesSalon'));
+const LiveTrafficMonitor = React.lazy(() => import('./components/LiveTrafficMonitor'));
+const LivePurchaseToasts = React.lazy(() => import('./components/LivePurchaseToasts'));
+const ReelsShowcase = React.lazy(() => import('./components/ReelsShowcase'));
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -854,6 +855,11 @@ function AppContent() {
 
       {/* CORE DYNAMIC LAYOUT BASED ON ACTIVE TAB */}
       <main className="animate-fade-in-rapid overflow-x-hidden">
+        <Suspense fallback={
+          <div className="min-h-[60vh] flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin"></div>
+          </div>
+        }>
         <AnimatePresence mode="wait">
           <motion.div 
             key={currentTab}
@@ -890,9 +896,9 @@ function AppContent() {
                     
                     <div className="flex items-center justify-between mb-3 sm:mb-5 pb-2 border-b border-gray-200/80">
                       <div className="text-right">
-                        <h3 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight">
+                        <h2 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight">
                           {section.title}
-                        </h3>
+                        </h2>
                         <p className="text-gray-500 text-[11px] sm:text-xs mt-0.5 sm:mt-1">
                           {section.label}
                         </p>
@@ -962,9 +968,9 @@ function AppContent() {
                                 <span className="text-[10px] text-gray-400 font-medium block">
                                   {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
                                 </span>
-                                <h4 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-black transition-colors">
+                                <h3 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-black transition-colors">
                                   {prod.nameAr || prod.nameEn}
-                                </h4>
+                                </h3>
                                 
                                 {/* Rating */}
                                 <div className="flex items-center gap-1 justify-start pt-0.5">
@@ -1050,9 +1056,9 @@ function AppContent() {
             <section className="py-16 bg-[#F8F9FA] text-gray-900 border-t border-gray-200">
               <div className="max-w-xl mx-auto px-6 text-center space-y-4">
                 <span className="text-2xl">💌</span>
-                <h3 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight">
                   انضمي إلى نادي SULTA الحصري
-                </h3>
+                </h2>
                 <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
                   اشتركي لتصلكِ أحدث العروض الحصرية، إشعارات توفر الموديلات الجديدة وكوبونات الخصم قبل الجميع.
                 </p>
@@ -1408,9 +1414,11 @@ function AppContent() {
 
           </motion.div>
         </AnimatePresence>
+        </Suspense>
       </main>
 
-      {/* OVERLAY MODAL 1: DYNAMICAL PRODUCT DETAILED VIEW */}
+      <Suspense fallback={null}>
+        {/* OVERLAY MODAL 1: DYNAMICAL PRODUCT DETAILED VIEW */}
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
@@ -1458,6 +1466,7 @@ function AppContent() {
           settings={settings}
         />
       )}
+      </Suspense>
 
       {/* GLOBAL SALLA / NALAH STYLE CLEAN WHITE FOOTER */}
       <footer className="bg-white text-gray-700 pt-16 pb-8 border-t border-gray-200 select-none font-sans text-xs" dir="rtl">
@@ -1484,34 +1493,34 @@ function AppContent() {
 
           {/* Quick Deep links */}
           <div className="space-y-3.5">
-            <h4 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
+            <h3 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
               روابط المتجر السريعة
-            </h4>
+            </h3>
             <div className="flex flex-col gap-2 font-sans items-start text-right text-gray-600">
-              <button type="button" onClick={() => setTab('home')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الرئيسية</button>
-              <button type="button" onClick={() => setTab('offers')} className="hover:text-[#A44C5C] font-bold text-[#A44C5C] transition-colors cursor-pointer flex items-center gap-1">
+              <button type="button" onClick={() => setTab('home')} aria-label="الذهاب للرئيسية" className="hover:text-[#A44C5C] transition-colors cursor-pointer">الرئيسية</button>
+              <button type="button" onClick={() => setTab('offers')} aria-label="عرض العروض والتخفيضات" className="hover:text-[#A44C5C] font-bold text-[#A44C5C] transition-colors cursor-pointer flex items-center gap-1">
                 <span>العروض والتخفيضات الحصرية</span>
                 <span className="bg-red-50 text-red-600 text-[9px] px-1.5 py-0.2 rounded-full font-bold">خصومات</span>
               </button>
-              <button type="button" onClick={() => setTab('store')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">المتجر الشامل</button>
-              <button type="button" onClick={() => setTab('best-sellers')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأكثر طلباً ومبيعاً</button>
-              <button type="button" onClick={() => setTab('new-arrivals')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">وصل حديثاً</button>
-              <button type="button" onClick={() => setTab('account')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">حسابي والطلبات</button>
-              <button type="button" onClick={() => setTab('dashboard')} className="hover:text-[#A44C5C] text-gray-300 text-[8px] transition-colors cursor-pointer mt-2 text-right opacity-40">دخول الإدارة ⚙️</button>
+              <button type="button" onClick={() => setTab('store')} aria-label="فتح المتجر الشامل" className="hover:text-[#A44C5C] transition-colors cursor-pointer">المتجر الشامل</button>
+              <button type="button" onClick={() => setTab('best-sellers')} aria-label="عرض الأكثر طلباً ومبيعاً" className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأكثر طلباً ومبيعاً</button>
+              <button type="button" onClick={() => setTab('new-arrivals')} aria-label="عرض المنتجات الجديدة" className="hover:text-[#A44C5C] transition-colors cursor-pointer">وصل حديثاً</button>
+              <button type="button" onClick={() => setTab('account')} aria-label="فتح حسابي والطلبات" className="hover:text-[#A44C5C] transition-colors cursor-pointer">حسابي والطلبات</button>
+              <button type="button" onClick={() => setTab('dashboard')} aria-label="دخول لوحة الإدارة" className="hover:text-[#A44C5C] text-gray-300 text-[8px] transition-colors cursor-pointer mt-2 text-right opacity-40">دخول الإدارة ⚙️</button>
             </div>
           </div>
 
           {/* Customer Service & Policies */}
           <div className="space-y-3.5 font-sans">
-            <h4 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
+            <h3 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
               خدمة العملاء والسياسات
-            </h4>
+            </h3>
             <div className="flex flex-col gap-2 items-start text-right text-gray-600">
-              <button type="button" onClick={() => setTab('faq')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
-              <button type="button" onClick={() => setTab('track-order')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">تتبع طلبيتكِ</button>
-              <button type="button" onClick={() => setTab('returns')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
-              <button type="button" onClick={() => setTab('fabrics')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات والمنسوجات</button>
-              <button type="button" onClick={() => setTab('contact')} className="hover:text-[#A44C5C] transition-colors cursor-pointer">اتصلي بنا</button>
+              <button type="button" onClick={() => setTab('faq')} aria-label="الأسئلة الشائعة" className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
+              <button type="button" onClick={() => setTab('track-order')} aria-label="تتبع الطلب" className="hover:text-[#A44C5C] transition-colors cursor-pointer">تتبع طلبيتكِ</button>
+              <button type="button" onClick={() => setTab('returns')} aria-label="سياسة الاسترجاع" className="hover:text-[#A44C5C] transition-colors cursor-pointer">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
+              <button type="button" onClick={() => setTab('fabrics')} aria-label="دليل الخامات" className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات والمنسوجات</button>
+              <button type="button" onClick={() => setTab('contact')} aria-label="تواصل معنا" className="hover:text-[#A44C5C] transition-colors cursor-pointer">اتصلي بنا</button>
               <div className="pt-2 text-[10.5px] text-gray-400 leading-normal">
                 ✓ شحن سريع ومغلف بعناية فائقة<br />
                 ✓ منتجات أصلية 100% مضمونة
@@ -1521,9 +1530,9 @@ function AppContent() {
 
           {/* Direct WhatsApp & Payment Badges */}
           <div className="space-y-3.5 font-sans">
-            <h4 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
+            <h3 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
               تواصل واتساب والدعم السريع
-            </h4>
+            </h3>
             <div className="space-y-2 text-xs">
               <a 
                 href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
@@ -1554,7 +1563,9 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-sans">
           <div className="flex items-center gap-4 flex-wrap">
             <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر SULTA للأزياء الفاخرة</span>
-            {isAdmin && <LiveTrafficMonitor compact={true} />}
+            <Suspense fallback={null}>
+              {isAdmin && <LiveTrafficMonitor compact={true} />}
+            </Suspense>
           </div>
           <div className="text-gray-400 text-[11px]">
             <span>تسوق سهل وسريع مع توصيل آمن لكافة مناطق المملكة والخليج ومصر</span>
@@ -1580,6 +1591,7 @@ function AppContent() {
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-gray-500 hover:text-red-500 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+                  aria-label="إغلاق القائمة"
                 >
                   <X size={20} />
                 </button>
@@ -1701,6 +1713,7 @@ function AppContent() {
             <button 
               onClick={() => setIsBottomSearchOpen(false)}
               className="absolute top-6 left-6 text-gray-400 hover:text-black p-2 hover:bg-neutral-100 rounded-full cursor-pointer transition-all border border-transparent"
+              aria-label="إغلاق البحث"
             >
               <X size={18} />
             </button>
@@ -1789,7 +1802,9 @@ function AppContent() {
         saudiNumber="966552823677" 
         country={country} 
       />
-      <LivePurchaseToasts />
+      <Suspense fallback={null}>
+        <LivePurchaseToasts />
+      </Suspense>
     </div>
   );
 }

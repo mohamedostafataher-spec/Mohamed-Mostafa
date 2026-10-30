@@ -59,12 +59,12 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
         {/* GUARANTEES / BENEFITS GRID */}
         <div className="text-center max-w-xl mx-auto mb-10">
           <RibbonBowDivider />
-          <h3 className="text-2xl md:text-3xl font-extrabold text-[#111827] tracking-tight mt-4">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#111827] tracking-tight mt-4">
             لماذا تختارين التسوق من SULTA؟
-          </h3>
+          </h2>
           <p className="text-gray-600 text-xs mt-2 font-bold tracking-wider">ضمان الجودة، سرعة الشحن، وراحة تليق بكِ</p>
         </div>
-
+ 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {qualities.map((item: any, idx: number) => (
             <div
@@ -74,9 +74,9 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
               <div className="w-12 h-12 rounded-full bg-white group-hover:bg-gray-100 border border-gray-200 flex items-center justify-center mb-4 transition-colors shadow-2xs">
                 {item.icon}
               </div>
-              <h4 className="text-sm font-bold text-[#111827] mb-1.5">
+              <h3 className="text-sm font-bold text-[#111827] mb-1.5">
                 {item.title}
-              </h4>
+              </h3>
               <p className="text-gray-500 text-xs leading-relaxed max-w-xs">
                 {item.desc}
               </p>

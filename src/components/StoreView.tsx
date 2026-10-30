@@ -270,9 +270,9 @@ export default function StoreView({
             {/* Luxury Brand Hook Card (Desktop / Tablet) */}
             <div className="hidden sm:block shrink-0 bg-[#111827] text-white p-4 sm:p-5 rounded-2xl shadow-sm text-center space-y-2.5 w-full md:w-72">
               <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300 block">✨ Haute Couture Sleepwear</span>
-              <h3 className="text-xs font-bold leading-relaxed text-gray-100">
+              <h2 className="text-xs font-bold leading-relaxed text-gray-100">
                 تصاميم حصرية وأرواب عرايس ملكية مصممة لأميرات السعودية
-              </h3>
+              </h2>
               <p className="text-[9.5px] text-gray-400 leading-normal">
                 أقمشة حريرية فاخرة، نعومة فائقة وتغليف ملكي يليق بذوقكِ الرفيع.
               </p>
@@ -318,6 +318,7 @@ export default function StoreView({
             <span className="bg-gray-100 text-gray-600 text-[11px] font-bold px-2 py-0.5 rounded-full font-mono">
               {filteredProducts.length} قطعة
             </span>
+            <h2 className="sr-only">قائمة المنتجات المعروضة</h2>
           </div>
 
           {/* Right Toolbar: Search & Sort Dropdown */}
@@ -371,6 +372,7 @@ export default function StoreView({
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="appearance-none bg-white border border-gray-200 hover:border-gray-400 rounded-lg pr-3 pl-8 py-1.5 text-xs font-semibold text-gray-800 outline-hidden cursor-pointer transition-colors shadow-2xs"
+                aria-label="ترتيب المنتجات حسب"
               >
                 <option value="newest">الأحدث وصولاً ✨</option>
                 <option value="bestseller">الأكثر طلباً 🔥</option>
@@ -393,6 +395,7 @@ export default function StoreView({
                   : 'bg-white text-gray-800 border-gray-200 hover:border-gray-400'
               }`}
               title="تصفية المنتجات حسب النطاق السعري"
+              aria-label="فتح لوحة تصفية السعر"
               id="toggle-price-slider"
             >
               <SlidersHorizontal size={13} className={maxPrice < maxPriceCatalog ? 'text-[#DF8A9C]' : ''} />
@@ -452,6 +455,7 @@ export default function StoreView({
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#A44C5C] focus:outline-none"
                   id="store-price-range-slider"
+                  aria-label="اختر الحد الأقصى للسعر"
                 />
                 
                 {/* Min / Max Labels */}
@@ -604,6 +608,7 @@ export default function StoreView({
                           type="button"
                           onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
                           className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-red-500 shadow-sm backdrop-blur-xs flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                          aria-label="إضافة للمفضلة"
                           title="إضافة للمفضلة"
                         >
                           <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
@@ -645,6 +650,7 @@ export default function StoreView({
                         }}
                         className="hidden sm:flex absolute inset-0 m-auto w-10 h-10 bg-white/95 rounded-full items-center justify-center text-gray-800 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 cursor-pointer"
                         title="معاينة سريعة"
+                        aria-label={`معاينة سريعة لـ ${product.nameAr}`}
                       >
                         <Eye size={16} />
                       </button>
@@ -828,9 +834,9 @@ export default function StoreView({
                       {quickViewProduct.collection || 'المجموعة الرسمية'}
                     </span>
                     
-                    <h2 className="text-xl md:text-2xl font-extrabold text-[#111827] leading-tight">
+                    <h3 className="text-xl md:text-2xl font-extrabold text-[#111827] leading-tight">
                       {quickViewProduct.nameAr || quickViewProduct.nameEn}
-                    </h2>
+                    </h3>
 
                     {/* Price tag */}
                     <div className="flex items-baseline gap-4">
