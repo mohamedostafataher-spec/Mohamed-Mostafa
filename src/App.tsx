@@ -291,13 +291,7 @@ function AppContent() {
           console.warn("[SULTA DB] Seeding initial data skipped or failed:", e);
         }
 
-        // Clean experimental pajama from live database if present to ensure clean slate
-        try {
-          await supabase.from('products').delete().eq('id', 'experimental-pajama-001');
-          console.log("[SULTA DB] Experimental template pajamas cleaned.");
-        } catch (e) {
-          console.warn("[SULTA DB] Cleaning experimental pajama failed:", e);
-        }
+        // Initial setup complete safely
 
         // Auth Session Sync
         try {

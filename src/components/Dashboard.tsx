@@ -252,7 +252,7 @@ export default function Dashboard({
       if (!loaded && supabase) {
         try {
           const { data: logs } = await supabase
-            .from('traffic_logs')
+            .from('user_sessions')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(5000);

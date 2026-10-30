@@ -132,9 +132,8 @@ export default function TrafficHeatmap() {
       if (supabase) {
         const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
-        // 2a. traffic_logs
         const { data: logs } = await supabase
-          .from('traffic_logs')
+          .from('user_sessions')
           .select('*')
           .gte('created_at', ninetyDaysAgo)
           .order('created_at', { ascending: false })

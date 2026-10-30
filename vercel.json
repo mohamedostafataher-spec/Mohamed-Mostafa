@@ -30,7 +30,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|\\.well-known/|llms\\.txt|sitemap\\.xml|robots\\.txt|.*\\.(webp|png|jpg|jpeg|json|txt|xml|js|css|woff2?)).*)",
       "destination": "/"
     }
   ]

@@ -219,10 +219,14 @@ export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
 
   const cleaned = url.trim();
 
-  // If it's already a full absolute URL, return it
+  // Optimize remote images via fast WebP CDN transformation
   if (cleaned.startsWith('http')) {
-    // Ensure no triple slashes or other common mangling
-    return cleaned.replace(/([^:])\/+/g, '$1/');
+    const sanitized = cleaned.replace(/([^:])\/+/g, '$1/');
+    if (sanitized.includes('wsrv.nl')) return sanitized;
+    if (sanitized.includes('supabase.co') || /\.(jpg|jpeg|png)$/i.test(sanitized)) {
+      return `https://wsrv.nl/?url=${encodeURIComponent(sanitized)}&w=650&output=webp&q=80`;
+    }
+    return sanitized;
   }
 
   if (cleaned.startsWith('data:')) return cleaned;

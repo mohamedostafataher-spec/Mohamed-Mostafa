@@ -77,7 +77,7 @@ export default function NewArrivals({
       {/* Grid of New arrivals */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-          {filtered.map((prod) => {
+          {filtered.map((prod, idx) => {
             const priceVal = prod.priceSA;
             const imgToUse = cleanImgUrl(prod.images[0], prod.category);
 
@@ -110,6 +110,7 @@ export default function NewArrivals({
                     alt={prod.nameAr}
                     className="w-full h-full"
                     imgClassName="w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-[800ms]"
+                    priority={idx < 2}
                   />
                 </div>
 

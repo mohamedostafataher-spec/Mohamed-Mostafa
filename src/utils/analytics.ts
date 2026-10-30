@@ -296,13 +296,8 @@ export const initGlobalSync = () => {
        console.log('[Analytics] Persisting new session:', sessionData);
     }
 
-    // 3a. Primary: traffic_logs (New high-fidelity tracking table)
-    supabase.from('traffic_logs').insert([sessionData]).then(({ error }) => {
-      if (error) {
-        if (isTrackingDebugMode()) console.warn('[Analytics] traffic_logs insert failed, trying user_sessions:', error.message);
-        supabase.from('user_sessions').insert([sessionData]).catch(() => {});
-      }
-    }).catch(() => {});
+    // Primary: user_sessions table
+    supabase.from('user_sessions').insert([sessionData]).catch(() => {});
   }
 
   // 4. Ping visit to legacy analytics endpoint for backward compatibility
