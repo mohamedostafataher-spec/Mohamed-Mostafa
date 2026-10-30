@@ -1923,7 +1923,18 @@ export default function ProductDetailModal({
                   <span>انضمي إلى قائمة الانتظار للتوفر 🔔</span>
                 </button>
               ) : (
-                  <div className="flex-1 flex flex-col gap-3">
+                  <div className="flex-1 flex flex-col gap-2.5">
+                    {/* Primary Direct Fast Purchase Button */}
+                    <button
+                      type="button"
+                      onClick={() => onBuyNow(product, selectedCol, selectedSz, quantity)}
+                      className="w-full bg-[#A44C5C] hover:bg-[#8e3f4e] text-white py-4 rounded-2xl text-[13.5px] font-sans font-black tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 ring-4 ring-rose-50"
+                      id="buy-now-direct-action"
+                    >
+                      <Zap size={18} className="fill-amber-300 text-amber-300" />
+                      <span>اشتري الآن (دفع فوري / عند الاستلام ⚡)</span>
+                    </button>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <button
                         type="button"
@@ -1932,19 +1943,19 @@ export default function ProductDetailModal({
                           luxuryWrap: selectedWrap !== 'none' ? selectedWrap : undefined,
                           giftMessage: selectedWrap !== 'none' && giftCardMessage.trim() ? giftCardMessage : undefined
                         })}
-                        className="w-full bg-[#111827] text-white hover:bg-black py-4 rounded-2xl text-[13px] font-sans font-black tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 order-2 sm:order-1"
+                        className="w-full bg-[#111827] text-white hover:bg-black py-3.5 rounded-2xl text-[12px] font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98"
                         id="add-to-cart-action"
                       >
-                        <ShoppingBag size={18} />
+                        <ShoppingBag size={17} />
                         <span>إضافة للسلة المتروفة</span>
                       </button>
                       <button
                         type="button"
                         onClick={handleOrderWhatsApp}
-                        className="w-full bg-[#25D366] text-white hover:bg-[#20ba59] py-4 rounded-2xl text-[13px] font-sans font-black tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98 order-1 sm:order-2 ring-4 ring-emerald-50"
+                        className="w-full bg-[#25D366] text-white hover:bg-[#20ba59] py-3.5 rounded-2xl text-[12px] font-sans font-bold tracking-wide transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98"
                         id="whatsapp-buy-now"
                       >
-                        <MessageCircle size={18} />
+                        <MessageCircle size={17} />
                         <span>اطلبي فوراً عبر واتساب</span>
                       </button>
                     </div>
@@ -2195,6 +2206,42 @@ export default function ProductDetailModal({
               toggleFavorite={toggleFavorite}
               onSelectProduct={onSelectProduct}
             />
+          </div>
+        )}
+
+        {/* Sticky Mobile Fast Checkout Bar (Visible only on mobile devices) */}
+        {!isCurrentConfigOutOfStock && (
+          <div className="md:hidden sticky bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-3 flex items-center justify-between gap-3 shadow-[0_-6px_25px_rgba(0,0,0,0.12)]" dir="rtl">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-12 rounded-lg overflow-hidden border border-gray-200 shrink-0 bg-gray-50">
+                <img src={cleanImgUrl(displayImages[0] || product.images[0])} alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="text-right min-w-0">
+                <p className="text-[11px] font-bold text-gray-900 truncate">{product.nameAr}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-xs font-black text-[#A44C5C] font-mono">{effectiveProductPrice} {country === 'EG' ? 'ج.م' : 'ر.س'}</span>
+                  <span className="text-[9.5px] text-gray-400 font-bold truncate">({selectedCol.name} - {selectedSz})</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => onAddToCart(product, selectedCol, selectedSz, quantity)}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl border border-gray-200 transition-all cursor-pointer active:scale-95"
+                title="إضافة للسلة"
+              >
+                <ShoppingBag size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => onBuyNow(product, selectedCol, selectedSz, quantity)}
+                className="bg-[#A44C5C] hover:bg-[#8e3f4e] text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+              >
+                <Zap size={14} className="fill-amber-300 text-amber-300" />
+                <span>اشتري الآن ⚡</span>
+              </button>
+            </div>
           </div>
         )}
 

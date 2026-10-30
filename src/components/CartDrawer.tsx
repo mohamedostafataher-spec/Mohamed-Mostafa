@@ -326,7 +326,7 @@ export default function CartDrawer({
                 />
                 <button
                   type="submit"
-                  className="bg-[#A44C5C] text-[#F6E7A6] hover:bg-[#F4B6C2] hover:text-white px-4 py-2 text-xs rounded-lg font-sans transition-colors shrink-0"
+                  className="bg-[#A44C5C] text-white hover:bg-[#8e3f4e] px-4 py-2 text-xs font-bold rounded-xl font-sans transition-all shadow-xs shrink-0 cursor-pointer"
                 >
                   تطبيق
                 </button>

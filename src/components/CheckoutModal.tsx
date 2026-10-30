@@ -68,8 +68,8 @@ export default function CheckoutModal({
   const [address, setAddress] = useState('');
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
 
-  // Selected Payment Method: 'bank_transfer' (Saudi Bank Transfer via Al Rajhi IBAN & Account Number)
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('bank_transfer');
+  // Selected Payment Method: 'cod' (Saudi Cash On Delivery) or 'bank_transfer' (Al Rajhi)
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('cod');
 
   // Processing & Verification States
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -737,6 +737,23 @@ export default function CheckoutModal({
                       className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all"
                       required
                     />
+                    {/* Quick City Selection Chips for Fast Mobile UX */}
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة', 'الخبر', 'القصيم', 'الطائف'].map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setCity(c)}
+                          className={`text-[9.5px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer font-bold ${
+                            city === c 
+                              ? 'bg-[#111827] text-white border-[#111827]' 
+                              : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-200 shadow-2xs'
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <label className="text-[11px] font-bold text-gray-700 block mb-1">

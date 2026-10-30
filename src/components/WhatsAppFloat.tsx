@@ -31,11 +31,11 @@ export default function WhatsAppFloat({
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="w-13 h-13 md:w-14 md:h-14 bg-[#DF8A9D] hover:bg-[#A44C5C] text-white rounded-full shadow-[0_6px_25px_rgba(223,138,157,0.35)] hover:shadow-[0_8px_30px_rgba(223,138,157,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
+        className="w-12 h-12 md:w-14 md:h-14 bg-[#A44C5C] hover:bg-[#8e3f4e] text-white rounded-full shadow-[0_6px_25px_rgba(164,76,92,0.35)] hover:shadow-[0_8px_30px_rgba(164,76,92,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
         aria-label="تواصل معنا عبر واتساب SULTA"
         title="تواصل مباشر عبر واتساب 0552823677"
       >
-        <MessageCircle size={28} />
+        <MessageCircle size={24} className="text-white" />
         
         {/* Subtle status pulse */}
         <span className="absolute top-1 right-1 w-3 h-3 bg-[#25D366] rounded-full border-2 border-white" />

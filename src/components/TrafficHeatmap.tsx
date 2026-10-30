@@ -26,23 +26,48 @@ interface Visit {
 const cleanCityName = (c?: string): string => {
   if (!c) return 'الرياض';
   try {
-    let decoded = decodeURIComponent(c.replace(/\+/g, ' ')).trim();
-    const lower = decoded.toLowerCase();
-    if (lower === 'san jose' || lower === 'sanjose') return 'سان خوسيه (خوادم Vercel)';
-    if (lower === 'riyadh' || lower === 'al riyadh') return 'الرياض';
-    if (lower === 'jeddah') return 'جدة';
-    if (lower === 'dammam') return 'الدمام';
-    if (lower === 'mecca' || lower === 'makkah') return 'مكة المكرمة';
-    if (lower === 'medina' || lower === 'madinah') return 'المدينة المنورة';
-    if (lower === 'khobar' || lower === 'al khobar') return 'الخبر';
-    if (lower === 'cairo') return 'القاهرة';
-    if (lower === 'alexandria') return 'الإسكندرية';
-    if (lower === 'dubai') return 'دبي';
-    if (lower === 'doha') return 'الدوحة';
-    if (lower === 'kuwait') return 'الكويت';
-    return decoded;
+    let text = String(c).trim();
+    // Decode percent encodings repeatedly if needed (handles double-encoded strings like San%2520Jose)
+    try { text = decodeURIComponent(text); } catch {}
+    try { text = decodeURIComponent(text); } catch {}
+    text = text.replace(/%20/g, ' ').replace(/\+/g, ' ').trim();
+    const lower = text.toLowerCase();
+    
+    if (
+      lower.includes('san jose') || 
+      lower.includes('sanjose') || 
+      lower.includes('vercel') || 
+      lower.includes('washington') || 
+      lower.includes('ashburn') ||
+      lower.includes('frankfurt')
+    ) {
+      return 'فحص واستعراض سحابي (Vercel Cloud)';
+    }
+    if (lower.includes('riyadh') || lower.includes('al riyadh') || lower.includes('ar riyad')) return 'الرياض';
+    if (lower.includes('jeddah') || lower.includes('jiddah')) return 'جدة';
+    if (lower.includes('dammam')) return 'الدمام';
+    if (lower.includes('mecca') || lower.includes('makkah')) return 'مكة المكرمة';
+    if (lower.includes('medina') || lower.includes('madinah')) return 'المدينة المنورة';
+    if (lower.includes('khobar') || lower.includes('al khobar')) return 'الخبر';
+    if (lower.includes('dhahran')) return 'الظهران';
+    if (lower.includes('taif')) return 'الطائف';
+    if (lower.includes('tabuk')) return 'تبوك';
+    if (lower.includes('abha')) return 'أبها';
+    if (lower.includes('qassim') || lower.includes('buraidah')) return 'القصيم (بريدة)';
+    if (lower.includes('hail')) return 'حائل';
+    if (lower.includes('cairo')) return 'القاهرة';
+    if (lower.includes('alexandria')) return 'الإسكندرية';
+    if (lower.includes('giza')) return 'الجيزة';
+    if (lower.includes('dubai')) return 'دبي';
+    if (lower.includes('abu dhabi')) return 'أبوظبي';
+    if (lower.includes('doha')) return 'الدوحة';
+    if (lower.includes('kuwait')) return 'الكويت';
+    if (lower.includes('manama')) return 'المنامة';
+    if (lower.includes('muscat')) return 'مسقط';
+    
+    return text;
   } catch {
-    return c;
+    return c || 'الرياض';
   }
 };
 
@@ -413,30 +438,39 @@ export default function TrafficHeatmap() {
             </h4>
             <span className="text-[10px] text-gray-400">محدث تلقائياً من Supabase</span>
           </div>
-          <div className="h-56 w-full bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={sourceChartData} layout="vertical" margin={{ left: 10, right: 30, top: 5, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
-                <XAxis type="number" hide />
-                <YAxis 
-                  dataKey="source" 
-                  type="category" 
-                  tick={{ fontSize: 11, fontWeight: 'bold', fill: '#374151' }} 
-                  width={90}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip 
-                  cursor={{ fill: 'rgba(164, 76, 92, 0.05)' }}
-                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)', fontSize: '12px', textAlign: 'right' }}
-                />
-                <Bar dataKey="count" radius={[0, 8, 8, 0]} barSize={24}>
-                  {sourceChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.9} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Source Breakdown Cards (100% Mobile Responsive, Zero Overlap) */}
+          <div className="bg-gray-50/70 p-4 rounded-2xl border border-gray-100 space-y-3">
+            {sourceChartData.map((item, idx) => {
+              const pct = totalHitsCount > 0 ? Math.round((item.count / totalHitsCount) * 100) : 0;
+              return (
+                <div key={idx} className="bg-white p-3 rounded-xl border border-gray-200/70 shadow-2xs hover:border-gray-300 transition-all">
+                  <div className="flex items-center justify-between text-xs mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <span 
+                        className="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs" 
+                        style={{ backgroundColor: item.color }} 
+                      />
+                      <span className="font-bold text-gray-900">{item.source}</span>
+                    </div>
+                    <div className="flex items-center gap-2 font-mono text-xs">
+                      <span className="font-black text-gray-900">{item.count} زائر</span>
+                      <span className="text-[11px] text-gray-400 font-bold bg-gray-100 px-2 py-0.5 rounded-md">
+                        {pct}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-700 ease-out" 
+                      style={{ 
+                        width: `${Math.max(item.count > 0 ? 4 : 0, pct)}%`, 
+                        backgroundColor: item.color 
+                      }} 
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

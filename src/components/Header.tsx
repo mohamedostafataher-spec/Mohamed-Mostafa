@@ -148,8 +148,8 @@ export default function Header({
                 ? 'شحن مجاني لكافة مدن ومناطق المملكة للطلبات بقيمة 299 ر.س فأكثر 🇸🇦 | أزياء النوم والقطع الملكية الفاخرة' 
                 : 'شحن مجاني داخل مصر للطلبات بقيمة 1000 ج.م فأكثر 🇪🇬 | أزياء النوم والقطع الفاخرة'}
             </span>
-            <span className="sm:hidden font-semibold truncate text-[9px]">
-              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س (شحن قياسي 40 ر.س)' : 'شحن مجاني فوق 1000 ج.م (شحن قياسي 75 ج.م)'}
+            <span className="sm:hidden font-bold truncate text-[10px] text-gray-800">
+              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س 🇸🇦' : 'شحن مجاني فوق 1000 ج.م 🇪🇬'}
             </span>
           </div>
 
