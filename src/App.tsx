@@ -49,7 +49,7 @@ const SultaConcierge = React.lazy(() => import('./components/SultaConcierge'));
 
 const RoyalSensesSalon = React.lazy(() => import('./components/RoyalSensesSalon'));
 const LiveTrafficMonitor = React.lazy(() => import('./components/LiveTrafficMonitor'));
-const LivePurchaseToasts = React.lazy(() => import('./components/LivePurchaseToasts'));
+// LivePurchaseToasts removed to ensure 100% genuine data only
 const ReelsShowcase = React.lazy(() => import('./components/ReelsShowcase'));
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
@@ -1333,9 +1333,7 @@ function AppContent() {
         saudiNumber="966552823677" 
         country={country} 
       />
-      <Suspense fallback={null}>
-        <LivePurchaseToasts />
-      </Suspense>
+      {/* Genuine orders only */}
     </div>
   );
 }
