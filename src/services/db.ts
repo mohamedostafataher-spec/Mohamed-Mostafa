@@ -188,29 +188,32 @@ export const SEED_INVENTORY_LOGS: any[] = [
 
 export function cleanText(text: any): any {
   if (typeof text !== 'string') return text;
-  return text
+  let cleaned = text
     .replace(/zoria/ig, 'SULTA')
-    .replace(/زوريا/g, 'سولتا')
+    .replace(/زوريا/g, 'سولتة')
     .replace(/كوتور ساتان/g, 'كوتور ناعم')
-    .replace(/الساتان/g, 'الكوتور الفاخر')
-    .replace(/ساتان/g, 'كوتور فاخر')
-    .replace(/(?<![فبك])الستان/g, 'الكوتور الفاخر')
-    .replace(/(?<![فبك])ستان/g, 'كوتور فاخر')
-    .replace(/الحريرية/g, 'الملكية الفاخرة')
-    .replace(/حريرية/g, 'ملكية فاخرة')
-    .replace(/الحرير/g, 'الأنسجة الفاخرة')
-    .replace(/حرير/g, 'أنسجة فاخرة')
-    .replace(/الإيطالي/g, 'الملكي الفاخر')
-    .replace(/إيطالي/g, 'فاخر')
-    .replace(/الايطالي/g, 'الملكي الفاخر')
-    .replace(/ايطالي/g, 'فاخر')
-    .replace(/الإيطالية/g, 'الملكية الفاخرة')
-    .replace(/إيطالية/g, 'فاخرة')
-    .replace(/الايطالية/g, 'الملكية الفاخرة')
-    .replace(/ايطالية/g, 'فاخرة')
+    .replace(/الساتان/g, 'الأنسجة الفاخرة')
+    .replace(/الستان/g, 'الأنسجة الفاخرة')
+    .replace(/ساتان/g, 'أنسجة فاخرة')
+    .replace(/ستان/g, 'أنسجة فاخرة')
+    .replace(/الإيطالي|الايطالي/g, 'الملكي')
+    .replace(/إيطالي|ايطالي/g, 'ملكي')
+    .replace(/الإيطالية|الايطالية/g, 'الملكية')
+    .replace(/إيطالية|ايطالية/g, 'ملكية')
     .replace(/satin/ig, 'couture')
     .replace(/silk/ig, 'couture')
     .replace(/italian/ig, 'luxury');
+
+  // Clean up duplicate words and typos caused by string replacements
+  cleaned = cleaned
+    .replace(/(فاخر\s+)+فاخر/g, 'فاخر')
+    .replace(/(فاخرة\s+)+فاخرة/g, 'فاخرة')
+    .replace(/(ملكي\s+)+ملكي/g, 'ملكي')
+    .replace(/(ملكية\s+)+ملكية/g, 'ملكية')
+    .replace(/فاخرةي/g, 'فاخرة')
+    .replace(/سولتا/g, 'سولتة');
+
+  return cleaned.trim();
 }
 
 export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
@@ -479,29 +482,43 @@ function mapProduct(data: any): Product {
     ];
   }
 
-  // Ensure default sizes exist
-  if (!sizes || sizes.length === 0) {
-    sizes = ['S', 'M', 'L', 'XL'];
-  }
+  // Force One Size for all products
+  sizes = ['One Size'];
 
   // Smart luxury enrichment for the official SULTA collection products
-  // Matches by ID or name similarity to ensure pristine luxury presentation
-  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => 
-    p.id === data.id || 
-    (nameAr && (
-      (nameAr.includes('الثقوب') && p.nameAr.includes('نُقط')) ||
-      (nameAr === 'وردي' && p.nameAr.includes('روز مخملي')) ||
-      (nameAr.includes('Polka') && p.nameAr.includes('ليلك')) ||
-      (nameAr.includes('فلورا') && p.nameAr.includes('فلورا')) ||
-      (nameAr.includes('روزي') && p.nameAr.includes('روزا')) ||
-      (nameAr.includes('فيونكة') && p.nameAr.includes('سُكّر'))
-    ))
-  );
+  // Matches by ID first, then specific unique color/name keywords
+  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id) || SEED_FALLBACK_PRODUCTS.find(p => {
+    if (!nameAr) return false;
+    if (nameAr.includes('عاجي') || nameAr.includes('أوف وايت') || nameAr.includes('Ivory')) {
+      return p.id === '54929551-5958-4b33-9ff9-abe83722cb78';
+    }
+    if (nameAr.includes('فيونكة') || nameAr.includes('سُكّر') || nameAr.includes('Sugar')) {
+      return p.id === '8d738e1c-0861-4569-8949-fc2d98c4fa50';
+    }
+    if (nameAr.includes('فلورا') || nameAr.includes('Flora')) {
+      return p.id === '614f6daa-d291-410b-a450-be23de75f868';
+    }
+    if (nameAr.includes('ليلك') || nameAr.includes('Polka')) {
+      return p.id === '51005136-8066-4844-8efe-718cd7644e6b';
+    }
+    if (nameAr.includes('مخمل') || nameAr.includes('Velvet')) {
+      return p.id === '78f851f3-5f75-4153-9fbe-0e8ad54825be';
+    }
+    if (nameAr.includes('نُقط') || nameAr.includes('Dot')) {
+      return p.id === '1d4e8104-17c9-4b64-8300-38340bdeaa18';
+    }
+    if (nameAr.includes('روزا') || nameAr.includes('Rosa')) {
+      return p.id === 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc';
+    }
+    return false;
+  });
 
   if (fallbackProduct) {
-    // Always use curated SULTA luxury titles to eliminate vague/repetitive naming
-    nameAr = fallbackProduct.nameAr;
-    nameEn = fallbackProduct.nameEn;
+    // Keep nameAr if DB provided a valid name, otherwise fallback to curated name
+    if (!nameAr || nameAr === 'منتج فاخر' || nameAr === 'وردي') {
+      nameAr = fallbackProduct.nameAr;
+      nameEn = fallbackProduct.nameEn;
+    }
     if (!fabricAr || fabricAr.length < 5 || fabricAr === 'خامة فاخرة') {
       fabricAr = fallbackProduct.fabricAr;
       fabricEn = fallbackProduct.fabricEn;

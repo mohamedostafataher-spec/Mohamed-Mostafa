@@ -93,7 +93,7 @@ export default function StoreView({
   // Auto-select size & color when product is selected for quick view
   useEffect(() => {
     if (quickViewProduct) {
-      setQvSelectedSize(quickViewProduct.sizes?.[0] || 'S');
+      setQvSelectedSize('One Size');
       setQvSelectedColor(quickViewProduct.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' });
       setQvActiveImageIdx(0);
     }
@@ -892,31 +892,7 @@ export default function StoreView({
                       </div>
                     )}
 
-                    {/* Sizes selection option */}
-                    {quickViewProduct.sizes && quickViewProduct.sizes.length > 0 && (
-                      <div className="space-y-1.5 text-right">
-                        <span className="text-[10px] text-gray-500 font-bold block">المقاس:</span>
-                        <div className="flex flex-wrap gap-2">
-                          {quickViewProduct.sizes.map(sz => {
-                            const isSelected = qvSelectedSize === sz;
-                            return (
-                              <button
-                                key={sz}
-                                type="button"
-                                onClick={() => setQvSelectedSize(sz)}
-                                className={`min-w-10 px-3 py-1.5 rounded-lg border text-xs font-bold text-center transition-all cursor-pointer ${
-                                  isSelected 
-                                    ? 'bg-[#111827] text-white border-[#111827]' 
-                                    : 'bg-white text-gray-700 border-gray-200 hover:border-black'
-                                }`}
-                              >
-                                {sz}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
+
 
                   </div>
 

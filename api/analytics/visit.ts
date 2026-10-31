@@ -47,22 +47,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const visitorCity = city || (req.headers['x-vercel-ip-city'] as string) || 'الرياض';
       const visitorCountry = (req.headers['x-vercel-ip-country'] as string) || 'SA';
 
-      // 0. Primary: Attempt user_sessions table (New requirement)
+      // Persist visit log safely in support_tickets table (guaranteed available in schema)
       try {
-        await supabase.from('user_sessions').insert([
+        await supabase.from('support_tickets').insert([
           {
-            session_id,
-            utm_source,
-            utm_medium,
-            utm_campaign,
-            referrer,
-            landing_page: page,
-            city: visitorCity,
-            country: visitorCountry,
+            subject: `visit:${session_id}`,
+            message: JSON.stringify({
+              page,
+              referrer,
+              utm_source,
+              utm_medium,
+              utm_campaign,
+              city: visitorCity,
+              country: visitorCountry
+            }),
+            status: 'analytics_visit',
             created_at: new Date().toISOString()
           }
         ]);
-      } catch {}
+      } catch (dbErr) {
+        console.warn('[Visit DB Warning]:', dbErr);
+      }
 
       // 1. Attempt site_visits table (Legacy)
       let inserted = false;
@@ -118,22 +123,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
-      // 1. Try to fetch from user_sessions (Primary source)
-      let { data: sessions } = await supabase
-        .from('user_sessions')
-        .select('*')
-        .gte('created_at', ninetyDaysAgo)
-        .order('created_at', { ascending: false })
-        .limit(50000);
-
-      // 2. Try to fetch from visitors (Secondary source)
-      let { data: visitors } = await supabase
-        .from('visitors')
-        .select('*')
-        .gte('created_at', ninetyDaysAgo)
-        .limit(50000);
-
-      // 3. Fetch from support_tickets (Legacy/Fallback source)
+      // 1. Fetch from support_tickets (Primary analytics source)
       const { data: tickets } = await supabase
         .from('support_tickets')
         .select('id, subject, created_at, message')
@@ -166,45 +156,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const allVisits: any[] = [];
       const sessionIds = new Set<string>();
 
-      if (sessions) {
-        sessions.forEach(s => {
-          const sid = s.session_id || s.id;
-          if (!sessionIds.has(sid)) {
-            allVisits.push({
-              id: s.id || sid,
-              sessionId: sid,
-              page: s.landing_page || '/',
-              referrer: s.referrer || '',
-              utm_source: s.utm_source || '',
-              utm_campaign: s.utm_campaign || '',
-              city: cleanCity(s.city),
-              country: s.country || 'SA',
-              created_at: s.created_at || new Date().toISOString()
-            });
-            sessionIds.add(sid);
-          }
-        });
-      }
 
-      if (visitors) {
-        visitors.forEach(v => {
-          const sid = v.session_id || v.id;
-          if (!sessionIds.has(sid)) {
-            allVisits.push({
-              id: v.id || sid,
-              sessionId: sid,
-              page: v.landing_page || '/',
-              referrer: v.referrer || '',
-              utm_source: v.utm_source || '',
-              utm_campaign: v.utm_campaign || '',
-              city: cleanCity(v.city),
-              country: v.country || 'SA',
-              created_at: v.created_at || new Date().toISOString()
-            });
-            sessionIds.add(sid);
-          }
-        });
-      }
 
       if (tickets) {
         tickets.forEach(t => {

@@ -1497,57 +1497,12 @@ export default function ProductDetailModal({
                   ) : (
                     <div className="space-y-4 text-right">
                       {/* 1. Dynamic Size Chart */}
-                      <div className="space-y-1.5">
-                        <span className="text-[10px] text-gray-400 font-bold block">📊 جدول مقاسات القطعة وملاءمتها:</span>
-                        <table className="w-full text-center border-collapse border border-gray-150 text-[10px]">
-                          <thead className="bg-[#A44C5C] text-white">
-                            <tr>
-                              <th className="p-1 border border-gray-150">المقاس</th>
-                              <th className="p-1 border border-gray-150">الصدر (Inches)</th>
-                              <th className="p-1 border border-gray-150">الورك (Inches)</th>
-                              <th className="p-1 border border-gray-150 font-sans">الطول cm</th>
-                              <th className="p-1 border border-gray-150">الحالة</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="bg-white">
-                              <td className="p-1 border border-gray-150 font-bold">XS / S</td>
-                              <td className="p-1 border border-gray-150 font-sans">32 - 34</td>
-                              <td className="p-1 border border-gray-150 font-sans">34 - 36</td>
-                              <td className="p-1 border border-gray-150">155 - 165</td>
-                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
-                                {product.sizes?.includes('S') || product.sizes?.includes('XS') ? 'متوفر ✦' : 'نفذت ✕'}
-                              </td>
-                            </tr>
-                            <tr className="bg-gray-50">
-                              <td className="p-1 border border-gray-150 font-bold">M / L</td>
-                              <td className="p-1 border border-gray-150 font-sans">36 - 38</td>
-                              <td className="p-1 border border-gray-150 font-sans">38 - 41</td>
-                              <td className="p-1 border border-gray-150">160 - 172</td>
-                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
-                                {product.sizes?.includes('M') || product.sizes?.includes('L') ? 'متوفر ✦' : 'نفذت ✕'}
-                              </td>
-                            </tr>
-                            <tr className="bg-white">
-                              <td className="p-1 border border-gray-150 font-bold">XL</td>
-                              <td className="p-1 border border-gray-150 font-sans">40 - 42</td>
-                              <td className="p-1 border border-gray-150 font-sans">43 - 45</td>
-                              <td className="p-1 border border-gray-150">165 - 180</td>
-                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
-                                {product.sizes?.includes('XL') ? 'متوفر ✦' : 'نفذت ✕'}
-                              </td>
-                            </tr>
-                            <tr className="bg-gray-50">
-                              <td className="p-1 border border-gray-150 font-bold">XXL</td>
-                              <td className="p-1 border border-gray-150 font-sans">44 - 46</td>
-                              <td className="p-1 border border-gray-150 font-sans">46 - 49</td>
-                              <td className="p-1 border border-gray-150">165 - 185</td>
-                              <td className="p-1 border border-gray-150 text-[9px] text-[#A44C5C] font-black">
-                                {product.sizes?.includes('XXL') ? 'متوفر ✦' : 'نفذت ✕'}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      {/* Size Info */}
+                      <div className="bg-gray-50 p-3 rounded-lg border border-gray-150 text-[11px]">
+                         <span className="font-bold text-gray-950 block mb-1">📏 المقاس:</span>
+                         <p className="text-gray-700 font-sans">
+                            جميع قطع سولتة مصممة بنظام القياس الموحد (One Size) لتناسب مختلف القوامات بانسدالية فاخرة ومريحة.
+                         </p>
                       </div>
 
                       {/* 2. Fit Information */}
@@ -1562,42 +1517,19 @@ export default function ProductDetailModal({
                       <div className="bg-neutral-50 p-2.5 rounded-lg border border-neutral-150 text-[10px] space-y-0.5">
                         <span className="font-bold text-gray-800 block">👩🏻 قياسات العارضة الإرشادية (Model Measurements):</span>
                         <p className="text-gray-500 font-sans">
-                          العارضة ترتدي مقاس <strong className="text-neutral-950">{(product.sizes || ['M'])[0]}</strong> المعروض في الصور الملكية للأطقم الفاخرة.
+                          العارضة ترتدي مقاس <strong className="text-neutral-950">One Size</strong> المعروض في الصور الملكية للأطقم الفاخرة.
                         </p>
                         <p className="text-gray-550 font-sans">
                           • طول العارضة: <span className="font-semibold text-neutral-800">173 سم</span> • محيط الصدر: <span className="font-semibold text-neutral-800">34 بوصة</span> • الأرداف: <span className="font-semibold text-neutral-800">37 بوصة</span> • الوزن التقريبي: <span className="font-semibold text-neutral-800">62 كيلو</span>.
                         </p>
                       </div>
 
-                      {/* 4. Product Measurements based on selectedSz */}
+                      {/* 4. Product Measurements based on One Size */}
                       <div className="bg-[#FAF9F5] p-2.5 rounded-md border border-amber-100/60 text-[10px]">
-                        <span className="font-bold text-[#A44C5C] block">📐 أبعاد القطعة المحددة الآن (Product Measurements):</span>
-                        <div className="mt-1 font-sans text-gray-700 grid grid-cols-2 gap-2 text-right">
-                          <p>• المقاس المختار: <strong className="text-black">{selectedSz || 'غير محدد'}</strong></p>
-                          <p>
-                            • أبعاد الصدر: {' '}
-                            <strong>
-                              {selectedSz === 'S' || selectedSz === 'XS' ? '32-34 بوصة' : 
-                               selectedSz === 'XL' ? '40-42 بوصة' :
-                               selectedSz === 'XXL' ? '44-46 بوصة' : '36-38 بوصة'}
-                            </strong>
-                          </p>
-                          <p>
-                            • أبعاد الأرداف: {' '}
-                            <strong>
-                              {selectedSz === 'S' || selectedSz === 'XS' ? '34-36 بوصة' : 
-                               selectedSz === 'XL' ? '43-45 بوصة' :
-                               selectedSz === 'XXL' ? '46-49 بوصة' : '38-41" بوصة'}
-                            </strong>
-                          </p>
-                          <p>
-                            • طول البنطال/الرداء: {' '}
-                            <strong>
-                              {selectedSz === 'S' || selectedSz === 'XS' ? '155-165 سم' : 
-                               selectedSz === 'XL' ? '165-180 سم' :
-                               selectedSz === 'XXL' ? '165-185 سم' : '160-172 سم'}
-                            </strong>
-                          </p>
+                        <span className="font-bold text-[#A44C5C] block">📐 أبعاد القطعة الموحدة (One Size Measurements):</span>
+                        <div className="mt-1 font-sans text-gray-700 grid grid-cols-1 gap-2 text-right">
+                          <p>• المقاس: <strong className="text-black">One Size</strong></p>
+                          <p>• طول القطعة: <strong className="text-black">165 سم</strong></p>
                         </div>
                       </div>
 

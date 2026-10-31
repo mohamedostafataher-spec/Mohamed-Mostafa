@@ -251,21 +251,26 @@ export default function Dashboard({
 
       if (!loaded && supabase) {
         try {
-          const { data: logs } = await supabase
-            .from('user_sessions')
-            .select('*')
+          const { data: tickets } = await supabase
+            .from('support_tickets')
+            .select('id, subject, created_at, message')
+            .eq('status', 'analytics_visit')
             .order('created_at', { ascending: false })
             .limit(5000);
-          if (logs && logs.length > 0) {
-            setRecentVisits(logs.map(l => ({
-              id: l.id,
-              sessionId: l.session_id,
-              page: l.landing_page || '/',
-              referrer: l.referrer || '',
-              utm_source: l.utm_source || '',
-              city: l.city || 'الرياض',
-              created_at: l.created_at
-            })));
+          if (tickets && tickets.length > 0) {
+            setRecentVisits(tickets.map(t => {
+              let meta: any = {};
+              try { meta = JSON.parse(t.message || '{}'); } catch {}
+              return {
+                id: t.id,
+                sessionId: t.subject?.replace('visit:', '') || `guest_${t.id}`,
+                page: meta.page || '/',
+                referrer: meta.referrer || '',
+                utm_source: meta.utm_source || '',
+                city: meta.city || 'الرياض',
+                created_at: t.created_at
+              };
+            }));
           }
         } catch {}
       }

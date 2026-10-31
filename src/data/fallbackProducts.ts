@@ -34,7 +34,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781051987621_5nlxo47f.png'
     ],
     colors: [{ name: 'وردي كراميل', hex: '#F4B6C2' }, { name: 'أسود فاحم', hex: '#0B0B0B' }],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['One Size'],
     isBestSeller: true,
     featured: true,
     status: 'active',
@@ -74,7 +74,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948374271_d1iw3smz.jpeg'
     ],
     colors: [{ name: 'وردي زهري', hex: '#F6E7A6' }, { name: 'أبيض لؤلؤي', hex: '#FDFBF7' }],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['One Size'],
     isBestSeller: true,
     featured: true,
     status: 'active',
@@ -84,7 +84,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
   },
   {
     id: '8d738e1c-0861-4569-8949-fc2d98c4fa50',
-    nameAr: 'بيجامة سُكّر — لمسة فيونكة | وردي ملكي',
+    nameAr: 'بيجامة سُكّر — لمسة فيونكة (وردي ملكي)',
     nameEn: 'Sugar Bow Pajama Set — Royal Pink',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
@@ -93,28 +93,29 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `تفاصيل رقيقة تجعل البساطة أجمل.
-بيجامة سُكّر بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة، خيار أنيق لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتّب والراحة اليومية، بتفاصيل تضيف لمسة دلع من دون مبالغة.
+بيجامة سُكّر باللون الوردي الملكي الناعم، بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة على الصدر والأكمام، خيار أنيق ومترف لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتب والراحة اليومية التامة.
 
-• اللون: وردي ملكي ناعم (Royal Rose)
-• الخامة: 92% خامة فاخرة + 8% ألياف ناعمة معالجة
-• المقاسات المتوفرة: S, M, L, XL
+• اللون: وردي ملكي ناعم (Royal Pink)
+• الخامة: 92% أقمشة فاخرة معالجة للنعومة + 8% ألياف مرنة مريحة
+• الوزن: خفيفة إلى متوسطة (حوالي 280 جرام)
+• المقاسات المتوفرة: S, M, L, XL مع قياسات دقيقة بالسنتمتر
 • تفاصيل الطقم: قميص نوم بأكمام متوسطة مزين بفيونكات ناعمة + بنطال مريح مع حواشي متناسقة
 • العناية: غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل
 
-هدوء اللون… وأناقة التفاصيل.
+هدوء اللون الوردي الملكي… وأناقة التفاصيل.
 
 تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
     descriptionEn: 'Sugar Bow Luxury Pajama Set in royal soft pink with hand-finished bow accents.',
-    fabricAr: '92% خامة فاخرة + 8% ألياف ناعمة معالجة',
-    fabricEn: '92% Fine Fabric + 8% Smooth Soft Fibers',
+    fabricAr: '92% أقمشة فاخرة معالجة للنعومة + 8% ألياف مرنة',
+    fabricEn: '92% Fine Soft Fabric + 8% Smooth Stretch Fibers',
     washInstructionsAr: 'غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل.',
     images: [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619728379_8p82a5cn.jpeg'
     ],
-    colors: [{ name: 'زهري وردي', hex: '#DF8A9D' }, { name: 'شامبين', hex: '#F6E7A6' }],
-    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [{ name: 'وردي ملكي', hex: '#DF8A9D' }, { name: 'شامبين هادئ', hex: '#F6E7A6' }],
+    sizes: ['One Size'],
     isBestSeller: true,
     featured: true,
     status: 'active',
@@ -153,7 +154,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png'
     ],
     colors: [{ name: 'وردي دافئ', hex: '#E8A5B8' }, { name: 'سكري هادئ', hex: '#FAF5EE' }],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['One Size'],
     isBestSeller: false,
     featured: true,
     status: 'active',
@@ -192,7 +193,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619728379_8p82a5cn.jpeg'
     ],
     colors: [{ name: 'روز مخملي', hex: '#DF8A9D' }, { name: 'عاجي', hex: '#FDFBF7' }],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['One Size'],
     isBestSeller: true,
     featured: true,
     status: 'active',
@@ -232,7 +233,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876942187_v57vs9y3.jpeg'
     ],
     colors: [{ name: 'أحمر منقط', hex: '#C0392B' }, { name: 'وردي هادئ', hex: '#DF8A9D' }],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['One Size'],
     isBestSeller: false,
     featured: true,
     status: 'active',
@@ -242,7 +243,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
   },
   {
     id: '54929551-5958-4b33-9ff9-abe83722cb78',
-    nameAr: 'بيجامة سُكّر — لمسة فيونكة | أوف وايت عاجي',
+    nameAr: 'بيجامة سُكّر — لمسة فيونكة (أوف وايت عاجي)',
     nameEn: 'Sugar Bow Pajama Set — Ivory White',
     category: 'new',
     categoryAr: 'المجموعة الجديدة | New Arrivals',
@@ -251,19 +252,20 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     salePriceSA: 99,
     salePriceEG: 499,
     descriptionAr: `أناقة ناعمة بتفاصيل تلفت النظر.
-تأتي بيجامة سُكّر باللون الأوف وايت العاجي بلمسة فيونكة أنثوية تضيف طابعًا رقيقًا لإطلالتك المنزلية وتناسب صباحيات العرائس. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف SULTA الفاخر.
+تأتي بيجامة سُكّر باللون الأوف وايت العاجي بلمسة فيونكة أنثوية تضفي طابعًا رقيقًا لإطلالتك المنزلية وتناسب صباحيات العرائس المترفة. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف SULTA الملكي.
 
 • اللون: أوف وايت عاجي نقي (Bridal Ivory White)
-• الخامة: 95% خامة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة مريحة
-• المقاسات المتوفرة: S, M, L, XL
+• الخامة: 95% أقمشة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة مريحة
+• الوزن: خفيفة إلى متوسطة (حوالي 290 جرام)
+• المقاسات المتوفرة: S, M, L, XL مع قياسات دقيقة بالسنتمتر
 • تفاصيل الطقم: قميص نوم عاجي بفيونكات دقيقة وخطوط رقيقة + بنطال واسع ومريح
-• العناية: غسيل يدوي بماء بارد ومنظف مخصص للأقمشة الفاخرة
+• العناية: غسيل يدوي بماء بارد ومنظف مخصص للأقمشة البيضاء الفاخرة
 
 هدوء اللون العاجي… وأناقة التفاصيل.
 
 تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
     descriptionEn: 'Sugar Bow Luxury Pajama Set in bridal ivory white with delicate trims and soft bows.',
-    fabricAr: '95% خامة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة',
+    fabricAr: '95% أقمشة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة',
     fabricEn: '95% Bridal Ivory Fine Fabric + 5% Comfort Stretch',
     washInstructionsAr: 'غسيل يدوي بماء بارد ومنظف مخصص للأقمشة البيضاء الفاخرة.',
     images: [
@@ -271,7 +273,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg'
     ],
     colors: [{ name: 'أوف وايت عاجي', hex: '#FDFBF7' }, { name: 'شامبين هادئ', hex: '#F6E7A6' }],
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['One Size'],
     isBestSeller: true,
     featured: true,
     status: 'active',

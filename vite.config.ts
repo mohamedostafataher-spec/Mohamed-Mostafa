@@ -14,11 +14,13 @@ export default defineConfig(() => {
         algorithm: 'brotliCompress',
         ext: '.br',
         threshold: 1024,
+        filter: /\.(js|css|html|svg)$/i,
       }),
       compression({
         algorithm: 'gzip',
         ext: '.gz',
         threshold: 1024,
+        filter: /\.(js|css|html|svg)$/i,
       })
     ],
     resolve: {

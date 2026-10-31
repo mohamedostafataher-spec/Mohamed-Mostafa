@@ -90,28 +90,31 @@ export default function TrafficHeatmap() {
       if (supabase) {
         const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
-        // 1. user_sessions
-        const { data: sessions } = await supabase
-          .from('user_sessions')
-          .select('*')
+        // 1. Fetch visits from support_tickets
+        const { data: tickets } = await supabase
+          .from('support_tickets')
+          .select('id, subject, created_at, message')
+          .eq('status', 'analytics_visit')
           .gte('created_at', ninetyDaysAgo)
           .order('created_at', { ascending: false })
           .limit(1000);
 
-        if (sessions) {
-          sessions.forEach((s: any) => {
-            const sid = s.session_id || s.id;
-            const key = `sess_${s.id || sid}`;
+        if (tickets) {
+          tickets.forEach((t: any) => {
+            const sid = t.subject?.replace('visit:', '') || `guest_${t.id}`;
+            let meta: any = {};
+            try { meta = JSON.parse(t.message || '{}'); } catch {}
+            const key = `sess_${t.id}`;
             visitMap.set(key, {
               id: key,
               sessionId: sid,
-              page: s.landing_page || '/',
-              referrer: s.referrer || '',
-              utm_source: s.utm_source || '',
-              city: cleanCityName(s.city),
-              country: s.country || 'SA',
-              is_admin: s.is_admin || false,
-              created_at: s.created_at || new Date().toISOString()
+              page: meta.page || '/',
+              referrer: meta.referrer || '',
+              utm_source: meta.utm_source || '',
+              city: cleanCityName(meta.city),
+              country: meta.country || 'SA',
+              is_admin: meta.is_admin || false,
+              created_at: t.created_at || new Date().toISOString()
             });
           });
         }

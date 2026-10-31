@@ -317,7 +317,12 @@ export const initGlobalSync = async () => {
       };
 
       try {
-        await supabase.from('user_sessions').insert([sessionData]);
+        await supabase.from('support_tickets').insert([{
+          subject: `visit:${sessionId}`,
+          message: JSON.stringify(sessionData),
+          status: 'analytics_visit',
+          created_at: new Date().toISOString()
+        }]);
       } catch (err) {
         if (isTrackingDebugMode()) console.warn('[Analytics] Session persistence failed:', err);
       }
@@ -1245,84 +1250,46 @@ export const fetchVisitorStatsFromSupabase = async (period: 'daily' | 'weekly' |
   try {
     if (!supabase) return [];
     
-    // Try querying user_sessions or support_tickets session logs
-    const { data, error } = await supabase
-      .from('user_sessions')
-      .select('created_at')
+    // Query support_tickets session logs (guaranteed table in schema)
+    const { data: ticketData } = await supabase
+      .from('support_tickets')
+      .select('created_at, subject')
+      .or('status.eq.analytics_visit,status.eq.analytics_session')
       .order('created_at', { ascending: false })
       .limit(1000);
 
-    if (error || !data || data.length === 0) {
-      // Fallback to support_tickets analytics logs
-      const { data: ticketData } = await supabase
-        .from('support_tickets')
-        .select('created_at, subject')
-        .eq('status', 'analytics_session')
-        .order('created_at', { ascending: false })
-        .limit(1000);
-
-      if (ticketData && ticketData.length > 0) {
-        // Group hits by date (YYYY-MM-DD)
-        const dateMap: Record<string, number> = {};
-        ticketData.forEach((row: any) => {
-          if (row.created_at) {
-            const dStr = row.created_at.split('T')[0];
-            dateMap[dStr] = (dateMap[dStr] || 0) + 1;
-          }
-        });
-
-        const history = Object.keys(dateMap).sort().map(date => ({
-          date,
-          visitors: dateMap[date],
-          orders: 0 // Orders should be fetched from orders table for true accuracy
-        }));
-
-        if (history.length > 0) {
-          const todayStr = new Date().toISOString().split('T')[0];
-          const todayHits = dateMap[todayStr] || 0;
-          const weeklySum = history.slice(-7).reduce((acc, h) => acc + h.visitors, 0);
-          const monthlySum = history.reduce((acc, h) => acc + h.visitors, 0);
-
-          cachedServerStats = {
-            todayCount: todayHits,
-            total30Days: monthlySum,
-            weeklyCount: weeklySum,
-            dailyHistory: history
-          };
-          return history;
+    if (ticketData && ticketData.length > 0) {
+      // Group hits by date (YYYY-MM-DD)
+      const dateMap: Record<string, number> = {};
+      ticketData.forEach((row: any) => {
+        if (row.created_at) {
+          const dStr = row.created_at.split('T')[0];
+          dateMap[dStr] = (dateMap[dStr] || 0) + 1;
         }
+      });
+
+      const history = Object.keys(dateMap).sort().map(date => ({
+        date,
+        visitors: dateMap[date],
+        orders: 0
+      }));
+
+      if (history.length > 0) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayHits = dateMap[todayStr] || 0;
+        const weeklySum = history.slice(-7).reduce((acc, h) => acc + h.visitors, 0);
+        const monthlySum = history.reduce((acc, h) => acc + h.visitors, 0);
+
+        cachedServerStats = {
+          todayCount: todayHits,
+          total30Days: monthlySum,
+          weeklyCount: weeklySum,
+          dailyHistory: history
+        };
+        return history;
       }
-      return [];
     }
-
-    // Group user_sessions by date
-    const dateMap: Record<string, number> = {};
-    data.forEach((row: any) => {
-      if (row.created_at) {
-        const dStr = row.created_at.split('T')[0];
-        dateMap[dStr] = (dateMap[dStr] || 0) + 1;
-      }
-    });
-
-    const history = Object.keys(dateMap).sort().map(date => ({
-      date,
-      visitors: dateMap[date],
-      orders: 0
-    }));
-
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayHits = dateMap[todayStr] || 0;
-    const weeklySum = history.slice(-7).reduce((acc, h) => acc + h.visitors, 0);
-    const monthlySum = history.reduce((acc, h) => acc + h.visitors, 0);
-
-    cachedServerStats = {
-      todayCount: todayHits,
-      total30Days: monthlySum,
-      weeklyCount: weeklySum,
-      dailyHistory: history
-    };
-
-    return history;
+    return [];
   } catch (err) {
     return [];
   }

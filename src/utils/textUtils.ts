@@ -43,16 +43,26 @@ export function truncateTo155Words(text?: string): string {
  * Formats product title to "{اسم المنتج} | سولتة" ensuring brand appears once and length <= 60 chars.
  */
 export function formatProductTitle(productName?: string): string {
-  const baseName = (productName || 'قطعة ملكية فاخرة').split(' | ')[0].trim();
+  if (!productName) return 'قطعة ملكية فاخرة | سولتة';
+  
+  // Remove existing brand suffix if present to prevent double brand
+  let cleanName = productName.replace(/\s*\|\s*سولتة/g, '').replace(/\s*-\s*سولتة/g, '').trim();
+  // Replace internal '|' separators with ' - ' to retain color variant distinctions
+  cleanName = cleanName.replace(/\s*\|\s*/g, ' - ');
+  
   const suffix = ' | سولتة';
   const maxLength = 60;
 
-  if ((baseName + suffix).length <= maxLength) {
-    return `${baseName}${suffix}`;
+  if ((cleanName + suffix).length <= maxLength) {
+    return `${cleanName}${suffix}`;
   }
 
-  // If too long, truncate base name
+  // If too long, truncate base name on complete word
   const availableLength = maxLength - suffix.length - 3; // 3 for '...'
-  const truncatedBase = baseName.substring(0, availableLength).trim();
-  return `${truncatedBase}...${suffix}`;
+  let truncatedBase = cleanName.substring(0, availableLength);
+  const lastSpace = truncatedBase.lastIndexOf(' ');
+  if (lastSpace > 20) {
+    truncatedBase = truncatedBase.substring(0, lastSpace);
+  }
+  return `${truncatedBase.trim()}...${suffix}`;
 }
