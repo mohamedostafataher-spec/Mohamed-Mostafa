@@ -339,10 +339,10 @@ function mapSettings(data: any): Settings {
     egExclusiveProductIds: data.egExclusiveProductIds || data.eg_exclusive_product_ids ? (Array.isArray(data.egExclusiveProductIds || data.eg_exclusive_product_ids) ? (data.egExclusiveProductIds || data.eg_exclusive_product_ids) : JSON.parse(data.egExclusiveProductIds || data.eg_exclusive_product_ids)) : [],
     saExclusiveProductIds: data.saExclusiveProductIds || data.sa_exclusive_product_ids ? (Array.isArray(data.saExclusiveProductIds || data.sa_exclusive_product_ids) ? (data.sa_exclusive_product_ids || data.sa_exclusive_product_ids) : JSON.parse(data.sa_exclusive_product_ids || data.sa_exclusive_product_ids)) : [],
     // Bank Account & Payment Gateways
-    bankName: data.bankName || data.bank_name || 'مصرف الراجحي',
+    bankName: data.bankName || data.bank_name || 'البنك العربي الوطني (مدى)',
     bankAccountName: data.bankAccountName || data.bank_account_name || 'ابو بكر احمد على يونس',
-    bankIban: data.bankIban || data.bank_iban || 'SA65 8000 0108 6080 1639 6260',
-    bankAccountNumber: data.bankAccountNumber || data.bank_account_number || '108000010006086396260',
+    bankIban: data.bankIban || data.bank_iban || 'SA3530100991100960601337',
+    bankAccountNumber: data.bankAccountNumber || data.bank_account_number || '991100960601337',
     bankQrCodeUrl: data.bankQrCodeUrl || data.bank_qr_code_url || '/assets/aistudio/IMG-20261026-WA0045_e8a306a8.jpg',
     tabbyEnabled: data.tabbyEnabled ?? data.tabby_enabled ?? true,
     tabbyPublicKey: data.tabbyPublicKey || data.tabby_public_key || '',
