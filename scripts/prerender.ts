@@ -21,6 +21,19 @@ function cleanImgUrl(url: any): string {
   return url.trim();
 }
 
+function extractProductInfo(p: any) {
+  let nameEn = p.name_en || p.nameEn || '';
+  let nameAr = p.name_ar || p.nameAr || '';
+  if (!nameEn && !nameAr && p.name) {
+    const parts = p.name.split(' | ');
+    nameAr = parts[0] || p.name;
+    nameEn = parts[1] || parts[0] || p.name;
+  }
+  if (!nameAr) nameAr = 'منتج فاخر';
+  const slug = getProductSlug({ id: p.id, nameEn, nameAr });
+  return { nameAr, nameEn, slug };
+}
+
 function buildPageHtml(
   template: string,
   routePath: string,
@@ -37,7 +50,6 @@ function buildPageHtml(
   const cleanRoutePath = routePath.split('?')[0].replace(/\/+$/, '') + '/';
   const fullUrl = `${BASE_URL}${cleanRoutePath}`;
   
-  // Use meta.title as provided, ensure it's not null
   const pageTitle = meta.title || 'سولتة | SULTA Atelier - أزياء النوم والبيجامات النسائية الفاخرة';
   const pageDesc = meta.description || 'متجر سولتة للأزياء الراقية والبيجامات الفاخرة. تصاميم ملكية بخامات عالمية وتوصيل سريع لكل مدن المملكة.';
   const rawImage = meta.image || '/img/sulta_couture_luxury_banner.webp';
@@ -86,8 +98,8 @@ async function runPrerender() {
   const templatePath = path.join(distDir, 'index.html');
 
   if (!fs.existsSync(templatePath)) {
-    console.error('[Prerender] Error: dist/index.html does not exist. Run vite build first.');
-    return;
+    console.error('[Prerender] ERROR: dist/index.html does not exist. Run vite build first.');
+    process.exit(1);
   }
 
   const template = fs.readFileSync(templatePath, 'utf-8');
@@ -97,13 +109,22 @@ async function runPrerender() {
     const { data, error } = await supabase.from('products').select('*');
     if (!error && data && data.length > 0) {
       rawProducts = data.filter((p: any) => p.status !== 'archived');
+      console.log(`[Prerender] Fetched ${rawProducts.length} active products from Supabase.`);
+    } else if (error) {
+      console.warn('[Prerender] Supabase fetch error, using fallback seed products:', error.message);
     }
   } catch (err) {
     console.warn('[Prerender] Supabase product fetch warning:', err);
   }
 
   if (rawProducts.length === 0) {
+    console.warn('[Prerender] Using SEED_FALLBACK_PRODUCTS as fallback source.');
     rawProducts = SEED_FALLBACK_PRODUCTS;
+  }
+
+  if (!rawProducts || rawProducts.length === 0) {
+    console.error('[Prerender] ERROR: No products found or fallback empty! Prerender failed.');
+    process.exit(1);
   }
 
   const staticRoutes = [
@@ -114,15 +135,18 @@ async function runPrerender() {
       bodyHtml: `<main dir="rtl" class="max-w-7xl mx-auto px-4 py-8">
         <h1 class="text-4xl font-black text-center my-6">سولتة | SULTA Atelier — أزياء النوم الفاخرة</h1>
         <section class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          ${rawProducts.map((p: any) => `
-            <a href="/product/${getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn || '', nameAr: p.name_ar || p.nameAr || '' })}/" class="block">
+          ${rawProducts.map((p: any) => {
+            const { nameAr, slug } = extractProductInfo(p);
+            return `
+            <a href="/product/${slug}/" class="block">
               <article class="border border-gray-100 rounded-3xl p-4 bg-white shadow-sm">
-                <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${p.name_ar || p.nameAr || 'بيجامة سولتة'}" class="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
-                <h2 class="text-xl font-bold mt-4">${p.name_ar || p.nameAr || 'بيجامة حرير فاخرة'}</h2>
+                <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${nameAr}" class="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
+                <h2 class="text-xl font-bold mt-4">${nameAr}</h2>
                 <p class="text-amber-700 font-extrabold text-lg mt-2">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
               </article>
             </a>
-          `).join('')}
+          `;
+          }).join('')}
         </section>
       </main>`
     },
@@ -133,15 +157,18 @@ async function runPrerender() {
       bodyHtml: `<main dir="rtl" class="max-w-7xl mx-auto px-4 py-8">
         <h1 class="text-3xl font-black my-6">تشكيلة المتجر الملكي الكاملة</h1>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          ${rawProducts.map((p: any) => `
-            <a href="/product/${getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn || '', nameAr: p.name_ar || p.nameAr || '' })}/" class="block">
+          ${rawProducts.map((p: any) => {
+            const { nameAr, slug } = extractProductInfo(p);
+            return `
+            <a href="/product/${slug}/" class="block">
               <article class="border rounded-2xl p-4 bg-white">
-                <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${p.name_ar || p.nameAr}" class="w-full aspect-[3/4] object-cover rounded-xl" loading="lazy" />
-                <h2 class="text-lg font-bold mt-3">${p.name_ar || p.nameAr}</h2>
+                <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${nameAr}" class="w-full aspect-[3/4] object-cover rounded-xl" loading="lazy" />
+                <h2 class="text-lg font-bold mt-3">${nameAr}</h2>
                 <p class="text-gray-900 font-black mt-1">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
               </article>
             </a>
-          `).join('')}
+          `;
+          }).join('')}
         </div>
       </main>`
     },
@@ -155,74 +182,91 @@ async function runPrerender() {
     { path: '/track-order/', title: 'تتبع الطلب | سولتة', description: 'تتبع الشحنة.', noindex: true, bodyHtml: '' }
   ];
 
-  for (const page of staticRoutes) {
-    const pageHtml = buildPageHtml(template, page.path, {
-      title: page.title,
-      description: page.description,
-      noindex: page.noindex,
-      bodyHtml: page.bodyHtml
-    });
+  try {
+    for (const page of staticRoutes) {
+      const pageHtml = buildPageHtml(template, page.path, {
+        title: page.title,
+        description: page.description,
+        noindex: page.noindex,
+        bodyHtml: page.bodyHtml
+      });
 
-    const pageDir = path.join(distDir, page.path.replace(/^\//, ''));
-    if (!fs.existsSync(pageDir)) fs.mkdirSync(pageDir, { recursive: true });
-    fs.writeFileSync(path.join(pageDir, 'index.html'), pageHtml, 'utf-8');
+      const pageDir = path.join(distDir, page.path.replace(/^\//, ''));
+      if (!fs.existsSync(pageDir)) fs.mkdirSync(pageDir, { recursive: true });
+      fs.writeFileSync(path.join(pageDir, 'index.html'), pageHtml, 'utf-8');
+    }
+  } catch (err) {
+    console.error('[Prerender] ERROR rendering static pages:', err);
+    process.exit(1);
   }
 
   let countProductPages = 0;
   for (const p of rawProducts) {
-    const nameAr = p.name_ar || p.nameAr || 'منتج فاخر';
-    const descAr = parseCleanArabicDescription(p.description_ar || p.descriptionAr || p.description || '');
+    try {
+      const { nameAr, slug } = extractProductInfo(p);
+      const descAr = parseCleanArabicDescription(p.description_ar || p.descriptionAr || p.description || '');
 
-    const slug = getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn || '', nameAr });
-    const productUrlPath = `/product/${slug}/`;
+      const productUrlPath = `/product/${slug}/`;
 
-    const pageTitle = formatProductTitle(nameAr);
-    const pageDesc = truncateTo155Words(descAr || nameAr);
+      const pageTitle = formatProductTitle(nameAr);
+      const pageDesc = truncateTo155Words(descAr || nameAr);
 
-    const productJsonLd = {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": nameAr,
-      "image": Array.isArray(p.images) ? p.images.map(cleanImgUrl) : [cleanImgUrl(p.image_url)],
-      "description": descAr || nameAr,
-      "sku": p.id,
-      "brand": { "@type": "Brand", "name": "SULTA Atelier" },
-      "offers": {
-        "@type": "Offer",
-        "url": `${BASE_URL}${productUrlPath}`,
-        "priceCurrency": "SAR",
-        "price": p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200,
-        "availability": Number(p.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
-      }
-    };
+      const productJsonLd = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": nameAr,
+        "image": Array.isArray(p.images) ? p.images.map(cleanImgUrl) : [cleanImgUrl(p.image_url)],
+        "description": descAr || nameAr,
+        "sku": p.id,
+        "brand": { "@type": "Brand", "name": "SULTA Atelier" },
+        "offers": {
+          "@type": "Offer",
+          "url": `${BASE_URL}${productUrlPath}`,
+          "priceCurrency": "SAR",
+          "price": p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200,
+          "availability": Number(p.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        }
+      };
 
-    const bodyHtml = `<main dir="rtl" class="max-w-7xl mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div><img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${nameAr}" class="w-full aspect-[3/4] object-cover rounded-3xl" fetchpriority="high" /></div>
-        <div class="space-y-4">
-          <h1 class="text-3xl font-black">${nameAr}</h1>
-          <p class="text-2xl font-bold text-amber-800">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
-          <p class="text-gray-700 text-lg leading-relaxed">${descAr}</p>
+      const bodyHtml = `<main dir="rtl" class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div><img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${nameAr}" class="w-full aspect-[3/4] object-cover rounded-3xl" fetchpriority="high" /></div>
+          <div class="space-y-4">
+            <h1 class="text-3xl font-black">${nameAr}</h1>
+            <p class="text-2xl font-bold text-amber-800">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
+            <p class="text-gray-700 text-lg leading-relaxed">${descAr}</p>
+          </div>
         </div>
-      </div>
-    </main>`;
+      </main>`;
 
-    const pageHtml = buildPageHtml(template, productUrlPath, {
-      title: pageTitle,
-      description: pageDesc,
-      image: cleanImgUrl(p.images?.[0] || p.image_url),
-      type: 'product',
-      jsonLd: [productJsonLd],
-      bodyHtml
-    });
+      const pageHtml = buildPageHtml(template, productUrlPath, {
+        title: pageTitle,
+        description: pageDesc,
+        image: cleanImgUrl(p.images?.[0] || p.image_url),
+        type: 'product',
+        jsonLd: [productJsonLd],
+        bodyHtml
+      });
 
-    const prodDir = path.join(distDir, 'product', `${slug}/`);
-    if (!fs.existsSync(prodDir)) fs.mkdirSync(prodDir, { recursive: true });
-    fs.writeFileSync(path.join(prodDir, 'index.html'), pageHtml, 'utf-8');
-    countProductPages++;
+      const prodDir = path.join(distDir, 'product', slug);
+      if (!fs.existsSync(prodDir)) fs.mkdirSync(prodDir, { recursive: true });
+      fs.writeFileSync(path.join(prodDir, 'index.html'), pageHtml, 'utf-8');
+      countProductPages++;
+    } catch (err) {
+      console.error(`[Prerender] ERROR rendering product ID ${p.id}:`, err);
+      process.exit(1);
+    }
+  }
+
+  if (countProductPages === 0) {
+    console.error('[Prerender] ERROR: 0 product pages were generated! Failing build.');
+    process.exit(1);
   }
 
   console.log(`[Prerender] Successfully generated ${countProductPages} product pages!`);
 }
 
-runPrerender().catch(err => { console.error(err); process.exit(1) });
+runPrerender().catch(err => {
+  console.error('[Prerender] Fatal build error:', err);
+  process.exit(1);
+});
