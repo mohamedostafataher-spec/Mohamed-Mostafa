@@ -858,19 +858,6 @@ async function startServer() {
       const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_pYBVo5mba3tEpuMDxUlt6g_3aCk67gj';
       const supabase = createClient(supabaseUrl, supabaseKey);
 
-      try {
-        await supabase.from('traffic_logs').insert([{
-          session_id,
-          utm_source,
-          utm_medium,
-          utm_campaign,
-          referrer,
-          landing_page: page,
-          city: visitorCity,
-          country: visitorCountry,
-          created_at: visitRecord.created_at
-        }]);
-      } catch {}
 
       try {
         await supabase.from('user_sessions').insert([{
@@ -921,30 +908,13 @@ async function startServer() {
         }
       };
 
-      const [trafficRes, sessionsRes, ticketsRes] = await Promise.all([
-        supabase.from('traffic_logs').select('*').gte('created_at', ninetyDaysAgo).order('created_at', { ascending: false }).limit(50000),
+      const [sessionsRes, ticketsRes] = await Promise.all([
         supabase.from('user_sessions').select('*').gte('created_at', ninetyDaysAgo).order('created_at', { ascending: false }).limit(50000),
         supabase.from('support_tickets').select('id, subject, created_at, message').eq('status', 'analytics_visit').gte('created_at', ninetyDaysAgo).limit(50000)
       ]);
 
       const allVisits: any[] = [];
       const sessionIds = new Set<string>();
-
-      (trafficRes.data || []).forEach((t: any) => {
-        const sid = t.session_id || t.id;
-        allVisits.push({
-          id: t.id || sid,
-          sessionId: sid,
-          page: t.landing_page || t.page || '/',
-          referrer: t.referrer || '',
-          utm_source: t.utm_source || '',
-          utm_campaign: t.utm_campaign || '',
-          city: cleanCity(t.city),
-          country: t.country || 'SA',
-          created_at: t.created_at || new Date().toISOString()
-        });
-        sessionIds.add(sid);
-      });
 
       (sessionsRes.data || []).forEach((s: any) => {
         const sid = s.session_id || s.id;

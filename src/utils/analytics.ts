@@ -1105,18 +1105,24 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
     const historyKey = 'sulta_comprehensive_visitor_history_v2';
     let history: { date: string; visitors: number; orders: number }[] = [];
     
+    let sessionId = sessionStorage.getItem('sulta_session_id');
+    if (!sessionId) {
+      sessionId = 'sess_' + Math.random().toString(36).substring(2, 9);
+      sessionStorage.setItem('sulta_session_id', sessionId);
+    }
+
     const storedHistory = localStorage.getItem(historyKey);
     if (storedHistory) {
-      history = JSON.parse(storedHistory);
-      // Migration/Cleanup: If history contains suspiciously high seeded data (>1000), purge it for real start
-      if (history.some(h => h.visitors > 1000)) {
-         history = [];
-         localStorage.setItem(historyKey, JSON.stringify(history));
+      try {
+        history = JSON.parse(storedHistory);
+        // Migration/Cleanup: Purge any old inflated or mock data spikes (>150)
+        if (history.some(h => h.visitors > 150)) {
+          history = history.filter(h => h.visitors <= 150);
+          localStorage.setItem(historyKey, JSON.stringify(history));
+        }
+      } catch {
+        history = [];
       }
-    } else {
-      // Empty history for fresh start with real data
-      history = [];
-      localStorage.setItem(historyKey, JSON.stringify(history));
     }
 
     // Sync with REAL server data if available (Fetched by LiveTrafficMonitor periodically)
@@ -1128,13 +1134,18 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
     let dailySessions: string[] = [];
     const storedSessions = localStorage.getItem(visitorSessionKey);
     if (storedSessions) {
-      dailySessions = JSON.parse(storedSessions);
-    }
-
-    let sessionId = sessionStorage.getItem('sulta_session_id');
-    if (!sessionId) {
-      sessionId = 'sess_' + Math.random().toString(36).substring(2, 9);
-      sessionStorage.setItem('sulta_session_id', sessionId);
+      try {
+        const parsed = JSON.parse(storedSessions);
+        if (Array.isArray(parsed) && parsed.length > 100) {
+          // Old mock data purge
+          dailySessions = [sessionId];
+          localStorage.setItem(visitorSessionKey, JSON.stringify(dailySessions));
+        } else if (Array.isArray(parsed)) {
+          dailySessions = parsed;
+        }
+      } catch {
+        dailySessions = [sessionId];
+      }
     }
 
     if (!dailySessions.includes(sessionId)) {
@@ -1142,7 +1153,7 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
       localStorage.setItem(visitorSessionKey, JSON.stringify(dailySessions));
     }
 
-    // Use cached server todayCount if available, otherwise fallback to local session count
+    // Real genuine counts without artificial multipliers
     const serverToday = cachedServerStats?.todayCount || 0;
     const localToday = dailySessions.length;
     const todayVisitors = Math.max(localToday, serverToday); 

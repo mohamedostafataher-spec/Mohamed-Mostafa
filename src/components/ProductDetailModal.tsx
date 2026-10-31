@@ -204,7 +204,7 @@ export default function ProductDetailModal({
     }
   };
 
-  const [selectedSz, setSelectedSz] = useState(product.sizes[0] || 'S');
+  const [selectedSz, setSelectedSz] = useState('One Size');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'wash' | 'pack' | 'size' | 'ship' | 'reviews' | 'questions'>('desc');
   const [videoPlaying, setVideoPlaying] = useState(false);
@@ -1166,36 +1166,18 @@ export default function ProductDetailModal({
               </div>
             </div>
 
-            {/* Sizes picker selection */}
-            <div className="mb-4 border-b border-gray-100 pb-4">
-              <div className="flex justify-between items-center mb-2.5">
-                <h3 className="text-[11px] font-bold text-gray-800 uppercase tracking-widest">المقاس (One Size / مقاس موحد مريح)</h3>
+            {/* One Size Royal Comfort Fit */}
+            <div className="mb-4 border-b border-gray-100 pb-3.5">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-bold text-gray-900">المقاس:</span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-900 bg-gray-100 border border-gray-200 px-3 py-1 rounded-full">
+                  <span>مقاس موحد مريح (One Size / Free Size)</span>
+                  <span>✨</span>
+                </span>
               </div>
-              <div className="flex gap-2 select-none justify-start flex-wrap">
-                {product.sizes.map(sz => {
-                  const isSzOutOfStock = isConfigOutOfStock(selectedCol.name, sz);
-                    return (
-                      <button
-                        key={sz}
-                        onClick={() => setSelectedSz(sz)}
-                        className={`relative min-w-[44px] h-11 px-3.5 text-xs font-sans font-medium rounded-xl flex items-center justify-center transition-all border cursor-pointer ${
-                          selectedSz === sz
-                            ? isSzOutOfStock
-                              ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold scale-103'
-                              : 'bg-[#A44C5C] text-[#FFFFFF] border-black shadow-md font-bold scale-103'
-                            : isSzOutOfStock
-                              ? 'bg-gray-50 text-gray-300 border-gray-150 line-through decoration-red-400 decoration-1'
-                              : 'bg-white text-gray-700 border-gray-200 hover:bg-[#FAF4F5]'
-                        }`}
-                      >
-                      <span>{sz}</span>
-                      {isSzOutOfStock && (
-                        <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full" title="نفد المخزون - تنبيه التوفر مفعل" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+              <p className="text-[11px] text-gray-600 leading-relaxed text-right">
+                تصميم انسيابي كوتور بمرونة راقية يلائم أوزان (45 - 85 كجم) ومختلف الأطوال براحة تامة وحرية حركة أثناء النوم.
+              </p>
             </div>
 
 

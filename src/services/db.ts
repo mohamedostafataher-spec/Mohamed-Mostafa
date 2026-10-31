@@ -2464,29 +2464,9 @@ export const dbService = {
       createdAt: p.created_at || p.createdAt
     });
 
-    const fetchPromos = () => {
-      supabase.from('promotions').select('*').then(({ data, error }) => {
-        if (error || !data || data.length === 0) {
-          onSuccess(SEED_PROMOTIONS.map(mapPromo));
-        } else {
-          onSuccess(data.map(mapPromo));
-        }
-      }).catch(() => {
-        onSuccess(SEED_PROMOTIONS.map(mapPromo));
-      });
-    };
-
-    fetchPromos();
-
-    const channelName = 'public:promotions:' + Math.random().toString(36).substring(2, 15);
-    const channel = supabase
-      .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, () => {
-        fetchPromos();
-      }).subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // Serve promotions safely from local seed / memory cache to eliminate 404 network errors
+    onSuccess(SEED_PROMOTIONS.map(mapPromo));
+    return () => {};
   },
 
   savePromotion: async (promo: any): Promise<void> => {

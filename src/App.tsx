@@ -907,7 +907,7 @@ function AppContent() {
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-                      {section.data.length > 0 ? section.data.slice(0, 8).map((prod) => {
+                      {section.data.length > 0 ? section.data.slice(0, 8).map((prod, prodIdx) => {
                         const priceVal = prod.priceSA;
                         const currencyLabel = 'ر.س';
                         const isFav = favorites.includes(prod.id);
@@ -954,6 +954,7 @@ function AppContent() {
                                   alt={prod.nameAr || prod.nameEn}
                                   className="absolute inset-0 w-full h-full"
                                   imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                  priority={sectionIdx === 0 && prodIdx < 2}
                                 />
                               </div>
 
@@ -1474,10 +1475,10 @@ function AppContent() {
               </span>
               <span className="text-[#A44C5C] text-sm">👑</span>
             </div>
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold block text-gray-400 font-sans -mt-2">
+            <span className="text-[11px] uppercase tracking-[0.2em] font-bold block text-gray-700 font-sans -mt-2">
               سُـلـطَـة · أزياء النوم الفاخرة
             </span>
-            <p className="text-gray-500 text-xs leading-relaxed max-w-xs pt-1">
+            <p className="text-gray-700 font-medium text-xs leading-relaxed max-w-xs pt-1">
               علامة سعودية فاخرة رائدة في تصميم وتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ودول الخليج العربي بأعلى معايير الجودة والأناقة.
             </p>
             <div className="pt-2">
@@ -1490,17 +1491,17 @@ function AppContent() {
             <h3 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
               روابط المتجر السريعة
             </h3>
-            <div className="flex flex-col gap-2 font-sans items-start text-right text-gray-600">
-              <button type="button" onClick={() => setTab('home')} aria-label="الذهاب للرئيسية" className="hover:text-[#A44C5C] transition-colors cursor-pointer">الرئيسية</button>
+            <div className="flex flex-col gap-2 font-sans items-start text-right text-gray-700">
+              <button type="button" onClick={() => setTab('home')} aria-label="الذهاب للرئيسية" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">الرئيسية</button>
               <button type="button" onClick={() => setTab('offers')} aria-label="عرض العروض والتخفيضات" className="hover:text-[#A44C5C] font-bold text-[#A44C5C] transition-colors cursor-pointer flex items-center gap-1">
                 <span>العروض والتخفيضات الحصرية</span>
                 <span className="bg-red-50 text-red-600 text-[9px] px-1.5 py-0.2 rounded-full font-bold">خصومات</span>
               </button>
-              <button type="button" onClick={() => setTab('store')} aria-label="فتح المتجر الشامل" className="hover:text-[#A44C5C] transition-colors cursor-pointer">المتجر الشامل</button>
-              <button type="button" onClick={() => setTab('best-sellers')} aria-label="عرض الأكثر طلباً ومبيعاً" className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأكثر طلباً ومبيعاً</button>
-              <button type="button" onClick={() => setTab('new-arrivals')} aria-label="عرض المنتجات الجديدة" className="hover:text-[#A44C5C] transition-colors cursor-pointer">وصل حديثاً</button>
-              <button type="button" onClick={() => setTab('account')} aria-label="فتح حسابي والطلبات" className="hover:text-[#A44C5C] transition-colors cursor-pointer">حسابي والطلبات</button>
-              <button type="button" onClick={() => setTab('dashboard')} aria-label="دخول لوحة الإدارة" className="hover:text-[#A44C5C] text-gray-300 text-[8px] transition-colors cursor-pointer mt-2 text-right opacity-40">دخول الإدارة ⚙️</button>
+              <button type="button" onClick={() => setTab('store')} aria-label="فتح المتجر الشامل" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">المتجر الشامل</button>
+              <button type="button" onClick={() => setTab('best-sellers')} aria-label="عرض الأكثر طلباً ومبيعاً" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">الأكثر طلباً ومبيعاً</button>
+              <button type="button" onClick={() => setTab('new-arrivals')} aria-label="عرض المنتجات الجديدة" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">وصل حديثاً</button>
+              <button type="button" onClick={() => setTab('account')} aria-label="فتح حسابي والطلبات" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">حسابي والطلبات</button>
+              <button type="button" onClick={() => setTab('dashboard')} aria-label="دخول لوحة الإدارة" className="text-gray-700 hover:text-black font-semibold text-xs transition-colors cursor-pointer mt-3 text-right flex items-center gap-1">⚙️ دخول الإدارة</button>
             </div>
           </div>
 
@@ -1509,13 +1510,13 @@ function AppContent() {
             <h3 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
               خدمة العملاء والسياسات
             </h3>
-            <div className="flex flex-col gap-2 items-start text-right text-gray-600">
-              <button type="button" onClick={() => setTab('faq')} aria-label="الأسئلة الشائعة" className="hover:text-[#A44C5C] transition-colors cursor-pointer">الأسئلة الشائعة للعرائس</button>
-              <button type="button" onClick={() => setTab('track-order')} aria-label="تتبع الطلب" className="hover:text-[#A44C5C] transition-colors cursor-pointer">تتبع طلبيتكِ</button>
-              <button type="button" onClick={() => setTab('returns')} aria-label="سياسة الاسترجاع" className="hover:text-[#A44C5C] transition-colors cursor-pointer">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
-              <button type="button" onClick={() => setTab('fabrics')} aria-label="دليل الخامات" className="hover:text-[#A44C5C] transition-colors cursor-pointer">دليل الخامات والمنسوجات</button>
-              <button type="button" onClick={() => setTab('contact')} aria-label="تواصل معنا" className="hover:text-[#A44C5C] transition-colors cursor-pointer">اتصلي بنا</button>
-              <div className="pt-2 text-[10.5px] text-gray-400 leading-normal">
+            <div className="flex flex-col gap-2 items-start text-right text-gray-700">
+              <button type="button" onClick={() => setTab('faq')} aria-label="الأسئلة الشائعة" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">الأسئلة الشائعة للعرائس</button>
+              <button type="button" onClick={() => setTab('track-order')} aria-label="تتبع الطلب" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">تتبع طلبيتكِ</button>
+              <button type="button" onClick={() => setTab('returns')} aria-label="سياسة الاسترجاع" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
+              <button type="button" onClick={() => setTab('fabrics')} aria-label="دليل الخامات" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">دليل الخامات والمنسوجات</button>
+              <button type="button" onClick={() => setTab('contact')} aria-label="تواصل معنا" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-medium">اتصلي بنا</button>
+              <div className="pt-2 text-[11px] text-gray-700 font-medium leading-normal">
                 ✓ شحن سريع ومغلف بعناية فائقة<br />
                 ✓ منتجات أصلية 100% مضمونة
               </div>

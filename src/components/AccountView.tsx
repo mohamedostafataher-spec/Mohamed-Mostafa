@@ -15,6 +15,10 @@ import {
   Zap,
   ShieldAlert,
   ShoppingBag,
+  ArrowRight,
+  ArrowLeft,
+  MessageCircle,
+  Phone,
 } from "lucide-react";
 import { useToast } from './Toast';
 import { Order, Product, Country, Review, OrderStatus } from "../types";
@@ -67,11 +71,14 @@ export default function AccountView({
   const [activeTab, setActiveTab] = useState<
     "orders" | "addresses" | "wishlist" | "settings" | "loyalty" | "track" | "tickets" | "activity"
   >("loyalty");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [authError, setAuthError] = useState("");
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-  const [authLoading, setAuthLoading] = useState(false);
+  const [localCustomer, setLocalCustomer] = useState<any>(() => {
+    try {
+      const stored = localStorage.getItem('sulta_customer_session');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
 
   // Data processing for Recharts inside AccountView component body:
   const monthlyData = React.useMemo(() => {
@@ -98,41 +105,13 @@ export default function AccountView({
 
   const completedOrdersCount = orders.filter(o => o.status === 'delivered' || o.status === 'shipped').length;
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError("");
-    setAuthLoading(true);
-
-    try {
-      const { error } =
-        authMode === "login"
-          ? await dbService.supabase.auth.signInWithPassword({
-              email,
-              password,
-            })
-          : await dbService.supabase.auth.signUp({ email, password });
-
-      if (error) throw error;
-      if (authMode === "signup") {
-        toast("تم إنشاء الحساب! يرجى تفعيل البريد الإلكتروني إذا تطلب الأمر.", 'success');
-        try {
-          trackTikTokCompleteRegistration(email, email);
-          trackCompleteRegistration('البريد الإلكتروني', 'ناجح');
-        } catch {}
-      } else {
-        try {
-          ttqIdentify({ email });
-        } catch {}
-      }
-    } catch (err: any) {
-      setAuthError(err.message || "حدث خطأ أثناء الاتصال بالنظام الملكي.");
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
   const handleLogout = async () => {
-    await dbService.supabase.auth.signOut();
+    localStorage.removeItem('sulta_customer_session');
+    setLocalCustomer(null);
+    try {
+      await dbService.supabase.auth.signOut();
+    } catch {}
+    toast("تمت إعادة ضبط الجلسة", 'info');
   };
 
   const [trackingIdInput, setTrackingIdInput] = useState("");
@@ -532,86 +511,12 @@ export default function AccountView({
   // Customer static addresses
   const [addresses, setAddresses] = useState<any[]>([]);
 
-  if (!session) {
-    return (
-      <div
-        className="max-w-md mx-auto py-16 px-6 text-right font-sans"
-        dir="rtl"
-      >
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-4 text-[#F4B6C2] border border-pink-100">
-            <Package size={32} />
-          </div>
-          <h2 className="font-serif text-2xl text-[#0B0B0B] mb-2">
-            تسجيل الدخول للنادي الملكي
-          </h2>
-          <p className="text-xs text-gray-400">
-            انضمي إلينا لمتابعة طلبياتك وإدارة مفضلتك الحصرية
-          </p>
-        </div>
+  const activeUser = session?.user || localCustomer || {
+    displayName: "عميلة SULTA الكريمة",
+    email: "client@sulta.atelier",
+    phone: "+966 55 282 3677"
+  };
 
-        <form onSubmit={handleAuth} className="space-y-4">
-          {authError && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-red-500 text-[10px] text-center">
-              {authError}
-            </div>
-          )}
-
-          <div className="space-y-1">
-            <label className="text-[10px] text-gray-500 px-1">
-              البريد الإلكتروني
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-[#F4B6C2]"
-              placeholder="example@style.com"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] text-gray-500 px-1">
-              كلمة المرور
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-[#F4B6C2]"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            disabled={authLoading}
-            className="w-full bg-[#A44C5C] text-[#F6E7A6] font-bold py-3 rounded-xl hover:bg-gray-800 transition-all text-xs disabled:opacity-50"
-          >
-            {authLoading
-              ? "جاري المعالجة..."
-              : authMode === "login"
-                ? "دخول"
-                : "إنشاء حساب جديد"}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <button
-            onClick={() =>
-              setAuthMode(authMode === "login" ? "signup" : "login")
-            }
-            className="text-[11px] text-[#F4B6C2] hover:underline cursor-pointer"
-          >
-            {authMode === "login"
-              ? "ليس لديكِ حساب؟ انضمي الآن"
-              : "لديكِ حساب بالفعل؟ سجلي الدخول"}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
 
   return (
@@ -626,7 +531,7 @@ export default function AccountView({
             <span className="text-gray-400 text-xs">|</span>
             <span className="text-[#0B0B0B] font-sans font-bold text-xs flex items-center gap-1">
               <Crown size={12} className="text-gray-400" />
-              <span>{session.user.email}</span>
+              <span>{activeUser?.phone || activeUser?.email || 'عميلة سولتة'}</span>
             </span>
 
 
