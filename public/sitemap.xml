@@ -1,103 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sulta.vercel.app</loc>
+    <loc>https://sulta.vercel.app/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/store</loc>
+    <loc>https://sulta.vercel.app/store/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/best-sellers</loc>
+    <loc>https://sulta.vercel.app/best-sellers/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/offers</loc>
+    <loc>https://sulta.vercel.app/offers/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/new-arrivals</loc>
+    <loc>https://sulta.vercel.app/new-arrivals/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/about</loc>
+    <loc>https://sulta.vercel.app/about/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/contact</loc>
+    <loc>https://sulta.vercel.app/contact/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/faq</loc>
+    <loc>https://sulta.vercel.app/faq/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/returns</loc>
+    <loc>https://sulta.vercel.app/returns/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/track-order</loc>
-    <lastmod>2026-10-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://sulta.vercel.app/product/51005136-8066-4844-8efe-718cd7644e6b-lilac-polka-dot-strappy-pajama-set</loc>
+    <loc>https://sulta.vercel.app/product/51005136-8066-4844-8efe-718cd7644e6b-lilac-polka-dot-strappy-pajama-set/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/614f6daa-d291-410b-a450-be23de75f868-flora-pajama-set-rose-whispers</loc>
+    <loc>https://sulta.vercel.app/product/614f6daa-d291-410b-a450-be23de75f868-flora-pajama-set-rose-whispers/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/8d738e1c-0861-4569-8949-fc2d98c4fa50-sugar-bow-pajama-set-royal-pink</loc>
+    <loc>https://sulta.vercel.app/product/8d738e1c-0861-4569-8949-fc2d98c4fa50-sugar-bow-pajama-set-royal-pink/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc-rosa-evening-bloom-pajama-set</loc>
+    <loc>https://sulta.vercel.app/product/bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc-rosa-evening-bloom-pajama-set/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/78f851f3-5f75-4153-9fbe-0e8ad54825be-velvet-rose-pajama-set</loc>
+    <loc>https://sulta.vercel.app/product/78f851f3-5f75-4153-9fbe-0e8ad54825be-velvet-rose-pajama-set/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/1d4e8104-17c9-4b64-8300-38340bdeaa18-classic-dot-pajama-set-playful-touch</loc>
+    <loc>https://sulta.vercel.app/product/1d4e8104-17c9-4b64-8300-38340bdeaa18-classic-dot-pajama-set-playful-touch/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/54929551-5958-4b33-9ff9-abe83722cb78-sugar-bow-pajama-set-ivory-white</loc>
+    <loc>https://sulta.vercel.app/product/54929551-5958-4b33-9ff9-abe83722cb78-sugar-bow-pajama-set-ivory-white/</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

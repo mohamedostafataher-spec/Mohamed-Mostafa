@@ -354,4 +354,4 @@ async function runPrerender() {
   console.log(`[Prerender] Successfully generated pre-rendered static HTML for ${staticRoutes.length} pages + ${countProductPages} product pages in dist/!`);
 }
 
-runPrerender();
+runPrerender().catch(err => { console.error(err); process.exit(1) });

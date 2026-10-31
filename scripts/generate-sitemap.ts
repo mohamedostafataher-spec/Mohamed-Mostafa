@@ -13,7 +13,7 @@ const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_A
 const supabase = createClient(supabaseUrl, supabaseKey);
 const BASE_URL = 'https://sulta.vercel.app';
 
-function generateSitemap() {
+async function main() {
   console.log('[Sitemap] Generating public/sitemap.xml...');
 
   const todayIso = new Date().toISOString().split('T')[0];
@@ -97,4 +97,4 @@ ${xmlEntries.join('\n')}
   console.log(`[Sitemap] Successfully generated sitemap.xml with ${staticPages.length + productEntries.length} routes at ${destPath}`);
 }
 
-generateSitemap();
+main().catch(err => { console.error(err); process.exit(1) });
