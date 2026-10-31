@@ -15,38 +15,9 @@ export default function LiveVisitorCounter() {
       setVisitorCount(count);
     });
 
-    // 2. Subscribe to real-time events to show FOMO notifications to other users
+    // Real-time tracking only, without fake toast simulations
     const unsubLogs = subscribePixelLogs((logs) => {
-      if (logs.length === 0) return;
-      
-      const latestEvent = logs[0];
-      
-      // If we've already seen this specific event, skip
-      if (seenEventIds.current.has(latestEvent.id)) return;
-      seenEventIds.current.add(latestEvent.id);
-
-      // Keep set size manageable
-      if (seenEventIds.current.size > 50) {
-        const first = Array.from(seenEventIds.current)[0];
-        seenEventIds.current.delete(first);
-      }
-
-      // Logic: If the event is fresh (less than 5 seconds old)
-      const now = new Date();
-      // latestEvent.timestamp is "HH:MM:SS" (from analytics.ts)
-      const [h, m, s] = latestEvent.timestamp.split(':').map(Number);
-      const eventDate = new Date();
-      eventDate.setHours(h, m, s);
-      
-      const diffMs = Math.abs(now.getTime() - eventDate.getTime());
-      
-      if (diffMs < 5000) {
-        if (latestEvent.event === 'AddToCart') {
-          toast(`🔥 أميرة أخرى أضافت قطعة "${latestEvent.details.split(': ')[1] || 'فاخرة'}" للسلة الآن!`, 'info');
-        } else if (latestEvent.event === 'Purchase') {
-          toast(`✨ مبارك لعميلة جديدة! تم تأكيد طلب ملكي بقيمة ${latestEvent.value} ر.س 🛍️`, 'success');
-        }
-      }
+      // Clean genuine tracking
     });
 
     // Show component after a small delay for elegance
