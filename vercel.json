@@ -1,5 +1,12 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/product/:id-product",
+      "destination": "/product/:id",
+      "permanent": true
+    }
   ]
 }
