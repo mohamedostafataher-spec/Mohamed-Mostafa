@@ -718,9 +718,12 @@ export const dbService = {
   getProductById: async (id: string): Promise<Product | null> => {
     try {
       if (!id) return null;
-      const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
-      if (!error && data) {
-        return mapProduct(data);
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      if (isUuid) {
+        const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+        if (!error && data) {
+          return mapProduct(data);
+        }
       }
     } catch (err) {
       console.warn("[dbService] getProductById error fetching from Supabase:", err);

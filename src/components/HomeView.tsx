@@ -114,9 +114,11 @@ const HomeView: React.FC<HomeViewProps> = ({
                           {/* Favorite Heart Button */}
                           <div className="absolute top-2 right-2 z-10">
                             <button 
+                              type="button"
                               onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                              className="w-7 h-7 sm:w-8 sm:h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-500 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
+                              className="w-7 h-7 sm:w-8 sm:h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-600 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
                               title="إضافة للمفضلة"
+                              aria-label={`إضافة ${prod.nameAr} للمفضلة`}
                             >
                               <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
                             </button>
@@ -133,7 +135,7 @@ const HomeView: React.FC<HomeViewProps> = ({
 
                         {/* Text details bottom */}
                         <div className="p-2.5 sm:p-3 space-y-1 text-right">
-                          <span className="text-[10px] text-gray-400 font-medium block">
+                          <span className="text-[10px] text-gray-600 font-medium block">
                             {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
                           </span>
                           <h2 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-black transition-colors">
@@ -144,12 +146,12 @@ const HomeView: React.FC<HomeViewProps> = ({
                           <div className="flex items-center gap-1 justify-start pt-0.5">
                             <div className="flex items-center text-amber-400">
                               {Array.from({ length: 5 }).map((_, i) => (
-                                <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
+                                <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-300"}`} viewBox="0 0 20 20" fill="currentColor">
                                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
                               ))}
                             </div>
-                            <span className="text-[10px] text-gray-400 font-mono">({prod.reviewsCount || 28})</span>
+                            <span className="text-[10px] text-gray-600 font-mono">({prod.reviewsCount || 28})</span>
                           </div>
                         </div>
                       </div>
@@ -158,7 +160,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                       <div className="p-2.5 sm:p-3 pt-0 space-y-2 mt-auto">
                         <div className="flex items-baseline justify-between border-t border-gray-100 pt-2">
                           <ProductPrice product={prod} country="SA" size="sm" showBadge={false} />
-                          <span className="text-[9.5px] text-gray-400">شامل الضريبة</span>
+                          <span className="text-[9.5px] text-gray-600">شامل الضريبة</span>
                         </div>
 
                         <button

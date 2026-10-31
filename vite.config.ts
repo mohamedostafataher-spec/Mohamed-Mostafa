@@ -26,6 +26,9 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      sourcemap: true,
+    },
     server: {
       // HMR is disabled to avoid console errors, but we keep watching enabled.
       hmr: false,

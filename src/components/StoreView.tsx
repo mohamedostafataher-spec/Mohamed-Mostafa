@@ -685,7 +685,7 @@ export default function StoreView({
                     <div className="p-2.5 sm:p-3 pb-1 text-right space-y-1">
                       
                       {/* Category Label */}
-                      <span className="text-[9.5px] sm:text-[10px] text-gray-400 font-medium block truncate">
+                      <span className="text-[9.5px] sm:text-[10px] text-gray-600 font-medium block truncate">
                         {product.categoryAr || product.category || 'ملابس نوم فاخرة'}
                       </span>
 
@@ -699,12 +699,12 @@ export default function StoreView({
                         <div className="flex items-center gap-1 sm:gap-1.5 justify-start pt-0.5">
                           <div className="flex items-center text-amber-400">
                             {Array.from({ length: 5 }).map((_, i) => (
-                              <svg key={i} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${i < Math.round(product.rating || 5) ? "fill-current" : "text-gray-200"}`} viewBox="0 0 20 20" fill="currentColor">
+                              <svg key={i} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${i < Math.round(product.rating || 5) ? "fill-current" : "text-gray-300"}`} viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                               </svg>
                             ))}
                           </div>
-                          <span className="text-[9.5px] sm:text-[10px] text-gray-400 font-sans font-medium">({product.reviewsCount})</span>
+                          <span className="text-[9.5px] sm:text-[10px] text-gray-600 font-sans font-medium">({product.reviewsCount})</span>
                         </div>
                       )}
 
@@ -717,6 +717,7 @@ export default function StoreView({
                               <button
                                 key={col.name}
                                 type="button"
+                                aria-label={`اختيار اللون ${col.name}`}
                                 onClick={(e) => handleCardColorSelect(product.id, col, e)}
                                 className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border transition-all cursor-pointer ${
                                   isSelected ? 'scale-125 ring-1 ring-black border-white' : 'border-gray-200'
@@ -726,7 +727,7 @@ export default function StoreView({
                               />
                             );
                           })}
-                          <span className="text-[9.5px] sm:text-[10px] text-gray-400 font-sans truncate">
+                          <span className="text-[9.5px] sm:text-[10px] text-gray-600 font-sans truncate">
                             {cardColorSel ? cardColorSel.name : product.colors[0]?.name}
                           </span>
                         </div>
@@ -741,7 +742,7 @@ export default function StoreView({
                     {/* Price and VAT inclusion */}
                     <div className="flex items-baseline justify-between">
                       <ProductPrice product={product} country={country} size="sm" showBadge={false} />
-                      <span className="text-[9px] sm:text-[9.5px] text-gray-400 font-medium">شامل الضريبة</span>
+                      <span className="text-[9px] sm:text-[9.5px] text-gray-600 font-medium">شامل الضريبة</span>
                     </div>
 
                     {/* Prominent Salla Style "Add to Cart" Button */}

@@ -116,16 +116,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // GET: Return aggregated real stats from Supabase
   if (req.method === 'GET') {
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
       const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-
-      // 0. Fetch from traffic_logs (Highest fidelity UTM & session logs)
-      let { data: trafficLogs } = await supabase
-        .from('traffic_logs')
-        .select('*')
-        .gte('created_at', ninetyDaysAgo)
-        .order('created_at', { ascending: false })
-        .limit(50000);
 
       // 1. Try to fetch from user_sessions (Primary source)
       let { data: sessions } = await supabase

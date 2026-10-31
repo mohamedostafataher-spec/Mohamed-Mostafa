@@ -958,13 +958,19 @@ export default function ProductDetailModal({
                 {displayImages.length > 1 && (
                   <>
                     <button 
+                      type="button"
                       onClick={prevImage}
+                      aria-label="الصورة السابقة"
+                      title="الصورة السابقة"
                       className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white p-2.5 rounded-full backdrop-blur-md transition-all opacity-100 md:opacity-0 md:group-hover/main:opacity-100 z-15 cursor-pointer shadow-sm border border-gray-150"
                     >
                       <ChevronLeft size={20} className="text-gray-950" />
                     </button>
                     <button 
+                      type="button"
                       onClick={nextImage}
+                      aria-label="الصورة التالية"
+                      title="الصورة التالية"
                       className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white p-2.5 rounded-full backdrop-blur-md transition-all opacity-100 md:opacity-0 md:group-hover/main:opacity-100 z-15 cursor-pointer shadow-sm border border-gray-150"
                     >
                       <ChevronRight size={20} className="text-gray-950" />
@@ -992,6 +998,9 @@ export default function ProductDetailModal({
               {displayImages.map((img, idx) => (
                 <button
                   key={idx}
+                  type="button"
+                  aria-label={`عرض صورة ${idx + 1}`}
+                  title={`عرض صورة ${idx + 1}`}
                   onClick={() => {
                     setActiveImageIdx(idx);
                     setVideoPlaying(false);
@@ -1014,6 +1023,8 @@ export default function ProductDetailModal({
               {(product.video || true) && (
                 <button
                   type="button"
+                  aria-label="عرض فيديو المنتج"
+                  title="عرض فيديو المنتج"
                   onClick={() => {
                     setVideoPlaying(true);
                     setIsMacroZoomActive(false);
@@ -1027,7 +1038,7 @@ export default function ProductDetailModal({
                     <span className="text-sm">🎬</span>
                     {product.video && <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />}
                   </div>
-                  <span className="text-[7px] font-sans text-gray-400 group-hover:text-[#FFFFFF]">فيديو</span>
+                  <span className="text-[7px] font-sans text-gray-300 group-hover:text-[#FFFFFF]">فيديو</span>
                 </button>
               )}
             </div>
@@ -1037,6 +1048,8 @@ export default function ProductDetailModal({
               {/* 360 Mode Button */}
               <button
                 type="button"
+                aria-label="تفعيل وضع الدوران 360 درجة"
+                title="تفعيل وضع الدوران 360 درجة"
                 onClick={() => {
                   setIs360Active(!is360Active);
                   setIsMacroZoomActive(false);
@@ -1054,6 +1067,8 @@ export default function ProductDetailModal({
               {/* Macro Fabric Zoom triggers */}
               <button
                 type="button"
+                aria-label="تفعيل ميكروسكوب زوم الخامة 50x"
+                title="تفعيل ميكروسكوب زوم الخامة 50x"
                 onClick={() => {
                   setIsMacroZoomActive(true);
                   setVideoPlaying(false);
@@ -1085,7 +1100,7 @@ export default function ProductDetailModal({
                 <div className="flex items-center gap-0.5">
                   <Star size={12} className="text-yellow-400 fill-yellow-400" />
                   <span className="text-xs font-semibold text-gray-800">{product.rating}</span>
-                  <span className="text-[9px] text-gray-400 font-sans">({product.reviewsCount} تقرير)</span>
+                  <span className="text-[9px] text-gray-600 font-sans">({product.reviewsCount} تقرير)</span>
                 </div>
               </div>
 
@@ -1099,7 +1114,7 @@ export default function ProductDetailModal({
             <h2 className="font-serif text-lg sm:text-2xl font-light text-[#0B0B0B] mb-1.5 leading-relaxed text-right">
               {product.nameAr}
             </h2>
-            <span className="font-serif italic text-xs text-gray-400 block mb-3 text-right">{product.nameEn}</span>
+            <span className="font-serif italic text-xs text-gray-600 block mb-3 text-right">{product.nameEn}</span>
 
             <div className="flex flex-col sm:flex-row items-baseline gap-2 mb-4 justify-between flex-row-reverse">
               <div className="text-right">
@@ -1116,7 +1131,7 @@ export default function ProductDetailModal({
 
             {/* V2.0 Smart Skin Tone Calibration Accordion */}
             <div className="bg-[#FAF4F5]/60 border border-gray-150 rounded-2xl p-3 mb-4 text-right">
-              <p className="text-[10px] text-gray-450 block pb-1.5 font-sans font-semibold">تناسق درجة الـ {selectedCol.name} مع لون بشرتكِ الحقيقي:</p>
+              <p className="text-[10px] text-gray-600 block pb-1.5 font-sans font-semibold">تناسق درجة الـ {selectedCol.name} مع لون بشرتكِ الحقيقي:</p>
               
               <div className="grid grid-cols-3 gap-1.5 select-none mb-2 text-center text-[10px] font-sans">
                 {[
@@ -1130,7 +1145,7 @@ export default function ProductDetailModal({
                     className={`py-1 rounded-lg border cursor-pointer transition-all ${
                       calibratedSkin === item.id 
                         ? 'border-[#DF8A9C] bg-white text-neutral-900 font-semibold shadow-xs'
-                        : 'border-transparent text-gray-455 hover:text-gray-700'
+                        : 'border-transparent text-gray-600 hover:text-gray-800'
                     }`}
                   >
                     {item.label}
@@ -1146,11 +1161,13 @@ export default function ProductDetailModal({
 
             {/* Colors picker selection */}
             <div className="mb-4 border-b border-gray-100 pb-4 text-right">
-              <h5 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">تلوينات راقية متوفرة: <span className="text-gray-800 font-sans font-medium">{selectedCol.name}</span></h5>
+              <div className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest mb-2">تلوينات راقية متوفرة: <span className="text-gray-800 font-sans font-medium">{selectedCol.name}</span></div>
               <div className="flex gap-2.5 justify-end select-none">
                 {product.colors.map(col => (
                   <button
                     key={col.name}
+                    type="button"
+                    aria-label={`اختيار اللون ${col.name}`}
                     onClick={() => setSelectedCol(col)}
                     className={`w-7.5 h-7.5 rounded-full border transition-all flex items-center justify-center cursor-pointer ${
                       selectedCol.name === col.name ? 'border-[#0B0B0B] scale-110 shadow-sm ring-1 ring-[#DF8A9C]' : 'border-gray-200 hover:scale-105'
