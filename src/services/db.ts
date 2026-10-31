@@ -2,6 +2,7 @@
 import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole } from '../types';
 import { createClient } from '@supabase/supabase-js';
 import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
+import { parseCleanArabicDescription } from '../utils/textUtils';
 export { SEED_FALLBACK_PRODUCTS };
 
 // --- ROBUST CONFIGURATION ---
@@ -424,26 +425,20 @@ function mapProduct(data: any): Product {
 
   // Try parsing description fallback and extract metadata block if present
   if (data.description) {
-    const metaIndex = data.description.indexOf(' | [METADATA_SULTA_V2]:');
+    const metaIndex = data.description.indexOf('[METADATA_SULTA_V2]');
     if (metaIndex !== -1) {
       const plainDescSection = data.description.substring(0, metaIndex);
-      const jsonSection = data.description.substring(metaIndex + ' | [METADATA_SULTA_V2]:'.length);
+      const jsonSection = data.description.substring(metaIndex + '[METADATA_SULTA_V2]:'.length);
       
-      if (plainDescSection.includes(' | ')) {
-        const parts = plainDescSection.split(' | ');
-        descriptionAr = parts[0] || '';
-        descriptionEn = parts[1] || parts[0] || '';
-      } else {
-        descriptionAr = plainDescSection;
-        descriptionEn = plainDescSection;
-      }
+      descriptionAr = parseCleanArabicDescription(plainDescSection);
 
       // Reconstruct all missing metadata back to the frontend typed object
       try {
-        const meta = JSON.parse(jsonSection);
+        const jsonClean = jsonSection.trim().replace(/^:/, '').trim();
+        const meta = JSON.parse(jsonClean);
         if (meta.nameAr) nameAr = meta.nameAr;
         if (meta.nameEn) nameEn = meta.nameEn;
-        if (meta.descriptionAr) descriptionAr = meta.descriptionAr;
+        if (meta.descriptionAr) descriptionAr = parseCleanArabicDescription(meta.descriptionAr);
         if (meta.descriptionEn) descriptionEn = meta.descriptionEn;
         if (meta.sku) sku = meta.sku;
         if (meta.fabricAr) fabricAr = meta.fabricAr;
@@ -456,7 +451,7 @@ function mapProduct(data: any): Product {
         if (meta.status) status = meta.status;
         if (meta.rating !== undefined) rating = meta.rating;
         if (meta.reviewsCount !== undefined) reviewsCount = meta.reviewsCount;
-        if (meta.shortDescription) shortDescription = meta.shortDescription;
+        if (meta.shortDescription) shortDescription = parseCleanArabicDescription(meta.shortDescription);
         if (meta.tags) tags = meta.tags;
         if (meta.collection) collection = meta.collection;
         if (meta.seo) seo = meta.seo;
@@ -468,14 +463,7 @@ function mapProduct(data: any): Product {
         console.error("[SULTA DB] Failed to parse metadata from description:", e);
       }
     } else {
-      if (data.description.includes(' | ')) {
-        const parts = data.description.split(' | ');
-        descriptionAr = parts[0] || '';
-        descriptionEn = parts[1] || parts[0] || '';
-      } else {
-        descriptionAr = data.description;
-        descriptionEn = data.description;
-      }
+      descriptionAr = parseCleanArabicDescription(data.description);
     }
   }
 

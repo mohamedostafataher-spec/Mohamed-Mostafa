@@ -13,22 +13,21 @@ const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_A
 const supabase = createClient(supabaseUrl, supabaseKey);
 const BASE_URL = 'https://sulta.vercel.app';
 
-async function generateSitemap() {
+function generateSitemap() {
   console.log('[Sitemap] Generating public/sitemap.xml...');
 
   const todayIso = new Date().toISOString().split('T')[0];
 
   const staticPages = [
-    { route: '', priority: '1.0', changefreq: 'daily' },
-    { route: '/store', priority: '0.9', changefreq: 'daily' },
-    { route: '/best-sellers', priority: '0.9', changefreq: 'daily' },
-    { route: '/offers', priority: '0.9', changefreq: 'daily' },
-    { route: '/new-arrivals', priority: '0.9', changefreq: 'daily' },
-    { route: '/about', priority: '0.7', changefreq: 'monthly' },
-    { route: '/contact', priority: '0.7', changefreq: 'monthly' },
-    { route: '/faq', priority: '0.7', changefreq: 'monthly' },
-    { route: '/returns', priority: '0.6', changefreq: 'monthly' },
-    { route: '/track-order', priority: '0.6', changefreq: 'monthly' }
+    { route: '/', priority: '1.0', changefreq: 'daily' },
+    { route: '/store/', priority: '0.9', changefreq: 'daily' },
+    { route: '/best-sellers/', priority: '0.9', changefreq: 'daily' },
+    { route: '/offers/', priority: '0.9', changefreq: 'daily' },
+    { route: '/new-arrivals/', priority: '0.9', changefreq: 'daily' },
+    { route: '/about/', priority: '0.7', changefreq: 'monthly' },
+    { route: '/contact/', priority: '0.7', changefreq: 'monthly' },
+    { route: '/faq/', priority: '0.7', changefreq: 'monthly' },
+    { route: '/returns/', priority: '0.6', changefreq: 'monthly' }
   ];
 
   let rawProducts: any[] = [];
@@ -61,7 +60,7 @@ async function generateSitemap() {
     const lastmod = p.updated_at ? p.updated_at.split('T')[0] : (p.created_at ? p.created_at.split('T')[0] : todayIso);
     
     return {
-      route: `/product/${slug}`,
+      route: `/product/${slug}/`,
       lastmod,
       priority: '0.8',
       changefreq: 'weekly'

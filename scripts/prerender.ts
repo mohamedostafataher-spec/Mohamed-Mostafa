@@ -18,20 +18,8 @@ function cleanImgUrl(url: any): string {
     return '/img/sulta_default_1_1781140865386.webp';
   }
   const cleaned = url.trim();
-  if (cleaned.startsWith('http')) {
-    if (cleaned.includes('wsrv.nl')) return cleaned;
-    return `https://wsrv.nl/?url=${encodeURIComponent(cleaned)}&w=650&output=webp&q=80`;
-  }
-  if (cleaned.startsWith('/img/') || cleaned.startsWith('img/')) {
-    const formatted = cleaned.startsWith('/') ? cleaned : '/' + cleaned;
-    return formatted.replace(/\.(png|jpg)$/, '.webp');
-  }
-  const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
-  if (cleanPath.includes('.')) {
-    const fullUrl = `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
-    return `https://wsrv.nl/?url=${encodeURIComponent(fullUrl)}&w=650&output=webp&q=80`;
-  }
-  return '/img/sulta_default_1_1781140865386.webp';
+  // Return original URL for OG/Twitter tags
+  return cleaned;
 }
 
 function buildPageHtml(
@@ -47,7 +35,9 @@ function buildPageHtml(
     bodyHtml?: string;
   }
 ): string {
-  const fullUrl = `${BASE_URL}${routePath}`;
+  // Ensure trailing slash
+  const cleanRoutePath = routePath.split('?')[0].replace(/\/+$/, '') + '/';
+  const fullUrl = `${BASE_URL}${cleanRoutePath}`;
   const siteName = 'سولتة | SULTA Atelier';
   const pageTitle = meta.title ? `${meta.title} | ${siteName}` : 'سولتة | SULTA Atelier - أزياء النوم الفاخرة';
   const pageDesc = meta.description || 'متجر سولتة للأزياء الراقية والبيجامات الفاخرة. تصاميم ملكية بخامات عالمية وتوصيل سريع لكل مدن المملكة.';
@@ -135,12 +125,14 @@ async function runPrerender() {
         <h1 class="text-4xl font-black text-center my-6">سولتة | SULTA Atelier — أزياء النوم الفاخرة</h1>
         <p class="text-center text-lg text-gray-600 max-w-2xl mx-auto">تصاميم كوتور أنثوية راقية من الأنسجة الملكية الملساء لتنعمي براحة واسترخاء استثنائيين.</p>
         <section class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          ${rawProducts.slice(0, 6).map((p: any) => `
-            <article class="border border-gray-100 rounded-3xl p-4 bg-white shadow-sm">
-              <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${p.name_ar || p.nameAr || 'بيجامة سولتة'}" class="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
-              <h2 class="text-xl font-bold mt-4">${p.name_ar || p.nameAr || 'بيجامة حرير فاخرة'}</h2>
-              <p class="text-amber-700 font-extrabold text-lg mt-2">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
-            </article>
+          ${rawProducts.map((p: any) => `
+            <a href="/product/${getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn || '', nameAr: p.name_ar || p.nameAr || '' })}/" class="block">
+              <article class="border border-gray-100 rounded-3xl p-4 bg-white shadow-sm">
+                <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${p.name_ar || p.nameAr || 'بيجامة سولتة'}" class="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
+                <h2 class="text-xl font-bold mt-4">${p.name_ar || p.nameAr || 'بيجامة حرير فاخرة'}</h2>
+                <p class="text-amber-700 font-extrabold text-lg mt-2">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
+              </article>
+            </a>
           `).join('')}
         </section>
       </main>`
@@ -153,11 +145,13 @@ async function runPrerender() {
         <h1 class="text-3xl font-black my-6">تشكيلة المتجر الملكي الكاملة</h1>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           ${rawProducts.map((p: any) => `
-            <article class="border rounded-2xl p-4 bg-white">
-              <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${p.name_ar || p.nameAr}" class="w-full aspect-[3/4] object-cover rounded-xl" loading="lazy" />
-              <h2 class="text-lg font-bold mt-3">${p.name_ar || p.nameAr}</h2>
-              <p class="text-gray-900 font-black mt-1">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
-            </article>
+            <a href="/product/${getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn || '', nameAr: p.name_ar || p.nameAr || '' })}/" class="block">
+              <article class="border rounded-2xl p-4 bg-white">
+                <img src="${cleanImgUrl(p.images?.[0] || p.image_url)}" alt="${p.name_ar || p.nameAr}" class="w-full aspect-[3/4] object-cover rounded-xl" loading="lazy" />
+                <h2 class="text-lg font-bold mt-3">${p.name_ar || p.nameAr}</h2>
+                <p class="text-gray-900 font-black mt-1">${p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200} ر.س</p>
+              </article>
+            </a>
           `).join('')}
         </div>
       </main>`
@@ -227,6 +221,7 @@ async function runPrerender() {
       path: '/track-order',
       title: 'تتبع الطلب - متابعة الشحن المباشر',
       description: 'تابعي حالة طلبك ورقم الشحنة مباشرة خطوة بخطوة مع شركة التوصيل.',
+      noindex: true,
       bodyHtml: `<main dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
         <h1 class="text-3xl font-black mb-6">تتبع شحنتك المباشرة</h1>
       </main>`
@@ -277,7 +272,7 @@ async function runPrerender() {
     }
 
     const slug = getProductSlug({ id: p.id, nameEn, nameAr });
-    const productUrlPath = `/product/${slug}`;
+    const productUrlPath = `/product/${slug}/`;
 
     const price = p.sale_price_sa || p.salePriceSA || p.price_sa || p.priceSA || 200;
     const imgUrl = cleanImgUrl((Array.isArray(p.images) ? p.images[0] : p.image_url) || '');
@@ -302,7 +297,7 @@ async function runPrerender() {
         "url": `${BASE_URL}${productUrlPath}`,
         "priceCurrency": "SAR",
         "price": price,
-        "availability": Number(p.stock ?? 1) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        "availability": Number(p.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
       }
     };
 
@@ -311,7 +306,7 @@ async function runPrerender() {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": `${BASE_URL}/` },
-        { "@type": "ListItem", "position": 2, "name": "المتجر", "item": `${BASE_URL}/store` },
+        { "@type": "ListItem", "position": 2, "name": "المتجر", "item": `${BASE_URL}/store/` },
         { "@type": "ListItem", "position": 3, "name": nameAr, "item": `${BASE_URL}${productUrlPath}` }
       ]
     };

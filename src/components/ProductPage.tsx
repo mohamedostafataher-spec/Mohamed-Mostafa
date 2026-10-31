@@ -4,6 +4,7 @@ import { Product } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import { getIdFromSlug, slugify } from '../utils/slugify';
 import SEO from './SEO';
+import { truncateTo155Words, formatProductTitle } from '../utils/textUtils';
 import { ProductPrice } from './ProductPrice';
 import { 
   ShoppingBag, 
@@ -142,13 +143,16 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     touchEndX.current = null;
   };
 
+  const cleanShortDesc = truncateTo155Words(product.descriptionAr);
+  const formattedTitle = formatProductTitle(product.nameAr);
+
   // JSON-LD for Product
   const jsonLd = {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": product.nameAr,
     "image": displayImages,
-    "description": product.descriptionAr || product.nameAr,
+    "description": cleanShortDesc,
     "sku": product.id,
     "brand": {
       "@type": "Brand",
@@ -192,8 +196,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10" dir="rtl">
       <SEO 
-        title={`${product.nameAr} - ${product.salePriceSA || product.priceSA} ر.س - سولتة`}
-        description={product.descriptionAr || product.nameAr}
+        title={formattedTitle}
+        description={cleanShortDesc}
         path={`/product/${slug}`}
         image={currentMainImage}
         type="product"
