@@ -12,7 +12,7 @@ export default function LiveTrafficMonitor({ compact = false, onClearLogs }: Liv
   const [stats, setStats] = useState<ComprehensiveVisitorStats>(() => getComprehensiveVisitorStats());
   const [activeTab, setActiveTab] = useState<'live' | 'today' | 'weekly' | 'monthly'>('live');
   const [selectedCity, setSelectedCity] = useState<string>('all');
-  const cities = ['all', 'الرياض', 'جدة', 'الدمام', 'مكة', 'المدينة'];
+  const cities = ['all', 'الرياض', 'جدة', 'الدمام', 'مكة', 'المدينة', 'القاهرة'];
 
   useEffect(() => {
     const unsub = subscribeVisitorCount((count) => {

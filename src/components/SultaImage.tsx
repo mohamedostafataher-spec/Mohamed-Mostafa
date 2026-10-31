@@ -49,17 +49,27 @@ export default function SultaImage({
   }, [src, fallbackSrc]);
 
   const handleError = () => {
-    // If WebP failed, fallback to original PNG/JPG or fallbackSrc
-    if (errorCount === 0 && currentSrc.endsWith('.webp')) {
-      const originalExt = currentSrc.replace('.webp', '.png');
-      setCurrentSrc(originalExt);
-      setErrorCount(1);
-    } else if (errorCount < 2) {
-      setCurrentSrc(fallbackSrc);
+    if (errorCount === 0 && currentSrc.includes('wsrv.nl/?url=')) {
+      try {
+        const rawUrl = currentSrc.split('url=')[1]?.split('&')[0];
+        if (rawUrl) {
+          const decoded = decodeURIComponent(rawUrl);
+          setCurrentSrc(decoded);
+          setErrorCount(1);
+          return;
+        }
+      } catch (e) {}
+    }
+    
+    if (errorCount < 2) {
+      setCurrentSrc(fallbackSrc || '/img/sulta_product_1.webp');
       setErrorCount(2);
     } else if (errorCount < 3) {
       setCurrentSrc('/img/sulta_product_2.webp');
       setErrorCount(3);
+    } else {
+      setCurrentSrc('/img/sulta_default_1_1781140865386.webp');
+      setErrorCount(4);
     }
   };
 
@@ -68,7 +78,10 @@ export default function SultaImage({
   };
 
   return (
-    <div className={`relative overflow-hidden bg-gray-50/50 ${className}`}>
+    <div 
+      className={`relative overflow-hidden bg-gray-50/50 ${className}`}
+      style={{ width: props.width, height: props.height }}
+    >
       {/* Lightweight Loading Skeleton */}
       {!isLoaded && (
         <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 animate-pulse flex items-center justify-center">
@@ -80,12 +93,11 @@ export default function SultaImage({
         key={currentSrc}
         ref={imgRef}
         src={currentSrc}
-        alt={alt || "SULTA Royal Couture"}
+        alt={alt || "بيجامة حرير سادة لون بيج من سولتة"}
         className={`w-full h-full block ${imgClassName} relative z-10 transition-opacity duration-200 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onError={handleError}
         onLoad={handleLoad}
         loading={priority ? 'eager' : (props.loading || 'lazy')}
-        // @ts-ignore - fetchPriority is the React-compliant name for LCP optimization
         fetchPriority={priority ? 'high' : 'auto'}
         decoding={priority ? 'sync' : 'async'}
         referrerPolicy="no-referrer"

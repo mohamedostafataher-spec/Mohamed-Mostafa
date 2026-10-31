@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HelpCircle, ChevronDown, ChevronUp, Sparkles, MessageSquare, ShieldCheck, Truck } from 'lucide-react';
 import { dbService } from '../services/db';
+import SEO from './SEO';
 
 interface FaqItem {
   question: string;
@@ -70,6 +71,11 @@ export default function Faq() {
 
   return (
     <div className="bg-white min-h-screen">
+      <SEO 
+        title="الأسئلة الشائعة للعرائس - مساعدة سولتة" 
+        description="كل ما تحتاجين معرفته عن خاماتنا الملكية، المقاسات، سياسة التوصيل والتغليف الفاخر لطلبياتكِ من سولتة." 
+        path="/faq" 
+      />
       
       {/* Editorial Header */}
       <div className="bg-[#FAF5F0] py-24 md:py-32 border-b border-[#DF8A9D]/20" dir="rtl">

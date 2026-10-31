@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Award, Feather, Sparkles, Palette, Camera, BookOpen, Copy, Check } from 'lucide-react';
 import RibbonBowDivider from './RibbonBowDivider';
 import { cleanImgUrl } from '../services/db';
+import SEO from './SEO';
 
 interface AboutUsProps {
   homepageSections?: any[];
@@ -34,6 +35,11 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
 
   return (
     <div className="bg-[#FAF4F5] min-h-screen animate-fade-in py-12" dir="rtl">
+      <SEO 
+        title="قصتنا وإرثنا - دار سولتة SULTA House" 
+        description="تعرفي على إرث سولتة في تصميم أزياء النوم الراقية. نؤمن أن الراحة والأناقة وجهان لعملة واحدة تليق بملكة." 
+        path="/about" 
+      />
       
       {/* Hero Header */}
       <div className="bg-[#FAF5F0] py-20 border-b border-[#DF8A9D]/20">

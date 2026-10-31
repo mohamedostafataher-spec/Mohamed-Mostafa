@@ -28,6 +28,7 @@ import { trackCompleteRegistration } from "../utils/analytics";
 import { dbService } from "../services/db";
 import OrderDetailView from "./OrderDetailView";
 import SupportTicketsClient from "./SupportTicketsClient";
+import SEO from "./SEO";
 import {
   AreaChart,
   Area,
@@ -522,6 +523,11 @@ export default function AccountView({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <SEO 
+        title="حسابي الملكي - نادي سولتة" 
+        description="إدارة طلبياتكِ الفاخرة، تتبع الشحنات، ونقاط الولاء في بوتيك سولتة للأزياء الراقية." 
+        path="/account" 
+      />
       {/* Introduction with Loyalty quick status banner */}
       <div className="mb-10 text-center md:text-right pb-6 border-b border-gray-150 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>

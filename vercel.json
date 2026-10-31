@@ -1,37 +1,5 @@
 {
-  "headers": [
-    {
-      "source": "/img/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*).(webp|png|jpg|jpeg|svg|woff2)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ],
   "rewrites": [
-    {
-      "source": "/((?!api/|\\.well-known/|llms\\.txt|sitemap\\.xml|robots\\.txt|.*\\.(webp|png|jpg|jpeg|json|txt|xml|js|css|woff2?)).*)",
-      "destination": "/"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

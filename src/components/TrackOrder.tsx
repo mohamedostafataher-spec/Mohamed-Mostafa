@@ -4,6 +4,7 @@ import {
   MapPin, Eye, Clock, ShieldCheck, Box, Truck, Sparkles, Check, Search, Smartphone
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import SEO from './SEO';
 import { dbService } from '../services/db';
 import { Order } from '../types';
 import OrderDetailView from './OrderDetailView';
@@ -204,6 +205,11 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
 
   return (
     <div className="py-24 px-4 bg-[#FCFAF7] min-h-screen relative overflow-hidden flex items-center justify-center">
+      <SEO 
+        title="تتبع الطلبية الملكية - سولتة" 
+        description="تابعي حالة شحنتكِ الملكية من سولتة مباشرة. أدخلي رقم الطلب أو الجوال لمعرفة أين وصلت باقتكِ الفاخرة." 
+        path="/track-order" 
+      />
       {/* Decorative luxury vector highlights */}
       <div className="absolute right-0 top-0 w-96 h-96 bg-[#DF8A9C]/5 rounded-full blur-3xl -z-10 pointer-events-none" />
       <div className="absolute left-0 bottom-0 w-96 h-96 bg-amber-500/3 rounded-full blur-3xl -z-10 pointer-events-none" />

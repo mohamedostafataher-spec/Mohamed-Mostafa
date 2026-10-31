@@ -35,8 +35,9 @@ interface TelemetryData {
 let inMemoryPixelLogs: PixelEventLog[] = [];
 let pixelLogListeners: ((logs: PixelEventLog[]) => void)[] = [];
 let visitorCountListeners: ((count: number) => void)[] = [];
-let liveVisitorCount = 1;
+let liveVisitorCount = 0;
 let activeChannel: any = null;
+let initPromise: Promise<void> | null = null;
 
 /**
  * Check if debug mode is active (?debug_tracking=1)
@@ -189,11 +190,13 @@ export const logPixelEvent = (
 
   // Broadcast to global channel so Admin sees it from ALL users (Others only, to avoid local duplicates)
   if (status === 'sent' && activeChannel && typeof window !== 'undefined') {
-    activeChannel.send({
-      type: 'broadcast',
-      event: 'pixel-event',
-      payload: newLog
-    }).catch(() => {});
+    try {
+      activeChannel.send({
+        type: 'broadcast',
+        event: 'pixel-event',
+        payload: newLog
+      });
+    } catch {}
   }
 };
 
@@ -238,130 +241,133 @@ export const subscribePixelLogs = (cb: (logs: PixelEventLog[]) => void) => {
  * Initializes Global Store Pulse Sync (Supabase Realtime)
  * Tracks active visitors and broadcasts browsing activity to all admins
  */
-export const initGlobalSync = () => {
-  if (typeof window === 'undefined' || !supabase || activeChannel) return;
+export const initGlobalSync = async () => {
+  if (typeof window === 'undefined' || !supabase) return;
+  
+  if (initPromise) return initPromise;
 
   // 1. Capture and store UTM parameters on initial landing
   captureUtmParams();
-  const traffic = detectTrafficSource();
 
-  // 2. Anonymous visitor session
-  let sessionId = sessionStorage.getItem('sulta_visitor_session_id');
-  const isNewSession = !sessionId;
-  if (!sessionId) {
-    sessionId = 'guest_' + Math.random().toString(36).substring(2, 12);
-    sessionStorage.setItem('sulta_visitor_session_id', sessionId);
+  // Listen for user interaction event from index.html
+  if (typeof window !== 'undefined') {
+    window.addEventListener('init-analytics', () => {
+      // Re-fetch settings if needed or use passed ones
+      const storedSettings = localStorage.getItem('sulta_settings');
+      const settings = storedSettings ? JSON.parse(storedSettings) : { facebookPixelId: '1648674350574190', tiktokPixelId: 'DBESRBJC77U4J2JQDUB0' };
+      initPixels(settings);
+    }, { once: true });
   }
 
-  // 3. Persistent session storage with multi-table fallback (New requirement)
-  const utm = getStoredUtmParams();
-  const referrer = typeof document !== 'undefined' ? document.referrer : '';
-  
-  // Check if current user is an admin to label traffic accurately
-  const isAdmin = !!localStorage.getItem('sulta_admin_auth_user');
-  
-  if (isNewSession) {
-    const tz = typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '';
-    let clientCity = 'الرياض';
-    let clientCountry = 'SA';
+  initPromise = (async () => {
+    const traffic = detectTrafficSource();
+
+    // 2. Anonymous visitor session
+    let sessionId = sessionStorage.getItem('sulta_visitor_session_id');
+    const isNewSession = !sessionId;
+    if (!sessionId) {
+      sessionId = 'guest_' + Math.random().toString(36).substring(2, 12);
+      sessionStorage.setItem('sulta_visitor_session_id', sessionId);
+    }
+
+    // 3. Persistent session storage
+    const utm = getStoredUtmParams();
+    const referrer = typeof document !== 'undefined' ? document.referrer : '';
+    const isAdmin = !!localStorage.getItem('sulta_admin_auth_user');
     
-    const lowerTz = tz.toLowerCase();
-    if (lowerTz.includes('cairo') || lowerTz.includes('egypt')) {
-      clientCity = 'القاهرة';
-      clientCountry = 'EG';
-    } else if (lowerTz.includes('dubai')) {
-      clientCity = 'دبي';
-      clientCountry = 'AE';
-    } else if (lowerTz.includes('kuwait')) {
-      clientCity = 'الكويت';
-      clientCountry = 'KW';
-    } else if (lowerTz.includes('qatar')) {
-      clientCity = 'الدوحة';
-      clientCountry = 'QA';
-    }
-
-    const sessionData = {
-      session_id: sessionId,
-      utm_source: utm.utm_source || traffic.source,
-      utm_medium: utm.utm_medium || '',
-      utm_campaign: utm.utm_campaign || '',
-      utm_content: utm.utm_content || '',
-      utm_term: utm.utm_term || '',
-      referrer: referrer,
-      landing_page: window.location.pathname,
-      city: clientCity,
-      country: clientCountry,
-      is_admin: isAdmin,
-      device: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-      metadata: { ...utm, is_admin: isAdmin }, // Store all captured params as a JSON blob
-      created_at: new Date().toISOString()
-    };
-
-    if (isTrackingDebugMode()) {
-       console.log('[Analytics] Persisting new session:', sessionData);
-    }
-
-    // Primary: user_sessions table
-    supabase.from('user_sessions').insert([sessionData]).then(({ error }) => {
-      if (error && isTrackingDebugMode()) {
-        console.warn('[Analytics] Session persistence failed:', error);
+    if (isNewSession) {
+      const tz = typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '';
+      let clientCity = 'الرياض';
+      let clientCountry = 'SA';
+      
+      const lowerTz = tz.toLowerCase();
+      if (lowerTz.includes('cairo') || lowerTz.includes('egypt')) {
+        clientCity = 'القاهرة';
+        clientCountry = 'EG';
+      } else if (lowerTz.includes('dubai')) {
+        clientCity = 'دبي';
+        clientCountry = 'AE';
+      } else if (lowerTz.includes('kuwait')) {
+        clientCity = 'الكويت';
+        clientCountry = 'KW';
+      } else if (lowerTz.includes('qatar')) {
+        clientCity = 'الدوحة';
+        clientCountry = 'QA';
+      } else if (lowerTz.includes('riyadh') || lowerTz.includes('saudi')) {
+        clientCity = 'الرياض';
+        clientCountry = 'SA';
       }
-    }).catch(() => {});
-  }
 
-  // 4. Ping visit to legacy analytics endpoint for backward compatibility
-  try {
-    const tz = typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '';
-    let pingCity = 'الرياض';
-    if (tz.toLowerCase().includes('cairo')) pingCity = 'القاهرة';
-    else if (tz.toLowerCase().includes('dubai')) pingCity = 'دبي';
-
-    fetch('/api/analytics/visit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      const sessionData = {
         session_id: sessionId,
-        page: window.location.pathname,
-        referrer,
         utm_source: utm.utm_source || traffic.source,
         utm_medium: utm.utm_medium || '',
         utm_campaign: utm.utm_campaign || '',
-        city: pingCity,
-        is_admin: isAdmin
-      })
-    }).catch(() => {});
-  } catch {}
+        utm_content: utm.utm_content || '',
+        utm_term: utm.utm_term || '',
+        referrer: referrer,
+        landing_page: window.location.pathname,
+        city: clientCity,
+        country: clientCountry,
+        is_admin: isAdmin,
+        device: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        metadata: { ...utm, is_admin: isAdmin, timezone: tz },
+        created_at: new Date().toISOString()
+      };
 
-  // 5. If new visitor session, log arrival event
-  if (isNewSession) {
-    logPixelEvent(traffic.pixel, 'PageView', `زائر جديد عبر ${traffic.label} ${traffic.icon}${isAdmin ? ' (إدارة)' : ''}`);
-  }
+      try {
+        await supabase.from('user_sessions').insert([sessionData]);
+      } catch (err) {
+        if (isTrackingDebugMode()) console.warn('[Analytics] Session persistence failed:', err);
+      }
 
-  const channelId = 'sulta-store-pulse';
-  activeChannel = supabase.channel(channelId, {
-    config: {
-      presence: { key: sessionId },
-      broadcast: { self: false }
+      // Log arrival event
+      logPixelEvent(traffic.pixel, 'PageView', `زائر حقيقي من ${clientCity} عبر ${traffic.label} ${traffic.icon}${isAdmin ? ' (إدارة)' : ''}`);
     }
-  });
 
-  activeChannel
-    .on('broadcast', { event: 'pixel-event' }, ({ payload }: { payload: PixelEventLog }) => {
-       if (payload && payload.id && !inMemoryPixelLogs.some(l => l.id === payload.id)) {
-          inMemoryPixelLogs = [payload, ...inMemoryPixelLogs].slice(0, 100);
-          pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
-       }
-    })
-    .on('presence', { event: 'sync' }, () => {
-      const state = activeChannel.presenceState();
-      const count = Object.keys(state).length;
-      // 100% Real presence count - no artificial minimum of 1
-      liveVisitorCount = count;
-      visitorCountListeners.forEach(l => l(liveVisitorCount));
-    })
-    .subscribe(async (status: string) => {
+    // 4. Supabase Realtime Channel
+    const channelId = 'sulta-store-pulse';
+    
+    // Cleanup if already exists somehow
+    if (activeChannel) {
+      try {
+        supabase.removeChannel(activeChannel);
+      } catch {}
+    }
+
+    activeChannel = supabase.channel(channelId, {
+      config: {
+        presence: { key: sessionId },
+        broadcast: { self: false }
+      }
+    });
+
+    // Register ALL handlers BEFORE subscribing
+    activeChannel
+      .on('broadcast', { event: 'pixel-event' }, ({ payload }: { payload: PixelEventLog }) => {
+         if (payload && payload.id && !inMemoryPixelLogs.some(l => l.id === payload.id)) {
+            inMemoryPixelLogs = [payload, ...inMemoryPixelLogs].slice(0, 100);
+            pixelLogListeners.forEach(l => l(inMemoryPixelLogs));
+         }
+      })
+      .on('presence', { event: 'sync' }, () => {
+        const state = activeChannel.presenceState();
+        const count = Object.keys(state).length;
+        liveVisitorCount = count;
+        visitorCountListeners.forEach(l => l(liveVisitorCount));
+      })
+      .on('presence', { event: 'join' }, ({ key, newPresences }: any) => {
+         if (isTrackingDebugMode()) console.log('Visitor joined:', key, newPresences);
+      })
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }: any) => {
+         if (isTrackingDebugMode()) console.log('Visitor left:', key, leftPresences);
+      });
+
+    // Finally subscribe
+    activeChannel.subscribe(async (status: string) => {
       if (status === 'SUBSCRIBED') {
+        if (isTrackingDebugMode()) console.log('[Realtime] Subscribed to pulse');
         await activeChannel.track({
           session_id: sessionId,
           online_at: new Date().toISOString(),
@@ -371,6 +377,9 @@ export const initGlobalSync = () => {
         });
       }
     });
+  })();
+
+  return initPromise;
 };
 
 /**
@@ -393,7 +402,7 @@ export const trackClick = (elementId: string, elementText: string) => {
       }),
       status: 'analytics_click',
       created_at: new Date().toISOString()
-    }]).catch(() => {});
+    }]);
   }
 };
 
@@ -1399,7 +1408,7 @@ export const getProductAnalytics = (products: Product[], orders: Order[]): Produ
     const liveAdditions = data[product.id]?.cartAdditions || 0;
     const liveOrders = actualOrdersCountMap[product.id] || 0;
 
-    const views = Math.max(liveViews, liveOrders * 3);
+    const views = liveViews;
     const cartAdditions = liveAdditions;
     const ordersCount = liveOrders;
 

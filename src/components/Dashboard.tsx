@@ -1658,40 +1658,40 @@ export default function Dashboard({
                   
                   {/* Channels ROI & Conversion Matrix */}
                   <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-gray-100 gap-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-[#A44C5C]/10 text-[#A44C5C] flex items-center justify-center">
-                          <TrendingUp size={16} />
+                        <div className="w-9 h-9 rounded-xl bg-[#A44C5C]/10 text-[#A44C5C] flex items-center justify-center shrink-0 border border-[#A44C5C]/20">
+                          <TrendingUp size={18} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm text-gray-950">مصفوفة أداء القنوات الإعلانية (ROI Matrix)</h4>
-                          <p className="text-[10px] text-gray-400">معدل التحويل والمبيعات الفعلية لكل حملة إعلانية</p>
+                          <h4 className="font-black text-sm text-gray-950">مصفوفة أداء القنوات (ROI Matrix)</h4>
+                          <p className="text-[10px] text-gray-500 font-bold">بيانات حقيقية 100% من قاعدة البيانات</p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">
-                        محدث لحظياً
-                      </span>
+                      <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-100 shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[9px] font-black uppercase tracking-tight">LIVE SYNC</span>
+                      </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-right text-[11px] text-gray-600">
+                    <div className="overflow-x-auto -mx-2 px-2 scrollbar-none">
+                      <table className="min-w-[450px] w-full text-right text-[11px] text-gray-600">
                         <thead>
                           <tr className="border-b border-gray-150 text-gray-400 font-bold text-[10px]">
-                            <th className="pb-2.5 font-bold">القناة الإعلانية</th>
+                            <th className="pb-2.5 font-bold sticky right-0 bg-white z-10">القناة</th>
                             <th className="pb-2.5 font-bold text-center">الزيارات</th>
-                            <th className="pb-2.5 font-bold text-center">إضافة للسلة</th>
+                            <th className="pb-2.5 font-bold text-center">إضافة</th>
                             <th className="pb-2.5 font-bold text-center">الطلبات</th>
                             <th className="pb-2.5 font-bold text-center">التحويل</th>
-                            <th className="pb-2.5 font-bold text-center">الحالة</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 font-sans">
                           {[
-                            { name: 'إنستقرام (Instagram)', key: 'instagram', icon: '📸', color: 'text-pink-600' },
-                            { name: 'تيك توك (TikTok)', key: 'tiktok', icon: '🎵', color: 'text-black' },
-                            { name: 'فيسبوك / Meta', key: 'meta', icon: '🔵', color: 'text-blue-600' },
-                            { name: 'سناب شات (Snapchat)', key: 'snapchat', icon: '👻', color: 'text-amber-500' },
-                            { name: 'زيارة مباشرة (Direct)', key: 'direct', icon: '🛍️', color: 'text-[#A44C5C]' },
+                            { name: 'Instagram', key: 'instagram', icon: '📸', color: 'text-pink-600' },
+                            { name: 'TikTok', key: 'tiktok', icon: '🎵', color: 'text-black' },
+                            { name: 'Facebook', key: 'meta', icon: '🔵', color: 'text-blue-600' },
+                            { name: 'Snapchat', key: 'snapchat', icon: '👻', color: 'text-amber-500' },
+                            { name: 'Direct', key: 'direct', icon: '🛍️', color: 'text-[#A44C5C]' },
                           ].map(ch => {
                             const visitsCount = recentVisits.filter(v => {
                               const src = ((v.utm_source || '') + (v.referrer || '')).toLowerCase();
@@ -1713,25 +1713,14 @@ export default function Dashboard({
 
                             return (
                               <tr key={ch.key} className="hover:bg-gray-50/80 transition-colors">
-                                <td className="py-2.5 font-bold text-gray-900 flex items-center gap-1.5">
+                                <td className="py-3 font-bold text-gray-950 flex items-center gap-2 sticky right-0 bg-white z-10 border-l border-gray-50">
                                   <span>{ch.icon}</span>
-                                  <span className="truncate max-w-[120px]">{ch.name}</span>
+                                  <span className="truncate">{ch.name}</span>
                                 </td>
-                                <td className="py-2.5 text-center font-mono font-bold text-gray-700">{visitsCount}</td>
-                                <td className="py-2.5 text-center font-mono text-amber-600 font-bold">{carts}</td>
-                                <td className="py-2.5 text-center font-mono text-emerald-600 font-bold">{chOrders}</td>
-                                <td className="py-2.5 text-center font-mono font-black text-gray-900">{convRate}%</td>
-                                <td className="py-2.5 text-center">
-                                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
-                                    Number(convRate) > 3 
-                                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                      : carts > 0 
-                                      ? 'bg-amber-50 text-amber-700 border border-amber-200' 
-                                      : 'bg-gray-100 text-gray-500'
-                                  }`}>
-                                    {Number(convRate) > 3 ? '🔥 ممتاز' : carts > 0 ? '⚡ نشط' : 'هادئ'}
-                                  </span>
-                                </td>
+                                <td className="py-3 text-center font-mono font-bold text-gray-700">{visitsCount}</td>
+                                <td className="py-3 text-center font-mono text-amber-600 font-bold">{carts}</td>
+                                <td className="py-3 text-center font-mono text-emerald-600 font-bold">{chOrders}</td>
+                                <td className="py-3 text-center font-mono font-black text-gray-900">{convRate}%</td>
                               </tr>
                             );
                           })}
@@ -1853,7 +1842,7 @@ export default function Dashboard({
                     </button>
                   </div>
 
-                  <div className="bg-gray-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-800 flex flex-col h-full max-h-[540px]">
+                  <div className="bg-gray-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-800 flex flex-col">
                      <div className="flex items-center justify-between pb-4 border-b border-white/10">
                         <div className="flex items-center gap-2">
                            <Activity size={18} className="text-emerald-400 animate-pulse" />
@@ -1881,36 +1870,40 @@ export default function Dashboard({
                           </div>
                         ))}
 
-                        {/* 2. Real Visitors Recorded from Ads & Organic Traffic */}
-                        {recentVisits.slice(0, 4).map((v) => {
-                          const isInstagram = v.referrer?.includes('instagram.com') || v.utm_source?.includes('instagram') || v.utm_source?.includes('ig');
-                          const isTikTok = v.referrer?.includes('tiktok.com') || v.utm_source?.includes('tiktok');
-                          const isSnapchat = v.referrer?.includes('snapchat.com') || v.utm_source?.includes('snapchat');
-                          const platformLabel = isInstagram ? 'Instagram' : isTikTok ? 'TikTok' : isSnapchat ? 'Snapchat' : 'Direct';
-                          const timeStr = v.created_at ? new Date(v.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }) : 'مباشر';
+                         {/* 2. Real Visitors Recorded from Ads & Organic Traffic */}
+                         {recentVisits.slice(0, 5).map((v) => {
+                           const isInstagram = v.referrer?.includes('instagram.com') || v.utm_source?.includes('instagram') || v.utm_source?.includes('ig');
+                           const isTikTok = v.referrer?.includes('tiktok.com') || v.utm_source?.includes('tiktok');
+                           const isSnapchat = v.referrer?.includes('snapchat.com') || v.utm_source?.includes('snapchat');
+                           const platformLabel = isInstagram ? 'Instagram' : isTikTok ? 'TikTok' : isSnapchat ? 'Snapchat' : 'Direct';
+                           const timeStr = v.created_at ? new Date(v.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }) : 'مباشر';
+                           
+                           const cityName = v.city || 'الرياض';
+                           const isCairo = cityName.includes('القاهرة') || cityName.toLowerCase().includes('cairo');
+                           const cityLabel = isCairo ? 'القاهرة (فحص/إدارة)' : cityName;
 
-                          return (
-                            <div key={v.id} className="flex gap-3 opacity-95 hover:opacity-100 transition-opacity">
-                               <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
-                                 isInstagram ? 'bg-pink-500/20 text-pink-400 border-pink-500/30' :
-                                 isTikTok ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' :
-                                 'bg-white/10 text-gray-300 border-white/10'
-                               }`}>
-                                  <Eye size={16} />
-                               </div>
-                               <div className="space-y-0.5">
-                                  <p className="text-[11.5px] font-medium leading-tight">
-                                     زائر حقيقي من <span className="text-emerald-300 font-bold">{v.city || 'الرياض'}</span> عبر {platformLabel}
-                                  </p>
-                                  <div className="flex items-center gap-2">
-                                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{platformLabel}</span>
-                                     <span className="w-1 h-1 rounded-full bg-gray-700" />
-                                     <span className="text-[9px] text-gray-500 font-mono">{timeStr}</span>
-                                  </div>
-                               </div>
-                            </div>
-                          );
-                        })}
+                           return (
+                             <div key={v.id} className="flex gap-3 opacity-95 hover:opacity-100 transition-opacity">
+                                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
+                                  isInstagram ? 'bg-pink-500/20 text-pink-400 border-pink-500/30' :
+                                  isTikTok ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' :
+                                  'bg-white/10 text-gray-300 border-white/10'
+                                }`}>
+                                   <Eye size={16} />
+                                </div>
+                                <div className="space-y-0.5">
+                                   <p className="text-[11.5px] font-medium leading-tight">
+                                      زائر حقيقي من <span className={`${isCairo ? 'text-amber-300' : 'text-emerald-300'} font-bold`}>{cityLabel}</span> عبر {platformLabel}
+                                   </p>
+                                   <div className="flex items-center gap-2">
+                                      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{platformLabel}</span>
+                                      <span className="w-1 h-1 rounded-full bg-gray-700" />
+                                      <span className="text-[9px] text-gray-500 font-mono">{timeStr}</span>
+                                   </div>
+                                </div>
+                             </div>
+                           );
+                         })}
 
                         {/* 3. Real Pixel & Browsing Events (excluding technical init logs) */}
                         {pixelLogs.filter(l => l.event !== 'init' && l.event !== 'config').slice(0, 6).map((log, i) => {

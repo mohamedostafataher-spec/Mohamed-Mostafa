@@ -1331,7 +1331,7 @@ export default function OrderDetailView({
               </div>
               <h3 className="font-serif text-xl font-bold">نشكر ثقتك ورأيكِ المرموق 🌸</h3>
               <p className="text-xs text-gray-500 mt-2 max-w-md mx-auto leading-relaxed">
-                تم تسجيل معايير الجودة بنجاح ونقل تقديراتكِ وملاحظاتكِ لمدراء بوتيك SULTA لضمان الأفضل دائماً لتاج طلّتكِ البهيّة.
+                تم تسجيل معايير الجودة بنجاح ونقل تقديراتكِ وملاحظاتكِ لمدراء بوتيك SULTA لضمان أعلى معايير الجودة دائماً لتاج طلّتكِ البهيّة.
               </p>
             </motion.div>
           ) : (

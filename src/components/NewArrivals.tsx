@@ -4,6 +4,7 @@ import { Star, Heart, Calendar, Sparkles, Inbox } from 'lucide-react';
 import { Product } from '../types';
 import { cleanImgUrl } from '../services/db';
 import { ProductPrice } from './ProductPrice';
+import SEO from './SEO';
 
 interface NewArrivalsProps {
   products: Product[];
@@ -37,6 +38,11 @@ export default function NewArrivals({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-right" dir="rtl">
+      <SEO 
+        title="وصل حديثاً - أحدث تصاميم SULTA" 
+        description="كوني أول من يكتشف أحدث صيحات الموضة في عالم أزياء النوم والبيجامات الفاخرة. تصاميم جديدة تضاف باستمرار لتناسب ذوقكِ." 
+        path="/new-arrivals" 
+      />
       {/* Editorial Header */}
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <div className="flex justify-center items-center gap-1.5 text-[#A44C5C] text-xs font-serif tracking-widest font-bold">

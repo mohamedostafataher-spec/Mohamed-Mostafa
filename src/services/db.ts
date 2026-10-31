@@ -251,7 +251,8 @@ export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
   // Fallback: Assume it's a filename in the Supabase 'products' bucket
   const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
   if (cleanPath.includes('.')) {
-    return `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
+    const fullSupabaseUrl = `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
+    return `https://wsrv.nl/?url=${encodeURIComponent(fullSupabaseUrl)}&w=650&output=webp&q=80`;
   }
 
   return '/img/sulta_default_1_1781140865386.webp';
@@ -726,6 +727,36 @@ function mapTicket(data: any): SupportTicket {
 export const dbService = {
   supabase,
   
+  getProductById: async (id: string): Promise<Product | null> => {
+    try {
+      if (!id) return null;
+      const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+      if (!error && data) {
+        return mapProduct(data);
+      }
+    } catch (err) {
+      console.warn("[dbService] getProductById error fetching from Supabase:", err);
+    }
+
+    // Fallback: Search in SEED_FALLBACK_PRODUCTS
+    const fallback = SEED_FALLBACK_PRODUCTS.find(p => 
+      p.id === id || 
+      p.id.includes(id) || 
+      id.includes(p.id)
+    );
+    if (fallback) return fallback;
+
+    // Fallback: search all Supabase products
+    try {
+      const { data: allProds } = await supabase.from('products').select('*');
+      if (allProds && Array.isArray(allProds)) {
+        const found = allProds.find(p => p.id === id || (p.id && id && (p.id.includes(id) || id.includes(p.id))));
+        if (found) return mapProduct(found);
+      }
+    } catch {}
+
+    return null;
+  },
   uploadImage: async (file: File): Promise<string | null> => {
     try {
       // Use a completely safe filename structure to avoid "Invalid path specified" error

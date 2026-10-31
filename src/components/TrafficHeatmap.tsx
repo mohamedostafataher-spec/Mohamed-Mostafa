@@ -208,7 +208,7 @@ export default function TrafficHeatmap() {
   }
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden h-full flex flex-col" dir="rtl">
+    <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col" dir="rtl">
       <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-[#A44C5C]/10 flex items-center justify-center text-[#A44C5C]">

@@ -835,7 +835,7 @@ export default function CheckoutModal({
                             </span>
                           </div>
                           <p className="text-[10px] text-gray-500 mt-0.5">
-                            ادفعي نقداً أو عبر مدى عند وصول المندوب لباب منزلك
+                            ادفعي نقداً أو عبر مدى (Mada) عند وصول المندوب لباب منزلك
                           </p>
                         </div>
                       </div>
@@ -848,7 +848,7 @@ export default function CheckoutModal({
                     </div>
                   </div>
 
-                  {/* OPTION 2: DIRECT BANK TRANSFER (SAUDI BANK ACCOUNT) */}
+                  {/* OPTION 2: BANK TRANSFER / MADA */}
                   <div
                     onClick={() => setSelectedPayment('bank_transfer')}
                     className={`w-full text-right p-4 rounded-2xl transition-all border cursor-pointer ${
@@ -860,19 +860,20 @@ export default function CheckoutModal({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
-                          <Check size={18} />
+                          <Globe size={18} />
                         </span>
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-black text-xs text-gray-950">
-                              تحويل بنكي / مدى (Bank Transfer / Mada)
+                              تحويل بنكي مباشر / مدى (Direct Mada Transfer)
                             </span>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800">
-                              متاح (الراجحي + العربي) 🏦
-                            </span>
+                            <div className="flex gap-1">
+                               <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-blue-600 text-white">MADA</span>
+                               <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-emerald-600 text-white">مدى</span>
+                            </div>
                           </div>
                           <p className="text-[10px] text-gray-500 mt-0.5">
-                            تحويل مباشر لأحد حسابات المتجر وإرسال صورة الإشعار لتأكيد الشحن فوراً
+                            تحويل فوري لأحد حسابات المتجر (الراجحي أو العربي) وتأكيد الشحن فوراً
                           </p>
                         </div>
                       </div>

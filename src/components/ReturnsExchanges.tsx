@@ -1,38 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Truck, CornerUpLeft, Clock, MessageCircle, Star, Sparkles, ChevronDown, CheckCircle2 } from 'lucide-react';
+import SEO from './SEO';
 
 export default function ReturnsExchanges() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
-    document.title = "سياسة الاستبدال والاسترجاع | SULTA ✨";
-    
-    // Update Meta Description
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement('meta');
-      metaDescription.setAttribute('name', 'description');
-      document.head.appendChild(metaDescription);
-    }
-    metaDescription.setAttribute("content", "تعرفي على سياسة الاستبدال والاسترجاع في SULTA. رضاكِ هو أولويتنا. ضمان الجودة، شحن آمن، وتجربة تسوق فاخرة ترضيكِ.");
-
-    // Update Open Graph tags
-    let ogTitle = document.querySelector('meta[property="og:title"]');
-    if (!ogTitle) {
-      ogTitle = document.createElement('meta');
-      ogTitle.setAttribute('property', 'og:title');
-      document.head.appendChild(ogTitle);
-    }
-    ogTitle.setAttribute("content", "سياسة الاستبدال والاسترجاع | SULTA");
-
-    let ogDesc = document.querySelector('meta[property="og:description"]');
-    if (!ogDesc) {
-      ogDesc = document.createElement('meta');
-      ogDesc.setAttribute('property', 'og:description');
-      document.head.appendChild(ogDesc);
-    }
-    ogDesc.setAttribute("content", "تعرفي على سياسة الاستبدال والاسترجاع في SULTA. رضاكِ هو أولويتنا.");
-
     // Structured Data for FAQPage
     const structuredData = {
       "@context": "https://schema.org",
@@ -120,6 +93,11 @@ export default function ReturnsExchanges() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20 font-sans" dir="rtl">
+      <SEO 
+        title="سياسة الاستبدال والاسترجاع - سولتة" 
+        description="تعرفي على سياسة سولتة المرنة للاستبدال والاسترجاع خلال ١٤ يوماً. نضمن لكِ الجودة والرضا التام في كل قطعة." 
+        path="/returns" 
+      />
       {/* Hero Section */}
       <div className="bg-[#FAF5F0] py-24 px-6 border-b border-[#DF8A9D]/20 text-center relative overflow-hidden">
         <Sparkles className="absolute top-10 right-10 text-[#DF8A9D]/30" size={32} />

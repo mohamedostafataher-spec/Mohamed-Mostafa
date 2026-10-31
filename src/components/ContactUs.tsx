@@ -6,6 +6,7 @@ import { Settings, ContactMessage } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
 import SocialLinksView from './SocialLinksView';
 import { trackContact, trackLead } from '../utils/analytics';
+import SEO from './SEO';
 
 interface ContactUsProps {
   settings?: Settings;
@@ -52,6 +53,11 @@ export default function ContactUs({ settings }: ContactUsProps) {
 
   return (
     <div className="bg-white min-h-screen">
+      <SEO 
+        title="تواصل معنا - خدمة عملاء سولتة" 
+        description="فريق سولتة متاح لخدمتكِ طوال اليوم. استفسارات عن الموديلات، تتبع الطلبات، أو اقتراحاتكِ الملكية محل اهتمامنا." 
+        path="/contact" 
+      />
       
       {/* Header Title */}
       <div className="bg-[#FAF5F0] py-24 md:py-32 border-b border-[#DF8A9D]/20" dir="rtl">

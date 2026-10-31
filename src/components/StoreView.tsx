@@ -10,6 +10,7 @@ import StyleAssistant from './StyleAssistant';
 import { ProductPrice } from './ProductPrice';
 import SultaImage from './SultaImage';
 import { cleanImgUrl } from '../services/db';
+import SEO from './SEO';
 
 interface StoreViewProps {
   products: Product[];
@@ -213,6 +214,13 @@ export default function StoreView({
 
   return (
     <div className="bg-white min-h-screen text-[#111827] font-sans antialiased text-xs md:text-sm select-none" dir="rtl">
+      <SEO 
+        title={selectedCategory === 'offers' ? 'العروض والتخفيضات الحصرية - سولتة' : 'المتجر والكتالوج - تسوقي تشكيلة سولتة الملكية'} 
+        description={selectedCategory === 'offers' 
+          ? 'استمتعي بخصومات مباشرة على أرقى تشكيلات ملابس النوم والبيجامات النسائية. عروض ملكية لفترة محدودة وتوصيل سريع.' 
+          : 'تصفحي التشكيلة الكاملة من البيجامات النسائية الفاخرة وأزياء النوم الراقية. خامات طبيعية وتصاميم حصرية تليق بكِ.'}
+        path={selectedCategory === 'offers' ? '/offers' : '/store'} 
+      />
       
       {/* Breadcrumb Navigation (Salla / Nalah Style) */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1 text-[11px] text-gray-500 font-medium flex items-center gap-1.5">
@@ -597,7 +605,7 @@ export default function StoreView({
                       {/* Sulta Image with Smooth Hover Zoom */}
                       <SultaImage 
                         src={currentImg} 
-                        alt={product.nameAr || product.nameEn} 
+                        alt={`${product.nameAr} - ${product.categoryAr || 'بيجامة'} سولتة فاخرة`} 
                         className="w-full h-full"
                         imgClassName="w-full h-full object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
                         priority={index < 4}
@@ -803,7 +811,7 @@ export default function StoreView({
                 <div className="w-full md:w-1/2 bg-gray-50 aspect-square md:aspect-auto relative min-h-[320px] md:min-h-[460px]">
                   <SultaImage 
                     src={quickViewProduct.images?.[qvActiveImageIdx]}
-                    alt={quickViewProduct.nameAr}
+                    alt={`${quickViewProduct.nameAr} - ${quickViewProduct.categoryAr || 'بيجامة'} سولتة`}
                     className="w-full h-full"
                     imgClassName="object-cover"
                   />
