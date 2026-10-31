@@ -110,7 +110,7 @@ export default function NewArrivals({
                     alt={prod.nameAr}
                     className="w-full h-full"
                     imgClassName="w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-[800ms]"
-                    priority={idx < 2}
+                    priority={idx < 4}
                   />
                 </div>
 

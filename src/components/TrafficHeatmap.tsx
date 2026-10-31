@@ -306,44 +306,71 @@ export default function TrafficHeatmap() {
     });
   }, [visits, timeFilter]);
 
-  // Traffic Source Breakdown
+  // Traffic Source Breakdown: Grouped by unique visitors for 100% consistency with total visitors
   const sourceChartData = useMemo(() => {
-    const counts: Record<string, number> = {
-      'Instagram': 0,
-      'TikTok': 0,
-      'Meta / FB': 0,
-      'Snapchat': 0,
-      'Google': 0,
-      'Direct': 0
-    };
+    const sessionSourceMap = new Map<string, { category: string; views: number }>();
 
     filteredVisits.forEach((v: any) => {
+      const sid = v.sessionId || v.id;
       const src = (v.utm_source || v.referrer || '').toLowerCase();
-      if (src.includes('instagram') || src.includes('ig')) counts['Instagram']++;
-      else if (src.includes('tiktok') || src.includes('tt')) counts['TikTok']++;
-      else if (src.includes('facebook') || src.includes('fb') || src.includes('meta')) counts['Meta / FB']++;
-      else if (src.includes('snapchat') || src.includes('snap')) counts['Snapchat']++;
-      else if (src.includes('google')) counts['Google']++;
-      else counts['Direct']++;
+      let category = 'Direct';
+      if (src.includes('instagram') || src.includes('ig')) category = 'Instagram';
+      else if (src.includes('tiktok') || src.includes('tt')) category = 'TikTok';
+      else if (src.includes('facebook') || src.includes('fb') || src.includes('meta')) category = 'Meta / FB';
+      else if (src.includes('snapchat') || src.includes('snap')) category = 'Snapchat';
+      else if (src.includes('google')) category = 'Google';
+
+      if (!sessionSourceMap.has(sid)) {
+        sessionSourceMap.set(sid, { category, views: 1 });
+      } else {
+        sessionSourceMap.get(sid)!.views += 1;
+      }
+    });
+
+    const visitorCounts: Record<string, { visitors: number; views: number }> = {
+      'Instagram': { visitors: 0, views: 0 },
+      'TikTok': { visitors: 0, views: 0 },
+      'Meta / FB': { visitors: 0, views: 0 },
+      'Snapchat': { visitors: 0, views: 0 },
+      'Google': { visitors: 0, views: 0 },
+      'Direct': { visitors: 0, views: 0 }
+    };
+
+    sessionSourceMap.forEach(({ category, views }) => {
+      if (visitorCounts[category]) {
+        visitorCounts[category].visitors += 1;
+        visitorCounts[category].views += views;
+      } else {
+        visitorCounts['Direct'].visitors += 1;
+        visitorCounts['Direct'].views += views;
+      }
     });
 
     return [
-      { source: 'إنستقرام', count: counts['Instagram'], color: '#E1306C' },
-      { source: 'تيك توك', count: counts['TikTok'], color: '#000000' },
-      { source: 'فيسبوك', count: counts['Meta / FB'], color: '#1877F2' },
-      { source: 'سناب شات', count: counts['Snapchat'], color: '#FACC15' },
-      { source: 'جوجل', count: counts['Google'], color: '#4285F4' },
-      { source: 'مباشر', count: counts['Direct'], color: '#A44C5C' }
-    ].sort((a, b) => b.count - a.count);
+      { source: 'إنستقرام', visitors: visitorCounts['Instagram'].visitors, views: visitorCounts['Instagram'].views, color: '#E1306C' },
+      { source: 'تيك توك', visitors: visitorCounts['TikTok'].visitors, views: visitorCounts['TikTok'].views, color: '#000000' },
+      { source: 'فيسبوك', visitors: visitorCounts['Meta / FB'].visitors, views: visitorCounts['Meta / FB'].views, color: '#1877F2' },
+      { source: 'سناب شات', visitors: visitorCounts['Snapchat'].visitors, views: visitorCounts['Snapchat'].views, color: '#FACC15' },
+      { source: 'جوجل', visitors: visitorCounts['Google'].visitors, views: visitorCounts['Google'].views, color: '#4285F4' },
+      { source: 'مباشر', visitors: visitorCounts['Direct'].visitors, views: visitorCounts['Direct'].views, color: '#A44C5C' }
+    ].sort((a, b) => b.visitors - a.visitors);
   }, [filteredVisits]);
 
-  // Active Cities Breakdown
+  // Active Cities Breakdown: Grouped by unique visitors
   const activeCities = useMemo(() => {
-    const cities: Record<string, number> = {};
+    const sessionCityMap = new Map<string, string>();
     filteredVisits.forEach(v => {
-      const city = cleanCityName(v.city);
-      cities[city] = (cities[city] || 0) + 1;
+      const sid = v.sessionId || v.id;
+      if (!sessionCityMap.has(sid)) {
+        sessionCityMap.set(sid, cleanCityName(v.city));
+      }
     });
+
+    const cities: Record<string, number> = {};
+    sessionCityMap.forEach(cityName => {
+      cities[cityName] = (cities[cityName] || 0) + 1;
+    });
+
     return Object.entries(cities)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
@@ -461,7 +488,7 @@ export default function TrafficHeatmap() {
           {/* Source Breakdown Cards (100% Mobile Responsive, Zero Overlap) */}
           <div className="bg-gray-50/70 p-4 rounded-2xl border border-gray-100 space-y-3">
             {sourceChartData.map((item, idx) => {
-              const pct = totalHitsCount > 0 ? Math.round((item.count / totalHitsCount) * 100) : 0;
+              const pct = uniqueVisitorsCount > 0 ? Math.round((item.visitors / uniqueVisitorsCount) * 100) : 0;
               return (
                 <div key={idx} className="bg-white p-3 rounded-xl border border-gray-200/70 shadow-2xs hover:border-gray-300 transition-all">
                   <div className="flex items-center justify-between text-xs mb-1.5">
@@ -473,7 +500,10 @@ export default function TrafficHeatmap() {
                       <span className="font-bold text-gray-900">{item.source}</span>
                     </div>
                     <div className="flex items-center gap-2 font-mono text-xs">
-                      <span className="font-black text-gray-900">{item.count} زائر</span>
+                      <span className="font-black text-gray-900">{item.visitors} زائر</span>
+                      {item.views > item.visitors && (
+                        <span className="text-gray-400 font-normal text-[10px]">({item.views} مشاهدة)</span>
+                      )}
                       <span className="text-[11px] text-gray-400 font-bold bg-gray-100 px-2 py-0.5 rounded-md">
                         {pct}%
                       </span>
@@ -483,7 +513,7 @@ export default function TrafficHeatmap() {
                     <div 
                       className="h-full rounded-full transition-all duration-700 ease-out" 
                       style={{ 
-                        width: `${Math.max(item.count > 0 ? 4 : 0, pct)}%`, 
+                        width: `${Math.max(item.visitors > 0 ? 4 : 0, pct)}%`, 
                         backgroundColor: item.color 
                       }} 
                     />

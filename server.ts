@@ -46,6 +46,24 @@ async function startServer() {
     next();
   });
 
+  // Static Agentic Discoverability Endpoints
+  app.get('/.well-known/ard.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(path.join(__dirname, 'public/.well-known/ard.json'));
+  });
+  app.get('/llms.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public/llms.txt'));
+  });
+  app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public/sitemap.xml'));
+  });
+  app.get('/robots.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public/robots.txt'));
+  });
+
   // API Route: Generate Splash Image
   app.get("/api/generate-splash", async (req, res) => {
     if (!ai) {

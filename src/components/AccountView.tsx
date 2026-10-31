@@ -24,7 +24,7 @@ import { useToast } from './Toast';
 import { Order, Product, Country, Review, OrderStatus } from "../types";
 import { trackTikTokCompleteRegistration, ttqIdentify } from "../utils/tiktokPixel";
 import { trackCompleteRegistration } from "../utils/analytics";
-import { jsPDF } from "jspdf";
+// Removed static jsPDF import for performance optimization - now using dynamic import in handleDownloadInvoice
 import { dbService } from "../services/db";
 import OrderDetailView from "./OrderDetailView";
 import SupportTicketsClient from "./SupportTicketsClient";
@@ -210,8 +210,9 @@ export default function AccountView({
     prevOrdersRef.current = orders;
   }, [orders, trackedOrder]);
 
-  const handleDownloadInvoice = (order: Order) => {
+  const handleDownloadInvoice = async (order: Order) => {
     try {
+      const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "mm",

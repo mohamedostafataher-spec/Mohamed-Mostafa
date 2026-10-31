@@ -1,5 +1,7 @@
 {
   "specVersion": "1.0",
+  "identifier": "urn:air:sulta.vercel.app:host:sulta",
+  "displayName": "SULTA Atelier",
   "host": {
     "displayName": "SULTA Atelier",
     "identifier": "urn:air:sulta.vercel.app:host:sulta"

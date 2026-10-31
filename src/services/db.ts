@@ -2321,7 +2321,7 @@ export const dbService = {
   // ADD TEST PRODUCT
   addExperimentalPajama: async (): Promise<void> => {
     const product: Product = {
-      id: 'experimental-pajama-001',
+      id: 'a0000000-0000-4000-8000-000000000001',
       nameAr: 'بيجامة فيونكات وردي تجريبية',
       nameEn: 'Experimental Pink Bow Pajama Set',
       category: 'sleepwear',

@@ -600,7 +600,7 @@ export default function StoreView({
                         alt={product.nameAr || product.nameEn} 
                         className="w-full h-full"
                         imgClassName="w-full h-full object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
-                        priority={index < 2}
+                        priority={index < 4}
                       />
 
                       {/* Top Right: Wishlist Heart Floating Button */}

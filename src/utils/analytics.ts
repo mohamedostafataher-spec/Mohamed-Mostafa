@@ -297,7 +297,11 @@ export const initGlobalSync = () => {
     }
 
     // Primary: user_sessions table
-    supabase.from('user_sessions').insert([sessionData]).catch(() => {});
+    supabase.from('user_sessions').insert([sessionData]).then(({ error }) => {
+      if (error && isTrackingDebugMode()) {
+        console.warn('[Analytics] Session persistence failed:', error);
+      }
+    }).catch(() => {});
   }
 
   // 4. Ping visit to legacy analytics endpoint for backward compatibility
