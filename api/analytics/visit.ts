@@ -166,24 +166,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const allVisits: any[] = [];
       const sessionIds = new Set<string>();
 
-      if (trafficLogs) {
-        trafficLogs.forEach(t => {
-          const sid = t.session_id || t.id;
-          allVisits.push({
-            id: t.id || sid,
-            sessionId: sid,
-            page: t.landing_page || t.page || '/',
-            referrer: t.referrer || '',
-            utm_source: t.utm_source || '',
-            utm_campaign: t.utm_campaign || '',
-            city: cleanCity(t.city),
-            country: t.country || 'SA',
-            created_at: t.created_at || new Date().toISOString()
-          });
-          sessionIds.add(sid);
-        });
-      }
-
       if (sessions) {
         sessions.forEach(s => {
           const sid = s.session_id || s.id;
@@ -245,6 +227,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           }
         });
       }
+
+      const todayStr = new Date().toISOString().split('T')[0];
 
       if (allVisits.length === 0) {
         return res.status(200).json({

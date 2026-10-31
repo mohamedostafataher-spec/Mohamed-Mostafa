@@ -337,6 +337,7 @@ export default function StoreView({
               <button
                 type="button"
                 onClick={() => setMobileLayout('single')}
+                aria-label="عرض عمود واحد"
                 className={`p-1 rounded text-xs transition-colors ${mobileLayout === 'single' ? 'bg-white shadow-2xs font-bold text-black' : 'text-gray-400'}`}
                 title="عرض فردي"
               >
@@ -345,6 +346,7 @@ export default function StoreView({
               <button
                 type="button"
                 onClick={() => setMobileLayout('double')}
+                aria-label="عرض عمودين"
                 className={`p-1 rounded text-xs transition-colors ${mobileLayout === 'double' ? 'bg-white shadow-2xs font-bold text-black' : 'text-gray-400'}`}
                 title="شبكة مزدوجة"
               >

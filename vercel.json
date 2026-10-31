@@ -15,9 +15,10 @@
     }
   ],
   "rewrites": [
-    { "source": "/.well-known/ard.json", "destination": "/.well-known/ard.json" },
-    { "source": "/llms.txt", "destination": "/llms.txt" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!\\.well-known|llms\\.txt|sitemap\\.xml|robots\\.txt|assets|img|.*\\..*).*)",
+      "destination": "/index.html"
+    }
   ],
   "redirects": [
     {

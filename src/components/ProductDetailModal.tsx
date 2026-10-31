@@ -475,6 +475,7 @@ export default function ProductDetailModal({
                   <button
                     key={idx}
                     type="button"
+                    aria-label={`عرض صورة المنتج ${idx + 1}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       setDirection(idx > activeImageIdx ? 1 : -1);
