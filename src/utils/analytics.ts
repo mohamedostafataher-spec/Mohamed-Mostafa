@@ -257,20 +257,25 @@ export const initGlobalSync = () => {
   const utm = getStoredUtmParams();
   const referrer = typeof document !== 'undefined' ? document.referrer : '';
   
+  // Check if current user is an admin to label traffic accurately
+  const isAdmin = !!localStorage.getItem('sulta_admin_auth_user');
+  
   if (isNewSession) {
     const tz = typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '';
     let clientCity = 'الرياض';
     let clientCountry = 'SA';
-    if (tz.includes('Cairo') || tz.includes('Egypt') || tz.includes('Africa/Cairo')) {
+    
+    const lowerTz = tz.toLowerCase();
+    if (lowerTz.includes('cairo') || lowerTz.includes('egypt')) {
       clientCity = 'القاهرة';
       clientCountry = 'EG';
-    } else if (tz.includes('Dubai') || tz.includes('Asia/Dubai')) {
+    } else if (lowerTz.includes('dubai')) {
       clientCity = 'دبي';
       clientCountry = 'AE';
-    } else if (tz.includes('Kuwait')) {
+    } else if (lowerTz.includes('kuwait')) {
       clientCity = 'الكويت';
       clientCountry = 'KW';
-    } else if (tz.includes('Qatar')) {
+    } else if (lowerTz.includes('qatar')) {
       clientCity = 'الدوحة';
       clientCountry = 'QA';
     }
@@ -286,9 +291,10 @@ export const initGlobalSync = () => {
       landing_page: window.location.pathname,
       city: clientCity,
       country: clientCountry,
+      is_admin: isAdmin,
       device: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-      metadata: utm, // Store all captured params as a JSON blob
+      metadata: { ...utm, is_admin: isAdmin }, // Store all captured params as a JSON blob
       created_at: new Date().toISOString()
     };
 
@@ -308,8 +314,8 @@ export const initGlobalSync = () => {
   try {
     const tz = typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '';
     let pingCity = 'الرياض';
-    if (tz.includes('Cairo')) pingCity = 'القاهرة';
-    else if (tz.includes('Dubai')) pingCity = 'دبي';
+    if (tz.toLowerCase().includes('cairo')) pingCity = 'القاهرة';
+    else if (tz.toLowerCase().includes('dubai')) pingCity = 'دبي';
 
     fetch('/api/analytics/visit', {
       method: 'POST',
@@ -321,14 +327,15 @@ export const initGlobalSync = () => {
         utm_source: utm.utm_source || traffic.source,
         utm_medium: utm.utm_medium || '',
         utm_campaign: utm.utm_campaign || '',
-        city: pingCity
+        city: pingCity,
+        is_admin: isAdmin
       })
     }).catch(() => {});
   } catch {}
 
   // 5. If new visitor session, log arrival event
   if (isNewSession) {
-    logPixelEvent(traffic.pixel, 'PageView', `زائر جديد عبر ${traffic.label} ${traffic.icon}`);
+    logPixelEvent(traffic.pixel, 'PageView', `زائر جديد عبر ${traffic.label} ${traffic.icon}${isAdmin ? ' (إدارة)' : ''}`);
   }
 
   const channelId = 'sulta-store-pulse';
@@ -349,7 +356,8 @@ export const initGlobalSync = () => {
     .on('presence', { event: 'sync' }, () => {
       const state = activeChannel.presenceState();
       const count = Object.keys(state).length;
-      liveVisitorCount = Math.max(1, count);
+      // 100% Real presence count - no artificial minimum of 1
+      liveVisitorCount = count;
       visitorCountListeners.forEach(l => l(liveVisitorCount));
     })
     .subscribe(async (status: string) => {
@@ -358,7 +366,8 @@ export const initGlobalSync = () => {
           session_id: sessionId,
           online_at: new Date().toISOString(),
           page: window.location.pathname,
-          source: traffic.label
+          source: traffic.label,
+          is_admin: isAdmin
         });
       }
     });
@@ -1176,21 +1185,21 @@ export const getComprehensiveVisitorStats = (): ComprehensiveVisitorStats => {
     const monthlyVisitors = history.reduce((sum, h) => sum + h.visitors, 0);
 
     return {
-      liveCount: Math.max(1, liveVisitorCount),
+      liveCount: liveVisitorCount,
       todayCount: todayVisitors,
       totalUniqueVisitors: monthlyVisitors,
       dailyHistory: history,
-      weeklyVisitors: Math.max(weeklyVisitors, todayVisitors),
-      monthlyVisitors: Math.max(monthlyVisitors, weeklyVisitors)
+      weeklyVisitors: weeklyVisitors,
+      monthlyVisitors: monthlyVisitors
     };
   } catch {
     return {
-      liveCount: 1,
-      todayCount: 1,
-      totalUniqueVisitors: 1,
-      dailyHistory: [{ date: new Date().toISOString().split('T')[0], visitors: 1, orders: 0 }],
-      weeklyVisitors: 1,
-      monthlyVisitors: 1
+      liveCount: 0,
+      todayCount: 0,
+      totalUniqueVisitors: 0,
+      dailyHistory: [],
+      weeklyVisitors: 0,
+      monthlyVisitors: 0
     };
   }
 };

@@ -1093,8 +1093,9 @@ export default function Dashboard({
               <div>
                 <h1 className="text-base sm:text-lg font-bold text-gray-950 flex items-center gap-1.5 font-serif">
                   <span>لوحة إدارة SULTA الملكية</span>
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-sans font-bold px-2 py-0.5 rounded-full">
-                    بيانات حية مباشرة ⚡
+                  <span className="flex items-center gap-1 bg-emerald-100 text-emerald-800 font-sans font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    بيانات حقيقية 100% ⚡
                   </span>
                 </h1>
                 <p className="text-[11px] text-gray-500 font-sans">

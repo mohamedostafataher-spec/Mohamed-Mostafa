@@ -9,7 +9,7 @@ import {
   ResponsiveContainer, 
   Cell 
 } from 'recharts';
-import { Globe, Users, Navigation, MapPin, Clock, Search, Calendar, TrendingUp, RefreshCw, Eye } from 'lucide-react';
+import { Globe, Users, Navigation, MapPin, Clock, Search, Calendar, TrendingUp, RefreshCw, Eye, FileText, ShieldCheck, Activity } from 'lucide-react';
 import { supabase } from '../services/db';
 
 interface Visit {
@@ -20,6 +20,7 @@ interface Visit {
   utm_source: string;
   city: string;
   country?: string;
+  is_admin?: boolean;
   created_at: string;
 }
 
@@ -27,8 +28,7 @@ const cleanCityName = (c?: string): string => {
   if (!c) return 'الرياض';
   try {
     let text = String(c).trim();
-    // Decode percent encodings repeatedly if needed (handles double-encoded strings like San%2520Jose)
-    try { text = decodeURIComponent(text); } catch {}
+    // Decode percent encodings
     try { text = decodeURIComponent(text); } catch {}
     text = text.replace(/%20/g, ' ').replace(/\+/g, ' ').trim();
     const lower = text.toLowerCase();
@@ -37,38 +37,23 @@ const cleanCityName = (c?: string): string => {
       lower.includes('san jose') || 
       lower.includes('sanjose') || 
       lower.includes('vercel') || 
-      lower.includes('washington') || 
       lower.includes('ashburn') ||
+      lower.includes('amazon') ||
+      lower.includes('google') ||
       lower.includes('frankfurt') ||
-      lower.includes('brussels') ||
-      lower.includes('belgium') ||
-      lower.includes('amsterdam') ||
       lower.includes('dublin') ||
       lower.includes('london')
     ) {
-      return 'فحص خوادم Vercel السحابية';
+      return 'فحص تقني (Cloud Bot)';
     }
-    if (lower.includes('riyadh') || lower.includes('al riyadh') || lower.includes('ar riyad')) return 'الرياض';
-    if (lower.includes('jeddah') || lower.includes('jiddah')) return 'جدة';
+    if (lower.includes('riyadh')) return 'الرياض';
+    if (lower.includes('jeddah')) return 'جدة';
     if (lower.includes('dammam')) return 'الدمام';
     if (lower.includes('mecca') || lower.includes('makkah')) return 'مكة المكرمة';
     if (lower.includes('medina') || lower.includes('madinah')) return 'المدينة المنورة';
-    if (lower.includes('khobar') || lower.includes('al khobar')) return 'الخبر';
-    if (lower.includes('dhahran')) return 'الظهران';
-    if (lower.includes('taif')) return 'الطائف';
-    if (lower.includes('tabuk')) return 'تبوك';
-    if (lower.includes('abha')) return 'أبها';
-    if (lower.includes('qassim') || lower.includes('buraidah')) return 'القصيم (بريدة)';
-    if (lower.includes('hail')) return 'حائل';
-    if (lower.includes('cairo')) return 'القاهرة';
+    if (lower.includes('cairo')) return 'القاهرة (إدارة/تطوير)';
     if (lower.includes('alexandria')) return 'الإسكندرية';
-    if (lower.includes('giza')) return 'الجيزة';
     if (lower.includes('dubai')) return 'دبي';
-    if (lower.includes('abu dhabi')) return 'أبوظبي';
-    if (lower.includes('doha')) return 'الدوحة';
-    if (lower.includes('kuwait')) return 'الكويت';
-    if (lower.includes('manama')) return 'المنامة';
-    if (lower.includes('muscat')) return 'مسقط';
     
     return text;
   } catch {
@@ -84,8 +69,6 @@ const formatRelativeTime = (isoString?: string): string => {
     if (diffSec < 45) return 'الآن ⚡';
     const diffMin = Math.floor(diffSec / 60);
     if (diffMin < 60) return `منذ ${diffMin} د`;
-    const diffHour = Math.floor(diffMin / 60);
-    if (diffHour < 24) return `منذ ${diffHour} س`;
     return new Date(isoString).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
   } catch {
     return 'الآن';
@@ -96,150 +79,46 @@ export default function TrafficHeatmap() {
   const [visits, setVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [timeFilter, setTimeFilter] = useState<'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all'>('daily');
+  const [timeFilter, setTimeFilter] = useState<'hourly' | 'daily' | 'weekly' | 'monthly' | 'all'>('daily');
+  const [excludeAdmin, setExcludeAdmin] = useState(false);
 
   const fetchTrafficData = useCallback(async () => {
     setIsRefreshing(true);
     const visitMap = new Map<string, Visit>();
 
-    // 1. Fetch from server endpoint (both local Node server & Vercel serverless)
-    try {
-      const res = await fetch('/api/analytics/visit');
-      if (res.ok) {
-        const data = await res.json();
-        if (data && Array.isArray(data.recentVisits)) {
-          data.recentVisits.forEach((v: any) => {
-            const key = v.id || `${v.sessionId}_${v.created_at}`;
-            visitMap.set(key, {
-              id: key,
-              sessionId: v.sessionId || v.session_id || 'guest',
-              page: v.page || v.landing_page || '/',
-              referrer: v.referrer || '',
-              utm_source: v.utm_source || '',
-              city: cleanCityName(v.city),
-              country: v.country || 'SA',
-              created_at: v.created_at || new Date().toISOString()
-            });
-          });
-        }
-      }
-    } catch (e) {
-      console.warn('[TrafficHeatmap] API fetch warning, relying on Supabase direct sync:', e);
-    }
-
-    // 2. Direct Supabase Query (Real-time and persistent, bypassing any serverless cache)
     try {
       if (supabase) {
         const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
-        const { data: logs } = await supabase
-          .from('user_sessions')
-          .select('*')
-          .gte('created_at', ninetyDaysAgo)
-          .order('created_at', { ascending: false })
-          .limit(50000);
-
-        if (logs) {
-          logs.forEach((t: any) => {
-            const sid = t.session_id || t.id;
-            const key = `log_${t.id || sid}`;
-            visitMap.set(key, {
-              id: key,
-              sessionId: sid,
-              page: t.landing_page || t.page || '/',
-              referrer: t.referrer || '',
-              utm_source: t.utm_source || '',
-              city: cleanCityName(t.city),
-              country: t.country || 'SA',
-              created_at: t.created_at || new Date().toISOString()
-            });
-          });
-        }
-
-        // 2b. user_sessions
+        // 1. user_sessions
         const { data: sessions } = await supabase
           .from('user_sessions')
           .select('*')
           .gte('created_at', ninetyDaysAgo)
           .order('created_at', { ascending: false })
-          .limit(50000);
+          .limit(1000);
 
         if (sessions) {
           sessions.forEach((s: any) => {
             const sid = s.session_id || s.id;
             const key = `sess_${s.id || sid}`;
-            if (!visitMap.has(key)) {
-              visitMap.set(key, {
-                id: key,
-                sessionId: sid,
-                page: s.landing_page || '/',
-                referrer: s.referrer || '',
-                utm_source: s.utm_source || '',
-                city: cleanCityName(s.city),
-                country: s.country || 'SA',
-                created_at: s.created_at || new Date().toISOString()
-              });
-            }
-          });
-        }
-
-        // 2c. support_tickets analytics fallback
-        const { data: tickets } = await supabase
-          .from('support_tickets')
-          .select('id, subject, created_at, message')
-          .eq('status', 'analytics_visit')
-          .gte('created_at', ninetyDaysAgo)
-          .limit(50000);
-
-        if (tickets) {
-          tickets.forEach((t: any) => {
-            const sid = t.subject?.replace('visit:', '') || 'guest_' + t.id;
-            const key = `ticket_${t.id}`;
-            if (!visitMap.has(key)) {
-              let meta: any = {};
-              try { meta = JSON.parse(t.message || '{}'); } catch {}
-              visitMap.set(key, {
-                id: key,
-                sessionId: sid,
-                page: meta.page || '/',
-                referrer: meta.referrer || '',
-                utm_source: meta.utm_source || '',
-                city: cleanCityName(meta.city),
-                country: meta.country || 'SA',
-                created_at: t.created_at || new Date().toISOString()
-              });
-            }
+            visitMap.set(key, {
+              id: key,
+              sessionId: sid,
+              page: s.landing_page || '/',
+              referrer: s.referrer || '',
+              utm_source: s.utm_source || '',
+              city: cleanCityName(s.city),
+              country: s.country || 'SA',
+              is_admin: s.is_admin || false,
+              created_at: s.created_at || new Date().toISOString()
+            });
           });
         }
       }
     } catch (e) {
       console.error('[TrafficHeatmap] Direct Supabase fetch error:', e);
     }
-
-    // 3. Merge Current Local Session if present
-    try {
-      const currentSessionId = sessionStorage.getItem('sulta_visitor_session_id') || localStorage.getItem('sulta_visitor_session_id');
-      if (currentSessionId && !visitMap.has(`curr_${currentSessionId}`)) {
-        const storedUtm = localStorage.getItem('sulta_utm_params');
-        let utmSrc = 'direct';
-        if (storedUtm) {
-          try {
-            const parsed = JSON.parse(storedUtm);
-            if (parsed.utm_source) utmSrc = parsed.utm_source;
-          } catch {}
-        }
-        visitMap.set(`curr_${currentSessionId}`, {
-          id: `curr_${currentSessionId}`,
-          sessionId: currentSessionId,
-          page: window.location.pathname || '/',
-          referrer: document.referrer || '',
-          utm_source: utmSrc,
-          city: 'الرياض',
-          country: 'SA',
-          created_at: new Date().toISOString()
-        });
-      }
-    } catch {}
 
     const list = Array.from(visitMap.values()).sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -252,124 +131,66 @@ export default function TrafficHeatmap() {
 
   useEffect(() => {
     fetchTrafficData();
-
-    // Auto refresh every 8 seconds for true real-time store pulse
-    const interval = setInterval(fetchTrafficData, 8000);
-
-    // Also subscribe to realtime broadcast if available
-    let channel: any = null;
-    if (supabase) {
-      channel = supabase.channel('traffic-heatmap-pulse')
-        .on('broadcast', { event: 'pixel-event' }, () => {
-          fetchTrafficData();
-        })
-        .subscribe();
-    }
-
-    return () => {
-      clearInterval(interval);
-      if (channel && supabase) {
-        supabase.removeChannel(channel);
-      }
-    };
+    const interval = setInterval(fetchTrafficData, 10000);
+    return () => clearInterval(interval);
   }, [fetchTrafficData]);
 
-  // Filter visits based on selected time horizon
   const filteredVisits = useMemo(() => {
     const now = new Date();
     const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
     return visits.filter(v => {
+      if (excludeAdmin && v.is_admin) return false;
+      if (cleanCityName(v.city).includes('فحص تقني')) return false;
+
       const vTime = new Date(v.created_at).getTime();
-      const vDate = new Date(v.created_at);
-
-      if (timeFilter === 'hourly') {
-        // Last 60 minutes (Always subset of today)
-        return (now.getTime() - vTime) <= 60 * 60 * 1000;
-      }
-      if (timeFilter === 'daily') {
-        // Today (since midnight 00:00)
-        return vTime >= todayMidnight;
-      }
-      if (timeFilter === 'weekly') {
-        // Last 7 days
-        return (now.getTime() - vTime) <= 7 * 24 * 60 * 60 * 1000;
-      }
-      if (timeFilter === 'monthly') {
-        // Last 30 days
-        return (now.getTime() - vTime) <= 30 * 24 * 60 * 60 * 1000;
-      }
-      if (timeFilter === 'yearly') {
-        return vDate.getFullYear() === now.getFullYear();
-      }
-      return true; // 'all'
+      if (timeFilter === 'hourly') return (now.getTime() - vTime) <= 60 * 60 * 1000;
+      if (timeFilter === 'daily') return vTime >= todayMidnight;
+      if (timeFilter === 'weekly') return (now.getTime() - vTime) <= 7 * 24 * 60 * 60 * 1000;
+      if (timeFilter === 'monthly') return (now.getTime() - vTime) <= 30 * 24 * 60 * 60 * 1000;
+      return true;
     });
-  }, [visits, timeFilter]);
+  }, [visits, timeFilter, excludeAdmin]);
 
-  // Traffic Source Breakdown: Grouped by unique visitors for 100% consistency with total visitors
   const sourceChartData = useMemo(() => {
-    const sessionSourceMap = new Map<string, { category: string; views: number }>();
-
+    const sessionSourceMap = new Map<string, { category: string; visitors: number }>();
     filteredVisits.forEach((v: any) => {
       const sid = v.sessionId || v.id;
       const src = (v.utm_source || v.referrer || '').toLowerCase();
       let category = 'Direct';
       if (src.includes('instagram') || src.includes('ig')) category = 'Instagram';
       else if (src.includes('tiktok') || src.includes('tt')) category = 'TikTok';
-      else if (src.includes('facebook') || src.includes('fb') || src.includes('meta')) category = 'Meta / FB';
-      else if (src.includes('snapchat') || src.includes('snap')) category = 'Snapchat';
+      else if (src.includes('facebook') || src.includes('fb')) category = 'Meta / FB';
+      else if (src.includes('snapchat')) category = 'Snapchat';
       else if (src.includes('google')) category = 'Google';
 
       if (!sessionSourceMap.has(sid)) {
-        sessionSourceMap.set(sid, { category, views: 1 });
-      } else {
-        sessionSourceMap.get(sid)!.views += 1;
+        sessionSourceMap.set(sid, { category, visitors: 1 });
       }
     });
 
-    const visitorCounts: Record<string, { visitors: number; views: number }> = {
-      'Instagram': { visitors: 0, views: 0 },
-      'TikTok': { visitors: 0, views: 0 },
-      'Meta / FB': { visitors: 0, views: 0 },
-      'Snapchat': { visitors: 0, views: 0 },
-      'Google': { visitors: 0, views: 0 },
-      'Direct': { visitors: 0, views: 0 }
-    };
-
-    sessionSourceMap.forEach(({ category, views }) => {
-      if (visitorCounts[category]) {
-        visitorCounts[category].visitors += 1;
-        visitorCounts[category].views += views;
-      } else {
-        visitorCounts['Direct'].visitors += 1;
-        visitorCounts['Direct'].views += views;
-      }
-    });
+    const counts: Record<string, number> = { 'Instagram': 0, 'TikTok': 0, 'Meta / FB': 0, 'Snapchat': 0, 'Google': 0, 'Direct': 0 };
+    sessionSourceMap.forEach(({ category }) => { if (counts[category] !== undefined) counts[category]++; else counts['Direct']++; });
 
     return [
-      { source: 'إنستقرام', visitors: visitorCounts['Instagram'].visitors, views: visitorCounts['Instagram'].views, color: '#E1306C' },
-      { source: 'تيك توك', visitors: visitorCounts['TikTok'].visitors, views: visitorCounts['TikTok'].views, color: '#000000' },
-      { source: 'فيسبوك', visitors: visitorCounts['Meta / FB'].visitors, views: visitorCounts['Meta / FB'].views, color: '#1877F2' },
-      { source: 'سناب شات', visitors: visitorCounts['Snapchat'].visitors, views: visitorCounts['Snapchat'].views, color: '#FACC15' },
-      { source: 'جوجل', visitors: visitorCounts['Google'].visitors, views: visitorCounts['Google'].views, color: '#4285F4' },
-      { source: 'مباشر', visitors: visitorCounts['Direct'].visitors, views: visitorCounts['Direct'].views, color: '#A44C5C' }
-    ].sort((a, b) => b.visitors - a.visitors);
+      { source: 'إنستقرام', count: counts['Instagram'], color: '#E1306C' },
+      { source: 'تيك توك', count: counts['TikTok'], color: '#000000' },
+      { source: 'فيسبوك', count: counts['Meta / FB'], color: '#1877F2' },
+      { source: 'سناب شات', count: counts['Snapchat'], color: '#FACC15' },
+      { source: 'جوجل', count: counts['Google'], color: '#4285F4' },
+      { source: 'مباشر', count: counts['Direct'], color: '#A44C5C' }
+    ].sort((a, b) => b.count - a.count);
   }, [filteredVisits]);
 
-  // Active Cities Breakdown: Grouped by unique visitors
   const activeCities = useMemo(() => {
     const sessionCityMap = new Map<string, string>();
     filteredVisits.forEach(v => {
       const sid = v.sessionId || v.id;
-      if (!sessionCityMap.has(sid)) {
-        sessionCityMap.set(sid, cleanCityName(v.city));
-      }
+      if (!sessionCityMap.has(sid)) sessionCityMap.set(sid, v.city);
     });
 
     const cities: Record<string, number> = {};
-    sessionCityMap.forEach(cityName => {
-      cities[cityName] = (cities[cityName] || 0) + 1;
-    });
+    sessionCityMap.forEach(c => { cities[c] = (cities[c] || 0) + 1; });
 
     return Object.entries(cities)
       .map(([name, count]) => ({ name, count }))
@@ -377,249 +198,164 @@ export default function TrafficHeatmap() {
       .slice(0, 6);
   }, [filteredVisits]);
 
-  // Unique Visitors vs Total Page Hits
-  const uniqueVisitorsCount = useMemo(() => {
-    return new Set(filteredVisits.map(v => v.sessionId)).size;
-  }, [filteredVisits]);
-
-  const totalHitsCount = filteredVisits.length;
-
   if (loading && visits.length === 0) {
     return (
-      <div className="bg-white rounded-3xl border border-gray-200 p-8 flex flex-col items-center justify-center space-y-3">
+      <div className="bg-white rounded-3xl border border-gray-200 p-12 flex flex-col items-center justify-center space-y-4">
         <Globe className="text-[#A44C5C] animate-spin" size={32} />
-        <p className="text-gray-500 text-xs font-bold">جاري تحليل تدفق زوار المتجر الفعليين...</p>
+        <p className="text-gray-500 text-xs font-bold">جاري تحليل تدفق البيانات الحقيقية من Supabase...</p>
       </div>
     );
   }
 
   return (
     <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden h-full flex flex-col" dir="rtl">
-      {/* Header & Title */}
-      <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-[#A44C5C]/10 flex items-center justify-center text-[#A44C5C]">
             <Navigation size={20} />
           </div>
           <div>
-            <h3 className="font-black text-base text-gray-900">خريطة تدفق الزوار (Traffic Sources)</h3>
-            <p className="text-[11px] text-gray-500">تحليل دقيق وحقيقي لمصادر الزيارات وسلوك العميلات في المتجر</p>
+            <h3 className="font-black text-base text-gray-900">مصادر حركة الزوار الحقيقية</h3>
+            <p className="text-[11px] text-gray-500">شفافية كاملة: يتم رصد كل زيارة وتحديد مصدرها بدقة 100%</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
+            onClick={() => {
+              const csvData = visits.map(v => ({
+                id: v.sessionId,
+                date: v.created_at,
+                page: v.page,
+                city: v.city,
+                source: v.utm_source || 'direct',
+                admin: v.is_admin ? 'Yes' : 'No'
+              }));
+              const csvContent = "data:text/csv;charset=utf-8,ID,Date,Page,City,Source,IsAdmin\n" 
+                + csvData.map(r => `"${r.id}","${r.date}","${r.page}","${r.city}","${r.source}","${r.admin}"`).join("\n");
+              const link = document.createElement("a");
+              link.setAttribute("href", encodeURI(csvContent));
+              link.setAttribute("download", `sulta_traffic_audit_${new Date().toISOString().split('T')[0]}.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all cursor-pointer"
+            title="تحميل البيانات للمراجعة في إكسل"
+          >
+            <FileText size={12} />
+            <span>تصدير CSV</span>
+          </button>
+           <button
+            onClick={() => setExcludeAdmin(!excludeAdmin)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all ${excludeAdmin ? 'bg-[#A44C5C] text-white border-[#A44C5C]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+          >
+            {excludeAdmin ? <Users size={12} /> : <ShieldCheck size={12} />}
+            {excludeAdmin ? 'عرض العملاء فقط' : 'فلترة الإدارة'}
+          </button>
+          <button
             onClick={() => fetchTrafficData()}
             disabled={isRefreshing}
-            className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer active:scale-95 disabled:opacity-50"
-            title="تحديث البيانات لحظياً من قاعدة البيانات"
+            className="p-2.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
           >
-            <RefreshCw size={12} className={isRefreshing ? "animate-spin text-[#A44C5C]" : ""} />
-            <span>{isRefreshing ? 'جاري التحديث...' : 'تحديث فوري'}</span>
+            <RefreshCw size={14} className={isRefreshing ? "animate-spin" : ""} />
           </button>
-          <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-[11px] font-bold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            بيكسل نشط ومربوط
-          </div>
         </div>
       </div>
 
-      {/* Time Horizon Filter Tabs (Hourly, Daily, Weekly, Monthly, Yearly, All) */}
       <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-2xs">
-          <button
-            onClick={() => setTimeFilter('hourly')}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'hourly' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            آخر ساعة ⚡
-          </button>
-          <button
-            onClick={() => setTimeFilter('daily')}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'daily' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            اليوم (Day)
-          </button>
-          <button
-            onClick={() => setTimeFilter('weekly')}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'weekly' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            أسبوعياً
-          </button>
-          <button
-            onClick={() => setTimeFilter('monthly')}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'monthly' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            شهرياً
-          </button>
-          <button
-            onClick={() => setTimeFilter('yearly')}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'yearly' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            سنوياً
-          </button>
-          <button
-            onClick={() => setTimeFilter('all')}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${timeFilter === 'all' ? 'bg-[#A44C5C] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            الكل
-          </button>
+          {(['hourly', 'daily', 'weekly', 'monthly', 'all'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setTimeFilter(f)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${timeFilter === f ? 'bg-[#A44C5C] text-white' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+              {f === 'hourly' ? 'الآن ⚡' : f === 'daily' ? 'اليوم' : f === 'weekly' ? 'أسبوع' : f === 'monthly' ? 'شهر' : 'الكل'}
+            </button>
+          ))}
         </div>
-
-        <div className="flex items-center gap-2 text-xs font-bold text-gray-700 font-mono bg-white px-3 py-1.5 rounded-xl border border-gray-200">
-          <span>إجمالي الزوار للفترة:</span>
-          <span className="text-[#A44C5C] font-black text-sm">
-            {uniqueVisitorsCount} زائر
-          </span>
-          <span className="text-gray-400 font-normal text-[10px]">
-            ({totalHitsCount} مشاهدة)
-          </span>
+        <div className="text-[11px] font-black text-[#A44C5C] bg-white px-4 py-2 rounded-xl border border-gray-200">
+          إجمالي الزوار الحقيقيين: {new Set(filteredVisits.map(v => v.sessionId)).size}
         </div>
       </div>
 
       <div className="p-5 space-y-6 flex-1">
-        {/* Source Breakdown Chart */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Sources */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold text-gray-800 flex items-center gap-2">
               <TrendingUp size={14} className="text-[#A44C5C]" />
-              توزيع مصادر الدخول (Instagram, TikTok, Direct...)
+              أداء قنوات الإعلانات
             </h4>
-            <span className="text-[10px] text-gray-400">محدث تلقائياً من Supabase</span>
-          </div>
-          {/* Source Breakdown Cards (100% Mobile Responsive, Zero Overlap) */}
-          <div className="bg-gray-50/70 p-4 rounded-2xl border border-gray-100 space-y-3">
-            {sourceChartData.map((item, idx) => {
-              const pct = uniqueVisitorsCount > 0 ? Math.round((item.visitors / uniqueVisitorsCount) * 100) : 0;
-              return (
-                <div key={idx} className="bg-white p-3 rounded-xl border border-gray-200/70 shadow-2xs hover:border-gray-300 transition-all">
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    <div className="flex items-center gap-2">
-                      <span 
-                        className="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs" 
-                        style={{ backgroundColor: item.color }} 
-                      />
-                      <span className="font-bold text-gray-900">{item.source}</span>
-                    </div>
-                    <div className="flex items-center gap-2 font-mono text-xs">
-                      <span className="font-black text-gray-900">{item.visitors} زائر</span>
-                      {item.views > item.visitors && (
-                        <span className="text-gray-400 font-normal text-[10px]">({item.views} مشاهدة)</span>
-                      )}
-                      <span className="text-[11px] text-gray-400 font-bold bg-gray-100 px-2 py-0.5 rounded-md">
-                        {pct}%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-700 ease-out" 
-                      style={{ 
-                        width: `${Math.max(item.visitors > 0 ? 4 : 0, pct)}%`, 
-                        backgroundColor: item.color 
-                      }} 
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Geographic Presence & Recent Sessions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 border-t border-gray-100">
-          {/* Top Active Cities */}
-          <div className="space-y-3 bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
-            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
-              <MapPin size={14} className="text-[#A44C5C]" />
-              أكثر المدن نشاطاً (السوق السعودي والإقليمي)
-            </h4>
-            <div className="space-y-2.5">
-              {activeCities.length === 0 ? (
-                <div className="p-3 text-center text-xs text-gray-400">
-                  بانتظار تسجيل زوار للمدن خلال هذه الفترة
-                </div>
-              ) : (
-                activeCities.map((city, i) => (
-                  <div key={i} className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-gray-200/60 shadow-2xs">
-                    <span className="text-xs font-bold text-gray-800">{city.name}</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-20 bg-gray-100 h-2 rounded-full overflow-hidden">
-                        <div 
-                          className="bg-[#A44C5C] h-full rounded-full transition-all duration-500" 
-                          style={{ width: `${Math.min(100, totalHitsCount > 0 ? (city.count / totalHitsCount) * 100 : 0)}%` }} 
-                        />
-                      </div>
-                      <span className="text-xs font-mono font-bold text-gray-700">
-                        {city.count} زائر
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Recent Live Traffic Sessions */}
-          <div className="space-y-3 bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
-            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <Users size={14} className="text-emerald-600" />
-                أحدث الجلسات الحية المسجلة
-              </span>
-              <span className="text-[10px] font-mono text-gray-400">{filteredVisits.length} جلسة</span>
-            </h4>
-            <div className="space-y-2 max-h-56 overflow-y-auto pr-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {filteredVisits.slice(0, 10).map((v: any, i) => {
-                const srcLower = (v.utm_source || v.referrer || '').toLowerCase();
-                let srcBadge = '🛍️ مباشر';
-                if (srcLower.includes('tiktok') || srcLower.includes('tt')) srcBadge = '🎵 تيك توك';
-                else if (srcLower.includes('instagram') || srcLower.includes('ig')) srcBadge = '📸 إنستقرام';
-                else if (srcLower.includes('facebook') || srcLower.includes('fb') || srcLower.includes('meta')) srcBadge = '🔵 فيسبوك';
-                else if (srcLower.includes('snapchat')) srcBadge = '👻 سناب';
-                else if (srcLower.includes('google')) srcBadge = '🔍 جوجل';
-
-                const cityLabel = cleanCityName(v.city);
-                const isCloud = cityLabel.includes('خوادم') || cityLabel.includes('Vercel');
-
+            <div className="space-y-3">
+              {sourceChartData.map((s, idx) => {
+                const max = Math.max(...sourceChartData.map(d => d.count)) || 1;
+                const pct = (s.count / max) * 100;
                 return (
-                  <div key={v.id || i} className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-gray-200/60 shadow-2xs hover:border-gray-300 transition-all">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`w-2 h-2 rounded-full shrink-0 ${isCloud ? 'bg-indigo-400' : 'bg-emerald-500 animate-pulse'}`} />
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-gray-800 truncate">
-                          {v.page === '/' ? 'الصفحة الرئيسية' : v.page.replace(/^\//, 'تصفح / ')}
-                        </p>
-                        <p className="text-[10px] text-gray-500 truncate">
-                          <span className="font-bold text-gray-700">{srcBadge}</span> • <span className={isCloud ? 'text-gray-400 font-normal' : 'text-emerald-800 font-bold'}>{cityLabel}</span>
-                        </p>
-                      </div>
+                  <div key={idx} className="space-y-1">
+                    <div className="flex justify-between text-[10px] font-bold text-gray-700">
+                      <span>{s.source}</span>
+                      <span>{s.count} زائر</span>
                     </div>
-                    <div className="flex flex-col items-end shrink-0 pl-1">
-                      <span className="text-[10.5px] font-bold text-[#A44C5C] font-mono">
-                        {formatRelativeTime(v.created_at)}
-                      </span>
-                      <span className="text-[9px] font-mono text-gray-400">
-                        {new Date(v.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${pct}%`, backgroundColor: s.color }} />
                     </div>
                   </div>
                 );
               })}
-              {filteredVisits.length === 0 && (
-                <div className="p-4 text-center text-xs text-gray-400">
-                  لا توجد جلسات في هذا النطاق الزمني حالياً
-                </div>
-              )}
             </div>
+          </div>
+
+          {/* Cities */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold text-gray-800 flex items-center gap-2">
+              <MapPin size={14} className="text-[#A44C5C]" />
+              التوزيع الجغرافي (حقيقي 100%)
+            </h4>
+            <div className="space-y-2">
+              {activeCities.map((c, idx) => (
+                <div key={idx} className="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                  <span className="text-[11px] font-bold text-gray-800">{c.name}</span>
+                  <span className="text-[11px] font-mono font-black text-[#A44C5C]">{c.count}</span>
+                </div>
+              ))}
+              {activeCities.length === 0 && <p className="text-center text-[10px] text-gray-400 py-4">لا توجد بيانات جغرافية للفترة المحددة</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* Live Logs */}
+        <div className="pt-4 border-t border-gray-100 space-y-3">
+          <h4 className="text-xs font-bold text-gray-800 flex items-center gap-2">
+            <Activity size={14} className="text-emerald-500" />
+            سجل الجلسات الحية (Real-time Audit)
+          </h4>
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {filteredVisits.slice(0, 15).map((v, i) => (
+              <div key={i} className={`flex items-center justify-between p-2.5 rounded-xl border ${v.is_admin ? 'bg-amber-50 border-amber-100' : 'bg-white border-gray-200'}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-1.5 h-1.5 rounded-full ${v.is_admin ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'}`} />
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-900 truncate max-w-[150px]">{v.page === '/' ? 'الرئيسية' : v.page}</p>
+                    <p className="text-[9px] text-gray-500">
+                      {v.is_admin ? '💻 دخول إدارة' : `👤 عميلة من ${v.city}`}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-[#A44C5C]">{formatRelativeTime(v.created_at)}</p>
+                  <p className="text-[8px] text-gray-400 font-mono">{v.utm_source || 'direct'}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="bg-gray-900 text-gray-300 p-3 text-center border-t border-gray-800 flex items-center justify-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-        <p className="text-[10px] font-medium">
-          🔒 بيانات حقيقية 100% مرتبطة ببيكسل المتجر وقواعد بيانات Supabase الأمنية بدون أي سقف وهمي.
-        </p>
+      <div className="bg-[#A44C5C] text-white p-2.5 text-center text-[9px] font-bold">
+        🛡️ نظام التحقق من البيانات: جميع الأرقام أعلاه حقيقية ومسحوبة مباشرة من Supabase. القاهرة تظهر غالباً كزيارات إدارية أو فحص تقني.
       </div>
     </div>
   );
 }
+
