@@ -7,6 +7,7 @@ import { ProductPrice } from './ProductPrice';
 import ReelsShowcase from './ReelsShowcase';
 import Features from './Features';
 import SEO from './SEO';
+import { getProductSlug } from '../utils/slugify';
 
 interface HomeViewProps {
   products: Product[];
@@ -42,15 +43,24 @@ const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="space-y-0">
       <SEO 
-        title="سولتة | SULTA Atelier - أزياء النوم والبيجامات الفاخرة"
-        description="متجر سولتة للأزياء الراقية والبيجامات الفاخرة. تصاميم ملكية بخامات عالمية وتوصيل سريع لكل مدن المملكة العربية السعودية."
+        title="بيجامات نسائية قطن ووان سايز | سولتة"
+        description="تسوقي بيجامات نسائية مريحة من قطن كوريشة ناعم وقطن مريح بمقاس وان سايز يناسب 45 إلى 80 كيلو. كميات محدودة وتوصيل لجميع مناطق المملكة."
         path="/"
       />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-right">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 mb-2">
+          بيجامات نسائية قطن ناعمة — سولتة
+        </h1>
+        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-3xl">
+          أهلاً بكِ في سولتة، حيث نقدم لكِ تشكيلة بيجامات نسائية صُممت خصيصاً لتمنحكِ الراحة والهدوء في أوقات استرخائكِ اليومية بالمنزل. نعتمد في قطعنا على خامات القطن الناعم المريح والقطن الكوريشة عالي التهوية بقصّات أنثوية لطيفة تناسب ذوقكِ الرفيع. تتوفر تشكيلتنا بمقاس وان سايز مرن يناسب الأوزان من 45 إلى 80 كيلو لتضمني راحة تامة، مع عناية بالتفاصيل وتوصيل موثوق لكافة مناطق المملكة.
+        </p>
+      </div>
 
       {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}
       {[
         { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
-        { title: 'وصل حديثاً من تشكيلة البيجامات الملكية ✨', label: 'أحدث تصاميم أزياء النوم والقطع الفاخرة', data: newArrivals },
+        { title: 'وصل حديثاً من تشكيلة البيجامات القطنية ✨', label: 'أحدث تصاميم أزياء النوم والقطع المريحة', data: newArrivals },
       ].map((section, sectionIdx) => (
         <React.Fragment key={section.title}>
           {sectionIdx === 1 && (
@@ -65,9 +75,9 @@ const HomeView: React.FC<HomeViewProps> = ({
               
               <div className="flex items-center justify-between mb-3 sm:mb-5 pb-2 border-b border-gray-200/80">
                 <div className="text-right">
-                  <h1 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight">
+                  <h2 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight">
                     {section.title}
-                  </h1>
+                  </h2>
                   <p className="text-gray-500 text-[11px] sm:text-xs mt-0.5 sm:mt-1">
                     {section.label}
                   </p>
@@ -84,6 +94,7 @@ const HomeView: React.FC<HomeViewProps> = ({
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
                 {section.data.length > 0 ? section.data.slice(0, 8).map((prod, prodIdx) => {
                   const isFav = favorites.includes(prod.id);
+                  const prodSlug = getProductSlug({ id: prod.id, nameEn: prod.nameEn, nameAr: prod.nameAr });
 
                   return (
                     <div
@@ -91,13 +102,16 @@ const HomeView: React.FC<HomeViewProps> = ({
                       className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer justify-between"
                       onClick={() => handleSelectProduct(prod)}
                     >
+                      <a href={`/product/${prodSlug}/`} className="sr-only">
+                        {prod.nameAr}
+                      </a>
                       <div>
                         {/* Top Photo Frame - Full Bleed 3:4 */}
                         <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100 rounded-t-2xl">
                           {/* Badges */}
                           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-                            <span className="bg-[#E11D48] text-white text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
-                              خصم 50%
+                            <span className="bg-rose-50 text-rose-700 text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
+                              متبقي {prod.stock} قطع
                             </span>
                             {prod.isBestSeller && (
                               <span className="bg-[#F59E0B] text-black text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
@@ -142,17 +156,19 @@ const HomeView: React.FC<HomeViewProps> = ({
                             {prod.nameAr || prod.nameEn}
                           </h2>
                           
-                          {/* Rating */}
-                          <div className="flex items-center gap-1 justify-start pt-0.5">
-                            <div className="flex items-center text-amber-400">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-300"}`} viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg>
-                              ))}
+                          {/* Rating (only if verified reviews exist) */}
+                          {Boolean(prod.reviewsCount && prod.reviewsCount > 0) && (
+                            <div className="flex items-center gap-1 justify-start pt-0.5">
+                              <div className="flex items-center text-amber-400">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-300"}`} viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                ))}
+                              </div>
+                              <span className="text-[10px] text-gray-600 font-mono">({prod.reviewsCount})</span>
                             </div>
-                            <span className="text-[10px] text-gray-600 font-mono">({prod.reviewsCount || 28})</span>
-                          </div>
+                          )}
                         </div>
                       </div>
 
@@ -198,10 +214,10 @@ const HomeView: React.FC<HomeViewProps> = ({
                     <span>تغليف ملكي وتوصيل فوري لجميع مدن المملكة 🇸🇦</span>
                   </div>
                   <h2 className="text-base sm:text-xl font-black tracking-tight text-white font-serif">
-                    تشكيلة السلطانة الحصرية - فخامة تليق بأميرات السعودية
+                    تشكيلة السلطانة الحصرية — أناقة تليق بكِ
                   </h2>
                   <p className="text-gray-300 text-xs leading-relaxed">
-                    أجود خامات الحرير والدانتيل الفرنسي مع خصومات مباشرة على كافة القطع الملكية. تسوقي الآن بضمان الجودة والاستبدال السهل.
+                    أرقى تصاميم ملابس النوم والبيجامات القطنية المريحة بضمان الجودة والاستبدال السهل. تسوقي الآن واستمتعي بتغليف ملكي.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">

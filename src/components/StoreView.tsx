@@ -10,6 +10,7 @@ import StyleAssistant from './StyleAssistant';
 import { ProductPrice } from './ProductPrice';
 import SultaImage from './SultaImage';
 import { cleanImgUrl } from '../services/db';
+import { getProductSlug } from '../utils/slugify';
 import SEO from './SEO';
 
 interface StoreViewProps {
@@ -215,11 +216,9 @@ export default function StoreView({
   return (
     <div className="bg-white min-h-screen text-[#111827] font-sans antialiased text-xs md:text-sm select-none" dir="rtl">
       <SEO 
-        title={selectedCategory === 'offers' ? 'العروض والتخفيضات الحصرية - سولتة' : 'المتجر والكتالوج - تسوقي تشكيلة سولتة الملكية'} 
-        description={selectedCategory === 'offers' 
-          ? 'استمتعي بخصومات مباشرة على أرقى تشكيلات ملابس النوم والبيجامات النسائية. عروض ملكية لفترة محدودة وتوصيل سريع.' 
-          : 'تصفحي التشكيلة الكاملة من البيجامات النسائية الفاخرة وأزياء النوم الراقية. خامات طبيعية وتصاميم حصرية تليق بكِ.'}
-        path={selectedCategory === 'offers' ? '/offers' : '/store'} 
+        title={selectedCategory === 'offers' ? 'العروض والتخفيضات | سولتة' : 'بيجامات نسائية قطن — تسوقي الآن | سولتة'} 
+        description="تصفحي كامل تشكيلة البيجامات النسائية من سولتة، خامات قطنية مريحة بمقاس وان سايز 45-80 كجم وتوصيل لكافة مدن المملكة."
+        path={selectedCategory === 'offers' ? '/offers/' : '/store/'} 
       />
       
       {/* Breadcrumb Navigation (Salla / Nalah Style) */}
@@ -238,21 +237,19 @@ export default function StoreView({
             <div className="text-right space-y-1.5 sm:space-y-2 max-w-2xl">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black text-white font-bold text-[10.5px] sm:text-xs">
                 <Sparkles size={11} />
-                <span>{selectedCategory === 'offers' ? 'تخفيضات وعروض حصرية 🏷️' : 'عروض موسم SULTA الحصرية 🏷️'}</span>
+                <span>أزياء النوم والبيجامات القطنية 🌸</span>
               </div>
               <h1 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-[#111827] leading-tight">
-                {selectedCategory === 'offers' ? 'عروض وتخفيضات ملابس النوم والبيجامات الملكية' : 'أرقى تصاميم ملابس النوم والبيجامات الفاخرة'}
+                تشكيلة بيجامات نسائية من سولتة
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                {selectedCategory === 'offers' 
-                  ? 'اكتشفي أقوى عروض التوفير بخصومات تصل إلى 30% مع شحن مجاني للطلبات فوق 299 ر.س وتوصيل لباب بيتكِ.'
-                  : 'اكتشفي تشكيلة بيجامات وأرواب النوم الفاخرة بخصومات فورية وشحن مجاني للطلبات فوق 299 ر.س.'}
+                استكشفي متجر سولتة واختاري بيجامتكِ المفضلة من تشكيلة البيجامات النسائية القطنية المصممة لتناسب مختلف الأوقات المنزلية. تشمل التشكيلة بيجامات قطن كوريشة بطبعات زهرية وبيجامات قطن بحمالات ربط وموديلات ناعمة بمقاس وان سايز مريح يناسب من 45 إلى 80 كيلو.
               </p>
 
-              {/* Mobile Luxury Hook Badge */}
+              {/* Mobile Hook Badge */}
               <div className="sm:hidden pt-1 flex items-center gap-2">
-                <span className="text-[10px] bg-amber-50 border border-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg shadow-2xs">
-                  ✨ تصاميم ملكية حصرية وأقمشة حريرية فاخرة
+                <span className="text-[10px] bg-rose-50 border border-rose-200 text-rose-900 font-bold px-2.5 py-1 rounded-lg shadow-2xs">
+                  ✨ قطن كوريشة ناعم ومريح - مقاس فري سايز
                 </span>
               </div>
               
@@ -260,12 +257,12 @@ export default function StoreView({
               <div className="hidden sm:flex flex-wrap items-center gap-4 pt-2 text-[11px] font-semibold text-gray-500">
                 <span className="flex items-center gap-1.5 text-gray-700">
                   <Truck size={14} className="text-black" />
-                  <span>شحن سريع ومجاني للطلبات المؤهلة</span>
+                  <span>توصيل سريع لكافة مدن المملكة</span>
                 </span>
                 <span className="text-gray-300">·</span>
                 <span className="flex items-center gap-1.5 text-gray-700">
                   <ShieldCheck size={14} className="text-black" />
-                  <span>ضمان الجودة والاستبدال السهل</span>
+                  <span>خامة قطن مريحة واستبدال سهل</span>
                 </span>
                 <span className="text-gray-300">·</span>
                 <span className="flex items-center gap-1.5 text-gray-700">
@@ -275,14 +272,14 @@ export default function StoreView({
               </div>
             </div>
 
-            {/* Luxury Brand Hook Card (Desktop / Tablet) */}
+            {/* Brand Card (Desktop / Tablet) */}
             <div className="hidden sm:block shrink-0 bg-[#111827] text-white p-4 sm:p-5 rounded-2xl shadow-sm text-center space-y-2.5 w-full md:w-72">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300 block">✨ Haute Couture Sleepwear</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300 block">✨ SULTA Sleepwear</span>
               <h2 className="text-xs font-bold leading-relaxed text-gray-100">
-                تصاميم حصرية وأرواب عرايس ملكية مصممة لأميرات السعودية
+                بيجامات قطن كوريشة وقطن ناعم مريح
               </h2>
               <p className="text-[9.5px] text-gray-400 leading-normal">
-                أقمشة حريرية فاخرة، نعومة فائقة وتغليف ملكي يليق بذوقكِ الرفيع.
+                مقاس وان سايز مريح يناسب من 45 إلى 80 كيلو، مع بوكس سولتة الأنيق.
               </p>
             </div>
           </div>
@@ -589,9 +586,10 @@ export default function StoreView({
               const salePrice = country === 'EG' ? product.salePriceEG : product.salePriceSA;
               const hasSale = !!salePrice && salePrice < currentPrice;
               const calculatedDiscount = hasSale 
-                ? Math.round(((currentPrice - salePrice!) / currentPrice) * 100)
-                : 50;
-              const discountVal = calculatedDiscount || 50;
+                ? Math.round(((currentPrice - salePrice!) / currentPrice) * 100) 
+                : 0;
+              const discountVal = calculatedDiscount;
+              const productSlug = getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr });
 
               return (
                 <div
@@ -599,6 +597,9 @@ export default function StoreView({
                   className="bg-white rounded-2xl border border-gray-200 hover:border-gray-300 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative cursor-pointer"
                   onClick={() => onSelectProduct(product)}
                 >
+                  <a href={`/product/${productSlug}/`} className="sr-only">
+                    {product.nameAr}
+                  </a>
                   
                   {/* Top Image Frame (3:4 aspect ratio full bleed) */}
                   <div>
@@ -692,9 +693,9 @@ export default function StoreView({
                       </span>
 
                       {/* Product Name in Bold Modern Arabic Font */}
-                      <h3 className="font-bold text-xs sm:text-sm text-gray-950 group-hover:text-[#A44C5C] transition-colors leading-snug line-clamp-2 min-h-[32px] sm:min-h-[38px]">
+                      <h2 className="font-bold text-xs sm:text-sm text-gray-950 group-hover:text-[#A44C5C] transition-colors leading-snug line-clamp-2 min-h-[32px] sm:min-h-[38px]">
                         {product.nameAr || product.nameEn}
-                      </h3>
+                      </h2>
 
                       {/* Rating Stars Row (Render only when verified reviews exist) */}
                       {Boolean(product.reviewsCount && product.reviewsCount > 0) && (

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://sulta.vercel.app/product/red-polka-dot-strappy-cotton-pajama/</loc>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/red-polka-dot-strappy-pajama.webp</image:loc>
+      <image:title>بيجامة روج المنقّطة بحمالات</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/tulip-crinkle-cotton-womens-pajama/</loc>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/tulip-crinkle-cotton-pajama.webp</image:loc>
+      <image:title>بيجامة فلورا — توليب</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/tulip-crinkle-cotton-pajama-detail.webp</image:loc>
+      <image:title>بيجامة فلورا — توليب</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/pink-floral-crinkle-cotton-womens-pajama/</loc>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/floral-crinkle-cotton-pajama-box.webp</image:loc>
+      <image:title>بيجامة روزي — زهور</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/sugar-bow-pajama-set-royal-pink/</loc>
+    <image:image>
+      <image:loc>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg</image:loc>
+      <image:title>بيجامة سُكّر بالفيونكة — وردي ملكي</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg</image:loc>
+      <image:title>بيجامة سُكّر بالفيونكة — وردي ملكي</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/sugar-bow-pajama-set-ivory-white/</loc>
+    <image:image>
+      <image:loc>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg</image:loc>
+      <image:title>بيجامة سُكّر بالفيونكة — أبيض عاجي</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg</image:loc>
+      <image:title>بيجامة سُكّر بالفيونكة — أبيض عاجي</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/rosa-evening-bloom-pajama-set/</loc>
+    <image:image>
+      <image:loc>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg</image:loc>
+      <image:title>بيجامة روزا — ورد المساء</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png</image:loc>
+      <image:title>بيجامة روزا — ورد المساء</image:title>
+    </image:image>
+  </url>
+</urlset>

@@ -117,10 +117,18 @@ export interface Product {
   code?: string;
   salePriceEG?: number;
   salePriceSA?: number;
+  compareAtPrice?: number;
+  saleEndsAt?: string;
   rating: number;
   reviewsCount: number;
   stock: number;
+  h1?: string;
+  seoTitle?: string;
   shortDescription?: string;
+  slug?: string;
+  material?: string;
+  sizeInfo?: string;
+  careInstructions?: string;
   tags?: string[];
   season?: string;
   collection?: string;

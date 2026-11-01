@@ -3,6 +3,7 @@ import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Setting
 import { createClient } from '@supabase/supabase-js';
 import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 import { parseCleanArabicDescription } from '../utils/textUtils';
+import { getIdFromSlug } from '../utils/slugify';
 export { SEED_FALLBACK_PRODUCTS };
 
 // --- ROBUST CONFIGURATION ---
@@ -389,181 +390,80 @@ function mapProduct(data: any): Product {
     ? validImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey))
     : [cleanImgUrl('', catKey)];
 
-  // Default fallbacks from physical columns
-  let nameAr = data.name_ar || '';
-  let nameEn = data.name_en || '';
-  let descriptionAr = data.description_ar || '';
-  let descriptionEn = data.description_en || '';
-  let sku = data.sku || undefined;
-  let fabricAr = data.fabric_ar || '';
-  let fabricEn = data.fabric_en || '';
-  let washInstructionsAr = data.wash_instructions_ar || '';
-  let colors = Array.isArray(data.colors) ? data.colors : (data.colors ? JSON.parse(data.colors) : []);
-  let sizes = Array.isArray(data.sizes) ? data.sizes : (data.sizes ? JSON.parse(data.sizes) : []);
-  let isBestSeller = !!data.is_best_seller;
-  let rating = Number(data.rating ?? 5);
-  let reviewsCount = Number(data.reviews_count ?? 0);
-  let featured = !!data.featured;
-  let status = data.status || 'active';
-  let shortDescription = cleanText(data.short_description || undefined);
-  let tags = Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []);
-  let collection = data.collection || undefined;
-  let seo = data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined;
-  let metaPriceSA: number | undefined;
-  let metaPriceEG: number | undefined;
-  let metaSalePriceSA: number | undefined;
-  let metaSalePriceEG: number | undefined;
-
-  // Try parsing name fallback if nameAr and nameEn are empty but name column contains data
-  if (!nameAr && !nameEn && data.name) {
-    if (data.name.includes(' | ')) {
-      const parts = data.name.split(' | ');
-      nameAr = parts[0] || '';
-      nameEn = parts[1] || parts[0] || '';
-    } else {
-      nameAr = data.name;
-      nameEn = data.name;
-    }
-  }
-
-  // Try parsing description fallback and extract metadata block if present
-  if (data.description) {
-    const metaIndex = data.description.indexOf('[METADATA_SULTA_V2]');
-    if (metaIndex !== -1) {
-      const plainDescSection = data.description.substring(0, metaIndex);
-      const jsonSection = data.description.substring(metaIndex + '[METADATA_SULTA_V2]:'.length);
-      
-      descriptionAr = parseCleanArabicDescription(plainDescSection);
-
-      // Reconstruct all missing metadata back to the frontend typed object
-      try {
-        const jsonClean = jsonSection.trim().replace(/^:/, '').trim();
-        const meta = JSON.parse(jsonClean);
-        if (meta.nameAr) nameAr = meta.nameAr;
-        if (meta.nameEn) nameEn = meta.nameEn;
-        if (meta.descriptionAr) descriptionAr = parseCleanArabicDescription(meta.descriptionAr);
-        if (meta.descriptionEn) descriptionEn = meta.descriptionEn;
-        if (meta.sku) sku = meta.sku;
-        if (meta.fabricAr) fabricAr = meta.fabricAr;
-        if (meta.fabricEn) fabricEn = meta.fabricEn;
-        if (meta.washInstructionsAr) washInstructionsAr = meta.washInstructionsAr;
-        if (meta.colors) colors = meta.colors;
-        if (meta.sizes) sizes = meta.sizes;
-        if (meta.isBestSeller !== undefined) isBestSeller = meta.isBestSeller;
-        if (meta.featured !== undefined) featured = meta.featured;
-        if (meta.status) status = meta.status;
-        if (meta.rating !== undefined) rating = meta.rating;
-        if (meta.reviewsCount !== undefined) reviewsCount = meta.reviewsCount;
-        if (meta.shortDescription) shortDescription = parseCleanArabicDescription(meta.shortDescription);
-        if (meta.tags) tags = meta.tags;
-        if (meta.collection) collection = meta.collection;
-        if (meta.seo) seo = meta.seo;
-        if (meta.priceSA !== undefined && Number(meta.priceSA) > 0) metaPriceSA = Number(meta.priceSA);
-        if (meta.priceEG !== undefined && Number(meta.priceEG) > 0) metaPriceEG = Number(meta.priceEG);
-        if (meta.salePriceSA !== undefined) metaSalePriceSA = Number(meta.salePriceSA);
-        if (meta.salePriceEG !== undefined) metaSalePriceEG = Number(meta.salePriceEG);
-      } catch (e) {
-        console.error("[SULTA DB] Failed to parse metadata from description:", e);
-      }
-    } else {
-      descriptionAr = parseCleanArabicDescription(data.description);
-    }
-  }
-
-  // Ensure status is active for store visibility
-  status = (data.status === 'archived') ? 'archived' : 'active';
-
-  // Ensure default colors exist if none defined in database
-  if (!colors || colors.length === 0) {
-    colors = [
-      { name: 'الوردي الملكي (Royal Rose)', hex: '#E8A5B8' },
-      { name: 'الأوف وايت (Ivory White)', hex: '#FDFBF7' },
-      { name: 'الأسود الفاحم (Midnight Black)', hex: '#1C1917' }
-    ];
-  }
-
-  // Force One Size for all products
-  sizes = ['One Size'];
-
-  // Smart luxury enrichment for the official SULTA collection products
-  // Matches by ID first, then specific unique color/name keywords
-  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id) || SEED_FALLBACK_PRODUCTS.find(p => {
-    if (!nameAr) return false;
-    if (nameAr.includes('عاجي') || nameAr.includes('أوف وايت') || nameAr.includes('Ivory')) {
-      return p.id === '54929551-5958-4b33-9ff9-abe83722cb78';
-    }
-    if (nameAr.includes('فيونكة') || nameAr.includes('سُكّر') || nameAr.includes('Sugar')) {
-      return p.id === '8d738e1c-0861-4569-8949-fc2d98c4fa50';
-    }
-    if (nameAr.includes('فلورا') || nameAr.includes('Flora')) {
-      return p.id === '614f6daa-d291-410b-a450-be23de75f868';
-    }
-    if (nameAr.includes('ليلك') || nameAr.includes('Polka')) {
-      return p.id === '51005136-8066-4844-8efe-718cd7644e6b';
-    }
-    if (nameAr.includes('مخمل') || nameAr.includes('Velvet')) {
-      return p.id === '78f851f3-5f75-4153-9fbe-0e8ad54825be';
-    }
-    if (nameAr.includes('نُقط') || nameAr.includes('Dot')) {
-      return p.id === '1d4e8104-17c9-4b64-8300-38340bdeaa18';
-    }
-    if (nameAr.includes('روزا') || nameAr.includes('Rosa')) {
-      return p.id === 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc';
-    }
+  // Match fallback product first
+  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id || (data.id && p.id.startsWith(data.id.slice(0, 8)))) || SEED_FALLBACK_PRODUCTS.find(p => {
+    const n = data.name_ar || data.name || '';
+    if (!n) return false;
+    if (n.includes('عاجي') || n.includes('أوف وايت') || n.includes('Ivory')) return p.id.startsWith('54929551');
+    if (n.includes('فيونكة') || n.includes('سُكّر') || n.includes('Sugar')) return p.id.startsWith('8d738e1c');
+    if (n.includes('فلورا') || n.includes('Flora') || n.includes('توليب')) return p.id.startsWith('614f6daa');
+    if (n.includes('روج') || n.includes('حمالات') || n.includes('ليلك') || n.includes('Polka')) return p.id.startsWith('51005136');
+    if (n.includes('روزي') || n.includes('مخمل') || n.includes('Velvet')) return p.id.startsWith('78f851f3');
+    if (n.includes('روزا') || n.includes('Rosa')) return p.id.startsWith('bf2ba4f4');
+    if (n.includes('نُقط') || n.includes('Dot') || n.includes('كلاسيك')) return p.id.startsWith('1d4e8104');
     return false;
   });
 
-  if (fallbackProduct) {
-    // Keep nameAr if DB provided a valid name, otherwise fallback to curated name
-    if (!nameAr || nameAr === 'منتج فاخر' || nameAr === 'وردي') {
-      nameAr = fallbackProduct.nameAr;
-      nameEn = fallbackProduct.nameEn;
-    }
-    if (!fabricAr || fabricAr.length < 5 || fabricAr === 'خامة فاخرة') {
-      fabricAr = fallbackProduct.fabricAr;
-      fabricEn = fallbackProduct.fabricEn;
-    }
-    if (!washInstructionsAr || washInstructionsAr.length < 5) {
-      washInstructionsAr = fallbackProduct.washInstructionsAr;
-    }
-    if (!descriptionAr || descriptionAr.length < 60) {
-      descriptionAr = fallbackProduct.descriptionAr;
-      descriptionEn = fallbackProduct.descriptionEn;
-    }
-    if (!colors || colors.length === 0) {
-      colors = fallbackProduct.colors;
-    }
-    if (!sizes || sizes.length === 0) {
-      sizes = fallbackProduct.sizes;
-    }
+  // Name resolution: DB physical columns FIRST
+  let nameAr = data.name_ar || (fallbackProduct ? fallbackProduct.nameAr : '') || (data.name ? data.name.split(' | ')[0] : '') || 'منتج سولتة';
+  let nameEn = data.name_en || (fallbackProduct ? fallbackProduct.nameEn : '') || (data.name && data.name.includes(' | ') ? data.name.split(' | ')[1] : '') || 'SULTA Product';
+
+  // Description resolution
+  let rawDesc = data.description_ar || data.description || '';
+  if (rawDesc.includes('[METADATA_SULTA_V2]')) {
+    rawDesc = rawDesc.substring(0, rawDesc.indexOf('[METADATA_SULTA_V2]'));
   }
+  let descriptionAr = parseCleanArabicDescription(rawDesc) || (fallbackProduct ? fallbackProduct.descriptionAr : '');
+  let descriptionEn = (fallbackProduct ? fallbackProduct.descriptionEn : '');
 
-  let resolvedPriceSA = metaPriceSA !== undefined 
-    ? metaPriceSA 
-    : (Number(data.price_sa) > 0 
-      ? Number(data.price_sa) 
-      : (Number(data.price) > 0 
-        ? Number(data.price) 
-        : (fallbackProduct ? fallbackProduct.priceSA : 200)));
+  // Fabric / Wash
+  let fabricAr = data.fabric_ar || data.material || (fallbackProduct ? fallbackProduct.fabricAr : '');
+  let fabricEn = data.fabric_en || (fallbackProduct ? fallbackProduct.fabricEn : '');
+  let washInstructionsAr = data.wash_instructions_ar || data.care_instructions || (fallbackProduct ? fallbackProduct.washInstructionsAr : '');
 
-  let resolvedSalePriceSA = metaSalePriceSA !== undefined 
-    ? metaSalePriceSA 
-    : (data.sale_price_sa ? Number(data.sale_price_sa) : (data.sale_price ? Number(data.sale_price) : undefined));
+  // Colors & Sizes
+  let colors = Array.isArray(data.colors) ? data.colors : (data.colors ? JSON.parse(data.colors) : (fallbackProduct ? fallbackProduct.colors : []));
+  if (!colors || colors.length === 0) {
+    colors = fallbackProduct ? fallbackProduct.colors : [{ name: 'وردي', hex: '#DF8A9D' }];
+  }
+  let sizes = ['One Size'];
 
-  // Use values directly from DB without forced magic fallbacks to ensure coordination with Admin Dashboard
+  // Price resolution: DB physical columns FIRST, then fallback
+  let resolvedPriceSA = Number(data.price_sa) > 0 
+    ? Number(data.price_sa) 
+    : (Number(data.price) > 0 
+      ? Number(data.price) 
+      : (fallbackProduct ? fallbackProduct.priceSA : 69));
+
+  let resolvedSalePriceSA = data.sale_price_sa !== null && data.sale_price_sa !== undefined 
+    ? Number(data.sale_price_sa) 
+    : (data.sale_price !== null && data.sale_price !== undefined ? Number(data.sale_price) : undefined);
+
   if (resolvedSalePriceSA === resolvedPriceSA) {
     resolvedSalePriceSA = undefined;
   }
 
-  const resolvedPriceEG = metaPriceEG !== undefined 
-    ? metaPriceEG 
-    : (Number(data.price_eg) > 0 
-      ? Number(data.price_eg) 
-      : 899);
+  const resolvedPriceEG = Number(data.price_eg) > 0 
+    ? Number(data.price_eg) 
+    : (fallbackProduct ? fallbackProduct.priceEG : 899);
 
-  const resolvedSalePriceEG = metaSalePriceEG !== undefined 
-    ? metaSalePriceEG 
-    : (data.sale_price_eg ? Number(data.sale_price_eg) : 499);
+  const resolvedSalePriceEG = data.sale_price_eg ? Number(data.sale_price_eg) : 499;
+
+  // Stock
+  const resolvedStock = data.stock !== undefined && data.stock !== null
+    ? Number(data.stock)
+    : (fallbackProduct ? fallbackProduct.stock : 10);
+
+  // SEO & Slugs
+  const h1 = data.h1 || (fallbackProduct ? fallbackProduct.h1 : undefined);
+  const seoTitle = data.seo_title || (fallbackProduct ? fallbackProduct.seoTitle : undefined);
+  const resolvedShortDesc = cleanText(data.short_description || (fallbackProduct ? fallbackProduct.shortDescription : undefined));
+  const slug = data.slug || (fallbackProduct ? fallbackProduct.slug : undefined);
+  const compareAtPrice = data.compare_at_price ? Number(data.compare_at_price) : undefined;
+  const saleEndsAt = data.sale_ends_at || undefined;
+  const material = data.material || fabricAr;
+  const sizeInfo = data.size_info || (fallbackProduct ? fallbackProduct.sizeInfo : 'وان سايز يناسب من 45 إلى 80 كيلو');
+  const careInstructions = data.care_instructions || washInstructionsAr;
 
   return {
     id: data.id,
@@ -582,19 +482,27 @@ function mapProduct(data: any): Product {
     video: data.video || undefined,
     colors,
     sizes,
-    isBestSeller,
-    rating,
-    reviewsCount,
-    stock: Number(data.stock ?? 0),
-    sku,
+    isBestSeller: data.is_best_seller !== undefined ? !!data.is_best_seller : (fallbackProduct ? fallbackProduct.isBestSeller : false),
+    rating: Number(data.rating ?? 5),
+    reviewsCount: Number(data.reviews_count ?? 0),
+    stock: resolvedStock,
+    sku: data.sku || undefined,
     salePriceEG: resolvedSalePriceEG,
     salePriceSA: resolvedSalePriceSA,
-    featured,
-    status,
-    shortDescription,
-    tags,
-    collection,
-    seo
+    compareAtPrice,
+    saleEndsAt,
+    featured: !!data.featured,
+    status: data.status || 'active',
+    h1,
+    seoTitle,
+    shortDescription: resolvedShortDesc,
+    slug,
+    material,
+    sizeInfo,
+    careInstructions,
+    tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
+    collection: data.collection || undefined,
+    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined
   };
 }
 
@@ -735,9 +643,10 @@ export const dbService = {
   getProductById: async (id: string): Promise<Product | null> => {
     try {
       if (!id) return null;
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      const resolvedId = getIdFromSlug(id) || id;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(resolvedId);
       if (isUuid) {
-        const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+        const { data, error } = await supabase.from('products').select('*').eq('id', resolvedId).single();
         if (!error && data) {
           return mapProduct(data);
         }
@@ -746,11 +655,14 @@ export const dbService = {
       console.warn("[dbService] getProductById error fetching from Supabase:", err);
     }
 
+    const resolvedId = getIdFromSlug(id) || id;
+
     // Fallback: Search in SEED_FALLBACK_PRODUCTS
     const fallback = SEED_FALLBACK_PRODUCTS.find(p => 
-      p.id === id || 
-      p.id.includes(id) || 
-      id.includes(p.id)
+      p.id === resolvedId || 
+      p.id === id ||
+      p.id.includes(resolvedId) || 
+      resolvedId.includes(p.id)
     );
     if (fallback) return fallback;
 
@@ -758,7 +670,7 @@ export const dbService = {
     try {
       const { data: allProds } = await supabase.from('products').select('*');
       if (allProds && Array.isArray(allProds)) {
-        const found = allProds.find(p => p.id === id || (p.id && id && (p.id.includes(id) || id.includes(p.id))));
+        const found = allProds.find(p => p.id === resolvedId || p.id === id || (p.id && resolvedId && (p.id.includes(resolvedId) || resolvedId.includes(p.id))));
         if (found) return mapProduct(found);
       }
     } catch {}
@@ -1234,44 +1146,9 @@ export const dbService = {
   ): (() => void) => {
     const deliverProducts = (rawList: Product[]) => {
       try {
-        let deletedIds: string[] = [];
-        try {
-          deletedIds = JSON.parse(localStorage.getItem('sulta_deleted_product_ids') || '[]');
-        } catch {}
-
-        const filteredRaw = rawList.filter(p => !deletedIds.includes(p.id));
-
-        const savedStr = localStorage.getItem('sulta_saved_products');
-        if (!savedStr) {
-          onSuccess(filteredRaw);
-          return;
-        }
-        const savedMap = JSON.parse(savedStr);
-        if (!savedMap || typeof savedMap !== 'object') {
-          onSuccess(filteredRaw);
-          return;
-        }
-
-        const mergedMap = new Map<string, Product>();
-        for (const p of filteredRaw) {
-          mergedMap.set(p.id, p);
-        }
-        for (const [id, savedP] of Object.entries(savedMap)) {
-          if (deletedIds.includes(id)) continue;
-          if (savedP && typeof savedP === 'object') {
-            const existing = mergedMap.get(id);
-            if (existing) {
-              mergedMap.set(id, { ...existing, ...(savedP as Product) });
-            } else {
-              mergedMap.set(id, savedP as Product);
-            }
-          }
-        }
-        onSuccess(Array.from(mergedMap.values()));
-      } catch (e) {
-        console.warn('[SULTA DB] Error merging local products:', e);
-        onSuccess(rawList);
-      }
+        localStorage.removeItem('sulta_saved_products');
+      } catch {}
+      onSuccess(rawList);
     };
 
     // Immediate optimistic delivery of fallback + any local edits so page loads instantly with correct prices

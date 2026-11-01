@@ -2,9 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product } from '../types';
 import { dbService, cleanImgUrl } from '../services/db';
-import { getIdFromSlug, slugify } from '../utils/slugify';
+import { getIdFromSlug, getProductSlug } from '../utils/slugify';
 import SEO from './SEO';
-import { truncateTo155Words, formatProductTitle } from '../utils/textUtils';
 import { ProductPrice } from './ProductPrice';
 import { 
   ShoppingBag, 
@@ -14,11 +13,11 @@ import {
   RefreshCw, 
   ChevronRight, 
   ChevronLeft, 
-  Play, 
-  Film, 
   ArrowRight,
   Plus,
   Minus,
+  MessageCircle,
+  HelpCircle,
   Sparkles
 } from 'lucide-react';
 import { trackViewContent } from '../utils/analytics';
@@ -35,14 +34,14 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<any>(null);
-  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>('One Size');
   const [quantity, setQuantity] = useState<number>(1);
 
   // Gallery & Media Interactive States
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
-  const [isVideoActive, setIsVideoActive] = useState<boolean>(false);
 
   // Touch Swipe Handling for Mobile
   const touchStartX = useRef<number | null>(null);
@@ -59,17 +58,16 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
         if (p) {
           setProduct(p);
           setSelectedColor(p.colors?.[0] || null);
-          setSelectedSize(p.sizes?.[0] || '');
+          setSelectedSize('One Size');
           setActiveImageIdx(0);
-          setIsVideoActive(false);
           
-          // Analytics
+          // Analytics (preserve exact pixels)
           trackViewContent(p, 'SAR');
           trackTikTokViewContent(p, 'SAR');
 
-          // Correct URL to pretty slug if needed
-          const correctSlug = `${p.id}-${slugify(p.nameEn || p.nameAr || '')}`;
-          if (slug !== correctSlug && !slug.startsWith(p.id)) {
+          // Ensure clean slug in URL
+          const correctSlug = p.slug || getProductSlug({ id: p.id, nameEn: p.nameEn, nameAr: p.nameAr });
+          if (slug !== correctSlug && slug !== `${p.id}-${correctSlug}`) {
             navigate(`/product/${correctSlug}`, { replace: true });
           }
         } else {
@@ -84,6 +82,13 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     };
 
     fetchProduct();
+
+    // Fetch similar products
+    const unsub = dbService.subscribeProducts((prods) => {
+      setAllProducts(prods.filter(item => item.status !== 'archived'));
+    }, () => {});
+
+    return () => unsub();
   }, [slug, navigate]);
 
   if (loading) {
@@ -107,12 +112,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const currentMainImage = displayImages[activeImageIdx] || displayImages[0];
 
   const handleNextImage = () => {
-    setIsVideoActive(false);
     setActiveImageIdx(prev => (prev + 1) % displayImages.length);
   };
 
   const handlePrevImage = () => {
-    setIsVideoActive(false);
     setActiveImageIdx(prev => (prev - 1 + displayImages.length) % displayImages.length);
   };
 
@@ -131,10 +134,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
     if (isSwipe) {
       if (distance > 0) {
-        // Swiped left in RTL: advance to next image
         handleNextImage();
       } else {
-        // Swiped right in RTL: go back to previous image
         handlePrevImage();
       }
     }
@@ -143,31 +144,58 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     touchEndX.current = null;
   };
 
-  const cleanShortDesc = truncateTo155Words(product.descriptionAr);
-  const formattedTitle = formatProductTitle(product.nameAr);
+  const shortDesc = product.shortDescription || product.descriptionAr.slice(0, 150);
+  const formattedTitle = product.seoTitle || `${product.nameAr} | سولتة`;
+  const productSlug = product.slug || getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr });
+  const canonicalUrl = `https://sulta.vercel.app/product/${productSlug}/`;
 
-  // JSON-LD for Product
-  const jsonLd = {
+  // WhatsApp inquiry link
+  const whatsappText = encodeURIComponent(`مرحباً سولتة، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالرابط: ${canonicalUrl}`);
+  const whatsappUrl = `https://wa.me/966552823677?text=${whatsappText}`;
+
+  // Price & strikethrough logic (strictly authentic)
+  const price = product.salePriceSA || product.priceSA;
+  const hasValidComparePrice = Boolean(
+    product.compareAtPrice && 
+    product.compareAtPrice > price &&
+    (!product.saleEndsAt || new Date(product.saleEndsAt) > new Date())
+  );
+
+  const isOutOfStock = product.stock === 0;
+
+  // JSON-LD for Product (STRICT: NO reviews, NO aggregateRating)
+  const jsonLd: any = {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": product.nameAr,
     "image": displayImages,
-    "description": cleanShortDesc,
-    "sku": product.id,
+    "description": shortDesc,
+    "sku": product.sku || product.id,
     "brand": {
       "@type": "Brand",
-      "name": "SULTA Atelier"
+      "name": "سولتة"
     },
+    "material": product.material || product.fabricAr,
+    "audience": {
+      "@type": "PeopleAudience",
+      "suggestedGender": "female"
+    },
+    "size": "One Size (45-80 kg)",
     "offers": {
       "@type": "Offer",
-      "url": `https://sulta.vercel.app/product/${slug}`,
+      "url": canonicalUrl,
       "priceCurrency": "SAR",
-      "price": product.salePriceSA || product.priceSA,
-      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+      "price": price,
+      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "itemCondition": "https://schema.org/NewCondition"
     }
   };
 
-  // Breadcrumb JSON-LD
+  if (hasValidComparePrice && product.saleEndsAt) {
+    jsonLd.offers.priceValidUntil = product.saleEndsAt;
+  }
+
+  // BreadcrumbList JSON-LD
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -182,30 +210,82 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
         "@type": "ListItem",
         "position": 2,
         "name": "المتجر",
-        "item": "https://sulta.vercel.app/store"
+        "item": "https://sulta.vercel.app/store/"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": product.nameAr,
-        "item": `https://sulta.vercel.app/product/${slug}`
+        "item": canonicalUrl
       }
     ]
   };
+
+  const isCrinkle = (product.material || product.fabricAr).includes('كوريشة');
+
+  const faqJsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "ما المقاس؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "وان سايز يناسب من 45 إلى 80 كيلو."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "من أي خامة؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": isCrinkle ? "قطن كوريشة ناعم ومريح." : "قطن ناعم ومريح."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "كيف أغسلها؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "بمويه باردة، ويفضّل بدون كلور، مع تجنّب الحرارة العالية."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "هل الكمية متوفرة؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `الكمية محدودة، وتظهر المتبقية في الصفحة.`
+        }
+      }
+    ]
+  };
+
+  const similarProducts = allProducts.filter(p => p.id !== product.id).slice(0, 3);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10" dir="rtl">
       <SEO 
         title={formattedTitle}
-        description={cleanShortDesc}
-        path={`/product/${slug}`}
+        description={shortDesc}
+        path={`/product/${productSlug}/`}
         image={currentMainImage}
         type="product"
       />
       
       <script type="application/ld+json">
-        {JSON.stringify([jsonLd, breadcrumbJsonLd])}
+        {JSON.stringify([jsonLd, breadcrumbJsonLd, faqJsonLd])}
       </script>
+
+      {/* Free Shipping Banner */}
+      <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl flex items-center justify-between shadow-2xs">
+        <span className="flex items-center gap-1.5">
+          <Truck size={16} className="text-emerald-700" />
+          <span>شحن مجاني لكافة مدن المملكة للطلبات فوق 299 ر.س 🇸🇦</span>
+        </span>
+        <span className="text-emerald-700 font-sans text-xs">سولتة SULTA</span>
+      </div>
 
       {/* Back to store shortcut */}
       <div className="mb-6 flex items-center justify-between">
@@ -216,251 +296,143 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           <span>العودة لجميع تشكيلات المتجر</span>
         </button>
-        <span className="text-xs text-gray-400 font-sans">
-          رقم القطعة: <span className="font-mono text-gray-600">{product.id.slice(0, 8)}</span>
-        </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
-        {/* Product Media & Interactive Gallery */}
+        {/* Product Media & Gallery */}
         <div className="space-y-4">
-          {/* Main Visual Display Frame (3:4 ratio) with Swipe & Flip Controls */}
           <div 
             className="relative aspect-[3/4] w-full rounded-3xl overflow-hidden bg-neutral-900 border border-gray-200 shadow-sm select-none"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {isVideoActive ? (
-              <div className="w-full h-full relative bg-black flex items-center justify-center">
-                {product.video ? (
-                  (() => {
-                    const isYouTube = product.video.includes('youtube.com') || product.video.includes('youtu.be');
-                    const isVimeo = product.video.includes('vimeo.com');
+            <SultaImage 
+              src={currentMainImage} 
+              alt={product.nameAr} 
+              className="w-full h-full"
+              imgClassName="w-full h-full object-cover object-center"
+              priority={true}
+            />
 
-                    if (isYouTube) {
-                      let vidId = '';
-                      if (product.video.includes('v=')) {
-                        vidId = product.video.split('v=')[1].split('&')[0];
-                      } else if (product.video.includes('youtu.be/')) {
-                        vidId = product.video.split('youtu.be/')[1];
-                      } else if (product.video.includes('embed/')) {
-                        vidId = product.video.split('embed/')[1];
-                      }
-                      return (
-                        <iframe
-                          src={`https://www.youtube.com/embed/${vidId}?autoplay=1&mute=0&loop=1&playlist=${vidId}`}
-                          className="w-full h-full border-0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title={product.nameAr}
-                        />
-                      );
-                    }
-
-                    if (isVimeo) {
-                      const vidId = product.video.split('/').pop()?.split('?')[0];
-                      return (
-                        <iframe
-                          src={`https://player.vimeo.com/video/${vidId}?autoplay=1&loop=1`}
-                          className="w-full h-full border-0"
-                          allow="autoplay; fullscreen; picture-in-picture"
-                          allowFullScreen
-                          title={product.nameAr}
-                        />
-                      );
-                    }
-
-                    return (
-                      <video
-                        src={product.video}
-                        className="w-full h-full object-cover"
-                        controls
-                        autoPlay
-                        loop
-                        playsInline
-                      />
-                    );
-                  })()
-                ) : (
-                  <div className="w-full h-full relative overflow-hidden flex flex-col items-center justify-center text-center p-6 text-white bg-gradient-to-b from-neutral-900 to-black">
-                    <SultaImage 
-                      src={currentMainImage} 
-                      alt={product.nameAr}
-                      className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105 transition-transform duration-700" 
-                    />
-                    <div className="relative z-10 space-y-3">
-                      <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center mx-auto border border-white/20 text-[#F4B6C2]">
-                        <Film size={26} />
-                      </div>
-                      <span className="text-[10px] tracking-widest uppercase text-[#F4B6C2] font-black">SULTA Haute Couture</span>
-                      <h4 className="text-xl font-serif font-black">{product.nameAr}</h4>
-                      <p className="text-xs text-gray-300 max-w-xs leading-relaxed">
-                        استعراض تفاصيل خامات البيجامة الفاخرة ونعومة النسيج الملكي.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Return to Photos Pill */}
+            {displayImages.length > 1 && (
+              <>
                 <button
                   type="button"
-                  onClick={() => setIsVideoActive(false)}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/75 hover:bg-[#A44C5C] text-white px-5 py-2 rounded-full text-xs font-bold border border-white/20 backdrop-blur-md transition-all shadow-lg flex items-center gap-2 cursor-pointer z-20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrevImage();
+                  }}
+                  aria-label="الصورة السابقة"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-900 shadow-md flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-sm"
                 >
-                  <span>عرض صور القطعة</span>
-                  <span>📷</span>
+                  <ChevronRight size={22} />
                 </button>
-              </div>
-            ) : (
-              <>
-                <SultaImage 
-                  key={currentMainImage}
-                  src={currentMainImage} 
-                  alt={`${product.nameAr} - ${product.categoryAr || 'بيجامة'} سولتة فاخرة`}
-                  className="w-full h-full"
-                  imgClassName="object-cover"
-                  priority={true}
-                />
-
-                {/* Counter Badge */}
-                {displayImages.length > 1 && (
-                  <div className="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full border border-white/10 shadow-sm">
-                    {activeImageIdx + 1} / {displayImages.length}
-                  </div>
-                )}
-
-                {/* Navigation Arrows for desktop and tablet */}
-                {displayImages.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePrevImage();
-                      }}
-                      aria-label="الصورة السابقة"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-900 shadow-md flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-sm"
-                    >
-                      <ChevronRight size={22} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNextImage();
-                      }}
-                      aria-label="الصورة التالية"
-                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-900 shadow-md flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-sm"
-                    >
-                      <ChevronLeft size={22} />
-                    </button>
-                  </>
-                )}
-
-                {/* Video Preview Button if Video Exists */}
-                {product.video && (
-                  <button
-                    type="button"
-                    onClick={() => setIsVideoActive(true)}
-                    className="absolute bottom-4 left-4 z-20 bg-[#A44C5C]/90 hover:bg-[#A44C5C] text-white px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg backdrop-blur-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                  >
-                    <Play size={14} className="fill-current" />
-                    <span>فيديو القطعة</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNextImage();
+                  }}
+                  aria-label="الصورة التالية"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-900 shadow-md flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-sm"
+                >
+                  <ChevronLeft size={22} />
+                </button>
               </>
             )}
           </div>
 
-          {/* Interactive Thumbnails Gallery */}
-          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none pt-1">
-            {displayImages.map((img, idx) => {
-              const isSelected = !isVideoActive && activeImageIdx === idx;
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    setIsVideoActive(false);
-                    setActiveImageIdx(idx);
-                  }}
-                  className={`relative flex-shrink-0 w-20 h-24 rounded-2xl overflow-hidden bg-gray-100 border-2 transition-all duration-200 cursor-pointer ${
-                    isSelected 
-                      ? 'border-[#A44C5C] ring-2 ring-[#A44C5C]/30 shadow-md scale-102' 
-                      : 'border-gray-200 opacity-70 hover:opacity-100'
-                  }`}
-                  aria-label={`عرض الصورة ${idx + 1}`}
-                >
-                  <SultaImage 
-                    src={img} 
-                    alt={`${product.nameAr} - صورة مصغرة ${idx + 1}`} 
-                    className="w-full h-full"
-                    imgClassName="object-cover"
-                  />
-                  {isSelected && (
-                    <div className="absolute inset-0 bg-[#A44C5C]/10 pointer-events-none" />
-                  )}
-                </button>
-              );
-            })}
-
-            {/* Video Thumbnail Button */}
-            {product.video && (
-              <button
-                type="button"
-                onClick={() => setIsVideoActive(true)}
-                className={`relative flex-shrink-0 w-20 h-24 rounded-2xl overflow-hidden bg-neutral-900 border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center text-white ${
-                  isVideoActive 
-                    ? 'border-[#A44C5C] ring-2 ring-[#A44C5C]/30 shadow-md scale-102' 
-                    : 'border-gray-300 opacity-75 hover:opacity-100'
-                }`}
-                aria-label="مشاهدة فيديو القطعة"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#A44C5C] flex items-center justify-center mb-1 text-white shadow-sm">
-                  <Play size={16} className="fill-current translate-x-[-1px]" />
-                </div>
-                <span className="text-[10px] font-bold">فيديو</span>
-              </button>
-            )}
-          </div>
-          <p className="text-[11px] text-gray-400 text-center font-sans">
-            اسحبي الصورة لليمين أو اليسار للتنقل بين زوايا القطعة ✦
-          </p>
+          {/* Interactive Thumbnails */}
+          {displayImages.length > 1 && (
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none pt-1">
+              {displayImages.map((img, idx) => {
+                const isSelected = activeImageIdx === idx;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImageIdx(idx)}
+                    className={`relative flex-shrink-0 w-20 h-24 rounded-2xl overflow-hidden bg-gray-100 border-2 transition-all duration-200 cursor-pointer ${
+                      isSelected 
+                        ? 'border-[#A44C5C] ring-2 ring-[#A44C5C]/30 shadow-md' 
+                        : 'border-gray-200 opacity-70 hover:opacity-100'
+                    }`}
+                    aria-label={`عرض الصورة ${idx + 1}`}
+                  >
+                    <SultaImage 
+                      src={img} 
+                      alt={`${product.nameAr} - صورة مصغرة ${idx + 1}`} 
+                      className="w-full h-full"
+                      imgClassName="object-cover"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Product Info & Specifications */}
+        {/* Product Details & Actions */}
         <div className="space-y-6 md:space-y-8">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-1.5 bg-[#FAF4F5] text-[#A44C5C] px-3 py-1 rounded-full text-xs font-bold">
-              <Sparkles size={14} />
-              <span>{product.categoryAr || 'أزياء النوم الملكية'}</span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-950 tracking-tight">
-              {product.nameAr}
-            </h1>
-
-            <div className="flex items-center gap-4 pt-1">
-              <ProductPrice product={product} country="SA" size="lg" />
-              <span className="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md font-bold">
-                شامل الضريبة والشحن السريع 🇸🇦
+            <div className="flex items-center gap-2">
+              {product.stock <= 10 && product.stock > 0 && (
+                <span className="inline-block bg-rose-50 text-rose-700 text-xs font-bold px-3 py-1 rounded-full">
+                  متبقي {product.stock} قطع فقط
+                </span>
+              )}
+              {isOutOfStock && (
+                <span className="inline-block bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full">
+                  نفدت الكمية
+                </span>
+              )}
+              <span className="inline-block bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">
+                وان سايز (45 - 80 كيلو)
               </span>
             </div>
 
-            <p className="text-gray-600 leading-relaxed text-sm sm:text-base pt-2 whitespace-pre-line">
-              {product.descriptionAr || "قطعة ملكية فاخرة من تشكيلة سولتة الحصرية، صُممت بعناية فائقة لتمنحكِ الراحة والأناقة التي تستحقينها."}
+            {/* H1 Heading exactly as requested */}
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-950 tracking-tight">
+              {product.h1 || `${product.nameAr} — قطن وان سايز`}
+            </h1>
+
+            <div className="flex items-center gap-4 pt-1">
+              <span className="text-2xl font-black text-[#A44C5C]">{price} ر.س</span>
+              {hasValidComparePrice && (
+                <span className="text-base text-gray-400 line-through font-bold">
+                  {product.compareAtPrice} ر.س
+                </span>
+              )}
+            </div>
+
+            {/* Structured specs box */}
+            <div className="bg-gray-50 border border-gray-200/80 rounded-2xl p-4 space-y-2.5 text-sm text-gray-800 my-4">
+              <div className="flex items-start gap-2">
+                <span className="font-bold text-gray-900 w-24 flex-shrink-0">الخامة:</span>
+                <span className="text-gray-700">{product.material || product.fabricAr}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-bold text-gray-900 w-24 flex-shrink-0">المقاس:</span>
+                <span className="text-gray-700">{product.sizeInfo || 'وان سايز يناسب من 45 إلى 80 كيلو'}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-bold text-gray-900 w-24 flex-shrink-0">تعليمات الغسيل:</span>
+                <span className="text-gray-700">{product.careInstructions || product.washInstructionsAr}</span>
+              </div>
+            </div>
+
+            <p className="text-gray-700 leading-relaxed text-sm sm:text-base pt-2 whitespace-pre-line">
+              {product.descriptionAr}
             </p>
           </div>
 
           {/* Color Selector */}
           {product.colors && product.colors.length > 0 && (
             <div className="space-y-3 pt-2 border-t border-gray-100">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-gray-900">
-                  اللون المختار: <span className="text-[#A44C5C] font-black">{selectedColor?.name || 'الافتراضي'}</span>
-                </label>
-              </div>
+              <label className="text-xs sm:text-sm font-bold text-gray-900 block">
+                اللون: <span className="text-[#A44C5C] font-black">{selectedColor?.name || 'الافتراضي'}</span>
+              </label>
               <div className="flex flex-wrap gap-3">
                 {product.colors.map((c, idx) => {
                   const isSelected = selectedColor?.name === c.name;
@@ -468,15 +440,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => {
-                        setSelectedColor(c);
-                        // If color has special images linked, switch to first one
-                        if (c.images && c.images.length > 0) {
-                          const matchingIdx = displayImages.findIndex(img => img.includes(c.images![0]));
-                          if (matchingIdx > -1) setActiveImageIdx(matchingIdx);
-                        }
-                      }}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
+                      onClick={() => setSelectedColor(c)}
+                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full border-2 transition-all cursor-pointer ${
                         isSelected 
                           ? 'border-[#A44C5C] bg-[#FAF4F5] text-[#A44C5C] font-bold shadow-xs' 
                           : 'border-gray-200 text-gray-700 hover:border-gray-300'
@@ -494,56 +459,37 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             </div>
           )}
 
-          {/* Size Selector */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div className="space-y-3 pt-2 border-t border-gray-100">
-              <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-bold text-gray-900">
-                  المقاس: <span className="text-[#A44C5C] font-black">{selectedSize}</span>
-                </label>
-                <span className="text-[11px] text-gray-400 font-sans">مقاسات قياسية مريحة</span>
-              </div>
-              <div className="flex flex-wrap gap-2.5">
-                {product.sizes.map((s, idx) => {
-                  const isSelected = selectedSize === s;
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setSelectedSize(s)}
-                      className={`min-w-[50px] px-4 py-2.5 rounded-xl border-2 font-black text-sm transition-all cursor-pointer ${
-                        isSelected 
-                          ? 'bg-[#111827] text-white border-[#111827] shadow-sm' 
-                          : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  );
-                })}
-              </div>
+          {/* Size Info */}
+          <div className="space-y-2 pt-2 border-t border-gray-100">
+            <label className="text-xs sm:text-sm font-bold text-gray-900 block">
+              المقاس: <span className="text-[#A44C5C] font-black">One Size (وان سايز)</span>
+            </label>
+            <div className="inline-block bg-gray-50 border-2 border-gray-300 text-gray-900 px-4 py-2 rounded-xl font-bold text-sm">
+              وان سايز مريح (يناسب 45 إلى 80 كيلو)
             </div>
-          )}
+          </div>
 
-          {/* Quantity and Add to Cart Section */}
-          <div className="space-y-4 pt-4 border-t border-gray-100">
+          {/* Quantity and Actions */}
+          <div className="space-y-3 pt-4 border-t border-gray-100">
             <div className="flex items-center gap-3">
               {/* Quantity Controller */}
               <div className="flex items-center border-2 border-gray-200 rounded-2xl bg-white px-2 py-1 select-none">
                 <button
                   type="button"
+                  disabled={isOutOfStock}
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
                   aria-label="تقليل الكمية"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 text-gray-700 transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 text-gray-700 transition-colors cursor-pointer disabled:opacity-40"
                 >
                   <Minus size={16} />
                 </button>
                 <span className="w-10 text-center font-black text-sm">{quantity}</span>
                 <button
                   type="button"
-                  onClick={() => setQuantity(q => q + 1)}
+                  disabled={isOutOfStock}
+                  onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
                   aria-label="زيادة الكمية"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 text-gray-700 transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 text-gray-700 transition-colors cursor-pointer disabled:opacity-40"
                 >
                   <Plus size={16} />
                 </button>
@@ -552,11 +498,12 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               {/* Add to Cart Button */}
               <button
                 type="button"
-                onClick={() => onAddToCart(product, selectedColor, selectedSize, quantity)}
-                className="flex-1 bg-[#111827] hover:bg-black text-white py-4 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all active:scale-98 shadow-md cursor-pointer"
+                disabled={isOutOfStock}
+                onClick={() => onAddToCart(product, selectedColor, 'One Size', quantity)}
+                className="flex-1 bg-[#111827] hover:bg-black text-white py-4 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all active:scale-98 shadow-md cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 <ShoppingBag size={20} />
-                <span>إضافة إلى الحقيبة ({quantity})</span>
+                <span>{isOutOfStock ? 'نفدت الكمية' : `إضافة إلى الحقيبة (${quantity})`}</span>
               </button>
 
               {/* Wishlist Button */}
@@ -573,21 +520,32 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                 <Heart size={22} className={isFav ? "fill-current" : ""} />
               </button>
             </div>
+
+            {/* Direct WhatsApp Ordering */}
+            <a 
+              href={whatsappUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold py-3.5 px-6 rounded-2xl transition-colors shadow-sm text-center text-sm sm:text-base cursor-pointer"
+            >
+              <MessageCircle size={20} />
+              <span>طلب مباشر واستفسار عبر واتساب</span>
+            </a>
           </div>
 
-          {/* Luxury Guarantees & Features */}
+          {/* Guarantees */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-gray-100">
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-gray-50/80 border border-gray-100">
               <div className="w-8 h-8 bg-emerald-100/70 rounded-full flex items-center justify-center text-emerald-700 flex-shrink-0">
                 <ShieldCheck size={18} />
               </div>
-              <span className="text-xs font-bold text-gray-800">جودة ملكية أصلية</span>
+              <span className="text-xs font-bold text-gray-800">قطن مريح عالي الجودة</span>
             </div>
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-gray-50/80 border border-gray-100">
               <div className="w-8 h-8 bg-blue-100/70 rounded-full flex items-center justify-center text-blue-700 flex-shrink-0">
                 <Truck size={18} />
               </div>
-              <span className="text-xs font-bold text-gray-800">شحن سريع للباب</span>
+              <span className="text-xs font-bold text-gray-800">توصيل لكافة مدن المملكة</span>
             </div>
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-gray-50/80 border border-gray-100">
               <div className="w-8 h-8 bg-amber-100/70 rounded-full flex items-center justify-center text-amber-700 flex-shrink-0">
@@ -596,6 +554,77 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               <span className="text-xs font-bold text-gray-800">استبدال سهل وسلس</span>
             </div>
           </div>
+
+          {/* Visible FAQ Accordion */}
+          <div className="pt-6 border-t border-gray-200">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-950 mb-3 flex items-center gap-2">
+              <HelpCircle size={20} className="text-[#A44C5C]" />
+              <span>الأسئلة الشائعة حول هذا المنتج</span>
+            </h2>
+            <div className="space-y-2.5">
+              <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50" open>
+                <summary className="font-bold cursor-pointer text-gray-900 text-sm">س: ما المقاس؟</summary>
+                <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                  ج: وان سايز يناسب من 45 إلى 80 كيلو.
+                </p>
+              </details>
+              <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50">
+                <summary className="font-bold cursor-pointer text-gray-900 text-sm">س: من أي خامة؟</summary>
+                <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                  ج: {isCrinkle ? 'قطن كوريشة ناعم ومريح.' : 'قطن ناعم ومريح.'}
+                </p>
+              </details>
+              <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50">
+                <summary className="font-bold cursor-pointer text-gray-900 text-sm">س: كيف أغسلها؟</summary>
+                <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                  ج: بمويه باردة، ويفضّل بدون كلور، مع تجنّب الحرارة العالية.
+                </p>
+              </details>
+              <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50">
+                <summary className="font-bold cursor-pointer text-gray-900 text-sm">س: هل الكمية متوفرة؟</summary>
+                <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                  ج: الكمية محدودة، وتظهر المتبقية في الصفحة.
+                </p>
+              </details>
+            </div>
+          </div>
+
+          {/* Similar Products */}
+          {similarProducts.length > 0 && (
+            <div className="pt-6 border-t border-gray-200">
+              <h2 className="text-lg font-bold text-gray-950 mb-3">منتجات مشابهة</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {similarProducts.map(sim => {
+                  const simSlug = sim.slug || getProductSlug({ id: sim.id, nameEn: sim.nameEn, nameAr: sim.nameAr });
+                  return (
+                    <a
+                      key={sim.id}
+                      href={`/product/${simSlug}/`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(`/product/${simSlug}`);
+                      }}
+                      className="group block bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
+                    >
+                      <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img 
+                          src={cleanImgUrl(sim.images?.[0])} 
+                          alt={sim.nameAr} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          loading="lazy" 
+                        />
+                      </div>
+                      <div className="p-2.5 text-right">
+                        <span className="text-xs font-bold text-gray-900 line-clamp-1 group-hover:text-[#A44C5C]">{sim.nameAr}</span>
+                        <span className="text-xs font-black text-[#A44C5C] mt-1 block">{sim.salePriceSA || sim.priceSA} ر.س</span>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
@@ -603,4 +632,3 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 };
 
 export default ProductPage;
-

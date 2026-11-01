@@ -39,22 +39,22 @@ export default function NewArrivals({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-right" dir="rtl">
       <SEO 
-        title="وصل حديثاً - أحدث تصاميم SULTA" 
-        description="كوني أول من يكتشف أحدث صيحات الموضة في عالم أزياء النوم والبيجامات الفاخرة. تصاميم جديدة تضاف باستمرار لتناسب ذوقكِ." 
-        path="/new-arrivals" 
+        title="أحدث بيجامات نسائية وصل حديثًا | سولتة" 
+        description="اكتشفي أحدث تصاميم ملابس النوم والبيجامات النسائية القطنية التي وصلت حديثاً إلى متجر سولتة." 
+        path="/new-arrivals/" 
       />
       {/* Editorial Header */}
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <div className="flex justify-center items-center gap-1.5 text-[#A44C5C] text-xs font-serif tracking-widest font-bold">
-          <Calendar size={14} className="text-[#A44C5C]" />
-          <span>CORDON BLEU REVELATIONS</span>
+          <Sparkles size={14} className="text-[#A44C5C]" />
+          <span>وصل حديثاً</span>
         </div>
-        <h2 className="font-serif text-3xl md:text-4xl font-light text-[#0B0B0B] tracking-wide">
-          أحدث الإصدارات الفاخرة | New Arrivals
-        </h2>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-[#0B0B0B] tracking-wide">
+          أحدث البيجامات النسائية من سولتة
+        </h1>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
-        <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
-          انغمسي في تشكيلة الموسم المطرّزة بشغف. نسيج طازج خرج لتوه من معاملنا وقُصّ بمهارة فاخرة لتوفير تجربة استرخاء لا نهائية وجمال لا يزول بريقه.
+        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto">
+          وصل حديثاً إلى سولتة: أحدث موديلات البيجامات النسائية بأقمشة قطنية ناعمة ومقاس وان سايز يناسب الأوزان من 45 إلى 80 كيلو. تسوقي أحدث الإضافات بكميات محدودة لضمان التميز.
         </p>
       </div>
 

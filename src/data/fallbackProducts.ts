@@ -1,39 +1,82 @@
 import { Product } from '../types';
 
 export const SEED_FALLBACK_PRODUCTS: Product[] = [
+  // المنتج (أ) - الحمراء المنقّطة بحمالات
   {
     id: '51005136-8066-4844-8efe-718cd7644e6b',
-    nameAr: 'بيجامة ليلك المنقّط — Polka Dot',
-    nameEn: 'Lilac Polka Dot Strappy Pajama Set',
-    category: 'new',
-    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    nameAr: 'بيجامة روج المنقّطة بحمالات',
+    nameEn: 'Red Polka Dot Strappy Cotton Pajama',
+    h1: 'بيجامة نسائية حمراء منقّطة بحمالات — قطن وان سايز',
+    seoTitle: 'بيجامة نسائية حمراء منقّطة بحمالات قطن | سولتة',
+    slug: 'red-polka-dot-strappy-cotton-pajama',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم نسائية',
     priceEG: 899,
-    priceSA: 200,
-    salePriceSA: 99,
-    salePriceEG: 499,
-    descriptionAr: `أناقة ناعمة… وراحة تستحقينها.
-اختاري بيجامة ليلك المنقّط لإطلالة منزلية أنثوية تجمع بين النقشة المرحة والتفاصيل الراقية. تصميمها يضيف لمسة مميزة لأوقات استرخائك، سواء كانت سهرة هادئة أو صباحًا على مهل.
-
-• اللون: كحلي ملكي منقّط مع تفاصيل وردي ناعم
-• الخامة: 95% خامة ناعمة الملمس معالجة + 5% إيلاستين لمرونة حركية مثالية
-• المقاسات المتوفرة: S, M, L, XL مع جدول قياسات دقيق بالسنتمتر
-• تفاصيل الطقم: توب نوم بحمالات رقيقة قابلة للتعديل + شورت بخصر مطاطي مرن + رباط شعر متناسق
-• العناية: غسيل يدوي بماء بارد أو غسيل جاف لطيف (Dry Clean)، يكوى بالبخار الخفيف
-
-دلّلي وقتك بقطعة تحبّين ارتداءها مرّة بعد مرّة.
-
-تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
-    descriptionEn: 'Lilac Polka Dot Strappy Pajama Set with delicate lace borders and breathable soft fabric.',
-    fabricAr: '95% خامة ناعمة معالجة فائقة النعومة + 5% إيلاستين',
-    fabricEn: '95% Premium Soft Fabric + 5% Elastane',
-    washInstructionsAr: 'غسيل يدوي بماء بارد أو غسيل جاف لطيف (Dry Clean)، يكوى بالبخار الخفيف.',
+    priceSA: 75,
+    salePriceSA: 75,
+    salePriceEG: 899,
+    compareAtPrice: undefined,
+    saleEndsAt: undefined,
+    shortDescription: 'بيجامة نسائية حمراء منقّطة بحمالات من قطن ناعم ومريح. وان سايز من 45 إلى 80 كيلو. الكمية محدودة، اطلبيها من سولتة.',
+    descriptionAr: `بيجامة نسائية حمراء منقّطة بحمالات من سولتة، بلون أحمر جريء ونقط بيضاء ناعمة. الحمالات تربطينها على الكتف وفيها تجميعة عند الصدر تعطي شكلًا أنثويًا مريحًا. مصنوعة من قطن ناعم ومريح على البشرة للنوم وجلسات البيت.
+• الخامة: قطن ناعم ومريح
+• المقاس: وان سايز يناسب من 45 إلى 80 كيلو
+• الكمية محدودة
+طريقة الغسيل: تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.`,
+    descriptionEn: 'Red Polka Dot Strappy Cotton Pajama with tie shoulder straps and ruched bust.',
+    fabricAr: 'قطن ناعم ومريح',
+    fabricEn: 'Soft & Comfortable Cotton',
+    material: 'قطن ناعم',
+    sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
+    careInstructions: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
+    washInstructionsAr: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023866351_q9mcco4s.png',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023867862_kvn8vc68.png',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781051987621_5nlxo47f.png'
+      '/img/red-polka-dot-strappy-pajama.webp'
     ],
-    colors: [{ name: 'وردي كراميل', hex: '#F4B6C2' }, { name: 'أسود فاحم', hex: '#0B0B0B' }],
+    colors: [{ name: 'أحمر منقط بالأبيض', hex: '#C0392B' }],
+    sizes: ['One Size'],
+    isBestSeller: true,
+    featured: true,
+    status: 'active',
+    rating: 5,
+    reviewsCount: 0,
+    stock: 6
+  },
+
+  // المنتج (ب) - فلورا: توليب وردي
+  {
+    id: '614f6daa-d291-410b-a450-be23de75f868',
+    nameAr: 'بيجامة فلورا — توليب',
+    nameEn: 'Flora Tulip Crinkle Cotton Pajama',
+    h1: 'بيجامة نسائية قطن كوريشة بطبعة التوليب — وان سايز',
+    seoTitle: 'بيجامة نسائية قطن كوريشة بطبعة التوليب | سولتة',
+    slug: 'tulip-crinkle-cotton-womens-pajama',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم نسائية',
+    priceEG: 899,
+    priceSA: 69,
+    salePriceSA: 69,
+    salePriceEG: 899,
+    compareAtPrice: undefined,
+    saleEndsAt: undefined,
+    shortDescription: 'بيجامة نسائية من قطن كوريشة ناعم بطبعة التوليب الوردي وحواف وردية. وان سايز من 45 إلى 80 كيلو. اطلبيها من سولتة.',
+    descriptionAr: `بيجامة نسائية قطن كوريشة بطبعة التوليب الوردي من سولتة، على قماش ناعم ومريح بقصّة قميص بأكمام قصيرة وحواف وردية تضيف لمسة أنثوية هادئة.
+• الخامة: قطن كوريشة ناعم ومريح
+• المقاس: وان سايز يناسب من 45 إلى 80 كيلو
+• الكمية محدودة
+طريقة الغسيل: تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.`,
+    descriptionEn: 'Tulip Crinkle Cotton Pajama Set with delicate pink borders and button shirt cut.',
+    fabricAr: 'قطن كوريشة ناعم ومريح',
+    fabricEn: 'Soft & Comfortable Crinkle Cotton',
+    material: 'قطن كوريشة',
+    sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
+    careInstructions: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
+    washInstructionsAr: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
+    images: [
+      '/img/tulip-crinkle-cotton-pajama.webp',
+      '/img/tulip-crinkle-cotton-pajama-detail.webp'
+    ],
+    colors: [{ name: 'أبيض بطبعة التوليب الوردي', hex: '#FADADD' }],
     sizes: ['One Size'],
     isBestSeller: true,
     featured: true,
@@ -42,243 +85,212 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     reviewsCount: 0,
     stock: 12
   },
+
+  // المنتج (ج) - روزي: زهور في بوكس سولتة
   {
-    id: '614f6daa-d291-410b-a450-be23de75f868',
-    nameAr: 'بيجامة فلورا — نسمات الورد',
-    nameEn: 'Flora Pajama Set — Rose Whispers',
-    category: 'new',
-    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    id: '78f851f3-5f75-4153-9fbe-0e8ad54825be',
+    nameAr: 'بيجامة روزي — زهور',
+    nameEn: 'Rosy Floral Crinkle Cotton Pajama',
+    h1: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة — في بوكس سولتة',
+    seoTitle: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة | سولتة',
+    slug: 'pink-floral-crinkle-cotton-womens-pajama',
+    category: 'sleepwear',
+    categoryAr: 'ملابس نوم نسائية',
     priceEG: 899,
-    priceSA: 200,
-    salePriceSA: 99,
-    salePriceEG: 499,
-    descriptionAr: `لمسة زهرية تُضفي نعومة على إطلالتك المنزلية.
-تجمع بيجامة فلورا بين الطابع الأنثوي والتصميم المريح، لترافقك في لحظات الاسترخاء وتمنحك إحساسًا جميلًا بالتجدّد. خيار لطيف لنفسك أو هدية أنيقة لشخص عزيز.
-
-• اللون: بيبي روز بنقشات الباستيل الزهرية
-• الخامة: 100% ألياف ناعمة معالجة بلمسة مبردة لطيفة ضد التجعد
-• المقاسات المتوفرة: S, M, L, XL
-• تفاصيل الطقم: قميص نوم بأزرار أمامية صدفية وياقة ناعمة + بنطال كامل بخصر مطاطي
-• العناية: غسيل يدوي بماء بارد وشامبو الأقمشة الخفيف، تجفيف في الظل
-
-راحة أنيقة… بتفاصيل مستوحاة من جمال الورد.
-
-تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
-    descriptionEn: 'Flora Luxury Pajama Set with gentle pastel tones and cooling soft touch.',
-    fabricAr: '100% خامة ملكية معالجة فائقة النعومة',
-    fabricEn: '100% Pure Royal Treated Fabric',
-    washInstructionsAr: 'غسيل يدوي بماء بارد وشامبو الأنسجة الناعمة، تجفيف في الظل.',
+    priceSA: 69,
+    salePriceSA: 69,
+    salePriceEG: 899,
+    compareAtPrice: undefined,
+    saleEndsAt: undefined,
+    shortDescription: 'بيجامة نسائية وردية بنقشة زهور من قطن كوريشة ناعم ومريح. وان سايز من 45 إلى 80 كيلو، وتصل في بوكس سولتة.',
+    descriptionAr: `بيجامة نسائية وردية بنقشة زهور من سولتة، بدرجة وردية ناعمة ونقشة زهور صغيرة على قماش قطن كوريشة ناعم ومريح. تصلك في بوكس سولتة مع ستيكرز، فهي اختيار لطيف كهدية.
+• الخامة: قطن كوريشة ناعم ومريح
+• المقاس: وان سايز يناسب من 45 إلى 80 كيلو
+• الكمية محدودة
+طريقة الغسيل: تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.`,
+    descriptionEn: 'Rosy Floral Crinkle Cotton Pajama presented in signature SULTA gift box with stickers sheet.',
+    fabricAr: 'قطن كوريشة ناعم ومريح',
+    fabricEn: 'Soft & Comfortable Crinkle Cotton',
+    material: 'قطن كوريشة',
+    sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
+    careInstructions: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
+    washInstructionsAr: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948372793_xb0h46zo.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948374271_d1iw3smz.jpeg'
+      '/img/floral-crinkle-cotton-pajama-box.webp'
     ],
-    colors: [{ name: 'وردي زهري', hex: '#F6E7A6' }, { name: 'أبيض لؤلؤي', hex: '#FDFBF7' }],
+    colors: [{ name: 'وردي بنقشة زهور', hex: '#FFB6C1' }],
     sizes: ['One Size'],
     isBestSeller: true,
     featured: true,
     status: 'active',
     rating: 5,
     reviewsCount: 0,
-    stock: 15
+    stock: 6
   },
+
+  // المنتجات (د) - سُكّر بالفيونكة (وردي ملكي)
   {
     id: '8d738e1c-0861-4569-8949-fc2d98c4fa50',
-    nameAr: 'بيجامة سُكّر — لمسة فيونكة (وردي ملكي)',
+    nameAr: 'بيجامة سُكّر بالفيونكة — وردي ملكي',
     nameEn: 'Sugar Bow Pajama Set — Royal Pink',
+    h1: 'بيجامة نسائية بطبعة الفيونكة — وردي ملكي',
+    seoTitle: 'بيجامة نسائية بطبعة الفيونكة وردي ملكي | سولتة',
+    slug: 'sugar-bow-pajama-set-royal-pink',
     category: 'new',
-    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    categoryAr: 'أزياء النوم النسائية',
     priceEG: 899,
-    priceSA: 200,
+    priceSA: 99,
     salePriceSA: 99,
     salePriceEG: 499,
+    compareAtPrice: undefined,
+    saleEndsAt: undefined,
+    shortDescription: 'بيجامة نسائية بطبعة الفيونكة باللون الوردي الملكي الناعم، تصميم أنيق ومريح للنوم وجلسات البيت.',
     descriptionAr: `تفاصيل رقيقة تجعل البساطة أجمل.
-بيجامة سُكّر باللون الوردي الملكي الناعم، بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة على الصدر والأكمام، خيار أنيق ومترف لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتب والراحة اليومية التامة.
+بيجامة سُكّر باللون الوردي الملكي الناعم، بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة على الصدر والأكمام، خيار أنيق لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتب والراحة اليومية التامة.
 
 • اللون: وردي ملكي ناعم (Royal Pink)
-• الخامة: 92% أقمشة فاخرة معالجة للنعومة + 8% ألياف مرنة مريحة
-• الوزن: خفيفة إلى متوسطة (حوالي 280 جرام)
-• المقاسات المتوفرة: S, M, L, XL مع قياسات دقيقة بالسنتمتر
-• تفاصيل الطقم: قميص نوم بأكمام متوسطة مزين بفيونكات ناعمة + بنطال مريح مع حواشي متناسقة
-• العناية: غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل
-
-هدوء اللون الوردي الملكي… وأناقة التفاصيل.
-
-تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
-    descriptionEn: 'Sugar Bow Luxury Pajama Set in royal soft pink with hand-finished bow accents.',
-    fabricAr: '92% أقمشة فاخرة معالجة للنعومة + 8% ألياف مرنة',
-    fabricEn: '92% Fine Soft Fabric + 8% Smooth Stretch Fibers',
+• المقاس: وان سايز مريح
+• العناية: غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل`,
+    descriptionEn: 'Sugar Bow Pajama Set in royal soft pink with delicate bow accents.',
+    fabricAr: 'أقمشة ناعمة مريحة',
+    fabricEn: 'Soft Comfortable Fabric',
+    material: 'أقمشة ناعمة مريحة',
+    sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
+    careInstructions: 'غسيل بماء بارد وكي بدرجة حرارة منخفضة.',
     washInstructionsAr: 'غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل.',
     images: [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619728379_8p82a5cn.jpeg'
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg'
     ],
-    colors: [{ name: 'وردي ملكي', hex: '#DF8A9D' }, { name: 'شامبين هادئ', hex: '#F6E7A6' }],
-    sizes: ['One Size'],
-    isBestSeller: true,
-    featured: true,
-    status: 'active',
-    rating: 5,
-    reviewsCount: 0,
-    stock: 14
-  },
-  {
-    id: 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc',
-    nameAr: 'بيجامة روزا — ورد المساء',
-    nameEn: 'Rosa Evening Bloom Pajama Set',
-    category: 'new',
-    categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 899,
-    priceSA: 200,
-    salePriceSA: 99,
-    salePriceEG: 499,
-    descriptionAr: `وردي ناعم ومزاج أجمل.
-أضيفي لمسة من الرقة إلى خزانة ملابسك المنزلية مع بيجامة روزا. تصميمها الأنثوي يجعلها مناسبة لأوقات الراحة، وللأمسيات الهادئة التي تحبين أن تكون فيها إطلالتك مرتّبة ومريحة.
-
-• اللون: وردي دافئ بلمعة لؤلؤية هادئة
-• الخامة: خامة مبردة عالية الكثافة ونعومة الملمس نخب أول
-• المقاسات المتوفرة: S, M, L, XL
-• تفاصيل الطقم: قميص نوم بأكمام طويلة مع ياقة كوتور راقية وأزرار مخملية + بنطال كامل مع جيب جانبي ناعم
-• العناية: غسيل يدوي أو دورة أقمشة رقيقة بماء بارد
-
-لأن راحتك تستحق لمسة وردية.
-
-تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
-    descriptionEn: 'Rosa Evening Bloom Luxury Pajama Set with pearl sheen and relaxed fit.',
-    fabricAr: 'خامة مبردة عالية الكثافة ونعومة الملمس',
-    fabricEn: 'High-Density Cooling Soft Fabric',
-    washInstructionsAr: 'غسيل يدوي أو دورة أقمشة رقيقة بماء بارد.',
-    images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png'
-    ],
-    colors: [{ name: 'وردي دافئ', hex: '#E8A5B8' }, { name: 'سكري هادئ', hex: '#FAF5EE' }],
+    colors: [{ name: 'وردي ملكي', hex: '#DF8A9D' }],
     sizes: ['One Size'],
     isBestSeller: false,
-    featured: true,
-    status: 'active',
-    rating: 5,
-    reviewsCount: 0,
-    stock: 11
-  },
-  {
-    id: '78f851f3-5f75-4153-9fbe-0e8ad54825be',
-    nameAr: 'بيجامة روز مخملي',
-    nameEn: 'Velvet Rose Pajama Set',
-    category: 'new',
-    categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 899,
-    priceSA: 200,
-    salePriceSA: 99,
-    salePriceEG: 499,
-    descriptionAr: `إطلالة وردية بلمسة من الأناقة الهادئة.
-اختاري بيجامة روز مخملي لإطلالة منزلية ناعمة وسهلة التنسيق. لونها الأنثوي يضفي إحساسًا جميلًا بالتجدّد، وتصميمها يجعلها رفيقة مناسبة للحظات الاسترخاء في المنزل.
-
-• اللون: روز مخملي ناعم (Brushed Dusty Rose)
-• الخامة: خامة مخملية الملمس معالجة بتقنية النعومة الفائقة بدون احتكاك
-• المقاسات المتوفرة: S, M, L, XL
-• تفاصيل الطقم: قميص نوم كوتور أنيق + بنطال خصر مرن مريح
-• العناية: غسيل يدوي خفيف بالماء البارد دون عصر قوي
-
-قطعتك المفضّلة لأوقات الراحة… بأناقة SULTA.
-
-تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
-    descriptionEn: 'Velvet Rose Pajama Set featuring ultra-soft brushed finish and luxury tailoring.',
-    fabricAr: 'خامة مخملية الملمس معالجة بتقنية النعومة الفائقة',
-    fabricEn: 'Peach-Skin Velvet Touch Fabric',
-    washInstructionsAr: 'غسيل يدوي خفيف بالماء البارد دون عصر قوي.',
-    images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619728379_8p82a5cn.jpeg'
-    ],
-    colors: [{ name: 'روز مخملي', hex: '#DF8A9D' }, { name: 'عاجي', hex: '#FDFBF7' }],
-    sizes: ['One Size'],
-    isBestSeller: true,
-    featured: true,
-    status: 'active',
-    rating: 5,
-    reviewsCount: 0,
-    stock: 9
-  },
-  {
-    id: '1d4e8104-17c9-4b64-8300-38340bdeaa18',
-    nameAr: 'بيجامة نُقط — لمسة مرحة',
-    nameEn: 'Classic Dot Pajama Set — Playful Touch',
-    category: 'new',
-    categoryAr: 'المجموعة الجديدة | New Arrivals',
-    priceEG: 899,
-    priceSA: 200,
-    salePriceSA: 99,
-    salePriceEG: 499,
-    descriptionAr: `نقشة مميزة… وإطلالة منزلية مختلفة.
-بيجامة نُقط تضيف لمسة مرحة إلى إطلالتك، مع تصميم يليق بأوقاتك اليومية في المنزل. اختاريها إذا كنتِ تحبين التفاصيل اللافتة والقطع التي تجمع بين الأنوثة والطابع العملي.
-
-• اللون: أحمر قرمزي ناعم منقّط بنقاط بيضاء رقيقة
-• الخامة: خامة ناعمة عالية التهوية وخفيفة الوزن مضادة للشحنات
-• المقاسات المتوفرة: S, M, L, XL
-• تفاصيل الطقم: قميص نوم كلاسيكي بنقشة النقط الناعمة + بنطال خفيف بخصر مطاطي مرن
-• العناية: غسيل يدوي أو غسيل لطيف بدرجة حرارة 30 مئوية
-
-تفاصيل صغيرة… تصنع فرقًا في إطلالتك.
-
-تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
-    descriptionEn: 'Classic Dot Pajama Set with playful dots pattern and ultra-soft breathable fabric.',
-    fabricAr: 'خامة ناعمة عالية التهوية وخفيفة الوزن',
-    fabricEn: 'Lightweight Breathable Soft Fabric',
-    washInstructionsAr: 'غسيل يدوي أو غسيل لطيف بدرجة حرارة 30 مئوية.',
-    images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876911471_gev0lr37.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876939000_gx8p3lpg.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876942187_v57vs9y3.jpeg'
-    ],
-    colors: [{ name: 'أحمر منقط', hex: '#C0392B' }, { name: 'وردي هادئ', hex: '#DF8A9D' }],
-    sizes: ['One Size'],
-    isBestSeller: false,
-    featured: true,
+    featured: false,
     status: 'active',
     rating: 5,
     reviewsCount: 0,
     stock: 10
   },
+
+  // المنتجات (د) - سُكّر بالفيونكة (أبيض عاجي)
   {
     id: '54929551-5958-4b33-9ff9-abe83722cb78',
-    nameAr: 'بيجامة سُكّر — لمسة فيونكة (أوف وايت عاجي)',
+    nameAr: 'بيجامة سُكّر بالفيونكة — أبيض عاجي',
     nameEn: 'Sugar Bow Pajama Set — Ivory White',
+    h1: 'بيجامة نسائية بطبعة الفيونكة — أبيض عاجي',
+    seoTitle: 'بيجامة نسائية بطبعة الفيونكة أبيض عاجي | سولتة',
+    slug: 'sugar-bow-pajama-set-ivory-white',
     category: 'new',
-    categoryAr: 'المجموعة الجديدة | New Arrivals',
+    categoryAr: 'أزياء النوم النسائية',
     priceEG: 899,
-    priceSA: 200,
+    priceSA: 99,
     salePriceSA: 99,
     salePriceEG: 499,
+    compareAtPrice: undefined,
+    saleEndsAt: undefined,
+    shortDescription: 'بيجامة نسائية بطبعة الفيونكة باللون الأبيض العاجي الناصع، مظهر مريح ومشرق لأوقات البيت.',
     descriptionAr: `أناقة ناعمة بتفاصيل تلفت النظر.
-تأتي بيجامة سُكّر باللون الأوف وايت العاجي بلمسة فيونكة أنثوية تضفي طابعًا رقيقًا لإطلالتك المنزلية وتناسب صباحيات العرائس المترفة. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف SULTA الملكي.
+تأتي بيجامة سُكّر باللون الأبيض العاجي بلمسة فيونكة أنثوية تضفي طابعًا رقيقًا لإطلالتك المنزلية. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف سولتة الأنيق.
 
-• اللون: أوف وايت عاجي نقي (Bridal Ivory White)
-• الخامة: 95% أقمشة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة مريحة
-• الوزن: خفيفة إلى متوسطة (حوالي 290 جرام)
-• المقاسات المتوفرة: S, M, L, XL مع قياسات دقيقة بالسنتمتر
-• تفاصيل الطقم: قميص نوم عاجي بفيونكات دقيقة وخطوط رقيقة + بنطال واسع ومريح
-• العناية: غسيل يدوي بماء بارد ومنظف مخصص للأقمشة البيضاء الفاخرة
-
-هدوء اللون العاجي… وأناقة التفاصيل.
-
-تُجهّز طلبات SULTA بعناية، مع تغليف أنيق وتوصيل إلى مدن المملكة. راجعي المقاسات وتفاصيل الخامة وسياسة الاستبدال قبل إتمام الطلب.`,
-    descriptionEn: 'Sugar Bow Luxury Pajama Set in bridal ivory white with delicate trims and soft bows.',
-    fabricAr: '95% أقمشة عاجية فاخرة ناصعة النقاء + 5% ألياف مرنة',
-    fabricEn: '95% Bridal Ivory Fine Fabric + 5% Comfort Stretch',
-    washInstructionsAr: 'غسيل يدوي بماء بارد ومنظف مخصص للأقمشة البيضاء الفاخرة.',
+• اللون: أبيض عاجي نقي (Ivory White)
+• المقاس: وان سايز مريح
+• العناية: غسيل بماء بارد وتجفيف لطيف`,
+    descriptionEn: 'Sugar Bow Pajama Set in ivory white with delicate trims and soft bows.',
+    fabricAr: 'أقمشة ناعمة مريحة',
+    fabricEn: 'Soft Comfortable Fabric',
+    material: 'أقمشة ناعمة مريحة',
+    sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
+    careInstructions: 'غسيل بماء بارد وتجفيف لطيف.',
+    washInstructionsAr: 'غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة.',
     images: [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg'
     ],
-    colors: [{ name: 'أوف وايت عاجي', hex: '#FDFBF7' }, { name: 'شامبين هادئ', hex: '#F6E7A6' }],
+    colors: [{ name: 'أبيض عاجي', hex: '#FDFBF7' }],
     sizes: ['One Size'],
-    isBestSeller: true,
-    featured: true,
+    isBestSeller: false,
+    featured: false,
     status: 'active',
     rating: 5,
     reviewsCount: 0,
-    stock: 13
+    stock: 10
+  },
+
+  // المنتج (هـ) - روزا ورد المساء
+  {
+    id: 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc',
+    nameAr: 'بيجامة روزا — ورد المساء',
+    nameEn: 'Rosa Evening Bloom Pajama Set',
+    h1: 'بيجامة نسائية روزا ورد المساء — سولتة',
+    seoTitle: 'بيجامة نسائية روزا ورد المساء | سولتة',
+    slug: 'rosa-evening-bloom-pajama-set',
+    category: 'new',
+    categoryAr: 'أزياء النوم النسائية',
+    priceEG: 899,
+    priceSA: 99,
+    salePriceSA: 99,
+    salePriceEG: 499,
+    compareAtPrice: undefined,
+    saleEndsAt: undefined,
+    shortDescription: 'بيجامة نسائية روزا ورد المساء، تصميم مريح وأنيق للاسترخاء بألوان هادئة ومقاس وان سايز مريح.',
+    descriptionAr: `وردي ناعم ومزاج أجمل.
+أضيفي لمسة من الرقة إلى خزانة ملابسك المنزلية مع بيجامة روزا. تصميمها الأنثوي يجعلها مناسبة لأوقات الراحة، وللأمسيات الهادئة التي تحبين أن تكون فيها إطلالتك مرتّبة ومريحة.
+
+• اللون: وردي دافئ
+• المقاس: وان سايز مريح
+• العناية: غسيل بماء بارد ودورة أقمشة لطيفة`,
+    descriptionEn: 'Rosa Evening Bloom Pajama Set with soft touch and relaxed fit.',
+    fabricAr: 'خامة ناعمة الملمس مريحة',
+    fabricEn: 'Soft Comfortable Fabric',
+    material: 'خامة ناعمة الملمس مريحة',
+    sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
+    careInstructions: 'غسيل بماء بارد ودورة أقمشة لطيفة.',
+    washInstructionsAr: 'غسيل يدوي أو دورة أقمشة رقيقة بماء بارد.',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg',
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png'
+    ],
+    colors: [{ name: 'وردي دافئ', hex: '#E8A5B8' }],
+    sizes: ['One Size'],
+    isBestSeller: false,
+    featured: false,
+    status: 'active',
+    rating: 5,
+    reviewsCount: 0,
+    stock: 8
+  },
+
+  // المنتج (و) - classic-dot (مؤرشف / غير ظاهر في الرئيسية)
+  {
+    id: '1d4e8104-17c9-4b64-8300-38340bdeaa18',
+    nameAr: 'بيجامة كلاسيك دوت',
+    nameEn: 'Classic Dot Pajama Set',
+    h1: 'بيجامة نسائية كلاسيك دوت — سولتة',
+    seoTitle: 'بيجامة نسائية كلاسيك دوت | سولتة',
+    slug: 'classic-dot-pajama-set',
+    category: 'archive',
+    categoryAr: 'أزياء النوم النسائية',
+    priceEG: 899,
+    priceSA: 75,
+    salePriceSA: 75,
+    salePriceEG: 499,
+    shortDescription: 'بيجامة نسائية بنقشة كلاسيكية مريحة.',
+    descriptionAr: 'بيجامة نسائية كلاسيكية بنقشة النقط الناعمة.',
+    descriptionEn: 'Classic Dot Pajama Set.',
+    fabricAr: 'قطن ناعم ومريح',
+    fabricEn: 'Soft Cotton',
+    material: 'قطن ناعم',
+    washInstructionsAr: 'غسيل بمويه باردة.',
+    images: [
+      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876911471_gev0lr37.jpeg'
+    ],
+    colors: [{ name: 'أحمر', hex: '#C0392B' }],
+    sizes: ['One Size'],
+    isBestSeller: false,
+    featured: false,
+    status: 'archived',
+    rating: 5,
+    reviewsCount: 0,
+    stock: 0
   }
 ];

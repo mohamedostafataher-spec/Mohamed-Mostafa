@@ -1,68 +1,57 @@
-import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
 import { getProductSlug } from '../src/utils/slugify.js';
 import { SEED_FALLBACK_PRODUCTS } from '../src/data/fallbackProducts.js';
+import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://fwadgmhabzaudusxghnh.supabase.co';
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_pYBVo5mba3tEpuMDxUlt6g_3aCk67gj';
-
 const supabase = createClient(supabaseUrl, supabaseKey);
+
 const BASE_URL = 'https://sulta.vercel.app';
 
-async function main() {
-  console.log('[Sitemap] Generating public/sitemap.xml...');
+async function generateSitemaps() {
+  console.log('[Sitemap] Generating sitemaps...');
 
   const todayIso = new Date().toISOString().split('T')[0];
 
   const staticPages = [
     { route: '/', priority: '1.0', changefreq: 'daily' },
     { route: '/store/', priority: '0.9', changefreq: 'daily' },
-    { route: '/best-sellers/', priority: '0.9', changefreq: 'daily' },
-    { route: '/offers/', priority: '0.9', changefreq: 'daily' },
-    { route: '/new-arrivals/', priority: '0.9', changefreq: 'daily' },
-    { route: '/about/', priority: '0.7', changefreq: 'monthly' },
-    { route: '/contact/', priority: '0.7', changefreq: 'monthly' },
-    { route: '/faq/', priority: '0.7', changefreq: 'monthly' },
-    { route: '/returns/', priority: '0.6', changefreq: 'monthly' }
+    { route: '/best-sellers/', priority: '0.8', changefreq: 'weekly' },
+    { route: '/offers/', priority: '0.8', changefreq: 'weekly' },
+    { route: '/new-arrivals/', priority: '0.8', changefreq: 'weekly' },
+    { route: '/about/', priority: '0.6', changefreq: 'monthly' },
+    { route: '/contact/', priority: '0.6', changefreq: 'monthly' },
+    { route: '/faq/', priority: '0.6', changefreq: 'monthly' },
+    { route: '/returns/', priority: '0.5', changefreq: 'monthly' }
   ];
 
-  let rawProducts: any[] = [];
+  let activeProducts: any[] = [];
   try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('id, name_en, name_ar, name, updated_at, created_at, status');
-    
+    const { data, error } = await supabase.from('products').select('*');
     if (!error && data && data.length > 0) {
-      rawProducts = data.filter((p: any) => p.status !== 'archived');
+      activeProducts = data.filter((p: any) => p.status !== 'archived');
     }
   } catch (err) {
-    console.warn('[Sitemap] Supabase products fetch notice, using fallback items:', err);
+    console.warn('[Sitemap] Supabase products fetch notice:', err);
   }
 
-  if (rawProducts.length === 0) {
-    rawProducts = SEED_FALLBACK_PRODUCTS;
+  if (activeProducts.length === 0) {
+    activeProducts = SEED_FALLBACK_PRODUCTS.filter((p: any) => p.status !== 'archived');
   }
 
-  const productEntries = rawProducts.map((p: any) => {
-    let nameEn = p.name_en || p.nameEn || '';
-    let nameAr = p.name_ar || p.nameAr || '';
-    if (!nameEn && !nameAr && p.name) {
-      const parts = p.name.split(' | ');
-      nameAr = parts[0] || p.name;
-      nameEn = parts[1] || parts[0] || p.name;
-    }
-    
-    const slug = getProductSlug({ id: p.id, nameEn, nameAr });
-    const lastmod = p.updated_at ? p.updated_at.split('T')[0] : (p.created_at ? p.created_at.split('T')[0] : todayIso);
-    
+  // 1. Regular sitemap.xml
+  const productEntries = activeProducts.map((p: any) => {
+    const slug = p.slug || getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr });
+    const lastmod = p.updated_at ? p.updated_at.split('T')[0] : (p.created_at ? p.created_at.split('T')[0] : '2026-11-01');
     return {
       route: `/product/${slug}/`,
       lastmod,
-      priority: '0.8',
+      priority: '0.9',
       changefreq: 'weekly'
     };
   });
@@ -87,14 +76,38 @@ async function main() {
 ${xmlEntries.join('\n')}
 </urlset>`;
 
+  // 2. Image Sitemap: image-sitemap.xml
+  const imageEntries = activeProducts.map((p: any) => {
+    const slug = p.slug || getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr });
+    const nameAr = p.name_ar || p.nameAr || p.name || 'بيجامة نسائية';
+    const imgs: string[] = Array.isArray(p.images) ? p.images : (p.image_url ? [p.image_url] : []);
+    const cleanImgs = imgs.map((img: string) => img.startsWith('http') ? img : `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`);
+
+    return `  <url>
+    <loc>${BASE_URL}/product/${slug}/</loc>
+${cleanImgs.map((img: string) => `    <image:image>
+      <image:loc>${img}</image:loc>
+      <image:title>${nameAr}</image:title>
+    </image:image>`).join('\n')}
+  </url>`;
+  });
+
+  const imageSitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${imageEntries.join('\n')}
+</urlset>`;
+
   const publicDir = path.resolve(process.cwd(), 'public');
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  const destPath = path.join(publicDir, 'sitemap.xml');
-  fs.writeFileSync(destPath, sitemapXml, 'utf-8');
-  console.log(`[Sitemap] Successfully generated sitemap.xml with ${staticPages.length + productEntries.length} routes at ${destPath}`);
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml, 'utf-8');
+  fs.writeFileSync(path.join(publicDir, 'image-sitemap.xml'), imageSitemapXml, 'utf-8');
+  console.log(`[Sitemap] Generated public/sitemap.xml and public/image-sitemap.xml with ${activeProducts.length} products.`);
 }
 
-main().catch(err => { console.error(err); process.exit(1) });
+generateSitemaps().catch(err => {
+  console.error('[Sitemap] Generation error:', err);
+  process.exit(1);
+});

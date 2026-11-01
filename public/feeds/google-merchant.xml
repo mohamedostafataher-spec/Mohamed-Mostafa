@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>متجر سولتة | SULTA Atelier</title>
+    <link>https://sulta.vercel.app</link>
+    <description>تغذية منتجات متجر سولتة لملابس النوم والبيجامات النسائية القطنية</description>
+    <item>
+      <g:id>51005136-8066-4844-8efe-718cd7644e6b</g:id>
+      <g:title>بيجامة روج المنقّطة بحمالات</g:title>
+      <g:description>بيجامة نسائية حمراء منقّطة بحمالات من قطن ناعم ومريح. وان سايز من 45 إلى 80 كيلو. الكمية محدودة، اطلبيها من سولتة.</g:description>
+      <g:link>https://sulta.vercel.app/product/red-polka-dot-strappy-cotton-pajama/</g:link>
+      <g:image_link>https://sulta.vercel.app/img/red-polka-dot-strappy-pajama.webp</g:image_link>
+
+      <g:price>75.00 SAR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>سولتة</g:brand>
+      <g:condition>new</g:condition>
+      <g:gender>female</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:size>Free Size</g:size>
+      <g:material>قطن ناعم</g:material>
+      <g:color>أحمر منقط بالأبيض</g:color>
+    </item>
+    <item>
+      <g:id>614f6daa-d291-410b-a450-be23de75f868</g:id>
+      <g:title>بيجامة فلورا — توليب</g:title>
+      <g:description>بيجامة نسائية من قطن كوريشة ناعم بطبعة التوليب الوردي وحواف وردية. وان سايز من 45 إلى 80 كيلو. اطلبيها من سولتة.</g:description>
+      <g:link>https://sulta.vercel.app/product/tulip-crinkle-cotton-womens-pajama/</g:link>
+      <g:image_link>https://sulta.vercel.app/img/tulip-crinkle-cotton-pajama.webp</g:image_link>
+      <g:additional_image_link>https://sulta.vercel.app/img/tulip-crinkle-cotton-pajama-detail.webp</g:additional_image_link>
+      <g:price>69.00 SAR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>سولتة</g:brand>
+      <g:condition>new</g:condition>
+      <g:gender>female</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:size>Free Size</g:size>
+      <g:material>قطن كوريشة</g:material>
+      <g:color>أبيض بطبعة التوليب الوردي</g:color>
+    </item>
+    <item>
+      <g:id>78f851f3-5f75-4153-9fbe-0e8ad54825be</g:id>
+      <g:title>بيجامة روزي — زهور</g:title>
+      <g:description>بيجامة نسائية وردية بنقشة زهور من قطن كوريشة ناعم ومريح. وان سايز من 45 إلى 80 كيلو، وتصل في بوكس سولتة.</g:description>
+      <g:link>https://sulta.vercel.app/product/pink-floral-crinkle-cotton-womens-pajama/</g:link>
+      <g:image_link>https://sulta.vercel.app/img/floral-crinkle-cotton-pajama-box.webp</g:image_link>
+
+      <g:price>69.00 SAR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>سولتة</g:brand>
+      <g:condition>new</g:condition>
+      <g:gender>female</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:size>Free Size</g:size>
+      <g:material>قطن كوريشة</g:material>
+      <g:color>وردي بنقشة زهور</g:color>
+    </item>
+    <item>
+      <g:id>8d738e1c-0861-4569-8949-fc2d98c4fa50</g:id>
+      <g:title>بيجامة سُكّر بالفيونكة — وردي ملكي</g:title>
+      <g:description>بيجامة نسائية بطبعة الفيونكة باللون الوردي الملكي الناعم، تصميم أنيق ومريح للنوم وجلسات البيت.</g:description>
+      <g:link>https://sulta.vercel.app/product/sugar-bow-pajama-set-royal-pink/</g:link>
+      <g:image_link>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg</g:image_link>
+      <g:additional_image_link>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg</g:additional_image_link>
+      <g:price>99.00 SAR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>سولتة</g:brand>
+      <g:condition>new</g:condition>
+      <g:gender>female</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:size>Free Size</g:size>
+      <g:material>أقمشة ناعمة مريحة</g:material>
+      <g:color>وردي ملكي</g:color>
+    </item>
+    <item>
+      <g:id>54929551-5958-4b33-9ff9-abe83722cb78</g:id>
+      <g:title>بيجامة سُكّر بالفيونكة — أبيض عاجي</g:title>
+      <g:description>بيجامة نسائية بطبعة الفيونكة باللون الأبيض العاجي الناصع، مظهر مريح ومشرق لأوقات البيت.</g:description>
+      <g:link>https://sulta.vercel.app/product/sugar-bow-pajama-set-ivory-white/</g:link>
+      <g:image_link>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg</g:image_link>
+      <g:additional_image_link>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg</g:additional_image_link>
+      <g:price>99.00 SAR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>سولتة</g:brand>
+      <g:condition>new</g:condition>
+      <g:gender>female</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:size>Free Size</g:size>
+      <g:material>أقمشة ناعمة مريحة</g:material>
+      <g:color>أبيض عاجي</g:color>
+    </item>
+    <item>
+      <g:id>bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc</g:id>
+      <g:title>بيجامة روزا — ورد المساء</g:title>
+      <g:description>بيجامة نسائية روزا ورد المساء، تصميم مريح وأنيق للاسترخاء بألوان هادئة ومقاس وان سايز مريح.</g:description>
+      <g:link>https://sulta.vercel.app/product/rosa-evening-bloom-pajama-set/</g:link>
+      <g:image_link>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg</g:image_link>
+      <g:additional_image_link>https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png</g:additional_image_link>
+      <g:price>99.00 SAR</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>سولتة</g:brand>
+      <g:condition>new</g:condition>
+      <g:gender>female</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:size>Free Size</g:size>
+      <g:material>خامة ناعمة الملمس مريحة</g:material>
+      <g:color>وردي دافئ</g:color>
+    </item>
+  </channel>
+</rss>
