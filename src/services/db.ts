@@ -217,23 +217,21 @@ export function cleanText(text: any): any {
   return cleaned.trim();
 }
 
-export function cleanImgUrl(url: any, width: number | string = 800): string {
+export function cleanImgUrl(url: any, width: number | string = 1200): string {
   if (!url || typeof url !== 'string' || url.trim() === '' || url.trim() === 'null' || url.trim() === 'undefined') {
     return '/img/sulta_default_1_1781140865386.webp';
   }
 
   const cleaned = url.trim();
-  const w = typeof width === 'number' ? width : 800;
 
-  // Optimize remote images via fast WebP CDN transformation
+  // Return direct clean URL without wsrv.nl wrapping to ensure high-res og:image
   if (cleaned.startsWith('http')) {
     const sanitized = cleaned.replace(/([^:])\/+/g, '$1/');
-    if (sanitized.includes('wsrv.nl')) return sanitized;
-    
-    // If it's a Supabase URL or common image format, use wsrv.nl CDN
-    if (sanitized.includes('supabase.co') || /\.(jpg|jpeg|png|webp|avif)$/i.test(sanitized)) {
-      // Use higher quality (90) and progressive for better "4K feel" without the weight
-      return `https://wsrv.nl/?url=${encodeURIComponent(sanitized)}&w=${w}&output=webp&q=85&il`;
+    if (sanitized.includes('wsrv.nl')) {
+      try {
+        const rawUrl = sanitized.split('url=')[1]?.split('&')[0];
+        if (rawUrl) return decodeURIComponent(rawUrl);
+      } catch (e) {}
     }
     return sanitized;
   }

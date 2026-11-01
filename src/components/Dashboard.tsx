@@ -3886,26 +3886,36 @@ export default function Dashboard({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">القسم</label>
-                <select
-                  value={productForm.category || 'new'}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    const catMap: Record<string, string> = {
-                      new: 'المجموعة الجديدة',
-                      satin: 'كوتور ناعم',
-                      cotton: 'قطنيات فاخرة',
-                      loungewear: 'ملابس استرخاء'
-                    };
-                    setProductForm(prev => ({ ...prev, category: val, categoryAr: catMap[val] || 'المجموعة الجديدة' }));
-                  }}
-                  className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black cursor-pointer"
-                >
-                  <option value="new">المجموعة الجديدة ✨</option>
-                  <option value="satin">كوتور ملكي 👑</option>
-                  <option value="cotton">قطنيات فاخرة 🌸</option>
-                  <option value="loungewear">ملابس استرخاء 🕊️</option>
-                </select>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">نسبة الخصم (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="90"
+                  value={productForm.discountPercent || 0}
+                  onChange={(e) => setProductForm(prev => ({ ...prev, discountPercent: Number(e.target.value) }))}
+                  className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">بداية الخصم</label>
+                  <input
+                    type="datetime-local"
+                    value={productForm.discountStartsAt || ''}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, discountStartsAt: e.target.value }))}
+                    className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">نهاية الخصم</label>
+                  <input
+                    type="datetime-local"
+                    value={productForm.discountEndsAt || ''}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, discountEndsAt: e.target.value }))}
+                    className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black"
+                  />
+                </div>
               </div>
 
               <div>

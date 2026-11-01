@@ -162,7 +162,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg'
     ],
-    colors: [{ name: 'وردي ملكي', hex: '#DF8A9D' }],
+    colors: [{ name: 'وردي ملكي', hex: '#FF69B4' }],
     sizes: ['One Size'],
     isBestSeller: false,
     featured: false,
@@ -206,7 +206,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
       'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg'
     ],
-    colors: [{ name: 'أبيض عاجي', hex: '#FDFBF7' }],
+    colors: [{ name: 'أبيض عاجي', hex: '#FFFFFF' }],
     sizes: ['One Size'],
     isBestSeller: false,
     featured: false,

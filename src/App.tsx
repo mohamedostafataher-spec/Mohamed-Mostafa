@@ -134,6 +134,9 @@ function AppContent() {
     try {
       localStorage.setItem('sulta_user_country_preference', country);
     } catch (e) {}
+
+    // Track page view
+    supabase.from('page_views').insert([{ page_path: window.location.pathname }]).then();
   }, [country]);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
