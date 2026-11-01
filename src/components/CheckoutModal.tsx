@@ -21,6 +21,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
+import { calculateEffectiveDiscount } from '../utils/discountUtils';
 import { WhatsAppService } from '../services/whatsappService';
 import { agentSystem } from '../services/agentSystem';
 import { supabase } from '../services/db';
@@ -122,13 +123,10 @@ export default function CheckoutModal({
     // Check if device supports specific features if needed
   }, []);
 
-  // Subtotal and Calculations: Use real database prices (sale price or original price)
-  // No hardcoded "99 SAR" logic to ensure coordination with Admin Dashboard settings.
+  // Subtotal and Calculations using forward discount formula
   const subtotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' 
-      ? (item.product.salePriceEG || item.product.priceEG || 0) 
-      : (item.product.salePriceSA || item.product.priceSA || 0);
-    return sum + itemPrice * item.quantity;
+    const effectiveInfo = calculateEffectiveDiscount(item.product, settings, country);
+    return sum + effectiveInfo.effectivePrice * item.quantity;
   }, 0);
 
   // Unified Dynamic Shipping calculation:

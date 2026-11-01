@@ -2,6 +2,7 @@ import SultaImage from "./SultaImage";
 import React, { useState } from 'react';
 import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check, Truck, Plus } from 'lucide-react';
 import { CartItem, Country, Product, DiscountCoupon } from '../types';
+import { calculateEffectiveDiscount } from '../utils/discountUtils';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -37,12 +38,10 @@ export default function CartDrawer({
 
   const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
-  // Total pricing logic (Using discounted price 99 SAR)
+  // Total pricing logic
   const subtotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' 
-      ? (item.product.salePriceEG || item.product.priceEG || 0) 
-      : (item.product.salePriceSA || item.product.priceSA || 0);
-    return sum + itemPrice * item.quantity;
+    const effectiveInfo = calculateEffectiveDiscount(item.product, null, country);
+    return sum + effectiveInfo.effectivePrice * item.quantity;
   }, 0);
 
   // Discount calculation
@@ -157,9 +156,8 @@ export default function CartDrawer({
             ) : (
               <div className="space-y-4 divide-y divide-gray-100">
                 {cart.map((item, idx) => {
-                  const itemPrice = country === 'EG' 
-                    ? (item.product.salePriceEG || item.product.priceEG || 0) 
-                    : (item.product.salePriceSA || item.product.priceSA || 0);
+                  const effectiveInfo = calculateEffectiveDiscount(item.product, null, country);
+                  const itemPrice = effectiveInfo.effectivePrice;
                   
                   return (
                     <div key={idx} className="flex gap-4 pt-4 first:pt-0 group relative">

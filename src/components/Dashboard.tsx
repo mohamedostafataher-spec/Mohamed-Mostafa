@@ -65,6 +65,7 @@ import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMem
 import { dbService, cleanImgUrl, supabase } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
 import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats, getProductAnalytics, ProductMetric } from '../utils/analytics';
+import { calculateEffectiveDiscount } from '../utils/discountUtils';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
 import PixelHealthIndicator from './PixelHealthIndicator';
 import TrafficHeatmap from './TrafficHeatmap';
@@ -225,7 +226,11 @@ export default function Dashboard({
     bankAccountName: settings?.bankAccountName || 'ابو بكر احمد على يونس',
     bankAccountNumber: settings?.bankAccountNumber || '108000010006086396260',
     bankIban: settings?.bankIban || 'SA65 8000 0108 6080 1639 6260',
-    bankQrCodeUrl: settings?.bankQrCodeUrl || '/assets/images/alrajhi_qr.jpg'
+    bankQrCodeUrl: settings?.bankQrCodeUrl || '/assets/images/alrajhi_qr.jpg',
+    storeDiscountPercent: settings?.storeDiscountPercent || 0,
+    storeDiscountStartsAt: settings?.storeDiscountStartsAt || '',
+    storeDiscountEndsAt: settings?.storeDiscountEndsAt || '',
+    minReferenceDays: settings?.minReferenceDays || 14
   });
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
@@ -777,33 +782,36 @@ export default function Dashboard({
 
     try {
       const isEditing = !!editingProduct;
-      const targetId = editingProduct ? editingProduct.id : `prod_${Date.now()}`;
-      const priceSA = Number(productForm.priceSA) || 0;
-      const priceEG = Number(productForm.priceEG) || (priceSA ? priceSA * 5 : 0);
-      const salePriceSA = productForm.salePriceSA ? Number(productForm.salePriceSA) : undefined;
-      const salePriceEG = productForm.salePriceEG ? Number(productForm.salePriceEG) : undefined;
+      const targetId = editingProduct ? editingProduct.id : 'prod_' + Date.now();
+      const regularPrice = Number(productForm.regularPrice) || Number(productForm.priceSA) || 69;
+      const discountPercent = Number(productForm.discountPercent) || 0;
+      const effectiveSA = discountPercent > 0 ? Math.round(regularPrice * (1 - discountPercent / 100)) : regularPrice;
+      const priceEG = Number(productForm.priceEG) || Math.round(effectiveSA * 5);
 
       const newProd: Product = {
         ...(editingProduct || {}),
         id: targetId,
         nameAr: productForm.nameAr.trim(),
         nameEn: productForm.nameEn?.trim() || productForm.nameAr.trim(),
-        priceSA,
+        regularPrice,
+        regularPriceSince: editingProduct?.regularPriceSince || new Date().toISOString().split('T')[0],
+        discountPercent,
+        discountStartsAt: productForm.discountStartsAt || undefined,
+        discountEndsAt: productForm.discountEndsAt || undefined,
+        priceSA: effectiveSA,
         priceEG,
-        salePriceSA,
-        salePriceEG,
         stock: Number(productForm.stock) || 0,
         category: productForm.category || 'new',
         categoryAr: productForm.categoryAr || 'المجموعة الجديدة',
         descriptionAr: productForm.descriptionAr || '',
         descriptionEn: productForm.descriptionEn || '',
-        fabricAr: productForm.fabricAr || editingProduct?.fabricAr || 'كوتور معالج فائق النعومة',
-        fabricEn: productForm.fabricEn || editingProduct?.fabricEn || 'Premium Couture blend',
-        washInstructionsAr: productForm.washInstructionsAr || editingProduct?.washInstructionsAr || 'غسيل يدوي بماء بارد أو غسيل جاف لطيف',
-        images: productForm.images && productForm.images.length > 0 ? productForm.images : (editingProduct?.images || ['/img/sulta_product_1.png']),
+        fabricAr: productForm.fabricAr || editingProduct?.fabricAr || 'قطن ناعم ومريح',
+        fabricEn: productForm.fabricEn || editingProduct?.fabricEn || 'Soft Cotton',
+        washInstructionsAr: productForm.washInstructionsAr || editingProduct?.washInstructionsAr || 'بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
+        images: productForm.images && productForm.images.length > 0 ? productForm.images : (editingProduct?.images || ['/img/tulip-crinkle-cotton-pajama.webp']),
         video: productForm.video?.trim() || editingProduct?.video || undefined,
-        colors: productForm.colors && productForm.colors.length > 0 ? productForm.colors : (editingProduct?.colors || [{ name: 'وردي كوتور', hex: '#E8A5B8' }]),
-        sizes: productForm.sizes && productForm.sizes.length > 0 ? productForm.sizes : (editingProduct?.sizes || ['S', 'M', 'L', 'XL']),
+        colors: productForm.colors && productForm.colors.length > 0 ? productForm.colors : (editingProduct?.colors || [{ name: 'وردي', hex: '#E8A5B8' }]),
+        sizes: productForm.sizes && productForm.sizes.length > 0 ? productForm.sizes : (editingProduct?.sizes || ['One Size']),
         status: productForm.status || editingProduct?.status || 'active',
         featured: editingProduct?.featured ?? true,
         rating: editingProduct?.rating ?? 5,
@@ -1065,7 +1073,11 @@ export default function Dashboard({
         bankAccountName: settingsForm.bankAccountName,
         bankAccountNumber: settingsForm.bankAccountNumber,
         bankIban: settingsForm.bankIban,
-        bankQrCodeUrl: settingsForm.bankQrCodeUrl
+        bankQrCodeUrl: settingsForm.bankQrCodeUrl,
+        storeDiscountPercent: Number(settingsForm.storeDiscountPercent) || 0,
+        storeDiscountStartsAt: settingsForm.storeDiscountStartsAt || undefined,
+        storeDiscountEndsAt: settingsForm.storeDiscountEndsAt || undefined,
+        minReferenceDays: Number(settingsForm.minReferenceDays) || 14
       };
 
       const success = await dbService.updateSettings(payload);
@@ -2475,13 +2487,11 @@ export default function Dashboard({
                               </button>
                             </div>
                           ) : (() => {
-                            const beforePrice = (p.salePriceSA && p.priceSA && p.salePriceSA < p.priceSA)
-                              ? p.priceSA
-                              : 200;
-                            const afterPrice = (p.salePriceSA && p.priceSA && p.salePriceSA < p.priceSA)
-                              ? p.salePriceSA
-                              : (p.priceSA || 195);
-                            const discountPct = Math.round(((beforePrice - afterPrice) / beforePrice) * 100) || 0;
+                            const eff = calculateEffectiveDiscount(p, settings, 'SA');
+                            const regDate = p.regularPriceSince ? new Date(p.regularPriceSince) : new Date();
+                            const daysDiff = Math.floor((new Date().getTime() - regDate.getTime()) / (1000 * 60 * 60 * 24));
+                            const minDays = settings?.minReferenceDays || 14;
+                            const showWarning = eff.hasActiveDiscount && daysDiff < minDays;
 
                             return (
                               <div className="flex flex-col items-start gap-1" dir="rtl">
@@ -2490,30 +2500,57 @@ export default function Dashboard({
                                     className="font-black text-xs sm:text-sm text-[#A44C5C] font-mono cursor-pointer"
                                     onClick={() => {
                                       setEditingPriceId(p.id);
-                                      setInlinePriceVal(String(afterPrice));
+                                      setInlinePriceVal(String(eff.effectivePrice));
                                     }}
                                     title="اضغطي للتعديل السريع"
                                   >
-                                    {afterPrice} ر.س
+                                    {eff.effectivePrice} ر.س
                                   </span>
-                                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-mono line-through">
-                                    {beforePrice} ر.س
-                                  </span>
+                                  {eff.hasActiveDiscount && (
+                                    <span className="text-[10px] sm:text-[11px] text-gray-400 font-mono line-through">
+                                      {eff.regularPrice} ر.س
+                                    </span>
+                                  )}
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      setEditingPriceId(p.id);
-                                      setInlinePriceVal(String(afterPrice));
+                                      setEditingProduct(p);
+                                      setIsAddProductOpen(true);
+                                      setProductForm({
+                                        nameAr: p.nameAr,
+                                        nameEn: p.nameEn,
+                                        regularPrice: p.regularPrice || p.priceSA || 69,
+                                        priceSA: p.priceSA || 69,
+                                        discountPercent: p.discountPercent || 0,
+                                        discountStartsAt: p.discountStartsAt ? new Date(p.discountStartsAt).toISOString().slice(0, 16) : '',
+                                        discountEndsAt: p.discountEndsAt ? new Date(p.discountEndsAt).toISOString().slice(0, 16) : '',
+                                        priceEG: p.priceEG || 0,
+                                        stock: p.stock || 0,
+                                        category: p.category || 'new',
+                                        categoryAr: p.categoryAr || 'المجموعة الجديدة',
+                                        descriptionAr: p.descriptionAr || '',
+                                        images: p.images || ['/img/tulip-crinkle-cotton-pajama.webp']
+                                      });
                                     }}
                                     className="p-1 text-gray-400 hover:text-[#A44C5C] hover:bg-pink-50 rounded transition-all cursor-pointer"
-                                    title="تعديل السعر"
+                                    title="تعديل خصم المنتج وسعره"
                                   >
                                     <Edit2 size={12} />
                                   </button>
                                 </div>
-                                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#FFF0F2] text-[#A44C5C] border border-[#A44C5C]/20 rounded-md">
-                                  خصم {discountPct}٪
-                                </span>
+                                {eff.hasActiveDiscount ? (
+                                  <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#FFF0F2] text-[#A44C5C] border border-[#A44C5C]/20 rounded-md">
+                                    خصم {eff.discountPercent}٪ {eff.isStoreWide ? '(شامل)' : ''}
+                                  </span>
+                                ) : (
+                                  <span className="text-[9.5px] text-gray-400">سعر أساسي بدون خصم</span>
+                                )}
+                                {showWarning && (
+                                  <span className="text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded-md mt-0.5 flex items-center gap-1" title={`السعر مسجل منذ ${daysDiff} يوم (أقل من ${minDays} يوم)`}>
+                                    <AlertTriangle size={10} className="text-amber-600 shrink-0" />
+                                    <span>مسجّل من أقل من {minDays} يوم</span>
+                                  </span>
+                                )}
                               </div>
                             );
                           })()}
@@ -3253,6 +3290,79 @@ export default function Dashboard({
                 </div>
               </div>
 
+              {/* Store-Wide Percentage Discount Management */}
+              <div className="bg-[#FAF8F8] border border-gray-200 rounded-2xl p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Tag size={18} className="text-[#A44C5C]" />
+                    <h4 className="font-bold text-sm text-gray-950">خصم عام شامل لجميع منتجات المتجر (%)</h4>
+                  </div>
+                  <span className="text-[10px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded-full border border-rose-200">
+                    يُطبق على المنتجات بدون خصم خاص 🏷️
+                  </span>
+                </div>
+
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  عند تفعيل نسبة خصم عامة، سيتم تطبيق الخصم تلقائياً على كل منتج تكون نسبة خصمه الخاص = 0%. وفي حال كان للمنتج خصم خاص، تُطبق النسبة الأكبر تلقائياً.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">نسبة الخصم العام (%)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="0"
+                        max="90"
+                        placeholder="0"
+                        value={settingsForm.storeDiscountPercent}
+                        onChange={(e) => setSettingsForm(prev => ({ ...prev, storeDiscountPercent: Number(e.target.value) }))}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold focus:outline-none focus:border-[#A44C5C] text-left pl-8"
+                        dir="ltr"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-bold pointer-events-none">%</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">بداية الخصم الشامل</label>
+                    <input
+                      type="datetime-local"
+                      value={settingsForm.storeDiscountStartsAt || ''}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, storeDiscountStartsAt: e.target.value }))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-sans focus:outline-none focus:border-[#A44C5C]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">نهاية الخصم الشامل</label>
+                    <input
+                      type="datetime-local"
+                      value={settingsForm.storeDiscountEndsAt || ''}
+                      onChange={(e) => setSettingsForm(prev => ({ ...prev, storeDiscountEndsAt: e.target.value }))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-sans focus:outline-none focus:border-[#A44C5C]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">حد الأيام المرجعية للتنبيه</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="1"
+                        max="90"
+                        placeholder="14"
+                        value={settingsForm.minReferenceDays}
+                        onChange={(e) => setSettingsForm(prev => ({ ...prev, minReferenceDays: Number(e.target.value) }))}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold focus:outline-none focus:border-[#A44C5C] text-left pl-8"
+                        dir="ltr"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-bold pointer-events-none">يوم</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Marketing Pixels */}
               <div className="space-y-4 pt-2">
                 {/* Live Diagnostic Quick Access Banner */}
@@ -3570,53 +3680,123 @@ export default function Dashboard({
                 />
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">السعر بالمملكة (ر.س) *</label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    placeholder="195"
-                    value={productForm.priceSA === 0 ? '' : (productForm.priceSA || '')}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, priceSA: e.target.value === '' ? 0 : Number(e.target.value) }))}
-                    className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
-                  />
+              {/* Price & Discount Management Box */}
+              <div className="bg-[#FAF8F8] border border-gray-200 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                  <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                    <Tag size={14} className="text-[#A44C5C]" />
+                    <span>إدارة السعر الأساسي ونسبة الخصم المئوية (%)</span>
+                  </h4>
+                  <span className="text-[10px] text-gray-500 font-sans">
+                    الحساب التلقائي من السعر الأساسي
+                  </span>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">سعر العرض (اختياري)</label>
-                  <input
-                    type="number"
-                    min="1"
-                    placeholder="خصم إن وجد"
-                    value={productForm.salePriceSA === undefined ? '' : (productForm.salePriceSA || '')}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, salePriceSA: e.target.value === '' ? undefined : Number(e.target.value) }))}
-                    className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
-                  />
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">السعر الأساسي المرجعي (ر.س) *</label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      placeholder="69"
+                      value={productForm.regularPrice === undefined || productForm.regularPrice === 0 ? (productForm.priceSA || '') : productForm.regularPrice}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, regularPrice: Number(e.target.value) }))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:border-[#A44C5C]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">نسبة الخصم (%)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="0"
+                        max="90"
+                        placeholder="0"
+                        value={productForm.discountPercent === undefined ? 0 : productForm.discountPercent}
+                        onChange={(e) => setProductForm(prev => ({ ...prev, discountPercent: Number(e.target.value) }))}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:border-[#A44C5C] text-left pl-7"
+                        dir="ltr"
+                      />
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-bold pointer-events-none">%</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">بداية الخصم (اختياري)</label>
+                    <input
+                      type="datetime-local"
+                      value={productForm.discountStartsAt || ''}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, discountStartsAt: e.target.value }))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-sans focus:outline-none focus:border-[#A44C5C]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-1">نهاية الخصم (اختياري)</label>
+                    <input
+                      type="datetime-local"
+                      value={productForm.discountEndsAt || ''}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, discountEndsAt: e.target.value }))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-sans focus:outline-none focus:border-[#A44C5C]"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">السعر في مصر (ج.م)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="تلقائي 5x"
-                    value={productForm.priceEG === 0 ? '' : (productForm.priceEG || '')}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, priceEG: e.target.value === '' ? 0 : Number(e.target.value) }))}
-                    className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
-                  />
+
+                {/* Calculation preview box */}
+                <div className="bg-white p-3 rounded-xl border border-gray-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500 font-medium">السعر الفعلي المعروض للعميلة:</span>
+                    <span className="font-mono font-black text-sm text-[#A44C5C]">
+                      {(() => {
+                        const reg = Number(productForm.regularPrice) || Number(productForm.priceSA) || 69;
+                        const pct = Number(productForm.discountPercent) || 0;
+                        return pct > 0 ? Math.round(reg * (1 - pct / 100)) : reg;
+                      })()} ر.س
+                    </span>
+                    {(productForm.discountPercent || 0) > 0 && (
+                      <span className="text-[10px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded-full border border-rose-200">
+                        خصم {productForm.discountPercent}%
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3 font-mono text-[11px]">
+                    <span className="text-gray-400">السعر بمصر: {Math.round((((productForm.discountPercent || 0) > 0 ? Math.round((Number(productForm.regularPrice) || 69) * (1 - (productForm.discountPercent || 0)/100)) : (Number(productForm.regularPrice) || 69)) * 5))} ج.م</span>
+                    <span className="text-gray-500 font-bold">المخزون:</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={productForm.stock === undefined ? 10 : productForm.stock}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, stock: Number(e.target.value) }))}
+                      className="w-16 bg-[#F8F9FA] border border-gray-200 rounded-lg px-2 py-1 text-center font-bold"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">الكمية في المخزن *</label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    placeholder="15"
-                    value={productForm.stock === 0 ? '' : (productForm.stock || '')}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, stock: e.target.value === '' ? 0 : Number(e.target.value) }))}
-                    className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
-                  />
-                </div>
+
+                {/* Reference Price 14-day Warning Banner */}
+                {(() => {
+                  const pct = Number(productForm.discountPercent) || 0;
+                  const regDate = editingProduct?.regularPriceSince ? new Date(editingProduct.regularPriceSince) : new Date();
+                  const daysDiff = Math.floor((new Date().getTime() - regDate.getTime()) / (1000 * 60 * 60 * 24));
+                  const minDays = settings?.minReferenceDays || 14;
+
+                  if (pct > 0 && daysDiff < minDays) {
+                    return (
+                      <div className="bg-amber-50 border border-amber-200 text-amber-900 text-xs p-3 rounded-xl flex items-start gap-2 animate-fade-in">
+                        <AlertTriangle size={15} className="text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-bold text-[11px]">تنبيه التسعير المرجعي (الامتثال للأنظمة):</p>
+                          <p className="text-[10.5px] leading-relaxed mt-0.5">
+                            السعر الأساسي المرجعي لهذا المنتج مسجّل منذ <strong>{daysDiff} يوماً</strong> فقط (أقل من {minDays} يوماً). قد لا يُعتبر سعرًا مرجعيًا حقيقيًا معتمداً عند إطلاق التخفيضات الرسمية.
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
 
               <div>

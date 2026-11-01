@@ -1,36 +1,27 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Product } from '../types';
-import { dbService, cleanImgUrl } from '../services/db';
-import { getIdFromSlug, getProductSlug } from '../utils/slugify';
-import SEO from './SEO';
-import { ProductPrice } from './ProductPrice';
 import { 
-  ShoppingBag, 
-  Heart, 
-  ShieldCheck, 
-  Truck, 
-  RefreshCw, 
-  ChevronRight, 
-  ChevronLeft, 
-  ArrowRight,
-  Plus,
-  Minus,
-  MessageCircle,
-  HelpCircle,
-  Sparkles
+  Truck, ArrowRight, ChevronRight, ChevronLeft, Sparkles, Minus, Plus, 
+  ShoppingBag, Heart, MessageCircle, ShieldCheck, RefreshCw, HelpCircle 
 } from 'lucide-react';
+import { Product } from '../types';
+import { getIdFromSlug, getProductSlug } from '../utils/slugify';
+import { dbService, cleanImgUrl } from '../services/db';
 import { trackViewContent } from '../utils/analytics';
 import { trackTikTokViewContent } from '../utils/tiktokPixel';
+import SEO from './SEO';
+import { ProductPrice } from './ProductPrice';
 import SultaImage from './SultaImage';
+import { calculateEffectiveDiscount, formatStockBadge } from '../utils/discountUtils';
 
 interface ProductPageProps {
   onAddToCart: (product: Product, color: any, size: string, qty: number) => void;
   toggleFavorite: (id: string) => void;
   favorites: string[];
+  settings?: any;
 }
 
-const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, favorites }) => {
+const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, favorites, settings }) => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
@@ -42,6 +33,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
   // Gallery & Media Interactive States
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
+
+  // Countdown timer state
+  const [countdownText, setCountdownText] = useState<string>('');
 
   // Touch Swipe Handling for Mobile
   const touchStartX = useRef<number | null>(null);
@@ -61,7 +55,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           setSelectedSize('One Size');
           setActiveImageIdx(0);
           
-          // Analytics (preserve exact pixels)
+          // Analytics
           trackViewContent(p, 'SAR');
           trackTikTokViewContent(p, 'SAR');
 
@@ -90,6 +84,41 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
     return () => unsub();
   }, [slug, navigate]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (!product) return;
+    const discountInfo = calculateEffectiveDiscount(product, settings, 'SA');
+    if (!discountInfo.hasActiveDiscount || !discountInfo.endsAt) {
+      setCountdownText('');
+      return;
+    }
+
+    const updateTimer = () => {
+      const target = new Date(discountInfo.endsAt!).getTime();
+      const now = Date.now();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setCountdownText('');
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      let str = '';
+      if (days > 0) str += `${days} يوم و `;
+      str += `${hours} ساعة و ${mins} دقيقة و ${secs} ثانية`;
+      setCountdownText(str);
+    };
+
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  }, [product, settings]);
 
   if (loading) {
     return (
@@ -149,19 +178,14 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const productSlug = product.slug || getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr });
   const canonicalUrl = `https://sulta.vercel.app/product/${productSlug}/`;
 
-  // WhatsApp inquiry link
-  const whatsappText = encodeURIComponent(`مرحباً سولتة، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالرابط: ${canonicalUrl}`);
-  const whatsappUrl = `https://wa.me/966552823677?text=${whatsappText}`;
-
-  // Price & strikethrough logic (strictly authentic)
-  const price = product.salePriceSA || product.priceSA;
-  const hasValidComparePrice = Boolean(
-    product.compareAtPrice && 
-    product.compareAtPrice > price &&
-    (!product.saleEndsAt || new Date(product.saleEndsAt) > new Date())
-  );
-
+  // Effective discount info
+  const discountInfo = calculateEffectiveDiscount(product, settings, 'SA');
+  const stockBadgeInfo = formatStockBadge(product.stock);
   const isOutOfStock = product.stock === 0;
+
+  // WhatsApp inquiry link
+  const whatsappText = encodeURIComponent(`مرحباً سولتة، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالسعر الحالي: ${discountInfo.effectivePrice} ر.س\nالرابط: ${canonicalUrl}`);
+  const whatsappUrl = `https://wa.me/966552823677?text=${whatsappText}`;
 
   // JSON-LD for Product (STRICT: NO reviews, NO aggregateRating)
   const jsonLd: any = {
@@ -185,14 +209,14 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
       "@type": "Offer",
       "url": canonicalUrl,
       "priceCurrency": "SAR",
-      "price": price,
+      "price": discountInfo.effectivePrice,
       "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       "itemCondition": "https://schema.org/NewCondition"
     }
   };
 
-  if (hasValidComparePrice && product.saleEndsAt) {
-    jsonLd.offers.priceValidUntil = product.saleEndsAt;
+  if (discountInfo.hasActiveDiscount && discountInfo.endsAt) {
+    jsonLd.offers.priceValidUntil = discountInfo.endsAt;
   }
 
   // BreadcrumbList JSON-LD
@@ -223,6 +247,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
   const isCrinkle = (product.material || product.fabricAr).includes('كوريشة');
 
+  // FAQ Page Schema strictly matching visible FAQ text
   const faqJsonLd = {
     "@context": "https://schema.org/",
     "@type": "FAQPage",
@@ -256,7 +281,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
         "name": "هل الكمية متوفرة؟",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `الكمية محدودة، وتظهر المتبقية في الصفحة.`
+          "text": "الكمية محدودة."
         }
       }
     ]
@@ -309,7 +334,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           >
             <SultaImage 
               src={currentMainImage} 
-              alt={product.nameAr} 
+              alt={product.h1 || `${product.nameAr} من سولتة`} 
               className="w-full h-full"
               imgClassName="w-full h-full object-cover object-center"
               priority={true}
@@ -362,7 +387,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                   >
                     <SultaImage 
                       src={img} 
-                      alt={`${product.nameAr} - صورة مصغرة ${idx + 1}`} 
+                      alt={`${product.h1 || product.nameAr} - صورة ${idx + 1}`} 
                       className="w-full h-full"
                       imgClassName="object-cover"
                     />
@@ -377,14 +402,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
         <div className="space-y-6 md:space-y-8">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              {product.stock <= 10 && product.stock > 0 && (
-                <span className="inline-block bg-rose-50 text-rose-700 text-xs font-bold px-3 py-1 rounded-full">
-                  متبقي {product.stock} قطع فقط
-                </span>
-              )}
-              {isOutOfStock && (
-                <span className="inline-block bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full">
-                  نفدت الكمية
+              {stockBadgeInfo && (
+                <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${stockBadgeInfo.isOutOfStock ? 'bg-gray-100 text-gray-600' : 'bg-rose-50 text-rose-700'}`}>
+                  {stockBadgeInfo.text}
                 </span>
               )}
               <span className="inline-block bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">
@@ -392,19 +412,25 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               </span>
             </div>
 
-            {/* H1 Heading exactly as requested */}
+            {/* H1 Heading */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-950 tracking-tight">
               {product.h1 || `${product.nameAr} — قطن وان سايز`}
             </h1>
 
-            <div className="flex items-center gap-4 pt-1">
-              <span className="text-2xl font-black text-[#A44C5C]">{price} ر.س</span>
-              {hasValidComparePrice && (
-                <span className="text-base text-gray-400 line-through font-bold">
-                  {product.compareAtPrice} ر.س
-                </span>
-              )}
+            {/* Product Price & Percentage Discount */}
+            <div className="pt-1">
+              <ProductPrice product={product} country="SA" settings={settings} size="lg" showBadge={true} />
             </div>
+
+            {/* Countdown timer banner if active discount has endsAt */}
+            {countdownText && (
+              <div className="bg-gradient-to-r from-rose-50 to-amber-50 border border-rose-200 text-rose-900 text-xs font-bold px-4 py-2.5 rounded-2xl flex items-center justify-between shadow-2xs my-2">
+                <span className="flex items-center gap-1.5">
+                  <Sparkles size={16} className="text-rose-600" />
+                  <span>ينتهي العرض خلال: <strong className="font-mono text-rose-700">{countdownText}</strong></span>
+                </span>
+              </div>
+            )}
 
             {/* Structured specs box */}
             <div className="bg-gray-50 border border-gray-200/80 rounded-2xl p-4 space-y-2.5 text-sm text-gray-800 my-4">

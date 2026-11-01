@@ -8,6 +8,7 @@ import ReelsShowcase from './ReelsShowcase';
 import Features from './Features';
 import SEO from './SEO';
 import { getProductSlug } from '../utils/slugify';
+import { formatStockBadge, calculateEffectiveDiscount } from '../utils/discountUtils';
 
 interface HomeViewProps {
   products: Product[];
@@ -44,7 +45,7 @@ const HomeView: React.FC<HomeViewProps> = ({
     <div className="space-y-0">
       <SEO 
         title="بيجامات نسائية قطن ووان سايز | سولتة"
-        description="تسوقي بيجامات نسائية مريحة من قطن كوريشة ناعم وقطن مريح بمقاس وان سايز يناسب 45 إلى 80 كيلو. كميات محدودة وتوصيل لجميع مناطق المملكة."
+        description="تسوقي بيجامات نسائية من قطن ناعم ومريح بمقاس وان سايز يناسب من 45 إلى 80 كيلو. تصاميم أنثوية بكميات محدودة من سولتة."
         path="/"
       />
 
@@ -53,7 +54,7 @@ const HomeView: React.FC<HomeViewProps> = ({
           بيجامات نسائية قطن ناعمة — سولتة
         </h1>
         <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-3xl">
-          أهلاً بكِ في سولتة، حيث نقدم لكِ تشكيلة بيجامات نسائية صُممت خصيصاً لتمنحكِ الراحة والهدوء في أوقات استرخائكِ اليومية بالمنزل. نعتمد في قطعنا على خامات القطن الناعم المريح والقطن الكوريشة عالي التهوية بقصّات أنثوية لطيفة تناسب ذوقكِ الرفيع. تتوفر تشكيلتنا بمقاس وان سايز مرن يناسب الأوزان من 45 إلى 80 كيلو لتضمني راحة تامة، مع عناية بالتفاصيل وتوصيل موثوق لكافة مناطق المملكة.
+          أهلاً بكِ في سولتة، حيث نقدم لكِ تشكيلة بيجامات نسائية صُممت خصيصاً لتمنحكِ الراحة والهدوء في أوقات استرخائكِ اليومية بالمنزل. نعتمد في قطعنا على خامات القطن الناعم المريح والقطن الكوريشة بقصّات أنثوية مريحة بمقاس وان سايز يناسب الأوزان من 45 إلى 80 كيلو لتضمني التلاؤم التام والراحة المطلقة.
         </p>
       </div>
 
@@ -95,6 +96,8 @@ const HomeView: React.FC<HomeViewProps> = ({
                 {section.data.length > 0 ? section.data.slice(0, 8).map((prod, prodIdx) => {
                   const isFav = favorites.includes(prod.id);
                   const prodSlug = getProductSlug({ id: prod.id, nameEn: prod.nameEn, nameAr: prod.nameAr });
+                  const stockBadge = formatStockBadge(prod.stock);
+                  const effDiscount = calculateEffectiveDiscount(prod, null, 'SA');
 
                   return (
                     <div
@@ -110,9 +113,16 @@ const HomeView: React.FC<HomeViewProps> = ({
                         <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100 rounded-t-2xl">
                           {/* Badges */}
                           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-                            <span className="bg-rose-50 text-rose-700 text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
-                              متبقي {prod.stock} قطع
-                            </span>
+                            {effDiscount.hasActiveDiscount && (
+                              <span className="bg-[#E11D48] text-white text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
+                                خصم {effDiscount.discountPercent}%
+                              </span>
+                            )}
+                            {stockBadge && (
+                              <span className={`text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs ${stockBadge.isOutOfStock ? 'bg-gray-200 text-gray-700' : 'bg-rose-50 text-rose-700'}`}>
+                                {stockBadge.text}
+                              </span>
+                            )}
                             {prod.isBestSeller && (
                               <span className="bg-[#F59E0B] text-black text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
                                 الأكثر طلباً 👑

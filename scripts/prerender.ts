@@ -340,7 +340,7 @@ async function runPrerender() {
             "name": "هل الكمية متوفرة؟",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": `الكمية محدودة، وتظهر المتبقية في الصفحة (متبقي ${stock} قطع).`
+              "text": "الكمية محدودة."
             }
           }
         ]

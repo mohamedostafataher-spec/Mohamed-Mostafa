@@ -60,14 +60,10 @@ async function generateSitemaps() {
     ...staticPages.map(p => `  <url>
     <loc>${BASE_URL}${p.route}</loc>
     <lastmod>${todayIso}</lastmod>
-    <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
   </url>`),
     ...productEntries.map(p => `  <url>
     <loc>${BASE_URL}${p.route}</loc>
     <lastmod>${p.lastmod}</lastmod>
-    <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
   </url>`)
   ];
 

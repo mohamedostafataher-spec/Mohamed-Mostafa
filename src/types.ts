@@ -78,8 +78,12 @@ export interface Settings {
   whatsappDiscountCode?: string;
   whatsappMarketingMessageTemplate?: string;
   whatsappCartRecoveryMessageTemplate?: string;
-  // Team Management & Gmail Access
-  adminTeamMembers?: TeamMember[];
+  // Store-wide Percentage Discounts & Admin Audit Rules
+  storeDiscountPercent?: number;
+  storeDiscountStartsAt?: string;
+  storeDiscountEndsAt?: string;
+  minReferenceDays?: number; // Default 14
+  adminTeamMembers?: any[];
 }
 
 export type TeamMemberRole = 'owner' | 'manager' | 'orders_agent' | 'viewer';
@@ -101,6 +105,12 @@ export interface Product {
   categoryAr: string;
   priceEG: number;
   priceSA: number;
+  // Percentage Discount System Fields
+  regularPrice?: number;
+  regularPriceSince?: string; // YYYY-MM-DD
+  discountPercent?: number; // 0 to 90
+  discountStartsAt?: string; // ISO timestamptz
+  discountEndsAt?: string; // ISO timestamptz
   descriptionAr: string;
   descriptionEn: string;
   fabricAr: string;

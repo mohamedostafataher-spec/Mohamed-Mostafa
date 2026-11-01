@@ -11,6 +11,7 @@ import { ProductPrice } from './ProductPrice';
 import SultaImage from './SultaImage';
 import { cleanImgUrl } from '../services/db';
 import { getProductSlug } from '../utils/slugify';
+import { calculateEffectiveDiscount, formatStockBadge } from '../utils/discountUtils';
 import SEO from './SEO';
 
 interface StoreViewProps {
@@ -134,7 +135,7 @@ export default function StoreView({
     
     // Category filter
     if (selectedCategory === 'offers') {
-      result = result.filter(p => (country === 'EG' ? !!p.salePriceEG : !!p.salePriceSA) || p.rating >= 4.8);
+      result = result.filter(p => calculateEffectiveDiscount(p, null, country).hasActiveDiscount);
     } else if (selectedCategory === 'new') {
       result = result.filter(p => p.featured || p.status === 'active');
     } else if (selectedCategory === 'bestseller') {
@@ -581,14 +582,9 @@ export default function StoreView({
               const safeIdx = (activeImgIdx >= 0 && activeImgIdx < productImgs.length) ? activeImgIdx : 0;
               const currentImg = cleanImgUrl(productImgs[safeIdx], product.category);
 
-              // Calculate price & discount for Salla badge
-              const currentPrice = country === 'EG' ? product.priceEG : product.priceSA;
-              const salePrice = country === 'EG' ? product.salePriceEG : product.salePriceSA;
-              const hasSale = !!salePrice && salePrice < currentPrice;
-              const calculatedDiscount = hasSale 
-                ? Math.round(((currentPrice - salePrice!) / currentPrice) * 100) 
-                : 0;
-              const discountVal = calculatedDiscount;
+              // Calculate price & discount for Salla badge using centralized calculateEffectiveDiscount
+              const effDiscount = calculateEffectiveDiscount(product, null, country);
+              const discountVal = effDiscount.hasActiveDiscount ? effDiscount.discountPercent : 0;
               const productSlug = getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr });
 
               return (
@@ -647,11 +643,15 @@ export default function StoreView({
                       </div>
 
                       {/* Stock Warning Badge */}
-                      {product.stock <= 3 && product.stock > 0 && (
-                        <div className="absolute bottom-2 right-2 bg-red-600/90 text-white text-[8px] sm:text-[8.5px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-xs shadow-xs">
-                          متبقي {product.stock} فقط 🚨
-                        </div>
-                      )}
+                      {(() => {
+                        const stockInfo = formatStockBadge(product.stock);
+                        if (!stockInfo) return null;
+                        return (
+                          <div className={`absolute bottom-2 right-2 ${stockInfo.isOutOfStock ? 'bg-gray-800/90' : 'bg-red-600/90'} text-white text-[8px] sm:text-[8.5px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-xs shadow-xs`}>
+                            {stockInfo.text}
+                          </div>
+                        );
+                      })()}
 
                       {/* Quick View Button on Hover */}
                       <button
