@@ -33,12 +33,12 @@ export default function SleepExperience({
     },
     {
       title: '٢. التنفس ونقاء الجسد ليلاً',
-      desc: 'بيجامات سولتة مصممة بنسب فضفاضة ملكية لعدم تقييد الشرايين والأوعية اللمفاوية أثناء النوم، مما يؤمن تهوية فائقة بفضل مسامات النسيج الناعم المغسول بعناية فائقة.',
+      desc: 'بيجامات سولته مصممة بنسب فضفاضة ملكية لعدم تقييد الشرايين والأوعية اللمفاوية أثناء النوم، مما يؤمن تهوية فائقة بفضل مسامات النسيج الناعم المغسول بعناية فائقة.',
       benefit: 'التهوية العميقة وتنقية العضلات'
     },
     {
       title: '٣. طقوس العطر والتهيئة الملكية',
-      desc: 'اجعلي طقس ارتدائك لبيجامة سولتة بمثابة إعلان رسمي لعقلك عن بدء الاسترخاء. رشي القليل من رذاذ اللافندر البري على أكمام الدانتيل وتنفسي بعمق لخمس دورات متصلة.',
+      desc: 'اجعلي طقس ارتدائك لبيجامة سولته بمثابة إعلان رسمي لعقلك عن بدء الاسترخاء. رشي القليل من رذاذ اللافندر البري على أكمام الدانتيل وتنفسي بعمق لخمس دورات متصلة.',
       benefit: 'تثبيت هرمونات الاسترخاء العميق'
     }
   ];
@@ -49,10 +49,10 @@ export default function SleepExperience({
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <div className="flex justify-center items-center gap-1.5 text-[#A44C5C] text-xs font-serif tracking-widest font-bold">
           <Moon size={14} className="text-[#A44C5C]" />
-          <span>SULTA SLEEP CONTEXT & WELLNESS</span>
+          <span>Sulta SLEEP CONTEXT & WELLNESS</span>
         </div>
         <h2 className="font-serif text-3xl md:text-4xl font-light text-[#0B0B0B] tracking-wide">
-          تجربة النوم الملوكية | SULTA Sleep Experience
+          تجربة النوم الملوكية | Sulta Sleep Experience
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
@@ -70,7 +70,7 @@ export default function SleepExperience({
               HEALTH & BEAUTY DICTATE | صحتك وجمالك في الليل
             </span>
             <h3 className="font-serif text-2xl font-light text-[#0B0B0B]">
-              لماذا الكوتور الفاخر من SULTA؟
+              لماذا الكوتور الفاخر من Sulta؟
             </h3>
             <p className="text-gray-500 text-xs leading-relaxed">
               تصفحي الدليل التفصيلي والطقوس الموصى بها من أطباء البشرية والجلدية وخبراء الأزياء الملكية بباريس لتحصلي على أقصى سُموّ واسترخاء.

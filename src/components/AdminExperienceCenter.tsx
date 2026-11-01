@@ -60,7 +60,7 @@ export default function AdminExperienceCenter({
   const [newVideoUrl, setNewVideoUrl] = useState('');
   const [newVideoProd, setNewVideoProd] = useState('');
 
-  // SULTA AI Demand prediction state
+  // Sulta AI Demand prediction state
   const [predictionLogs, setPredictionLogs] = useState<any[]>([]);
   const [predicting, setPredicting] = useState<boolean>(false);
 
@@ -73,7 +73,7 @@ export default function AdminExperienceCenter({
 
   // Interactive site map expanded nodes
   const [mappingExpanded, setMappingExpanded] = useState<Record<string, boolean>>({
-    '👑 منصة SULTA الملكية الكبرى': true,
+    '👑 منصة Sulta الملكية الكبرى': true,
     '📄 الصفحات التفاعلية بالواجهة': true,
     '🏷️ أقسام معروضات المتجر السحابية': true,
     '🖼️ تشكيلات الأجواء والمواسم كوتور': true,
@@ -526,8 +526,8 @@ export default function AdminExperienceCenter({
       {/* CMS Administrative Header */}
       <div className="bg-[#FAF5F0] border border-[#A44C5C]/15 p-6 rounded-3xl mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <span className="text-[10px] text-[#A44C5C] font-semibold tracking-widest uppercase block mb-1">✦ SULTA NEXT-GEN PLATFORM COCKPIT ✦</span>
-          <h2 className="font-serif text-3xl font-extrabold text-gray-950">لوحة الإشراف المتكاملة وغرفة القيادة والتحليل (SULTA Cockpit)</h2>
+          <span className="text-[10px] text-[#A44C5C] font-semibold tracking-widest uppercase block mb-1">✦ Sulta NEXT-GEN PLATFORM COCKPIT ✦</span>
+          <h2 className="font-serif text-3xl font-extrabold text-gray-950">لوحة الإشراف المتكاملة وغرفة القيادة والتحليل (Sulta Cockpit)</h2>
           <p className="text-gray-500 text-xs mt-1.5 leading-relaxed">
             محرك مبيعات ومطابقة العلامة التجارية بالذكاء الاصطناعي، يربط السلوك البصري، جاهزية الإطلاق، صحة البيانات وإحصائيات الدورة المالية المترابطة مع Supabase بشكل حي ومباشر.
           </p>
@@ -589,7 +589,7 @@ export default function AdminExperienceCenter({
 
               {/* Orders Match */}
               <div>
-                <span className="text-xs font-bold text-[#A44C5C] block mb-2">💳 طلبيات صالون سولتة ({searchResults.orders.length})</span>
+                <span className="text-xs font-bold text-[#A44C5C] block mb-2">💳 طلبيات صالون سولته ({searchResults.orders.length})</span>
                 {searchResults.orders.length > 0 ? (
                   <div className="space-y-2">
                     {searchResults.orders.map(o => (
@@ -776,7 +776,7 @@ export default function AdminExperienceCenter({
             <div className="bg-white border border-gray-150 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs animate-fade-in">
               <div>
                 <span className="bg-amber-100 text-amber-700 text-[9px] font-bold px-3 py-1 rounded-full">{`نظام تدقيق الدورة المالية والارتباط`}</span>
-                <h3 className="font-serif text-2xl text-gray-950 mt-2">09. اللوحة القيادية التنفيذية المتكاملة لدار سولتة (SULTA Executive Desk)</h3>
+                <h3 className="font-serif text-2xl text-gray-950 mt-2">09. اللوحة القيادية التنفيذية المتكاملة لدار سولته (Sulta Executive Desk)</h3>
                 <p className="text-gray-500 text-xs mt-1">القنوات الحساسة والمعلومات السحابية الحية المستخرجة من Supabase وجدول المنتجات والنشاط.</p>
               </div>
 
@@ -834,7 +834,7 @@ export default function AdminExperienceCenter({
                 <div className="bg-neutral-50 p-4 border rounded-2xl space-y-3 flex flex-col justify-between">
                   <div>
                     <h4 className="text-xs font-bold text-gray-900">سجل الإجراءات والتحديثات اللحظية (Ticker)</h4>
-                    <p className="text-[11px] text-gray-500 mt-1">آخر عملية رصد وتعديل تمت على مخازن وجداول سولتة:</p>
+                    <p className="text-[11px] text-gray-500 mt-1">آخر عملية رصد وتعديل تمت على مخازن وجداول سولته:</p>
                   </div>
                   
                   <div className="bg-white border rounded-xl p-3 max-h-24 overflow-y-auto font-mono text-[10px] text-gray-500 space-y-1.5 leading-relaxed">
@@ -857,7 +857,7 @@ export default function AdminExperienceCenter({
               <div className="flex justify-between items-start">
                 <div>
                   <span className="bg-indigo-100 text-indigo-700 text-[9px] font-bold px-3 py-1 rounded-full">🧠 مستشار الذكاء السلوكي والتجاري</span>
-                  <h3 className="font-serif text-2xl text-gray-950 mt-2">10. مساعد التدقيق الأوتوماتيكي بالذكاء الاصطناعي (SULTA AI Audit Assistant)</h3>
+                  <h3 className="font-serif text-2xl text-gray-950 mt-2">10. مساعد التدقيق الأوتوماتيكي بالذكاء الاصطناعي (Sulta AI Audit Assistant)</h3>
                   <p className="text-gray-500 text-xs mt-1">يقوم بمسح كامل لبيانات Supabase والمؤشرات المالية لتوليد دراسة استراتيجية لتشغيل البوتيك الإقليمي بالكامل.</p>
                 </div>
 
@@ -900,7 +900,7 @@ export default function AdminExperienceCenter({
               {!suggestedAuditText && !generatingAudit && (
                 <div className="text-center py-12 border border-dashed rounded-2xl text-gray-400 text-xs space-y-2">
                   <Sparkles size={24} className="mx-auto text-amber-300 animate-bounce" />
-                  <p>اضغط على "توليد التقرير الذكي" لتمكين الذكاء التوليدي من قراءة إحصائيات دار سولتة وكتابة الفحص الملكي.</p>
+                  <p>اضغط على "توليد التقرير الذكي" لتمكين الذكاء التوليدي من قراءة إحصائيات دار سولته وكتابة الفحص الملكي.</p>
                 </div>
               )}
             </div>
@@ -975,7 +975,7 @@ export default function AdminExperienceCenter({
               </div>
 
               <div className="bg-[#FAF5F0] p-4 rounded-2xl flex justify-between items-center border">
-                <span className="text-xs font-bold text-gray-800">معدل جودة كتالوج كوتور العام لدار سولتة:</span>
+                <span className="text-xs font-bold text-gray-800">معدل جودة كتالوج كوتور العام لدار سولته:</span>
                 <span className="font-serif text-xl font-extrabold text-[#A44C5C] bg-white border px-4 py-1.5 rounded-xl">{averageProductsQualityScore} / 100</span>
               </div>
 
@@ -1102,7 +1102,7 @@ export default function AdminExperienceCenter({
                     </div>
                     <div className="flex items-center gap-2">
                       {hasLookbookVideos ? <span className="text-green-600">✔</span> : <span className="text-red-500">✕</span>}
-                      <span>ربط فيديوهات في تليفزيون سولتة التفاعلي (sulta_videos): {hasLookbookVideos ? 'نشط' : 'فارغ'}</span>
+                      <span>ربط فيديوهات في تليفزيون سولته التفاعلي (sulta_videos): {hasLookbookVideos ? 'نشط' : 'فارغ'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       {brandConsistencyVerified ? <span className="text-green-600">✔</span> : <span className="text-red-500">✕</span>}
@@ -1235,7 +1235,7 @@ export default function AdminExperienceCenter({
 
               {/* Site map node tree */}
               <div className="p-6 bg-neutral-900 text-right rounded-3xl text-xs space-y-4 font-mono text-zinc-300 max-h-[450px] overflow-y-auto">
-                <span className="text-[10px] text-amber-300 block font-bold mb-3">✦ دليل محتويات دار سولتة النشط كلياً:</span>
+                <span className="text-[10px] text-amber-300 block font-bold mb-3">✦ دليل محتويات دار سولته النشط كلياً:</span>
                 
                 {/* Splicing the helper mapped tree node renderer */}
                 {(() => {
@@ -1305,7 +1305,7 @@ export default function AdminExperienceCenter({
               {/* Brand Guidelines view */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                 <div className="bg-[#FAF5F0] p-5 rounded-2xl border space-y-3">
-                  <h4 className="font-serif text-sm font-bold text-gray-900">ألوان الخط الملكي المعتمد لصالون سولتة</h4>
+                  <h4 className="font-serif text-sm font-bold text-gray-900">ألوان الخط الملكي المعتمد لصالون سولته</h4>
                   <div className="space-y-2">
                     {BRAND_COLORS.map(col => (
                       <div key={col.hex} className="flex gap-3 items-center">
@@ -1356,7 +1356,7 @@ export default function AdminExperienceCenter({
                     </div>
                   ) : (
                     <div className="p-4 bg-green-50 text-green-700 font-bold text-center text-xs rounded-xl">
-                      ✔ تهانينا الملكية كوتور! الكتالوج والبنرات وبنية النصوص تتبع دليل المفردات الفاخر لدار سولتة بالامتياز بنسبة ١٠٠٪.
+                      ✔ تهانينا الملكية كوتور! الكتالوج والبنرات وبنية النصوص تتبع دليل المفردات الفاخر لدار سولته بالامتياز بنسبة ١٠٠٪.
                     </div>
                   )}
                 </div>
@@ -1490,7 +1490,7 @@ export default function AdminExperienceCenter({
 
               {/* Extra lookbook interaction requested by earlier codes */}
               <div className="border bg-zinc-50 rounded-2xl p-4 space-y-3 text-xs">
-                <span className="font-serif font-bold text-[#A44C5C] block">🎬 معاينة وإضافة فيديوهات كوتور تليفزيون سولتة (Lookbook Videos CMS)</span>
+                <span className="font-serif font-bold text-[#A44C5C] block">🎬 معاينة وإضافة فيديوهات كوتور تليفزيون سولته (Lookbook Videos CMS)</span>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <input 
@@ -1596,7 +1596,7 @@ export default function AdminExperienceCenter({
                     <div className="flex-1 bg-white rounded-[26px] overflow-hidden flex flex-col text-[8px] text-right p-2 select-none relative">
                         {/* Header banner */}
                         <div className="bg-[#A44C5C] text-[#F6E7A6] p-1 text-center font-serif flex justify-between items-center px-2 mt-2">
-                          <span>SULTA CAST</span>
+                          <span>Sulta CAST</span>
                           <span>🕌 العرض الرمضاني</span>
                         </div>
 
@@ -1699,7 +1699,7 @@ export default function AdminExperienceCenter({
           {activeSystem === 'sensory_control' && (
             <div className="bg-white border border-gray-150 rounded-3xl p-6 md:p-8 space-y-8 shadow-xs animate-fade-in text-right" dir="rtl">
               <div className="border-b border-gray-100 pb-5">
-                <span className="bg-pink-100 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">👑 الـتـغـلـيـف الـفـاخـر كـوتـور • SULTA Luxury Couture Wrapping Suite</span>
+                <span className="bg-pink-100 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">👑 الـتـغـلـيـف الـفـاخـر كـوتـور • Sulta Luxury Couture Wrapping Suite</span>
                 <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold">15. لوحة التحكم وجناح التعبئة كوتور (Couture Wrapping Control Panel)</h3>
                 <p className="text-gray-500 text-xs mt-1 leading-relaxed">
                   تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش والأشرطة الملوكية التي تختارها العرائس لتزيين الصناديق الفاخرة للبيجامات وأطقم المنسوجات.

@@ -24,7 +24,7 @@ export default function GlobalSystemConfig({
   const [contactPhoneSaudi, setContactPhoneSaudi] = useState('');
   const [whatsappSaudi, setWhatsappSaudi] = useState('');
   const [instagram, setInstagram] = useState('');
-  const [siteName, setSiteName] = useState('SULTA');
+  const [siteName, setSiteName] = useState('Sulta');
 
   // Country specific states
   const [saDefaultCoupon, setSaDefaultCoupon] = useState('');
@@ -42,7 +42,7 @@ export default function GlobalSystemConfig({
       setContactPhoneSaudi(settings.contactPhoneSaudi || '+966 55 282 3677');
       setWhatsappSaudi(settings.whatsappSaudi || '966552823677');
       setInstagram(settings.instagram || '');
-      setSiteName(settings.siteName || 'SULTA');
+      setSiteName(settings.siteName || 'Sulta');
 
       setSaDefaultCoupon(settings.saDefaultCoupon || '');
       setSaExclusiveProductIds(settings.saExclusiveProductIds || []);
@@ -72,7 +72,7 @@ export default function GlobalSystemConfig({
       const dbSuccess = await dbService.saveHomepageSection('settings', payload);
 
       if (success || dbSuccess) {
-        alert('تم حفظ الإعدادات الملكية لـ SULTA بنجاح! 🇸🇦');
+        alert('تم حفظ الإعدادات الملكية لـ Sulta بنجاح! 🇸🇦');
         if (onSaveComplete) onSaveComplete();
       } else {
         alert('فشل حفظ إعدادات الأنظمة الإقليمية.');
@@ -263,7 +263,7 @@ export default function GlobalSystemConfig({
                   type="text"
                   value={saDefaultCoupon}
                   onChange={(e) => setSaDefaultCoupon(e.target.value.toUpperCase())}
-                  placeholder="مثال: SULTA20"
+                  placeholder="مثال: Sulta20"
                   className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-sans text-center"
                 />
               </div>

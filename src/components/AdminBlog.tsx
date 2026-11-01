@@ -40,7 +40,7 @@ export default function AdminBlog() {
         content: currentPost.content,
         excerpt: currentPost.excerpt || '',
         imageUrl: currentPost.imageUrl,
-        author: currentPost.author || 'SULTA',
+        author: currentPost.author || 'Sulta',
         category: currentPost.category || 'general',
         tags: currentPost.tags || [],
         status: currentPost.status || 'published',
@@ -78,7 +78,7 @@ export default function AdminBlog() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h3 className="text-xl font-serif text-[#0B0B0B] flex items-center gap-2">
-            مجلة SULTA
+            مجلة Sulta
           </h3>
           <p className="text-gray-500 text-xs mt-1">إدارة مقالات الموضة والأناقة والراحة المنزلية</p>
         </div>

@@ -28,7 +28,7 @@ export default function SultaConcierge({
       {/* Header card description */}
       <div className="text-center space-y-3 max-w-3xl mx-auto">
         <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-serif font-black tracking-widest uppercase">
-          SULTA DIGITAL ATELIER • صالون الاستشارات الملكية
+          Sulta DIGITAL ATELIER • صالون الاستشارات الملكية
         </span>
         <h1 className="font-serif text-3xl md:text-5xl font-light text-gray-950 tracking-tight leading-relaxed">
           مستشارتِك الشخصية كوتور
@@ -43,7 +43,7 @@ export default function SultaConcierge({
             onClick={() => setAdvisorView('advisor')}
             className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${advisorView === 'advisor' ? 'bg-white shadow-xs text-gray-950 border border-stone-200' : 'text-gray-500 hover:text-gray-800'}`}
           >
-            👑 مستشارة الموديل والأناقة SULTA Advisor
+            👑 مستشارة الموديل والأناقة Sulta Advisor
           </button>
           <button
             onClick={() => setAdvisorView('quick-size')}

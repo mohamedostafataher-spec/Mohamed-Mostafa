@@ -1075,7 +1075,7 @@ export const trackStartTrial = (trialName: string = 'فترة تجربة VIP', v
   }
 };
 
-export const trackSubmitApplication = (applicationType: string = 'طلب انضمام لنادي سولتة VIP') => {
+export const trackSubmitApplication = (applicationType: string = 'طلب انضمام لنادي سولته VIP') => {
   if (typeof window !== 'undefined' && window.fbq) {
     window.fbq('track', 'SubmitApplication', {
       content_name: applicationType
@@ -1084,7 +1084,7 @@ export const trackSubmitApplication = (applicationType: string = 'طلب انض�
   }
 };
 
-export const trackFindLocation = (city: string = 'الرياض', storeName: string = 'بوتيك سولتة') => {
+export const trackFindLocation = (city: string = 'الرياض', storeName: string = 'بوتيك سولته') => {
   if (typeof window !== 'undefined' && window.fbq) {
     window.fbq('track', 'FindLocation', {
       content_name: storeName,

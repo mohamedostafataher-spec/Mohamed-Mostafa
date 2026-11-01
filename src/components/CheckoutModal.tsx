@@ -394,7 +394,7 @@ export default function CheckoutModal({
           </div>
 
           <span className="text-[11px] font-bold text-[#A44C5C] tracking-widest uppercase block mb-1">
-            SULTA ATELIER 🇸🇦 المملكة العربية السعودية
+            Sulta ATELIER 🇸🇦 المملكة العربية السعودية
           </span>
           
           <h3 className="text-xl sm:text-2xl font-black text-gray-950 mb-2">
@@ -791,7 +791,7 @@ export default function CheckoutModal({
                     <Check className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 transition-opacity peer-checked:opacity-100" strokeWidth={4} />
                   </div>
                   <div className="flex-1 space-y-0.5">
-                    <p className="text-xs font-bold text-gray-950">أوافق على استلام رسائل واتساب من SULTA 🌸</p>
+                    <p className="text-xs font-bold text-gray-950">أوافق على استلام رسائل واتساب من Sulta 🌸</p>
                     <p className="text-[10px] text-gray-500 leading-relaxed">
                       سأستلم تفاصيل الحساب البنكي لتأكيد الدفع، تحديثات الشحن، ومتابعة الطلب.
                     </p>

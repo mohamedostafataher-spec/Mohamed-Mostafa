@@ -102,7 +102,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
           const defaultReports = [
             {
               id: 'rep-init',
-              title: 'التقرير التأسيسي لمؤشرات الأداء العليا لدار SULTA',
+              title: 'التقرير التأسيسي لمؤشرات الأداء العليا لدار Sulta',
               type: 'monthly',
               timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
               content: 'نظام رصد المبيعات التلقائي يعمل بكفاءة 100%. تم الكشف عن معدلات تحويل قوية في كل من المملكة العربية السعودية وجمهورية مصر العربية، مع تفضيل عالي لمجموعات الكوتور الملكي باللون الوردي والأرجواني.'
@@ -146,7 +146,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
           ];
         }
 
-        // Merge with local live logs from SULTA Order/WhatsApp/VIP agents
+        // Merge with local live logs from Sulta Order/WhatsApp/VIP agents
         const localLogs = agentSystem.getLogs().map((l: any) => ({
           id: l.id || `local-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
           timestamp: l.timestamp,
@@ -401,7 +401,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
           // Add proposed coupon as pending task
           const newTask = {
             id: 'task-' + Date.now(),
-            title: `مقترح حملة كوبون خصم SULTA`,
+            title: `مقترح حملة كوبون خصم Sulta`,
             agent: 'Marketing Agent',
             status: 'pending',
             data: { proposal: data.result }
@@ -495,7 +495,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
           created_at: new Date().toISOString()
         }]);
         if (error) throw error;
-        showToast("تم نشر المقال المولد تلقائياً في مدونة SULTA بنجاح! ✍️📖", 'success');
+        showToast("تم نشر المقال المولد تلقائياً في مدونة Sulta بنجاح! ✍️📖", 'success');
       } else if (task.agent === 'Marketing Agent') {
         // Create an actual discount coupon in DB!
         const randCode = 'AI' + Math.floor(100 + Math.random() * 900);
@@ -597,7 +597,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
         
         <div className="space-y-2 relative z-10 text-right">
           <span className="text-3xs font-black bg-[#FCF5F6] text-[#A44C5C] px-3 py-1 rounded-full uppercase tracking-widest inline-flex items-center gap-1 border border-[#DF8A9D]/20">
-            <Zap size={10} className="animate-pulse" /> SULTA HYPER-TECH ENGINE
+            <Zap size={10} className="animate-pulse" /> Sulta HYPER-TECH ENGINE
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-wide flex items-center gap-3 justify-start">
             <Cpu className="text-[#A44C5C]" size={28} />
@@ -881,7 +881,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                             onChange={(e) => setAgentInputPayload({ ...agentInputPayload, contentType: e.target.value })}
                             className="w-full border border-gray-200 bg-stone-50 rounded-xl px-4 py-3 text-xs"
                           >
-                            <option value="مقالات المدونة">مقال للمدونة الرسمية لـ SULTA</option>
+                            <option value="مقالات المدونة">مقال للمدونة الرسمية لـ Sulta</option>
                             <option value="بوست انستقرام">منشور انستغرام (Instagram Couture)</option>
                             <option value="بوست فيسبوك">بوست ترويجي فيسبوك</option>
                             <option value="نص فيديو تيك توك">مخطط وسيناريو TikTok ملوكي</option>
@@ -1038,7 +1038,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
             <div>
               <h3 className="font-serif text-lg font-bold text-gray-950 flex items-center gap-2 justify-start border-b border-gray-100 pb-3">
                 <Zap className="text-[#A44C5C]" size={20} />
-                نظام أتمتة الجدولة الليلية (SULTA Daily Cron System)
+                نظام أتمتة الجدولة الليلية (Sulta Daily Cron System)
               </h3>
               <p className="text-gray-400 text-xs mt-1 leading-relaxed">
                 يقوم محرك الأتمتة المبرمج تلقائياً وبدون تدخل بشري كل يوم عند الساعة 3 صباحاً بفحص المنتجات والتقييمات وصياغة التقارير التشغيلية والمالية مع حفظها سحابياً. يمكنك تشغيله يدوياً لاختبار المعطيات.
@@ -1051,7 +1051,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                 <div className="space-y-2">
                   <h4 className="text-xs font-black text-gray-800">⚙️ إعدادات الجدولة والتحفيز التلقائي:</h4>
                   <p className="text-[10px] text-gray-500 leading-relaxed">
-                    يعمل النظام تلقائياً للقيام بمهام الصباح وتحديث محركات الـ SEO والسمعة لـ SULTA.
+                    يعمل النظام تلقائياً للقيام بمهام الصباح وتحديث محركات الـ SEO والسمعة لـ Sulta.
                   </p>
                 </div>
 
@@ -1252,7 +1252,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                 <Activity className="text-[#A44C5C]" size={20} />
                 سجل العمليات التقنية للذكاء الاصطناعي (AI Logs Tracker)
               </h3>
-              <p className="text-gray-400 text-xs">تعقب فوري لنشاط الوكلاء الذاتيين ومخرجاتهم المحفوظة في قاعدة بيانات SULTA.</p>
+              <p className="text-gray-400 text-xs">تعقب فوري لنشاط الوكلاء الذاتيين ومخرجاتهم المحفوظة في قاعدة بيانات Sulta.</p>
             </div>
             
             <button
@@ -1269,7 +1269,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
           <div className="bg-[#FAF9F6] border border-[#DF8A9D]/10 rounded-3.5xl p-5 text-right font-mono overflow-hidden shadow-sm">
             <div className="flex items-center gap-2 border-b border-stone-800 pb-3 mb-4 text-xs text-[#F6E7A6]">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-              <span>SULTA SECURE AI AGENTS SHELL TERMINAL - REAL TIME UPDATES</span>
+              <span>Sulta SECURE AI AGENTS SHELL TERMINAL - REAL TIME UPDATES</span>
             </div>
 
             <div className="space-y-3.5 text-xs text-gray-200 max-h-96 overflow-y-auto">
@@ -1307,7 +1307,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                 تخصيص وإعدادات منظومة الوكلاء الأذكياء
               </h3>
               <p className="text-gray-400 text-xs mt-1 leading-relaxed">
-                تحكم بالصلاحيات وتفعيل/تعطيل كل وكيل من الوكلاء الـ 10 ومستوى الإبداع وحرية الكتابة الممنوحة لهم في SULTA.
+                تحكم بالصلاحيات وتفعيل/تعطيل كل وكيل من الوكلاء الـ 10 ومستوى الإبداع وحرية الكتابة الممنوحة لهم في Sulta.
               </p>
             </div>
 

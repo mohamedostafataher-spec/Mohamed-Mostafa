@@ -28,7 +28,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
     },
     {
       mediaUrl: '/img/sulta_collections_1_1781140831329.webp',
-      title: 'تشكيلة SULTA الملكية',
+      title: 'تشكيلة Sulta الملكية',
       subtitle: 'نعومة فائقة وأناقة منسوجة بعناية',
       ctaText: 'اكتشفي الموديلات',
       mediaType: 'image'
@@ -46,7 +46,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
 
   const slides = activeBanners.map((b: any) => ({
     url: cleanImgUrl(b.mediaUrl || b.url, 'sleepwear'),
-    alt: b.title || 'SULTA',
+    alt: b.title || 'Sulta',
     title: b.title || 'أزياء النوم الفاخرة',
     subtitle: b.subtitle || 'بيجامات وأرواب القطع الملكية',
     ctaText: b.ctaText || 'تسوقي الآن',
@@ -75,33 +75,34 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
         {slides.map((slide, idx) => {
           const isActive = idx === currentSlide;
           return (
-            <div
-              key={slide.url + idx}
-              className={`absolute inset-0 w-full h-full transform transition-all duration-1000 ease-in-out ${
-                isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 z-0'
-              }`}
-            >
-              {slide.mediaType === 'video' ? (
-                <video
-                  src={slide.url}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover object-center"
-                />
-              ) : (
-                <SultaImage
-                  src={slide.url}
-                  alt={slide.alt}
-                  className="w-full h-full"
-                  imgClassName="object-cover object-center"
-                  priority={idx === 0}
-                />
-              )}
-              {/* Clean Salla style gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/60 to-transparent sm:from-white/85 sm:via-white/50" />
-            </div>
+              <div
+                key={slide.url + idx}
+                className={`absolute inset-0 w-full h-full transform transition-all duration-[1500ms] cubic-bezier(0.4, 0, 0.2, 1) ${
+                  isActive ? 'opacity-100 scale-100 z-10 translate-x-0' : 'opacity-0 scale-105 z-0 translate-x-4'
+                }`}
+              >
+                {slide.mediaType === 'video' ? (
+                  <video
+                    src={slide.url}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover object-center"
+                  />
+                ) : (
+                  <SultaImage
+                    src={slide.url}
+                    alt={slide.alt}
+                    className="w-full h-full"
+                    width={1400}
+                    imgClassName="object-cover object-center"
+                    priority={idx === 0}
+                  />
+                )}
+                {/* Clean Salla style gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/40 to-transparent sm:from-white/90 sm:via-white/30" />
+              </div>
           );
         })}
       </div>

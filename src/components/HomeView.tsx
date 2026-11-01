@@ -46,14 +46,14 @@ const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="space-y-0">
       <SEO 
-        title="بيجامات نسائية قطن ووان سايز | سولتة"
-        description="تسوقي بيجامات نسائية من قطن ناعم ومريح بمقاس وان سايز يناسب من 45 إلى 80 كيلو. تصاميم أنثوية بكميات محدودة من سولتة."
+        title="بيجامات نسائية قطن ووان سايز | سولته"
+        description="تسوقي بيجامات نسائية من قطن ناعم ومريح بمقاس وان سايز يناسب من 45 إلى 80 كيلو. تصاميم أنثوية بكميات محدودة من سولته."
         path="/"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-right">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 mb-0">
-          بيجامات نسائية قطن ناعمة — سولتة
+          بيجامات نسائية قطن ناعمة — سولته
         </h1>
       </div>
 
@@ -108,8 +108,8 @@ const HomeView: React.FC<HomeViewProps> = ({
                         {prod.nameAr}
                       </a>
                       <div>
-                        {/* Top Photo Frame - Full Bleed 3:4 */}
-                        <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100 rounded-t-2xl">
+                        {/* Top Photo Frame - Full Bleed 2:3 for fashion */}
+                        <div className="relative aspect-[3/4] w-full overflow-hidden bg-white rounded-t-2xl flex items-center justify-center">
                           {/* Badges */}
                           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                             {effDiscount.hasActiveDiscount && (
@@ -149,8 +149,11 @@ const HomeView: React.FC<HomeViewProps> = ({
 
                           <SultaImage
                             src={cleanImgUrl(prod.images?.[0] || '', prod.category)}
-                            alt={`${prod.nameAr} - ${prod.categoryAr || 'بيجامة'} سولتة`}
-                            className="absolute inset-0 w-full h-full"
+                            alt={`${prod.nameAr} - ${prod.categoryAr || 'بيجامة'} سولته`}
+                            className="w-full h-full"
+                            contain={false}
+                            alignment="center"
+                            width={600}
                             imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                             priority={sectionIdx === 0 && prodIdx < 2}
                           />
@@ -164,6 +167,20 @@ const HomeView: React.FC<HomeViewProps> = ({
                           <h2 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-black transition-colors">
                             {prod.nameAr || prod.nameEn}
                           </h2>
+
+                          {/* Color Swatch Display */}
+                          {prod.colors && prod.colors.length > 0 && (
+                            <div className="flex items-center gap-1.5 pt-0.5">
+                              <span 
+                                className="w-3.5 h-3.5 rounded-full border border-gray-300 ring-1 ring-gray-400 inline-block shrink-0" 
+                                style={{ backgroundColor: prod.colors[0].hex }} 
+                                title={prod.colors[0].name}
+                              />
+                              <span className="text-[10px] text-gray-500 truncate font-medium">
+                                {prod.colors[0].name}
+                              </span>
+                            </div>
+                          )}
                           
                           {/* Rating (only if verified reviews exist) */}
                           {Boolean(prod.reviewsCount && prod.reviewsCount > 0) && (
@@ -252,7 +269,7 @@ const HomeView: React.FC<HomeViewProps> = ({
         <div className="max-w-xl mx-auto px-6 text-center space-y-4">
           <span className="text-2xl">💌</span>
           <h2 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight">
-            انضمي إلى نادي SULTA الحصري
+            انضمي إلى نادي Sulta الحصري
           </h2>
           <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
             اشتركي لتصلكِ أحدث العروض الحصرية، إشعارات توفر الموديلات الجديدة وكوبونات الخصم قبل الجميع.

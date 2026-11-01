@@ -141,7 +141,7 @@ export default function AdminAuthGate({
             <ShieldCheck size={28} />
           </div>
           <h1 className="font-serif text-2xl font-black text-gray-950 tracking-wide pt-1">
-            SULTA · بوابة الإدارة
+            Sulta · بوابة الإدارة
           </h1>
           <p className="text-xs text-gray-500 font-sans leading-relaxed">
             منطقة مخصصة للمالك وفريق العمل والمشرفين. يتم التحقق من الصلاحيات عبر حساب Gmail المعتمد.
@@ -229,7 +229,7 @@ export default function AdminAuthGate({
 
       {/* Security Footnote */}
       <div className="text-center text-[11px] text-gray-400 mt-6 space-y-1 font-sans">
-        <p>نظام أمان وحماية بيانات متجر SULTA الفاخر © ٢٠٢٦</p>
+        <p>نظام أمان وحماية بيانات متجر Sulta الفاخر © ٢٠٢٦</p>
         <p>لا يتم منح الوصول إلا للبريد الإلكتروني المدرج في قائمة فريق العمل.</p>
       </div>
     </div>

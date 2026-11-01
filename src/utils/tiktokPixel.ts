@@ -80,7 +80,7 @@ export function trackTikTokViewContent(product: Product, currency: string = 'SAR
       {
         content_id: String(product.id),
         content_type: 'product',
-        content_name: product.nameAr || product.nameEn || 'SULTA Sleepwear'
+        content_name: product.nameAr || product.nameEn || 'Sulta Sleepwear'
       }
     ],
     value: val,
@@ -98,7 +98,7 @@ export function trackTikTokAddToWishlist(product: Product, currency: string = 'S
       {
         content_id: String(product.id),
         content_type: 'product',
-        content_name: product.nameAr || product.nameEn || 'SULTA Sleepwear'
+        content_name: product.nameAr || product.nameEn || 'Sulta Sleepwear'
       }
     ],
     value: val,
@@ -138,7 +138,7 @@ export function trackTikTokAddToCart(product: Product, quantity: number = 1, cur
       {
         content_id: String(product.id),
         content_type: 'product',
-        content_name: product.nameAr || product.nameEn || 'SULTA Sleepwear'
+        content_name: product.nameAr || product.nameEn || 'Sulta Sleepwear'
       }
     ],
     value: totalVal,
@@ -157,7 +157,7 @@ export function trackTikTokInitiateCheckout(
   const contents = items.map(i => ({
     content_id: String(i.product?.id || i.productId || 'item'),
     content_type: 'product',
-    content_name: i.product?.nameAr || i.name || 'SULTA Piece'
+    content_name: i.product?.nameAr || i.name || 'Sulta Piece'
   }));
 
   trackTikTok('InitiateCheckout', {
@@ -178,7 +178,7 @@ export function trackTikTokAddPaymentInfo(
   const contents = items.map(i => ({
     content_id: String(i.product?.id || i.productId || 'item'),
     content_type: 'product',
-    content_name: i.product?.nameAr || i.name || 'SULTA Piece'
+    content_name: i.product?.nameAr || i.name || 'Sulta Piece'
   }));
 
   trackTikTok('AddPaymentInfo', {
@@ -196,7 +196,7 @@ export function trackTikTokPlaceAnOrder(order: Order, currency: string = 'SAR') 
   const contents = order.items.map(i => ({
     content_id: String(i.productId),
     content_type: 'product',
-    content_name: i.productName || 'SULTA Piece'
+    content_name: i.productName || 'Sulta Piece'
   }));
 
   trackTikTok('PlaceAnOrder', {
@@ -234,7 +234,7 @@ export function trackTikTokPurchase(order: Order, currency: string = 'SAR') {
   const contents = order.items.map(i => ({
     content_id: String(i.productId),
     content_type: 'product',
-    content_name: i.productName || 'SULTA Piece'
+    content_name: i.productName || 'Sulta Piece'
   }));
 
   // Identify with customer data from the order

@@ -41,7 +41,7 @@ class ErrorBoundary extends React.Component<Props, State> {
             <div className="space-y-2">
               <h1 className="text-xl font-bold text-gray-900">نعتذر عن هذا العطل التقني المفاجئ</h1>
               <p className="text-sm text-gray-500 leading-relaxed">
-                واجه نظام SULTA الملكي خطأً غير متوقع. جاري محاولة التعافي آلياً، أو يمكنك تجربة إعادة تحميل الصفحة.
+                واجه نظام Sulta الملكي خطأً غير متوقع. جاري محاولة التعافي آلياً، أو يمكنك تجربة إعادة تحميل الصفحة.
               </p>
             </div>
 

@@ -33,7 +33,7 @@ export default function LimitedPieces({
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <div className="flex justify-center items-center gap-1.5 text-[#A44C5C] text-xs font-serif tracking-widest font-bold">
           <Zap size={14} className="text-[#A44C5C] animate-pulse" />
-          <span>SULTA ROYAL LIMITED RESERVES</span>
+          <span>Sulta ROYAL LIMITED RESERVES</span>
         </div>
         <h2 className="font-serif text-3xl md:text-4xl font-light text-[#0B0B0B] tracking-wide">
           القطع الفريدة والمحدودة | Limited Pieces

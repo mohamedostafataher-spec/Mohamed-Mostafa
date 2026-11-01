@@ -22,7 +22,7 @@ interface BrandAsset {
 }
 
 const BRAND_ASSETS_LIBRARY: BrandAsset[] = [
-  { id: 'logo-vector', nameAr: 'شعار SULTA المذهب النواقل (SVG)', nameEn: 'Sultan Gold Master Logo Vector', type: 'Vector / SVG', dimensions: 'Resizable Scale-free', desc: 'الشعار الملكي عالي النقاوة المخصص للوحات الإعلانات الكبيرة والطباعة الحفر للأختام.' },
+  { id: 'logo-vector', nameAr: 'شعار Sulta المذهب النواقل (SVG)', nameEn: 'Sultan Gold Master Logo Vector', type: 'Vector / SVG', dimensions: 'Resizable Scale-free', desc: 'الشعار الملكي عالي النقاوة المخصص للوحات الإعلانات الكبيرة والطباعة الحفر للأختام.' },
   { id: 'pattern-bg', nameAr: 'خلفية الباترن الملوكي الوردي', nameEn: 'Rose Repeating Texture', type: 'Raster / Wallpaper', dimensions: '3000 x 3000 px', desc: 'زخرفة متكررة خفيفة مكونة من الفراشات والفيونكة الكوزي المميزة لغلق ورق الزبد.' },
   { id: 'ribbon-deco', nameAr: 'فواصل خطية على شكل فيونكات خطية', nameEn: 'Feminine Bow Graphic Divider', type: 'Vector Layout', dimensions: '1200 x 300 px', desc: 'فاصل رقيق يوضع أسفل رسائل الشكر أو أعلى جدول دليل كي الملابس.' },
   { id: 'wax-seal-vector', nameAr: 'ختم الشمع الدائري المعياري', nameEn: 'Royal Sulta Wax Seal Stamp Mask', type: 'SVG Vector Mask', dimensions: '500 x 500 px', desc: 'الختم الدائري لتطبيق الورنيش البارز (Spot UV) على ملصقات إغلاق الكراتين.' }
@@ -192,7 +192,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
   const [accentColor, setAccentColor] = useState<string>('#A44C5C'); // Rose Luxury
   const [paletteTheme, setPaletteTheme] = useState<'classic_black' | 'cozy_rose' | 'champagne' | 'ivory'>('cozy_rose');
   const [customClientName, setCustomClientName] = useState<string>('صاحبة السمو أميرة تاجر');
-  const [customPromoCode, setCustomPromoCode] = useState<string>('SULTA10');
+  const [customPromoCode, setCustomPromoCode] = useState<string>('Sulta10');
   const [stickerShape, setStickerShape] = useState<'circle' | 'square' | 'rectangle' | 'transparent'>('circle');
   const [stickerIcon, setStickerIcon] = useState<'crown' | 'bow' | 'butterfly' | 'text'>('crown');
   const [monogramLetter, setMonogramLetter] = useState<string>('S');
@@ -283,7 +283,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
         <circle cx="50" cy="40" r="14" fill="#F6E7A6" opacity="0.3"/>
         <text x="50" y="45" font-family="serif" font-size="16" fill="#F6E7A6" font-weight="bold" text-anchor="middle">${monogramLetter}</text>
         <path d="M30,68 C40,55 60,55 70,68" stroke="#F6E7A6" stroke-width="1.8" fill="none"/>
-        <text x="50" y="82" font-family="sans-serif" font-size="6" fill="#FFF" text-anchor="middle">SULTA SLEEPWEAR COUTURE</text>
+        <text x="50" y="82" font-family="sans-serif" font-size="6" fill="#FFF" text-anchor="middle">Sulta SLEEPWEAR COUTURE</text>
       </svg>`;
       const blob = new Blob([svgHeader], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(blob);
@@ -301,7 +301,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
   const generateFullPackagingKit = async () => {
     setLoadingType('kit');
     setGenerationProgress(10);
-    triggerAlert('🚀 جاري تشغيل محرّك التوليد الشامل لدفتر الطباعة الملكي SULTA! جاري التوليد والالتقاط (10 assets)...');
+    triggerAlert('🚀 جاري تشغيل محرّك التوليد الشامل لدفتر الطباعة الملكي Sulta! جاري التوليد والالتقاط (10 assets)...');
 
     // References to capture sequentially
     const targets = [
@@ -367,7 +367,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
           doc.setTextColor(246, 231, 166); // Gold
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(14);
-          doc.text(`SULTA LUXURY BRAND - COHESIVE PACKAGING KIT 2026`, 15, 13);
+          doc.text(`Sulta LUXURY BRAND - COHESIVE PACKAGING KIT 2026`, 15, 13);
 
           doc.setTextColor(210, 210, 215);
           doc.setFont('helvetica', 'normal');
@@ -384,12 +384,12 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
           doc.setFontSize(8);
           doc.setTextColor(100, 100, 102);
           doc.text(`Production Tip: Ask local printers in Faggala/Azhar to print with Recycled Textured Stock for maximum luxury look.`, 15, 195);
-          doc.text(`SULTA Sleepwear Studio - Private Artwork Pass`, 220, 195);
+          doc.text(`Sulta Sleepwear Studio - Private Artwork Pass`, 220, 195);
         }
       }
 
       setGenerationProgress(100);
-      doc.save(`SULTA-Cohesive-Luxury-Packaging-Kit-300dpi.pdf`);
+      doc.save(`Sulta-Cohesive-Luxury-Packaging-Kit-300dpi.pdf`);
       setLoadingType(null);
       triggerAlert('🏆 مبروك! تم توليد وتحميل الحقيبة المتكاملة (10-in-1 Complete Packaging Kit) خالية من أي مشاكل لغوية جاهزة للتسليم المطبعي الفوري!');
     } catch (error) {
@@ -410,13 +410,13 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
         <div className="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-3 max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-[#A44C5C]/30 text-[#DF8A9D] px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wide">
-              <span>👑 SULTA ENTERPRISE STUDIO</span>
+              <span>👑 Sulta ENTERPRISE STUDIO</span>
               <span>•</span>
               <span>مستشار تصميم وصناعة خط إنتاج التغليف الفاخر 2026</span>
             </div>
             
             <h1 className="text-2xl md:text-3.5xl font-serif text-[#F6E7A6] font-black tracking-tight" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.6)' }}>
-              💎 SULTA Packaging Studio
+              💎 Sulta Packaging Studio
             </h1>
             
             <p className="text-xs md:text-sm text-zinc-300 leading-relaxed font-sans">
@@ -787,7 +787,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
 
               {/* SECTION 13: Brand Assets Library */}
               <div className="space-y-2">
-                <h4 className="text-xs font-black text-stone-900">🎁 SEC 13: مكتبة أدوات وسورس اللوجو SULTA</h4>
+                <h4 className="text-xs font-black text-stone-900">🎁 SEC 13: مكتبة أدوات وسورس اللوجو Sulta</h4>
                 <div className="grid grid-cols-1 gap-2">
                   {BRAND_ASSETS_LIBRARY.map((asset) => (
                     <div key={asset.id} className="p-3 bg-stone-50 border border-stone-150 rounded-xl text-xs space-y-1">
@@ -969,7 +969,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   SEC 10: محاذاة أكواد QR لسهولة الوصول (Interactive Linkages)
                 </h4>
                 <p className="text-[10px] text-stone-600 leading-relaxed font-sans">
-                  جميع أكواد الـ QR مطبوعة ومتصلة بسيرفر متجر SULTA، تمسحها العميلة لطلب الدعم وتتبع الطرود فوراً.
+                  جميع أكواد الـ QR مطبوعة ومتصلة بسيرفر متجر Sulta، تمسحها العميلة لطلب الدعم وتتبع الطرود فوراً.
                 </p>
                 <div className="space-y-1.5 text-xs text-stone-605">
                   <div className="p-1.5 bg-white rounded border border-stone-150 flex justify-between">
@@ -1054,9 +1054,9 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </div>
               </div>
 
-              {/* SECTION 07: SULTA Brand Premium Illustrative Art-work Info */}
+              {/* SECTION 07: Sulta Brand Premium Illustrative Art-work Info */}
               <div className="space-y-2 text-xs text-stone-600 leading-relaxed bg-[#FFF0F2]/30 p-3 rounded-xl border border-pink-100">
-                <span className="font-bold text-[#A44C5C] block">🎨 SEC 07: الرسم الفني الأنثوي الحصري لـ SULTA:</span>
+                <span className="font-bold text-[#A44C5C] block">🎨 SEC 07: الرسم الفني الأنثوي الحصري لـ Sulta:</span>
                 تم دمج الفيونكات 🎀، والأقمار الفضية 🌙، وأكواب القهوة العطرة ☕، وحقائب السفر كوتور، وأيقونات الأناقة لتعبر عن طيف وروح فتيات سولا الشغوفات بالجمال والأمسيات الهادئة، مستبدلين بذلك أي عناصر لعلامات تجارية غربية أخرى.
               </div>
 
@@ -1120,7 +1120,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 هنا يمكنك استخراج كل المفرغات الورقية كيت تلو الآخر، أو النقر على الزر الذهبي بالأسفل لإصدار الـ 10 أجزاء من علبة السوموت وحتى بوليصة الشحن بضغطة زر واحدة.
               </p>
 
-              {/* SECTION 15: SULTA Packaging Collection list of elements */}
+              {/* SECTION 15: Sulta Packaging Collection list of elements */}
               <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-stone-200 space-y-3">
                 <span className="text-xs font-black text-[#A44C5C] block">🏆 قائمة حزمة الـ 10-in-1 الجاهزة للطباعة:</span>
                 <div className="grid grid-cols-2 gap-2 text-[10px] text-stone-700 font-sans">
@@ -1175,7 +1175,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   className="w-full bg-[#121212] hover:bg-stone-900 text-[#F6E7A6] hover:scale-[1.01] duration-300 py-3.5 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xl border border-[#FFF] "
                 >
                   <Sparkles size={15} className="text-amber-400 fill-amber-400 animate-bounce" />
-                  <span>تجهيز حزمة مطبوعات SULTA التلقائية الكاملة بنقرة واحدة (10-in-1 Kit)</span>
+                  <span>تجهيز حزمة مطبوعات Sulta التلقائية الكاملة بنقرة واحدة (10-in-1 Kit)</span>
                 </button>
               </div>
             </div>
@@ -1184,7 +1184,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
           {/* Quick Branding Tagline Signature */}
           <div className="text-center pt-4 border-t border-stone-100">
             <span className="text-[10px] text-stone-450 font-serif font-black tracking-widest select-none">
-              SULTA COUTURE SLEEPWEAR CO. 2026
+              Sulta COUTURE SLEEPWEAR CO. 2026
             </span>
           </div>
         </div>
@@ -1245,7 +1245,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               
               {/* Dynamic Overlay labels of safe cut bleed line */}
               <div className="absolute top-2 left-2 text-[8px] font-mono text-zinc-400 select-none hidden sm:block">✂️ Bleed Limit [3.5mm]</div>
-              <div className="absolute bottom-2 right-2 text-[8px] font-mono text-[#A44C5C] font-semibold select-none hidden sm:block">SULTA COUTURE PRINT ENGINE</div>
+              <div className="absolute bottom-2 right-2 text-[8px] font-mono text-[#A44C5C] font-semibold select-none hidden sm:block">Sulta COUTURE PRINT ENGINE</div>
 
               <div 
                 style={{ transform: `scale(${zoomScale})`, transformOrigin: 'center' }} 
@@ -1262,7 +1262,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   stickerShape === 'transparent' ? 'bg-[#FCFAF2]/30 border-dashed border-[#E5C470]' : 'bg-[#FCFAF2]'
                 } ${activeTab === 'stickers_qr' ? 'block' : 'hidden'}`}
               >
-                <div className="text-xs text-stone-500 font-serif">👑 SULTA ATELIER</div>
+                <div className="text-xs text-stone-500 font-serif">👑 Sulta ATELIER</div>
                 
                 {stickerIcon === 'crown' && <span className="text-3xl my-2 text-[#A44C5C] select-none animate-bounce">👑</span>}
                 {stickerIcon === 'bow' && <span className="text-3xl my-2 text-[#A44C5C] select-none">🎀</span>}
@@ -1270,7 +1270,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 {stickerIcon === 'text' && <span className="text-xl my-3 font-bold font-serif text-[#A44C5C] tracking-widest">{monogramLetter}</span>}
 
                 <h4 className="text-xs font-serif font-black tracking-wide text-stone-900 leading-none">
-                  ST SULTA STYLE
+                  ST Sulta STYLE
                 </h4>
                 <p className="text-[8px] text-stone-400 mt-1 uppercase">Sleepwear & Linen Co.</p>
                 <div className="absolute bottom-6 font-mono text-[8.5px] font-bold text-[#A44C5C] select-none">
@@ -1289,7 +1289,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   <span className="text-[9.5px] uppercase tracking-widest text-[#F6E7A6] font-serif font-black">
                     🎀 Royal Thank You Card
                   </span>
-                  <span className="text-[8px] text-zinc-500">SULTA STUDIO</span>
+                  <span className="text-[8px] text-zinc-500">Sulta STUDIO</span>
                 </div>
 
                 <div className="my-auto space-y-1.5 py-2">
@@ -1342,7 +1342,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </div>
 
                 <div className="text-center text-[8.5px] text-stone-400 border-t border-stone-150 pt-2">
-                  Atelier SULTA Wear Instructions & Care © 2026
+                  Atelier Sulta Wear Instructions & Care © 2026
                 </div>
               </div>
 
@@ -1357,7 +1357,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-stone-300 border border-stone-100 select-none" />
 
                 <div className="mt-4 font-serif text-[11px] font-black tracking-widest text-[#A44C5C]">
-                  SULTA ATELIER
+                  Sulta ATELIER
                 </div>
 
                 <div className="my-auto space-y-2 border-y border-stone-200 py-4 text-right">
@@ -1385,7 +1385,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </div>
               </div>
 
-              {/* Asset 5: SULTA Brand Custom Illustrated Artwork (Section 07) */}
+              {/* Asset 5: Sulta Brand Custom Illustrated Artwork (Section 07) */}
               <div 
                 ref={artworkCanvasRef}
                 className={`w-80 h-80 border border-[#A44C5C]/20 bg-[#FFF4F6] p-6 rounded-2xl flex flex-col justify-between shadow-md relative text-center text-[#A44C5C] ${
@@ -1393,7 +1393,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 }`}
               >
                 <div className="text-[9px] tracking-widest uppercase font-serif font-black">
-                  🛡️ SULTA COUTURE ART ARCHIVE
+                  🛡️ Sulta COUTURE ART ARCHIVE
                 </div>
 
                 {/* Hand sketched premium layout simulation */}
@@ -1419,7 +1419,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </div>
 
                 <div className="text-[8.5px] text-stone-500 font-mono">
-                  SULTA Original Hand Drawn Motif Preset
+                  Sulta Original Hand Drawn Motif Preset
                 </div>
               </div>
 
@@ -1432,18 +1432,18 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               >
                 {/* Wallpaper repeating Sulta & Monogram */}
                 <div className="grid grid-cols-4 gap-x-4 gap-y-6 opacity-60 text-[9px] font-serif font-black text-[#A44C5C]/80 p-2 leading-none w-full h-full text-center">
-                  <span>SULTA 👑</span>
-                  <span>SULTA 🎀</span>
+                  <span>Sulta 👑</span>
+                  <span>Sulta 🎀</span>
                   <span>{monogramLetter} 👑</span>
-                  <span>SULTA 🎀</span>
+                  <span>Sulta 🎀</span>
                   <span>{monogramLetter} 🎀</span>
-                  <span>SULTA {monogramLetter}</span>
-                  <span>SULTA 🎀</span>
-                  <span>SULTA 👑</span>
-                  <span>SULTA 👑</span>
-                  <span>SULTA 🎀</span>
+                  <span>Sulta {monogramLetter}</span>
+                  <span>Sulta 🎀</span>
+                  <span>Sulta 👑</span>
+                  <span>Sulta 👑</span>
+                  <span>Sulta 🎀</span>
                   <span>{monogramLetter} 👑</span>
-                  <span>SULTA 🎀</span>
+                  <span>Sulta 🎀</span>
                 </div>
 
                 <div className="absolute inset-x-2 bottom-2 bg-white/95 border border-[#DF8A9D]/45 rounded-lg p-2.5 text-center text-[9px] text-stone-705 shadow-sm">
@@ -1459,8 +1459,8 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 }`}
               >
                 <div className="flex justify-between items-center border-b-2 border-stone-200 pb-2">
-                  <span className="text-[10px] font-black text-[#A44C5C] font-serif uppercase">SULTA SLEEP DELIVERIES</span>
-                  <span className="text-[8px] text-stone-400 font-mono">Waybill #SULTA-8854</span>
+                  <span className="text-[10px] font-black text-[#A44C5C] font-serif uppercase">Sulta SLEEP DELIVERIES</span>
+                  <span className="text-[8px] text-stone-400 font-mono">Waybill #Sulta-8854</span>
                 </div>
 
                 <div className="space-y-2 text-[9.5px] my-4 leading-normal font-sans">
@@ -1489,7 +1489,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 }`}
               >
                 <span className="text-[8.5px] font-bold text-[#F6E7A6] text-center w-full block uppercase tracking-widest leading-none">
-                  SULTA INSTANT CONNECT GATEWAY
+                  Sulta INSTANT CONNECT GATEWAY
                 </span>
 
                 <div className="grid grid-cols-2 gap-4 my-auto items-center text-center">
@@ -1531,7 +1531,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 }`}
               >
                 <div className="text-center text-[10px] font-black uppercase tracking-widest text-[#A44C5C]">
-                  🎀 SULTA LUXURY 3D MOCKUP VISUAL
+                  🎀 Sulta LUXURY 3D MOCKUP VISUAL
                 </div>
                 
                 {/* 3D Box Simulation Graphic */}
@@ -1543,7 +1543,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                         GIRLHOOD BOX
                       </div>
                       <div className="border border-stone-300 rounded p-1.5 bg-white/50 text-center space-y-0.5">
-                        <span className="text-xs font-serif font-black tracking-widest block">ST SULTA</span>
+                        <span className="text-xs font-serif font-black tracking-widest block">ST Sulta</span>
                         <div className="text-[7px] text-stone-500">Zero Calories Sleepwear Studio</div>
                       </div>
                       <div className="text-center text-[8px] text-stone-500 font-bold">30cm Box Print Spec</div>
@@ -1553,7 +1553,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   {boxPreset === 'drawer_box' && (
                     <div className="w-48 h-24 bg-stone-900 border-2 border-zinc-700 text-[#F6E7A6] rounded-xl flex items-center justify-between p-4 relative shadow-lg transform -skew-x-2">
                       <div className="space-y-1 text-right">
-                        <span className="text-[10px] font-black font-serif tracking-widest">SULTA ATELIER</span>
+                        <span className="text-[10px] font-black font-serif tracking-widest">Sulta ATELIER</span>
                         <div className="text-[7.5px] text-zinc-400">منزلق الحظ الدافئ</div>
                       </div>
                       <div className="w-12 h-16 bg-white rounded border border-stone-300 shadow-sm" /> {/* drawer pull out */}
@@ -1566,7 +1566,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                       <div className="text-center font-bold text-base border border-[#F6E7A6]/20 py-2 rounded">
                         ST
                       </div>
-                      <span className="text-[7.5px] text-zinc-400 text-center">كود المطبعة: RIGID-SULTA-2026</span>
+                      <span className="text-[7.5px] text-zinc-400 text-center">كود المطبعة: RIGID-Sulta-2026</span>
                     </div>
                   )}
 
@@ -1576,7 +1576,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl">🎗️</div>
                       <div className="text-center my-auto space-y-1">
                         <span className="text-lg">🛍️</span>
-                        <h6 className="text-[10px] font-serif font-black tracking-widest text-stone-950">SULTA BAG</h6>
+                        <h6 className="text-[10px] font-serif font-black tracking-widest text-stone-950">Sulta BAG</h6>
                       </div>
                       <span className="text-[7px] text-stone-400 text-center">ورق كرافت مطلي بالفارنيش الدائري</span>
                     </div>
@@ -1594,9 +1594,9 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 ref={bagCanvasRef} 
                 className="w-56 h-72 hidden bg-white border border-stone-200 p-4 flex flex-col justify-between"
               >
-                <div className="text-center text-[10px] font-black">SULTA PREMIUM GIFT BAG</div>
+                <div className="text-center text-[10px] font-black">Sulta PREMIUM GIFT BAG</div>
                 <div className="border-t border-b-2 border-stone-300 py-4 my-auto text-center font-serif text-lg text-[#A44C5C]">
-                  SULTA COUTURE ATELIER
+                  Sulta COUTURE ATELIER
                 </div>
                 <div className="text-[8px] text-stone-400 text-center">Premium Kraft with Cotton Ribbons Specs</div>
               </div>
@@ -1637,7 +1637,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
 
           </div>
 
-          {/* SULTA Production Blueprint Guide Tip */}
+          {/* Sulta Production Blueprint Guide Tip */}
           <div className="mt-4 p-4 bg-blue-50/50 border border-blue-150 rounded-2.5xl text-stone-700 text-[11px] leading-relaxed flex items-start gap-2.5 shadow-2xs">
             <InfoIcon size={16} className="text-[#A44C5C] shrink-0 mt-0.5" />
             <div>

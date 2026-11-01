@@ -1,5 +1,5 @@
 /**
- * SULTA Payment Architecture - PayPal Checkout Module
+ * Sulta Payment Architecture - PayPal Checkout Module
  * 
  * Provides end-to-end PayPal checkout experience:
  * - Real-time currency conversion (SAR to USD)

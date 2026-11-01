@@ -13,7 +13,7 @@ interface WhatsAppFloatProps {
 export default function WhatsAppFloat({
   number = '966552823677',
   saudiNumber = '966552823677',
-  message = 'مرحباً SULTA، أود الاستفسار بخصوص الموديلات الملكية وتأكيد طلبي 🌸'
+  message = 'مرحباً Sulta، أود الاستفسار بخصوص الموديلات الملكية وتأكيد طلبي 🌸'
 }: WhatsAppFloatProps) {
   const cleanSaudi = (saudiNumber || number || '966552823677').replace(/\D/g, '');
   const saudiUrl = `https://wa.me/${cleanSaudi}?text=${encodeURIComponent(message)}`;
@@ -32,7 +32,7 @@ export default function WhatsAppFloat({
         rel="noopener noreferrer"
         onClick={handleClick}
         className="w-12 h-12 md:w-14 md:h-14 bg-[#A44C5C] hover:bg-[#8e3f4e] text-white rounded-full shadow-[0_6px_25px_rgba(164,76,92,0.35)] hover:shadow-[0_8px_30px_rgba(164,76,92,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
-        aria-label="تواصل معنا عبر واتساب SULTA"
+        aria-label="تواصل معنا عبر واتساب Sulta"
         title="تواصل مباشر عبر واتساب 0552823677"
       >
         <MessageCircle size={24} className="text-white" />

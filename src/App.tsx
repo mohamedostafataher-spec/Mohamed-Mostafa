@@ -149,7 +149,7 @@ function AppContent() {
     try {
       localStorage.setItem('sulta_cart', JSON.stringify(cart));
     } catch (e) {
-      console.error("[SULTA CART] Saving failure:", e);
+      console.error("[Sulta CART] Saving failure:", e);
     }
   }, [cart]);
   
@@ -186,7 +186,7 @@ function AppContent() {
     }
   }, [settings]);
 
-  // SULTA Order Tracking Center Deep-link Routing
+  // Sulta Order Tracking Center Deep-link Routing
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const trackParam = params.get('track') || params.get('id') || params.get('orderId');
@@ -216,7 +216,7 @@ function AppContent() {
         try {
           await dbService.seedInitialData();
         } catch (e) {
-          console.warn("[SULTA DB] Seeding initial data skipped or failed:", e);
+          console.warn("[Sulta DB] Seeding initial data skipped or failed:", e);
         }
 
         // Initial setup complete safely
@@ -226,7 +226,7 @@ function AppContent() {
           const { data: { session } } = await supabase.auth.getSession();
           setSession(session);
         } catch (e) {
-          console.error("[SULTA AUTH] Fetching active session failed:", e);
+          console.error("[Sulta AUTH] Fetching active session failed:", e);
         }
         setAuthLoading(false);
 
@@ -236,7 +236,7 @@ function AppContent() {
           });
           subscription = data.subscription;
         } catch (e) {
-          console.error("[SULTA AUTH] Setting auth state changes failed:", e);
+          console.error("[Sulta AUTH] Setting auth state changes failed:", e);
         }
 
         // Fetch settings - ensure this doesn't block the splash
@@ -247,7 +247,7 @@ function AppContent() {
           (list) => {
             setProducts(list);
             if (list.length > 0) {
-              console.log("[SULTA DEBUG] First 3 product images:", list.slice(0, 3).map(p => p.images?.[0]));
+              console.log("[Sulta DEBUG] First 3 product images:", list.slice(0, 3).map(p => p.images?.[0]));
             }
           },
           (error) => console.error("Products error:", error)
@@ -358,10 +358,10 @@ function AppContent() {
             userFavs = merged;
             localStorage.setItem(userKey, JSON.stringify(merged));
             localStorage.removeItem('sulta_favorites_guest');
-            console.log("[SULTA FAVORITES] Merged guest bookmarks into customer account:", merged);
+            console.log("[Sulta FAVORITES] Merged guest bookmarks into customer account:", merged);
           }
         } catch (e) {
-          console.error("[SULTA FAVORITES] Merging guest bookmarks failed:", e);
+          console.error("[Sulta FAVORITES] Merging guest bookmarks failed:", e);
         }
       }
       setFavorites(userFavs);
@@ -387,7 +387,7 @@ function AppContent() {
       const storageKey = activeUser ? `sulta_favorites_${activeUser}` : 'sulta_favorites_guest';
       localStorage.setItem(storageKey, JSON.stringify(favorites));
     } catch (e) {
-      console.error("[SULTA FAVORITES] Saving failure:", e);
+      console.error("[Sulta FAVORITES] Saving failure:", e);
     }
   }, [favorites, session]);
   
@@ -1009,12 +1009,12 @@ function AppContent() {
           <div className="space-y-4">
             <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => setTab('home')}>
               <span className="font-serif text-2xl font-black tracking-widest text-[#111827] uppercase">
-                {settings?.siteName || 'SULTA'}
+                {settings?.siteName || 'Sulta'}
               </span>
               <span className="text-[#A44C5C] text-sm">👑</span>
             </div>
             <span className="text-[11px] uppercase tracking-[0.2em] font-bold block text-gray-900 font-sans -mt-2">
-              سُـلـطَـة · أزياء النوم الفاخرة
+              سولته · أزياء النوم الفاخرة
             </span>
             <p className="text-gray-900 font-bold text-xs leading-relaxed max-w-xs pt-1">
               علامة سعودية فاخرة رائدة في تصميم وتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ودول الخليج العربي بأعلى معايير الجودة والأناقة.
@@ -1068,7 +1068,7 @@ function AppContent() {
             </h3>
             <div className="space-y-2 text-xs">
               <a 
-                href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
+                href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20Sulta%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors group shadow-2xs"
@@ -1082,21 +1082,28 @@ function AppContent() {
                 </div>
                 <span className="font-mono text-gray-900 font-black text-xs" dir="ltr">0552823677</span>
               </a>
+              <a 
+                href="mailto:sultabrand962@gmail.com"
+                className="block p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors shadow-2xs text-right font-bold text-gray-950 text-[11px] mt-2"
+              >
+                📧 sultabrand962@gmail.com
+              </a>
             </div>
-
+          </div>
+          
+          <div className="space-y-3.5">
               <h4 className="font-bold text-[11px] text-gray-900 mb-2">طريقة السداد المعتمدة</h4>
               <div className="flex flex-wrap gap-1.5 items-center">
                 <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (مصرف الراجحي والبنك العربي الوطني مدى عبر IBAN) 🇸🇦</span>
                 <span className="bg-emerald-50 text-emerald-850 border border-emerald-200 px-2.5 py-1 rounded text-[10px] font-bold text-emerald-700 shadow-2xs">الدفع عند الاستلام (COD) 📦</span>
               </div>
           </div>
-
         </div>
 
         {/* Bottom credits */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500 font-sans">
           <div className="flex items-center gap-4 flex-wrap">
-            <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر SULTA للأزياء الفاخرة</span>
+            <span>جميع الحقوق محفوظة © ٢٠٢٦ متجر Sulta للأزياء الفاخرة</span>
             <Suspense fallback={null}>
               {isAdmin && <LiveTrafficMonitor compact={true} />}
             </Suspense>
@@ -1121,7 +1128,7 @@ function AppContent() {
             <div>
               {/* Drawer Top logo bar */}
               <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-                <span className="font-serif text-2xl tracking-widest text-[#0B0B0B] font-light">SULTA ATELIER</span>
+                <span className="font-serif text-2xl tracking-widest text-[#0B0B0B] font-light">Sulta ATELIER</span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-gray-500 hover:text-red-500 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
@@ -1199,7 +1206,7 @@ function AppContent() {
             {/* Quick Country switcher & WhatsApp in Mobile menu list */}
             <div className="border-t border-gray-100 pt-4 mt-4 space-y-3">
               <a
-                href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%B7%D9%84%D8%A8%D8%A7%D8%AA"
+                href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20Sulta%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%B7%D9%84%D8%A8%D8%A7%D8%AA"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-[#111827] text-white py-2.5 px-3.5 rounded-xl font-sans font-bold text-xs flex items-center justify-between shadow-sm hover:bg-black transition-all border border-gray-700"
@@ -1254,7 +1261,7 @@ function AppContent() {
             <div className="space-y-4">
               <div className="flex items-center gap-1.5 text-black text-[10px] font-bold tracking-widest font-sans uppercase">
                 <Search size={12} />
-                <span>البحث الذكي الملكي | SULTA SEARCH ENGINE</span>
+                <span>البحث الذكي الملكي | Sulta SEARCH ENGINE</span>
               </div>
               <h3 className="font-serif text-xl font-light text-gray-900">ما الذي تبحثين عنه اليوم؟</h3>
               <p className="text-3xs sm:text-2xs text-gray-450 leading-relaxed font-sans">اكتبي ما يلهم طقوسكِ لتعثري عليه فوراً بلمح البصر في بوتيك سُلْطَة الملوكي.</p>
@@ -1280,7 +1287,7 @@ function AppContent() {
                 </button>
               </form>
 
-              {/* Live instant suggestions for SULTA Search Engine */}
+              {/* Live instant suggestions for Sulta Search Engine */}
               {searchQuery.trim().length >= 1 && (
                 <div className="mt-4 border-t border-gray-150 pt-4 space-y-3" dir="rtl">
                   <div className="text-[10px] text-gray-400 font-bold tracking-wider uppercase font-sans flex items-center justify-between">

@@ -1,5 +1,5 @@
 /**
- * SULTA Payment Architecture - Credit Card & Mada Payment Module
+ * Sulta Payment Architecture - Credit Card & Mada Payment Module
  * 
  * PCI-DSS & SECURITY MANDATE:
  * - NO raw card secrets are stored in plain text.

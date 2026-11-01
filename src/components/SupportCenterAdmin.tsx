@@ -30,7 +30,7 @@ export default function SupportCenterAdmin() {
       id: 'MSG-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
       ticketId: selectedTicket.id,
       senderType: 'admin',
-      senderName: 'SULTA Support',
+      senderName: 'Sulta Support',
       content: newMessage,
       createdAt: new Date().toISOString()
     };
@@ -160,7 +160,7 @@ export default function SupportCenterAdmin() {
                type="text"
                value={newMessage}
                onChange={(e) => setNewMessage(e.target.value)}
-               placeholder="رد دعم SULTA..."
+               placeholder="رد دعم Sulta..."
                className="flex-1 border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 text-right focus:outline-none focus:border-[#0B0B0B] focus:bg-white transition-all text-sm"
              />
              <button

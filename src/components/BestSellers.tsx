@@ -33,7 +33,7 @@ export default function BestSellers({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-right" dir="rtl">
       <SEO 
-        title="الأكثر طلباً ومبيعاً - قطع سولتة المفضلة" 
+        title="الأكثر طلباً ومبيعاً - قطع سولته المفضلة" 
         description="اكتشفي القطع التي نالت إعجاب عميلاتنا وحققت أعلى مبيعات. بيجامات حريرية وأرواب نوم مترفة تليق بكِ." 
         path="/best-sellers" 
       />
@@ -44,7 +44,7 @@ export default function BestSellers({
           <span>CELEBRATED CLASSICS</span>
         </div>
         <h2 className="font-serif text-3xl md:text-4xl font-light text-[#0B0B0B] tracking-wide">
-          الأكثر مبيعاً وطلباً | SULTA Best Sellers
+          الأكثر مبيعاً وطلباً | Sulta Best Sellers
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
@@ -69,9 +69,18 @@ export default function BestSellers({
                 NO.{index + 1}
               </div>
 
-              {/* Image Frame */}
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-white mb-4">
-                <SultaImage src={imgToUse} alt={prod.nameAr} className="w-full h-full" imgClassName="object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-700" priority={index < 4} />
+              {/* Image Frame - Use taller aspect ratio for fashion */}
+              <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem] bg-white mb-4 flex items-center justify-center">
+                <SultaImage 
+                  src={imgToUse} 
+                  alt={prod.nameAr} 
+                  className="w-full h-full" 
+                  contain={false}
+                  alignment="center"
+                  width={600}
+                  imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" 
+                  priority={index < 4} 
+                />
                 
                 {/* Save to Favorites toggle */}
                 <button
@@ -90,7 +99,7 @@ export default function BestSellers({
                   </span>
                 </div>
                 <h3 className="font-serif text-sm font-semibold text-[#0B0B0B] group-hover:text-[#A44C5C] transition-colors leading-relaxed line-clamp-1">
-                  {country === 'EG' && prod.nameAr ? prod.nameAr : prod.nameEn}
+                  {prod.nameAr || prod.nameEn}
                 </h3>
                 <p className="text-[10px] text-gray-400 max-w-xs font-sans line-clamp-1">
                   {prod.descriptionAr || 'نسيج فاخر يجمع بين دفء الأجواء وأناقة المظهر لراحة لا تضاهى'}
@@ -104,6 +113,7 @@ export default function BestSellers({
           );
         })}
       </div>
+
     </div>
   );
 }

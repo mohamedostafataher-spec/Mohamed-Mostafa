@@ -217,8 +217,8 @@ export default function StoreView({
   return (
     <div className="bg-white min-h-screen text-[#111827] font-sans antialiased text-xs md:text-sm select-none" dir="rtl">
       <SEO 
-        title={selectedCategory === 'offers' ? 'العروض والتخفيضات | سولتة' : 'بيجامات نسائية قطن — تسوقي الآن | سولتة'} 
-        description="تصفحي كامل تشكيلة البيجامات النسائية من سولتة، خامات قطنية مريحة بمقاس وان سايز 45-80 كجم وتوصيل لكافة مدن المملكة."
+        title={selectedCategory === 'offers' ? 'العروض والتخفيضات | سولته' : 'بيجامات نسائية قطن — تسوقي الآن | سولته'} 
+        description="تصفحي كامل تشكيلة البيجامات النسائية من سولته، خامات قطنية مريحة بمقاس وان سايز 45-80 كجم وتوصيل لكافة مدن المملكة."
         path={selectedCategory === 'offers' ? '/offers/' : '/store/'} 
       />
       
@@ -241,10 +241,10 @@ export default function StoreView({
                 <span>أزياء النوم والبيجامات القطنية 🌸</span>
               </div>
               <h1 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-[#111827] leading-tight">
-                تشكيلة بيجامات نسائية من سولتة
+                تشكيلة بيجامات نسائية من سولته
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                استكشفي متجر سولتة واختاري بيجامتكِ المفضلة من تشكيلة البيجامات النسائية القطنية المصممة لتناسب مختلف الأوقات المنزلية. تشمل التشكيلة بيجامات قطن كوريشة بطبعات زهرية وبيجامات قطن بحمالات ربط وموديلات ناعمة بمقاس وان سايز مريح يناسب من 45 إلى 80 كيلو.
+                استكشفي متجر سولته واختاري بيجامتكِ المفضلة من تشكيلة البيجامات النسائية القطنية المصممة لتناسب مختلف الأوقات المنزلية. تشمل التشكيلة بيجامات قطن كوريشة بطبعات زهرية وبيجامات قطن بحمالات ربط وموديلات ناعمة بمقاس وان سايز مريح يناسب من 45 إلى 80 كيلو.
               </p>
 
               {/* Mobile Hook Badge */}
@@ -275,12 +275,12 @@ export default function StoreView({
 
             {/* Brand Card (Desktop / Tablet) */}
             <div className="hidden sm:block shrink-0 bg-[#111827] text-white p-4 sm:p-5 rounded-2xl shadow-sm text-center space-y-2.5 w-full md:w-72">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300 block">✨ SULTA Sleepwear</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300 block">✨ Sulta Sleepwear</span>
               <h2 className="text-xs font-bold leading-relaxed text-gray-100">
                 بيجامات قطن كوريشة وقطن ناعم مريح
               </h2>
               <p className="text-[9.5px] text-gray-400 leading-normal">
-                مقاس وان سايز مريح يناسب من 45 إلى 80 كيلو، مع بوكس سولتة الأنيق.
+                مقاس وان سايز مريح يناسب من 45 إلى 80 كيلو، مع بوكس سولته الأنيق.
               </p>
             </div>
           </div>
@@ -418,7 +418,7 @@ export default function StoreView({
         </div>
       </div>
 
-      {/* 3.1 SULTA Interactive Price Range Slider Panel */}
+      {/* 3.1 Sulta Interactive Price Range Slider Panel */}
       <AnimatePresence>
         {isPriceSliderOpen && (
           <motion.div
@@ -555,7 +555,7 @@ export default function StoreView({
             </div>
             <h3 className="text-base font-bold text-gray-900 mb-1">لم يتم العثور على قطع تطابق بحثكِ</h3>
             <p className="text-gray-500 text-xs mb-6 leading-relaxed">
-              جرّبي تغيير كلمات البحث أو استعراض جميع التشكيلات للاستمتاع بأحدث تصاميم SULTA.
+              جرّبي تغيير كلمات البحث أو استعراض جميع التشكيلات للاستمتاع بأحدث تصاميم Sulta.
             </p>
             <button
               onClick={() => { setSelectedCategory('all'); onClearSearch && onClearSearch(); }}
@@ -597,18 +597,22 @@ export default function StoreView({
                     {product.nameAr}
                   </a>
                   
-                  {/* Top Image Frame (3:4 aspect ratio full bleed) */}
+                  {/* Top Image Frame (2:3 aspect ratio full bleed for fashion) */}
                   <div>
-                    <div className="relative bg-gray-100 w-full overflow-hidden aspect-[3/4] flex items-center justify-center">
+                    <div className="relative bg-white w-full overflow-hidden aspect-[3/4] flex items-center justify-center">
                       
                       {/* Sulta Image with Smooth Hover Zoom */}
                       <SultaImage 
                         src={currentImg} 
-                        alt={`${product.nameAr} - ${product.categoryAr || 'بيجامة'} سولتة فاخرة`} 
+                        alt={`${product.nameAr} - ${product.categoryAr || 'بيجامة'} سولته فاخرة`} 
                         className="w-full h-full"
-                        imgClassName="w-full h-full object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
+                        contain={false}
+                        alignment="center"
+                        width={400}
+                        imgClassName="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                         priority={index < 4}
                       />
+
 
                       {/* Top Right: Wishlist Heart Floating Button */}
                       <div className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10">
@@ -815,9 +819,11 @@ export default function StoreView({
                 <div className="w-full md:w-1/2 bg-gray-50 aspect-square md:aspect-auto relative min-h-[320px] md:min-h-[460px]">
                   <SultaImage 
                     src={quickViewProduct.images?.[qvActiveImageIdx]}
-                    alt={`${quickViewProduct.nameAr} - ${quickViewProduct.categoryAr || 'بيجامة'} سولتة`}
+                    alt={`${quickViewProduct.nameAr} - ${quickViewProduct.categoryAr || 'بيجامة'} سولته`}
                     className="w-full h-full"
-                    imgClassName="object-cover"
+                    contain={true}
+                    width={800}
+                    imgClassName="object-contain"
                   />
 
                   {/* Thumbnail strip */}

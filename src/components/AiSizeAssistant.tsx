@@ -64,7 +64,7 @@ export default function AiSizeAssistant() {
   return (
     <div className="bg-white rounded-3.5xl border border-stone-150 p-6 md:p-8 space-y-8 text-right font-sans shadow-sm" id="smart_size_assistant">
       <div className="border-b border-gray-100 pb-5">
-        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">مستشار القياسات الذكي • SULTA Smart Tailor</span>
+        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">مستشار القياسات الذكي • Sulta Smart Tailor</span>
         <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold select-none">٨. عراف القياسات ومقترح الموديل (Smart Size Assistant)</h3>
         <p className="text-gray-500 text-xs mt-1 leading-relaxed">
           تجنبي حيرة القياسات وتخمين الموديل. أدخلي بياناتكِ البسيطة (الطول، الوزن، العمر) وسيقوم محرك الخوارزميات الملكية من Sulta بحساب واقتراح مقاس pajamas الموصى به بدقة تبلغ 98%.
@@ -172,7 +172,7 @@ export default function AiSizeAssistant() {
           <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
           
           <div className="space-y-5 relative z-10">
-            <span className="text-[9.5px] uppercase tracking-widest text-[#F6E7A6] font-bold font-serif">SULTA COUTURE OPTIMIZED SIZE</span>
+            <span className="text-[9.5px] uppercase tracking-widest text-[#F6E7A6] font-bold font-serif">Sulta COUTURE OPTIMIZED SIZE</span>
             
             <div className="space-y-1.5">
               <span className="text-gray-400 text-xs block leading-none">المقاس المقترح والمثالي:</span>

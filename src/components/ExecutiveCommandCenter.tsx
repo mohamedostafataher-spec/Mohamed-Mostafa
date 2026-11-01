@@ -268,7 +268,7 @@ export default function ExecutiveCommandCenter({
             <span className="text-[10px] text-gray-400 font-sans">تحديث فوري دون تأخير</span>
           </div>
           <h3 className="text-xl md:text-2xl font-serif font-black text-gray-900">
-            لوح القيادة والمركز التنفيذي الموحد لبراند SULTA
+            لوح القيادة والمركز التنفيذي الموحد لبراند Sulta
           </h3>
           <p className="text-gray-400 text-xs">
             بوابتك الذهبية للتحكم بالأقسام، تتبع العملاء الأوفياء، مراقبة مستودعات الرياض ومصر، وضبط معروضات البوتيك بأرقى معايير النخبة وسلايدر الواجهة.
@@ -329,7 +329,7 @@ export default function ExecutiveCommandCenter({
           }`}
         >
           <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping absolute top-1 right-1" />
-          <span>مركز الذكاء الاصطناعي SULTA AI 👑✨</span>
+          <span>مركز الذكاء الاصطناعي Sulta AI 👑✨</span>
         </button>
 
         <button

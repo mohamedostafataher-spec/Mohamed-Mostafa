@@ -41,7 +41,7 @@ export default function OrderDetailView({
     'التجربة': 5
   });
 
-  // --- SULTA AI AGENT SYSTEMS STATES ---
+  // --- Sulta AI AGENT SYSTEMS STATES ---
   const [vipCustomer, setVipCustomer] = useState<VipCustomer | null>(null);
   const [prediction, setPrediction] = useState<any>(null);
   const [isDelayed, setIsDelayed] = useState(false);
@@ -189,7 +189,7 @@ export default function OrderDetailView({
         table: 'orders', 
         filter: `id=eq.${orderId}` 
       }, (payload) => {
-        console.log("[SULTA REALTIME] Live change identified:", payload);
+        console.log("[Sulta REALTIME] Live change identified:", payload);
         if (payload.new) {
           setOrder(mapOrder(payload.new));
         }
@@ -201,7 +201,7 @@ export default function OrderDetailView({
     };
   }, [orderId]);
 
-  // --- SULTA AI AGENT SYSTEMS INITIALIZATIONS ---
+  // --- Sulta AI AGENT SYSTEMS INITIALIZATIONS ---
   useEffect(() => {
     if (!order) return;
 
@@ -246,7 +246,7 @@ export default function OrderDetailView({
       {
         id: 'welcome',
         sender: 'ai',
-        text: `أهلاً بكِ يا أميرة SULTA الموقرة، ${order.customerName}! 🌸 أنا رفيقكِ الذكي لمساعد كوتور. ومستعد لمساعدتكِ فوراً في الإجابة عن أي استفسار يخص طلبيتكِ الفاخرة رقم #${order.id}. كيف يسعدني تدليل رغبات تساؤلاتكِ الكريمة اليوم؟ ✨`,
+        text: `أهلاً بكِ يا أميرة Sulta الموقرة، ${order.customerName}! 🌸 أنا رفيقكِ الذكي لمساعد كوتور. ومستعد لمساعدتكِ فوراً في الإجابة عن أي استفسار يخص طلبيتكِ الفاخرة رقم #${order.id}. كيف يسعدني تدليل رغبات تساؤلاتكِ الكريمة اليوم؟ ✨`,
         timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       }
     ]);
@@ -419,7 +419,7 @@ export default function OrderDetailView({
   const handleContactSupport = () => {
     if (!order) return;
     const msg = encodeURIComponent(
-      `مرحباً بوتيك سولتا لخدمة النخبة، أود الاستفسار بخصوص طلبي الملكي الحاصل على كود المعالجة: "${order.id}".\n` +
+      `مرحباً بوتيك سولته لخدمة النخبة، أود الاستفسار بخصوص طلبي الملكي الحاصل على كود المعالجة: "${order.id}".\n` +
       `باسم المستلم الموقر: (${order.customerName})\n` +
       `المبلغ الإجمالي المعتمد: ${order.totalPrice.toLocaleString()} ${order.currency}\n` +
       `الحالة الحالية: ${getStatusTitle(order.status)}\n` +
@@ -457,7 +457,7 @@ export default function OrderDetailView({
       doc.setTextColor(246, 231, 166); // Cream light gold
       doc.setFont("helvetica", "bold");
       doc.setFontSize(22);
-      doc.text("SULTA ATELIER", 105, 18, { align: "center" });
+      doc.text("Sulta ATELIER", 105, 18, { align: "center" });
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
@@ -551,7 +551,7 @@ export default function OrderDetailView({
       doc.setFont("helvetica", "oblique");
       doc.setFontSize(8.5);
       doc.setTextColor(130, 130, 130);
-      doc.text("Thank you for choosing SULTA. Your exquisite couture sleepwear, crafted elegantly with finest silks", 105, currentY + 6, { align: "center" });
+      doc.text("Thank you for choosing Sulta. Your exquisite couture sleepwear, crafted elegantly with finest silks", 105, currentY + 6, { align: "center" });
       doc.text("is backed by our 100% royal comfort warranty.", 105, currentY + 11, { align: "center" });
 
       doc.save(`Sulta_Order_Invoice_${order.id}.pdf`);
@@ -735,7 +735,7 @@ export default function OrderDetailView({
             </h1>
             
             <p className="text-gray-300 text-xs font-sans leading-relaxed">
-              سعداء جداً بثقتكِ الفائقة. تم تسجيل طلبكِ بتاريخ <strong className="text-white font-medium">{order.date}</strong> وتخصيص خط معالجة تتبع فوري بمقاييس سولتة الفاخرة لعلامتنا البوتيك الخاصة.
+              سعداء جداً بثقتكِ الفائقة. تم تسجيل طلبكِ بتاريخ <strong className="text-white font-medium">{order.date}</strong> وتخصيص خط معالجة تتبع فوري بمقاييس سولته الفاخرة لعلامتنا البوتيك الخاصة.
             </p>
           </div>
 
@@ -861,10 +861,10 @@ export default function OrderDetailView({
         )}
       </div>
 
-      {/* --- SULTA AI AGENT SYSTEMS CENTER PANEL --- */}
+      {/* --- Sulta AI AGENT SYSTEMS CENTER PANEL --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 text-right" dir="rtl">
         
-        {/* Left/Middle Column (span 2 on desktop): SULTA AI Chat Support */}
+        {/* Left/Middle Column (span 2 on desktop): Sulta AI Chat Support */}
         <div className="lg:col-span-2 bg-white text-stone-900 p-6 rounded-3xl border border-stone-200 shadow-xl flex flex-col min-h-[460px] relative overflow-hidden">
           {/* Subtle gold background glare effect */}
           <div className="absolute top-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none" />
@@ -875,7 +875,7 @@ export default function OrderDetailView({
                 <Sparkles size={14} className="text-white animate-pulse" />
               </div>
               <div>
-                <h3 className="font-serif text-sm font-bold text-[#F6E7A6]">المساعد الذكي لبوتيك SULTA 👑</h3>
+                <h3 className="font-serif text-sm font-bold text-[#F6E7A6]">المساعد الذكي لبوتيك Sulta 👑</h3>
                 <p className="text-[10px] text-gray-400 font-sans">مستشار الكوتور الشخصي يعمل بالذكاء الاصطناعي التوليدي 24/7</p>
               </div>
             </div>
@@ -918,7 +918,7 @@ export default function OrderDetailView({
                   <span className="w-1.5 h-1.5 bg-[#F6E7A6] rounded-full animate-bounce" />
                   <span className="w-1.5 h-1.5 bg-[#F6E7A6] rounded-full animate-bounce delay-150" />
                   <span className="w-1.5 h-1.5 bg-[#F6E7A6] rounded-full animate-bounce delay-300" />
-                  <span className="font-serif italic text-[#F6E7A6]">يقوم مستشار SULTA بمراجعة قياساتك وبيانات طلبك...</span>
+                  <span className="font-serif italic text-[#F6E7A6]">يقوم مستشار Sulta بمراجعة قياساتك وبيانات طلبك...</span>
                 </div>
               </div>
             )}
@@ -982,14 +982,14 @@ export default function OrderDetailView({
                     <Award size={18} className="animate-spin-slow" />
                   </div>
                   <span className="text-[9px] uppercase tracking-widest font-sans font-bold bg-[#D5A848] text-[#1E1B15] px-2.5 py-0.5 rounded-full">
-                    SULTA VIP CUSTOMER
+                    Sulta VIP CUSTOMER
                   </span>
                 </div>
                 <h4 className="font-serif text-sm font-bold text-[#F5C767] mb-1">
                   أميرتنا المرموقة والوفية 👑
                 </h4>
                 <p className="text-[10px] text-gray-300 leading-relaxed font-sans mb-3.5">
-                  تم رصد نشاط شرائك التراكمي المترف وتثبيت تصنيفكِ كعضوة ممتازة بـ SULTA. لكِ أولوية معالجة الشحنات الفورية وهدية خاصة.
+                  تم رصد نشاط شرائك التراكمي المترف وتثبيت تصنيفكِ كعضوة ممتازة بـ Sulta. لكِ أولوية معالجة الشحنات الفورية وهدية خاصة.
                 </p>
                 <div className="bg-white/5 border border-white/5 p-3 rounded-2xl flex justify-between items-center">
                   <div>
@@ -1228,7 +1228,7 @@ export default function OrderDetailView({
               <div className="flex justify-between items-center flex-row-reverse text-right">
                 <span className="text-gray-400">شركة الخدمات اللوجستية:</span>
                 <span className="font-serif text-gray-900 font-bold">
-                  {order.country === 'EG' ? 'سولتا إكسبريس (الأسرع بمصر)' : 'أرامكس لخدمات الطيران المتقدم'}
+                  {order.country === 'EG' ? 'سولته إكسبريس (الأسرع بمصر)' : 'أرامكس لخدمات الطيران المتقدم'}
                 </span>
               </div>
               <div className="flex justify-between items-center flex-row-reverse text-right">
@@ -1331,13 +1331,13 @@ export default function OrderDetailView({
               </div>
               <h3 className="font-serif text-xl font-bold">نشكر ثقتك ورأيكِ المرموق 🌸</h3>
               <p className="text-xs text-gray-500 mt-2 max-w-md mx-auto leading-relaxed">
-                تم تسجيل معايير الجودة بنجاح ونقل تقديراتكِ وملاحظاتكِ لمدراء بوتيك SULTA لضمان أعلى معايير الجودة دائماً لتاج طلّتكِ البهيّة.
+                تم تسجيل معايير الجودة بنجاح ونقل تقديراتكِ وملاحظاتكِ لمدراء بوتيك Sulta لضمان أعلى معايير الجودة دائماً لتاج طلّتكِ البهيّة.
               </p>
             </motion.div>
           ) : (
             <div className="space-y-6">
               <div className="text-center max-w-xl mx-auto">
-                <span className="font-serif italic text-[#A44C5C] text-xs tracking-[0.2em] block mb-2 uppercase">تقييم تجربة سولتة كوتور</span>
+                <span className="font-serif italic text-[#A44C5C] text-xs tracking-[0.2em] block mb-2 uppercase">تقييم تجربة سولته كوتور</span>
                 <h3 className="font-serif text-lg font-bold text-[#0B0B0B]">يسعدنا سماع رأيك الملكي 👑</h3>
                 <p className="text-xs text-gray-500 mt-2">
                   بعد تسليم طلبيتكِ الفاخرة، يسرنا جداً معرفة لمساتكِ وتجربتكِ لقطعنا. تفضلي بتقييم الخدمة ورفع صورة لتجربة التغليف لربح مميزات الـ VIP.
@@ -1457,7 +1457,7 @@ export default function OrderDetailView({
       <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm mt-8 flex flex-col md:flex-row justify-between items-center gap-4 flex-wrap" dir="rtl">
         <div>
           <h4 className="font-serif text-sm font-semibold text-gray-950 mb-1">لوحة التفاعل والتحكم الملكي بالطلبية:</h4>
-          <p className="text-[10px] text-gray-400 font-sans">تتوفر لكافة زبائن سولتا حزمة خدمات تكميلية وتعديلات سريعة بضغطة واحدة.</p>
+          <p className="text-[10px] text-gray-400 font-sans">تتوفر لكافة زبائن سولته حزمة خدمات تكميلية وتعديلات سريعة بضغطة واحدة.</p>
         </div>
 
         <div className="flex flex-wrap gap-3 w-full md:w-auto justify-end">

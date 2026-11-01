@@ -21,7 +21,7 @@ export default function Faq() {
     {
       category: 'sizing',
       question: 'كيف أختار مقاسي المثالي؟',
-      answer: 'قطع سولتة مصممة بقَصّات ملكية مريحة ومرنة بنظام المقاس الموحد (One Size) الانسيابي ليلائم مختلف الأجسام من وزن 45 إلى 85 كجم بأعلى درجات الراحة والنعومة.'
+      answer: 'قطع سولته مصممة بقَصّات ملكية مريحة ومرنة بنظام المقاس الموحد (One Size) الانسيابي ليلائم مختلف الأجسام من وزن 45 إلى 85 كجم بأعلى درجات الراحة والنعومة.'
     },
     {
       category: 'packaging',
@@ -72,8 +72,8 @@ export default function Faq() {
   return (
     <div className="bg-white min-h-screen">
       <SEO 
-        title="الأسئلة الشائعة للعرائس - مساعدة سولتة" 
-        description="كل ما تحتاجين معرفته عن خاماتنا الملكية، المقاسات، سياسة التوصيل والتغليف الفاخر لطلبياتكِ من سولتة." 
+        title="الأسئلة الشائعة للعرائس - مساعدة سولته" 
+        description="كل ما تحتاجين معرفته عن خاماتنا الملكية، المقاسات، سياسة التوصيل والتغليف الفاخر لطلبياتكِ من سولته." 
         path="/faq" 
       />
       
@@ -84,7 +84,7 @@ export default function Faq() {
             مركز المعرفة والدعم
           </span>
           <h2 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] tracking-wide mb-6 uppercase">
-            مساعدة SULTA
+            مساعدة Sulta
           </h2>
           <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mb-4" />
           <p className="text-sm text-gray-500 font-sans max-w-xl mx-auto leading-relaxed mb-8">

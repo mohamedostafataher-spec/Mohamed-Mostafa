@@ -170,7 +170,7 @@ export default function DatabaseTest() {
 
         <footer className="pt-12 text-center border-t border-white/5">
           <p className="text-[10px] text-gray-600 uppercase tracking-widest font-serif">
-            SULTA COUTURE INFRASTRUCTURE DIAGNOSTICS v1.0.4
+            Sulta COUTURE INFRASTRUCTURE DIAGNOSTICS v1.0.4
           </p>
         </footer>
       </div>

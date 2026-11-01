@@ -21,9 +21,9 @@ const SEO: React.FC<SEOProps> = ({
   const siteUrl = 'https://sulta.vercel.app';
   
   // Format title without duplicating brand name
-  let fullTitle = title || 'سولتة | بيجامات نسائية وملابس نوم قطنية مريحة';
-  if (title && !title.includes('سولتة')) {
-    fullTitle = `${title} | سولتة`;
+  let fullTitle = title || 'سولته | بيجامات نسائية وملابس نوم قطنية مريحة';
+  if (title && !title.includes('سولته')) {
+    fullTitle = `${title} | سولته`;
   }
 
   function truncateWordBoundary(text: string, maxLen = 154): string {
@@ -33,7 +33,7 @@ const SEO: React.FC<SEOProps> = ({
     return (lastSpace > 0 ? sub.substring(0, lastSpace) : sub).trim();
   }
 
-  const rawDescription = description || 'متجر سولتة لأزياء النوم والبيجامات النسائية القطنية المريحة بمقاس وان سايز يناسب من 45 إلى 80 كيلو.';
+  const rawDescription = description || 'متجر سولته لأزياء النوم والبيجامات النسائية القطنية المريحة بمقاس وان سايز يناسب من 45 إلى 80 كيلو.';
   const fullDescription = truncateWordBoundary(rawDescription);
   
   // Trailing slash canonical
@@ -58,7 +58,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:description" content={fullDescription} />
       <meta property="og:url" content={url} />
       <meta property="og:image" content={absoluteImage} />
-      <meta property="og:site_name" content="سولتة | SULTA" />
+      <meta property="og:site_name" content="سولته | Sulta" />
       <meta property="og:locale" content="ar_SA" />
 
       {/* Twitter */}

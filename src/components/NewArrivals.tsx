@@ -39,8 +39,8 @@ export default function NewArrivals({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-right" dir="rtl">
       <SEO 
-        title="أحدث بيجامات نسائية وصل حديثًا | سولتة" 
-        description="اكتشفي أحدث تصاميم ملابس النوم والبيجامات النسائية القطنية التي وصلت حديثاً إلى متجر سولتة." 
+        title="أحدث بيجامات نسائية وصل حديثًا | سولته" 
+        description="اكتشفي أحدث تصاميم ملابس النوم والبيجامات النسائية القطنية التي وصلت حديثاً إلى متجر سولته." 
         path="/new-arrivals/" 
       />
       {/* Editorial Header */}
@@ -50,11 +50,11 @@ export default function NewArrivals({
           <span>وصل حديثاً</span>
         </div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-[#0B0B0B] tracking-wide">
-          أحدث البيجامات النسائية من سولتة
+          أحدث البيجامات النسائية من سولته
         </h1>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto">
-          وصل حديثاً إلى سولتة: أحدث موديلات البيجامات النسائية بأقمشة قطنية ناعمة ومقاس وان سايز يناسب الأوزان من 45 إلى 80 كيلو. تسوقي أحدث الإضافات بكميات محدودة لضمان التميز.
+          وصل حديثاً إلى سولته: أحدث موديلات البيجامات النسائية بأقمشة قطنية ناعمة ومقاس وان سايز يناسب الأوزان من 45 إلى 80 كيلو. تسوقي أحدث الإضافات بكميات محدودة لضمان التميز.
         </p>
       </div>
 
@@ -109,13 +109,16 @@ export default function NewArrivals({
                   </button>
                 </div>
 
-                {/* Main Photo */}
-                <div className="relative aspect-[3/4] overflow-hidden bg-white rounded-xl mb-3">
+                {/* Main Photo - Use taller aspect ratio for fashion */}
+                <div className="relative aspect-[3/4] overflow-hidden bg-white rounded-xl mb-3 flex items-center justify-center">
                   <SultaImage
                     src={imgToUse}
                     alt={prod.nameAr}
                     className="w-full h-full"
-                    imgClassName="w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-[800ms]"
+                    contain={false}
+                    alignment="center"
+                    width={400}
+                    imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms]"
                     priority={idx < 4}
                   />
                 </div>
@@ -136,6 +139,7 @@ export default function NewArrivals({
             );
           })}
         </div>
+
       ) : (
         <div className="text-center py-20 bg-neutral-50 rounded-2xl text-gray-400 text-xs italic">
           لا توجد إصدارات جديدة مسجلة في هذا التصنيف حالياً.

@@ -41,7 +41,7 @@ try {
   // If it starts with 'sb_', we allow it to attempt initialization.
   if (typeof vKey === 'string' && vKey.trim().length > 20 && !vKey.includes('YOUR_')) {
     if (vKey.startsWith('sb_')) {
-        console.warn("[SULTA DB] Using a key starting with 'sb_'. This is active.");
+        console.warn("[Sulta DB] Using a key starting with 'sb_'. This is active.");
     }
     keyToUse = vKey.trim();
   }
@@ -111,14 +111,14 @@ const isKeyValid = (k: string) => {
 if (isUrlStructurallyValid(urlToUse) && isKeyValid(keyToUse)) {
     try {
         const cleanUrl = urlToUse.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
-        console.log(`[SULTA DB] Correctly configured with real Supabase database: ${cleanUrl} (Key length: ${keyToUse.length})`);
+        console.log(`[Sulta DB] Correctly configured with real Supabase database: ${cleanUrl} (Key length: ${keyToUse.length})`);
         supabaseInstance = createClient(cleanUrl, keyToUse);
     } catch (err) {
-        console.error("[SULTA DB] createClient threw an error:", err);
+        console.error("[Sulta DB] createClient threw an error:", err);
         supabaseInstance = createDummyClient();
     }
 } else {
-    console.warn(`[SULTA DB] Using offline fallback Dummy Client. Missing or invalid Supabase configurations. URL: ${urlToUse}, Key configured: ${isKeyValid(keyToUse)}`);
+    console.warn(`[Sulta DB] Using offline fallback Dummy Client. Missing or invalid Supabase configurations. URL: ${urlToUse}, Key configured: ${isKeyValid(keyToUse)}`);
     supabaseInstance = createDummyClient();
 }
 
@@ -129,10 +129,10 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     id: "art-001",
     title: "أسرار اختيار بيجامة العروس المثالية - ليلة من العمر تفوق الواقع",
     slug: "bride-pajama-secrets",
-    content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولتة المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولتة بالبدء بقطع الأنسجة الملكية المفتوحة، وتطويقها بالدانتيل الراقي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
+    content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولته المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولته بالبدء بقطع الأنسجة الملكية المفتوحة، وتطويقها بالدانتيل الراقي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
     excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
     imageUrl: "/img/sulta_default_1_1781140865386.png",
-    author: "SULTA Atelier",
+    author: "Sulta Atelier",
     category: "Couture",
     tags: ["Bridal", "Luxury", "Styling"],
     publishedAt: new Date().toISOString(),
@@ -144,10 +144,10 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     id: "art-002",
     title: "الألياف الطبيعية vs الصناعية - علم المنسوجات المترفة",
     slug: "pure-fabric-science",
-    content: "إن لمس أقمشة SULTA هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الناعمة الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
+    content: "إن لمس أقمشة Sulta هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الناعمة الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
     excerpt: "تعلمي كيف تفرقين بين التفاصيل الراقية والأقمشة المقلدة لترتدي دوماً ما يليق بوقارك.",
     imageUrl: "/img/pink_bow_pajama_1780730148591.png",
-    author: "Atelier SULTA",
+    author: "Atelier Sulta",
     category: "Fabric",
     tags: ["Tissue Soft", "Authenticity", "Couture"],
     publishedAt: new Date().toISOString(),
@@ -158,13 +158,13 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
 ];
 
 export const SEED_FAQ: FaqItem[] = [
-  { id: "faq-1", question: "كيف أقوم بتنظيف قطع الأنسجة الطبيعية من سولتة؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
-  { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Atelier SULTA علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
+  { id: "faq-1", question: "كيف أقوم بتنظيف قطع الأنسجة الطبيعية من سولته؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
+  { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Atelier Sulta علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
 ];
 
 export const SEED_ADVANCED_COUPONS: any[] = [
   { id: 'ac-1', code: 'ROYAL30', discount_type: 'percentage', discount_value: 30, limit_per_user: 1, min_order_value: 500, current_usages: 12, is_active: true },
-  { id: 'ac-2', code: 'SULTA100', discount_type: 'fixed', discount_value: 100, limit_per_user: 5, min_order_value: 1000, current_usages: 3, is_active: true }
+  { id: 'ac-2', code: 'Sulta100', discount_type: 'fixed', discount_value: 100, limit_per_user: 5, min_order_value: 1000, current_usages: 3, is_active: true }
 ];
 
 export const SEED_PROMOTIONS: any[] = [
@@ -184,14 +184,14 @@ export const SEED_INVENTORY_LOGS: any[] = [
 // ==========================================
 
 // ==========================================
-// SULTA COUTURE SUPABASE CONNECTION
+// Sulta COUTURE SUPABASE CONNECTION
 // ==========================================
 
 export function cleanText(text: any): any {
   if (typeof text !== 'string') return text;
   let cleaned = text
-    .replace(/zoria/ig, 'SULTA')
-    .replace(/زوريا/g, 'سولتة')
+    .replace(/zoria/ig, 'Sulta')
+    .replace(/زوريا/g, 'سولته')
     .replace(/كوتور ساتان/g, 'كوتور ناعم')
     .replace(/الساتان/g, 'الأنسجة الفاخرة')
     .replace(/الستان/g, 'الأنسجة الفاخرة')
@@ -212,24 +212,28 @@ export function cleanText(text: any): any {
     .replace(/(ملكي\s+)+ملكي/g, 'ملكي')
     .replace(/(ملكية\s+)+ملكية/g, 'ملكية')
     .replace(/فاخرةي/g, 'فاخرة')
-    .replace(/سولتا/g, 'سولتة');
+    .replace(/سولته/g, 'سولته');
 
   return cleaned.trim();
 }
 
-export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
+export function cleanImgUrl(url: any, width: number | string = 800): string {
   if (!url || typeof url !== 'string' || url.trim() === '' || url.trim() === 'null' || url.trim() === 'undefined') {
     return '/img/sulta_default_1_1781140865386.webp';
   }
 
   const cleaned = url.trim();
+  const w = typeof width === 'number' ? width : 800;
 
   // Optimize remote images via fast WebP CDN transformation
   if (cleaned.startsWith('http')) {
     const sanitized = cleaned.replace(/([^:])\/+/g, '$1/');
     if (sanitized.includes('wsrv.nl')) return sanitized;
-    if (sanitized.includes('supabase.co') || /\.(jpg|jpeg|png)$/i.test(sanitized)) {
-      return `https://wsrv.nl/?url=${encodeURIComponent(sanitized)}&w=650&output=webp&q=80`;
+    
+    // If it's a Supabase URL or common image format, use wsrv.nl CDN
+    if (sanitized.includes('supabase.co') || /\.(jpg|jpeg|png|webp|avif)$/i.test(sanitized)) {
+      // Use higher quality (90) and progressive for better "4K feel" without the weight
+      return `https://wsrv.nl/?url=${encodeURIComponent(sanitized)}&w=${w}&output=webp&q=85&il`;
     }
     return sanitized;
   }
@@ -257,7 +261,7 @@ export function cleanImgUrl(url: any, _fallbackCategory?: string): string {
   const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
   if (cleanPath.includes('.')) {
     const fullSupabaseUrl = `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
-    return `https://wsrv.nl/?url=${encodeURIComponent(fullSupabaseUrl)}&w=650&output=webp&q=80`;
+    return `https://wsrv.nl/?url=${encodeURIComponent(fullSupabaseUrl)}&w=${w}&output=webp&q=85&il`;
   }
 
   return '/img/sulta_default_1_1781140865386.webp';
@@ -294,7 +298,7 @@ function mapSettings(data: any): Settings {
     '/img/sulta_loungewear_1_1781140813379.png'
   ];
 
-  let mappedSiteName = cleanText(data.site_name || 'SULTA');
+  let mappedSiteName = cleanText(data.site_name || 'Sulta');
 
   let mappedWhatsapp = data.whatsapp;
   if (!mappedWhatsapp || mappedWhatsapp === '966500000000' || mappedWhatsapp.includes('966530454045') || mappedWhatsapp === '201110095403' || mappedWhatsapp.includes('20111') || mappedWhatsapp.includes('596894393')) {
@@ -359,7 +363,7 @@ function mapSettings(data: any): Settings {
     whatsappMarketingAutoEnabled: data.whatsappMarketingAutoEnabled ?? data.whatsapp_marketing_auto_enabled ?? true,
     whatsappCartRecoveryEnabled: data.whatsappCartRecoveryEnabled ?? data.whatsapp_cart_recovery_enabled ?? true,
     whatsappWelcomeEnabled: data.whatsappWelcomeEnabled ?? data.whatsapp_welcome_enabled ?? true,
-    whatsappDiscountCode: data.whatsappDiscountCode || data.whatsapp_discount_code || 'SULTA20',
+    whatsappDiscountCode: data.whatsappDiscountCode || data.whatsapp_discount_code || 'Sulta20',
     whatsappMarketingMessageTemplate: data.whatsappMarketingMessageTemplate || data.whatsapp_marketing_template || '',
     whatsappCartRecoveryMessageTemplate: data.whatsappCartRecoveryMessageTemplate || data.whatsapp_cart_recovery_template || '',
     // Team Members with Gmail access
@@ -405,13 +409,13 @@ function mapProduct(data: any): Product {
   });
 
   // Name resolution: DB physical columns FIRST
-  let nameAr = data.name_ar || (fallbackProduct ? fallbackProduct.nameAr : '') || (data.name ? data.name.split(' | ')[0] : '') || 'منتج سولتة';
-  let nameEn = data.name_en || (fallbackProduct ? fallbackProduct.nameEn : '') || (data.name && data.name.includes(' | ') ? data.name.split(' | ')[1] : '') || 'SULTA Product';
+  let nameAr = data.name_ar || (fallbackProduct ? fallbackProduct.nameAr : '') || (data.name ? data.name.split(' | ')[0] : '') || 'منتج سولته';
+  let nameEn = data.name_en || (fallbackProduct ? fallbackProduct.nameEn : '') || (data.name && data.name.includes(' | ') ? data.name.split(' | ')[1] : '') || 'Sulta Product';
 
   // Description resolution
   let rawDesc = data.description_ar || data.description || '';
-  if (rawDesc.includes('[METADATA_SULTA_V2]')) {
-    rawDesc = rawDesc.substring(0, rawDesc.indexOf('[METADATA_SULTA_V2]'));
+  if (rawDesc.includes('[METADATA_Sulta_V2]')) {
+    rawDesc = rawDesc.substring(0, rawDesc.indexOf('[METADATA_Sulta_V2]'));
   }
   let descriptionAr = parseCleanArabicDescription(rawDesc) || (fallbackProduct ? fallbackProduct.descriptionAr : '');
   let descriptionEn = (fallbackProduct ? fallbackProduct.descriptionEn : '');
@@ -751,7 +755,7 @@ export const dbService = {
         const updatePayload: any = {};
 
         if (data.site_name && data.site_name.toLowerCase().includes('zoria')) {
-          const cleanedSiteName = data.site_name.replace(/zoria/ig, 'SULTA');
+          const cleanedSiteName = data.site_name.replace(/zoria/ig, 'Sulta');
           updatePayload.site_name = cleanedSiteName;
           data.site_name = cleanedSiteName;
           needsUpdate = true;
@@ -784,7 +788,7 @@ export const dbService = {
 
     if (!settingsObj) {
       settingsObj = {
-        siteName: 'SULTA',
+        siteName: 'Sulta',
         contactPhone: '+966 55 282 3677',
         contactPhoneSaudi: '+966 55 282 3677',
         whatsapp: '966552823677',
@@ -1163,16 +1167,16 @@ export const dbService = {
 
     supabase.from('products').select('*').then(({ data, error }) => {
       if (error || !data || data.length === 0) {
-        console.warn('[SULTA DB] Supabase products empty or error, using fallback products with active images:', error);
+        console.warn('[Sulta DB] Supabase products empty or error, using fallback products with active images:', error);
         deliverProducts(SEED_FALLBACK_PRODUCTS);
       } else {
-        console.log(`[SULTA DB] Successfully synced ${data.length} products from Supabase.`);
+        console.log(`[Sulta DB] Successfully synced ${data.length} products from Supabase.`);
         const mapped = data.map(mapProduct);
         const finalProducts = mapped.length > 0 ? mapped : SEED_FALLBACK_PRODUCTS;
         deliverProducts(finalProducts);
       }
     }).catch((err: any) => {
-      console.error('[SULTA DB] Exception fetching products from Supabase, using fallback:', err);
+      console.error('[Sulta DB] Exception fetching products from Supabase, using fallback:', err);
       deliverProducts(SEED_FALLBACK_PRODUCTS);
     });
 
@@ -1183,9 +1187,9 @@ export const dbService = {
         try {
           const { data, error } = await supabase.from('products').select('*');
           if (error) {
-            console.error('[SULTA DB] Realtime error on products update:', error);
+            console.error('[Sulta DB] Realtime error on products update:', error);
           } else if (data) {
-            console.log(`[SULTA DB] Realtime update: ${data.length} products loaded.`);
+            console.log(`[Sulta DB] Realtime update: ${data.length} products loaded.`);
             deliverProducts(data.map(mapProduct));
           }
         } catch {
@@ -1502,10 +1506,10 @@ export const dbService = {
       if (!offlineOrders.some((o: any) => o.id === order.id)) {
         offlineOrders.unshift(order);
         localStorage.setItem('sulta_offline_orders', JSON.stringify(offlineOrders));
-        console.log("[SULTA DB] Saved order physically into localStorage for resilience.", order.id);
+        console.log("[Sulta DB] Saved order physically into localStorage for resilience.", order.id);
       }
     } catch (e) {
-      console.warn("[SULTA DB] Non-fatal localStorage dual-write failed:", e);
+      console.warn("[Sulta DB] Non-fatal localStorage dual-write failed:", e);
     }
 
     const safeCountry = 'SA';
@@ -1520,7 +1524,7 @@ export const dbService = {
     if (!isUuid) {
       finalId = crypto.randomUUID();
       order.id = finalId; // UPDATE OBJECT BY REFERENCE TO PREVENT MISMATCHES
-      console.log(`[SULTA DB] Non-UUID detected, generated new UUID: ${finalId}`);
+      console.log(`[Sulta DB] Non-UUID detected, generated new UUID: ${finalId}`);
     }
 
     // 2. Persist directly to Supabase cloud:
@@ -1534,12 +1538,12 @@ export const dbService = {
       
       const { error: oErr } = await supabase.from('orders').upsert([baseRow]);
       if (oErr) {
-        console.warn("[SULTA DB] orders table upsert:", oErr.message);
+        console.warn("[Sulta DB] orders table upsert:", oErr.message);
       } else {
-        console.log("[SULTA DB] Successfully inserted order row into Supabase 'orders'!");
+        console.log("[Sulta DB] Successfully inserted order row into Supabase 'orders'!");
       }
     } catch (err: any) {
-      console.warn("[SULTA DB] orders table exception:", err.message || err);
+      console.warn("[Sulta DB] orders table exception:", err.message || err);
     }
 
     // B. Insert complete order payload into 'support_tickets' with ORDER prefix for cross-device visibility
@@ -1557,12 +1561,12 @@ export const dbService = {
       };
       const { error: tErr } = await supabase.from('support_tickets').insert([ticketPayload]);
       if (tErr) {
-        console.warn("[SULTA DB] support_tickets order payload insert:", tErr.message);
+        console.warn("[Sulta DB] support_tickets order payload insert:", tErr.message);
       } else {
-        console.log("[SULTA DB] Successfully inserted full order payload into cloud for cross-device admin view!");
+        console.log("[Sulta DB] Successfully inserted full order payload into cloud for cross-device admin view!");
       }
     } catch (err: any) {
-      console.warn("[SULTA DB] support_tickets exception:", err.message || err);
+      console.warn("[Sulta DB] support_tickets exception:", err.message || err);
     }
   },
 
@@ -1605,10 +1609,10 @@ export const dbService = {
       }
       
       if (error) {
-        console.warn("[SULTA DB] Warning: updateProductStock did not apply on server, but continuing checkout:", error.message);
+        console.warn("[Sulta DB] Warning: updateProductStock did not apply on server, but continuing checkout:", error.message);
       }
     } catch (e: any) {
-      console.warn("[SULTA DB] Non-fatal stock update warning:", e.message || e);
+      console.warn("[Sulta DB] Non-fatal stock update warning:", e.message || e);
     }
   },
 
@@ -1619,9 +1623,9 @@ export const dbService = {
       const savedMap = JSON.parse(savedStr);
       savedMap[product.id] = product;
       localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
-      console.log(`[SULTA DB] Saved product "${product.nameAr}" (ID: ${product.id}, Price: ${product.priceSA} SAR) to localStorage.`);
+      console.log(`[Sulta DB] Saved product "${product.nameAr}" (ID: ${product.id}, Price: ${product.priceSA} SAR) to localStorage.`);
     } catch (e) {
-      console.warn('[SULTA DB] Error saving product to localStorage:', e);
+      console.warn('[Sulta DB] Error saving product to localStorage:', e);
     }
 
     // Standard allowed categories in CHECK constraint: ('satin', 'soft', 'cotton', 'loungewear', 'dresses', 'new')
@@ -1676,7 +1680,7 @@ export const dbService = {
     };
 
     const encodedName = (product.nameAr || '') + ' | ' + (product.nameEn || '');
-    const encodedDescription = (product.descriptionAr || '') + ' | ' + (product.descriptionEn || '') + ' | [METADATA_SULTA_V2]:' + JSON.stringify(metadata);
+    const encodedDescription = (product.descriptionAr || '') + ' | ' + (product.descriptionEn || '') + ' | [METADATA_Sulta_V2]:' + JSON.stringify(metadata);
 
     const payload: any = {
       id: product.id,
@@ -1731,7 +1735,7 @@ export const dbService = {
     let retries = 35;
     while (error && error.message && retries > 0) {
       const errMsg = error.message;
-      console.warn(`[SULTA DB] Attempting automatic error resolution for product upsert: "${errMsg}". Retries left: ${retries}`);
+      console.warn(`[Sulta DB] Attempting automatic error resolution for product upsert: "${errMsg}". Retries left: ${retries}`);
 
       // 1. Missing or extra column resolution (both PostgREST & PostgreSQL native formats)
       let colName: string | null = null;
@@ -1745,7 +1749,7 @@ export const dbService = {
       }
 
       if (colName) {
-        console.warn(`[SULTA DB] Automatically removing unsupported column '${colName}' from the insert payload to avoid schema conflict.`);
+        console.warn(`[Sulta DB] Automatically removing unsupported column '${colName}' from the insert payload to avoid schema conflict.`);
         delete payload[colName];
         
         const retryRes = await supabase.from('products').upsert([payload]);
@@ -1757,13 +1761,13 @@ export const dbService = {
       // 2. Foreign Key Constraint Violation (e.g., category_id or collection does not exist in their parent tables)
       if (errMsg.toLowerCase().includes("foreign key constraint") || errMsg.toLowerCase().includes("violates foreign key")) {
         if (errMsg.toLowerCase().includes("category_id") && payload.category_id !== null) {
-          console.warn("[SULTA DB] Foreign key violation on category_id! Nullifying category_id to guarantee product is created.");
+          console.warn("[Sulta DB] Foreign key violation on category_id! Nullifying category_id to guarantee product is created.");
           payload.category_id = null;
         } else if (errMsg.toLowerCase().includes("collection") && payload.collection !== null) {
-          console.warn("[SULTA DB] Foreign key violation on collection! Nullifying collection reference to guarantee product is created.");
+          console.warn("[Sulta DB] Foreign key violation on collection! Nullifying collection reference to guarantee product is created.");
           payload.collection = null;
         } else {
-          console.warn("[SULTA DB] Unspecified foreign key violation. Safety nullifying optional relational references.");
+          console.warn("[Sulta DB] Unspecified foreign key violation. Safety nullifying optional relational references.");
           payload.category_id = null;
           payload.collection = null;
         }
@@ -1778,22 +1782,22 @@ export const dbService = {
       const uuidMatch = errMsg.match(/invalid input syntax for type uuid:\s*"([^"]+)"/i);
       if (uuidMatch && uuidMatch[1]) {
         const problematicVal = uuidMatch[1];
-        console.warn(`[SULTA DB] Invalid UUID syntax detected: "${problematicVal}". Commencing auto-remapping...`);
+        console.warn(`[Sulta DB] Invalid UUID syntax detected: "${problematicVal}". Commencing auto-remapping...`);
         
         if (payload.category_id === problematicVal) {
           const catUuid = getCategoryUuid(problematicVal);
           if (catUuid) {
-            console.warn(`[SULTA DB] Auto-mapping invalid category_id '${problematicVal}' to valid UUID: '${catUuid}'`);
+            console.warn(`[Sulta DB] Auto-mapping invalid category_id '${problematicVal}' to valid UUID: '${catUuid}'`);
             payload.category_id = catUuid;
           } else {
-            console.warn(`[SULTA DB] No UUID map found. Nullifying category_id to bypass UUID type-casting check.`);
+            console.warn(`[Sulta DB] No UUID map found. Nullifying category_id to bypass UUID type-casting check.`);
             payload.category_id = null;
           }
         } else {
           // Look for any keys containing the problematic value and nullify/delete them
           for (const key of Object.keys(payload)) {
             if (payload[key] === problematicVal) {
-              console.warn(`[SULTA DB] Safety nullifying problematic UUID field: '${key}'`);
+              console.warn(`[Sulta DB] Safety nullifying problematic UUID field: '${key}'`);
               payload[key] = null;
             }
           }
@@ -1808,11 +1812,11 @@ export const dbService = {
       // 4. CHECK constraint violation (e.g. category CHECK or status CHECK limits in the database schema)
       if (errMsg.toLowerCase().includes("check constraint") || errMsg.toLowerCase().includes("violates check")) {
         if (errMsg.toLowerCase().includes("category")) {
-          console.warn("[SULTA DB] CHECK constraint error on category! Resetting to default 'new'.");
+          console.warn("[Sulta DB] CHECK constraint error on category! Resetting to default 'new'.");
           payload.category = 'new';
         }
         if (errMsg.toLowerCase().includes("status")) {
-          console.warn("[SULTA DB] CHECK constraint error on status! Resetting to default 'active'.");
+          console.warn("[Sulta DB] CHECK constraint error on status! Resetting to default 'active'.");
           payload.status = 'active';
         }
         
@@ -1825,7 +1829,7 @@ export const dbService = {
       // 5. Input syntax & array format normalization for arrays like sizes/images
       if (errMsg.toLowerCase().includes("malformed array literal") || errMsg.toLowerCase().includes("invalid input syntax") || errMsg.toLowerCase().includes("cannot cast")) {
         if (errMsg.toLowerCase().includes("images")) {
-          console.warn("[SULTA DB] Array syntax error on images column. Normalizing to native array...");
+          console.warn("[Sulta DB] Array syntax error on images column. Normalizing to native array...");
           if (typeof payload.images === 'string') {
             try {
               payload.images = JSON.parse(payload.images);
@@ -1839,12 +1843,12 @@ export const dbService = {
         }
         
         if (errMsg.toLowerCase().includes("colors")) {
-          console.warn("[SULTA DB] JSONB syntax error on colors column. Normalizing payload.colors to empty array...");
+          console.warn("[Sulta DB] JSONB syntax error on colors column. Normalizing payload.colors to empty array...");
           payload.colors = [];
         }
 
         if (errMsg.toLowerCase().includes("sizes")) {
-          console.warn("[SULTA DB] Array syntax error on sizes. Setting defaults.");
+          console.warn("[Sulta DB] Array syntax error on sizes. Setting defaults.");
           payload.sizes = ['S', 'M', 'L', 'XL', 'XXL'];
         }
 
@@ -1858,9 +1862,9 @@ export const dbService = {
       break;
     }
 
-    console.log("[SULTA DB] Save finished. Payload columns remaining:", Object.keys(payload), "Error:", error ? error.message : "Success 🎉");
+    console.log("[Sulta DB] Save finished. Payload columns remaining:", Object.keys(payload), "Error:", error ? error.message : "Success 🎉");
     if (error) {
-      console.warn("[SULTA DB] Supabase upsert returned error, but product is preserved in localStorage:", error.message || error);
+      console.warn("[Sulta DB] Supabase upsert returned error, but product is preserved in localStorage:", error.message || error);
     }
   },
 
@@ -1910,12 +1914,12 @@ export const dbService = {
 
       savedMap[productId] = updatedProd;
       localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
-      console.log(`[SULTA DB] Successfully updated price for ${productId} to ${priceSA} SAR.`);
+      console.log(`[Sulta DB] Successfully updated price for ${productId} to ${priceSA} SAR.`);
 
       // Sync to Supabase in background
       await dbService.saveProduct(updatedProd);
     } catch (err: any) {
-      console.warn('[SULTA DB] updateProductPrice notice:', err);
+      console.warn('[Sulta DB] updateProductPrice notice:', err);
     }
   },
 
@@ -1962,15 +1966,15 @@ export const dbService = {
       delete savedMap[productId];
       localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
     } catch (e) {
-      console.warn('[SULTA DB] Error deleting product from localStorage:', e);
+      console.warn('[Sulta DB] Error deleting product from localStorage:', e);
     }
 
     // 3. Delete permanently from Supabase products table
     try {
       const { error } = await supabase.from('products').delete().eq('id', productId);
-      if (error) console.warn('[SULTA DB] Supabase delete notice:', error.message || error);
+      if (error) console.warn('[Sulta DB] Supabase delete notice:', error.message || error);
     } catch (err: any) {
-      console.error('[SULTA DB] Supabase delete exception:', err?.message || err);
+      console.error('[Sulta DB] Supabase delete exception:', err?.message || err);
     }
   },
 
@@ -2461,7 +2465,7 @@ export const dbService = {
 
       if (error) {
         if (error.message && error.message.includes("Invalid path")) {
-          console.warn("[SULTA DB] Got 'Invalid path' error from Supabase Storage. This typically means the 'products' bucket has not been created yet in your Supabase project. To resolve, copy and execute the Storage SQL setup block at the bottom of standard 'supabase-schema.sql'.");
+          console.warn("[Sulta DB] Got 'Invalid path' error from Supabase Storage. This typically means the 'products' bucket has not been created yet in your Supabase project. To resolve, copy and execute the Storage SQL setup block at the bottom of standard 'supabase-schema.sql'.");
         }
         throw error;
       }
@@ -2593,16 +2597,16 @@ export const dbService = {
     message: string;
     diagnosticDetails?: string;
   }> => {
-    console.log("%c[SULTA DB DIAGNOSTIC] 🔍 Starting connection diagnostics for table 'products'...", "background: #161618; color: #c5a059; font-weight: bold; font-size: 13px; padding: 4px; border-radius: 4px;");
+    console.log("%c[Sulta DB DIAGNOSTIC] 🔍 Starting connection diagnostics for table 'products'...", "background: #161618; color: #c5a059; font-weight: bold; font-size: 13px; padding: 4px; border-radius: 4px;");
     
     // Log active URL
-    console.log(`[SULTA DB DIAGNOSTIC] Target Supabase URL: ${urlToUse}`);
+    console.log(`[Sulta DB DIAGNOSTIC] Target Supabase URL: ${urlToUse}`);
     
     try {
       // 1. Check if we are using the Dummy Client
       if (keyToUse === DEFAULT_KEY) {
         const errorMsg = "The database is currently using the offline fallback Mock Client because VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY are missing or set to defaults.";
-        console.error("%c[SULTA DB DIAGNOSTIC] ❌ CONFIGURATION ERROR:", "color: #ff4b4b; font-weight: bold;", errorMsg);
+        console.error("%c[Sulta DB DIAGNOSTIC] ❌ CONFIGURATION ERROR:", "color: #ff4b4b; font-weight: bold;", errorMsg);
         console.table({
           "VITE_SUPABASE_URL Configured": isUrlStructurallyValid(urlToUse) ? "Yes" : "No",
           "VITE_SUPABASE_ANON_KEY Configured": keyToUse !== DEFAULT_KEY ? "Yes" : "No (Using DEFAULT_KEY)",
@@ -2620,11 +2624,11 @@ export const dbService = {
       }
 
       // 2. Query 'products'
-      console.log("[SULTA DB DIAGNOSTIC] Sending select query: supabase.from('products').select('*').limit(5)...");
+      console.log("[Sulta DB DIAGNOSTIC] Sending select query: supabase.from('products').select('*').limit(5)...");
       const { data, error, status, statusText } = await supabase.from('products').select('*').limit(5);
 
       if (error) {
-        console.error("%c[SULTA DB DIAGNOSTIC] ❌ DATABASE CONNECTION FAILED:", "color: #ff4b4b; font-weight: bold;");
+        console.error("%c[Sulta DB DIAGNOSTIC] ❌ DATABASE CONNECTION FAILED:", "color: #ff4b4b; font-weight: bold;");
         console.error("Error Object:", error);
         console.table({
           "HTTP Status": status,
@@ -2639,19 +2643,19 @@ export const dbService = {
         if (status === 401 || error.message?.includes("JWT") || error.message?.includes("Invalid API key") || error.message?.toLowerCase().includes("unauthorized")) {
           // Authentication / API Key Issue
           diagnosticDetails = "❌ خلل في مفاتيح الـ API: رمز التوثيق (JWT / ANON KEY) غير صالح أو منتهي الصلاحية، أو أنه لا يتطابق مع هذا المشروع في Supabase. يرجى إعادة نسخ مفتاح Anon من إعدادات API في لوحة تحكم Supabase وتحديث المتغيرات.";
-          console.warn("%c[SULTA DB DIAGNOSTIC] 💡 ANALYSIS: API KEY / AUTHENTICATION ISSUE SPOTTED!", "color: #ffca28; font-weight: bold;");
+          console.warn("%c[Sulta DB DIAGNOSTIC] 💡 ANALYSIS: API KEY / AUTHENTICATION ISSUE SPOTTED!", "color: #ffca28; font-weight: bold;");
           console.warn("Recommendation: Ensure VITE_SUPABASE_ANON_KEY matches your Supabase Project's Anon key perfectly. Check for spaces or trailing slash errors.");
         } 
         else if (status === 403 || error.message?.toLowerCase().includes("violates row-level security") || error.message?.toLowerCase().includes("insufficient_privilege") || error.message?.toLowerCase().includes("permission denied")) {
           // RLS Rule Issue
           diagnosticDetails = "❌ خلل في سياسات الأمان RLS: تم الاتصال بنجاح ولكن سياسات الأمان في Supabase تمنع استرجاع البيانات (Row Level Security). يرجى فتح جدول 'products' في Supabase والذهاب لـ Authentication -> Policies وإنشاء سياسة تمكن المستخدمين (عموم الجمهور) من إجراء عملية القراءة SELECT.";
-          console.warn("%c[SULTA DB DIAGNOSTIC] 💡 ANALYSIS: ROW LEVEL SECURITY (RLS) VIOLATION SPOTTED!", "color: #ffca28; font-weight: bold;");
+          console.warn("%c[Sulta DB DIAGNOSTIC] 💡 ANALYSIS: ROW LEVEL SECURITY (RLS) VIOLATION SPOTTED!", "color: #ffca28; font-weight: bold;");
           console.warn("Recommendation: RLS is active on public.products but has no POLICY allowing SELECT/Read. Go to Supabase -> Database -> Policies -> Enable Read Access for everyone.");
         }
         else if (status === 404 || error.code === "PGRST116" || error.message?.toLowerCase().includes("relation") || error.message?.toLowerCase().includes("does not exist")) {
           // Missing Schema/Table Issue
           diagnosticDetails = "❌ خلل في جدول قاعدة البيانات: جدول 'products' غير موجود في قاعدة بياناتك داخل المخطط العام (public schema). يرجى نسخ الكود من ملف 'supabase-schema.sql' وتشغيله في الـ SQL Editor في Supabase لإنشاء الجداول.";
-          console.warn("%c[SULTA DB DIAGNOSTIC] 💡 ANALYSIS: MISSING TABLE OR SCHEMATIC ERROR!", "color: #ffca28; font-weight: bold;");
+          console.warn("%c[Sulta DB DIAGNOSTIC] 💡 ANALYSIS: MISSING TABLE OR SCHEMATIC ERROR!", "color: #ffca28; font-weight: bold;");
           console.warn("Recommendation: Run the database creation script 'supabase-schema.sql' inside the Supabase SQL Editor. The table 'products' could not be found.");
         }
 
@@ -2665,8 +2669,8 @@ export const dbService = {
       }
 
       // 3. Successful Connection
-      console.log("%c[SULTA DB DIAGNOSTIC] 🎉 CONNECTION TEST PASSED SUCCESSFULLY!", "color: #4caf50; font-weight: bold;");
-      console.log(`[SULTA DB DIAGNOSTIC] Retrieved ${data?.length || 0} products:`, data);
+      console.log("%c[Sulta DB DIAGNOSTIC] 🎉 CONNECTION TEST PASSED SUCCESSFULLY!", "color: #4caf50; font-weight: bold;");
+      console.log(`[Sulta DB DIAGNOSTIC] Retrieved ${data?.length || 0} products:`, data);
 
       let successMsg = `تم الاتصال بجداول Supabase ومطابقة جدول products بنجاح. تم استرجاع ${data?.length || 0} من المنتجات.`;
       let diagnosticDetails = "اتصالك سليم وقائم بشكل كامل! الجداول مطابقة والـ API Key سليم تماماً والبيانات مسترجعة ونشطة وعامة.";
@@ -2674,7 +2678,7 @@ export const dbService = {
       if (!data || data.length === 0) {
         successMsg += " (تحذير: جدول المنتجات فارغ تماماً)";
         diagnosticDetails = "الاتصال سليم، ولكن لا توجد منتجات لعرضها. يرجى الانتقال إلى لوحة التحكم الإدارية أو Supabase لإضافة منتج جديد، أو تشغيل Seed للبيانات للتمتع بالعرض التفاعلي.";
-        console.warn("[SULTA DB DIAGNOSTIC] Warning: Connection succeeded but table is empty. Try adding an item!");
+        console.warn("[Sulta DB DIAGNOSTIC] Warning: Connection succeeded but table is empty. Try adding an item!");
       }
 
       return {
@@ -2686,7 +2690,7 @@ export const dbService = {
       };
 
     } catch (err: any) {
-      console.error("%c[SULTA DB DIAGNOSTIC] ❌ UNEXPECTED SYSTEM RUNTIME EXCEPTION:", "color: #ff4b4b; font-weight: bold;", err);
+      console.error("%c[Sulta DB DIAGNOSTIC] ❌ UNEXPECTED SYSTEM RUNTIME EXCEPTION:", "color: #ff4b4b; font-weight: bold;", err);
       return {
         success: false,
         error: err,
@@ -2723,7 +2727,7 @@ export const dbService = {
         members = data.content_json;
       }
     } catch (e) {
-      console.warn('[SULTA DB] Error fetching team members from cloud:', e);
+      console.warn('[Sulta DB] Error fetching team members from cloud:', e);
     }
 
     // 2. Try localStorage if empty
@@ -2774,7 +2778,7 @@ export const dbService = {
         active: true
       }], { onConflict: 'section_key' });
     } catch (e) {
-      console.warn('[SULTA DB] Error saving team members to cloud:', e);
+      console.warn('[Sulta DB] Error saving team members to cloud:', e);
     }
   },
 

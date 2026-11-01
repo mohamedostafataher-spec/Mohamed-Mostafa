@@ -33,7 +33,7 @@ export default function LuxuryGifts({
   // Brand-defined packaging parameters
   const PACKAGING = {
     classic: {
-      title: 'صندوق SULTA الكلاسيكي المطفي الأسود',
+      title: 'صندوق Sulta الكلاسيكي المطفي الأسود',
       desc: 'صندوق كرتوني سميك فاخر باللون الأسود الملكي، مبطّن بورق مناديل وردي ناعم ومحكم بشريط ملوكي ذهبي عريض.',
       fee: country === 'EG' ? 100 : 15,
       img: '/img/sulta_product_2.png'
@@ -65,10 +65,10 @@ export default function LuxuryGifts({
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <div className="flex justify-center items-center gap-1.5 text-[#A44C5C] text-xs font-serif tracking-widest font-bold">
           <Gift size={14} className="text-[#A44C5C]" />
-          <span>SULTA COUTURE GIFTING EXPERIENCE</span>
+          <span>Sulta COUTURE GIFTING EXPERIENCE</span>
         </div>
         <h2 className="font-serif text-3xl md:text-4xl font-light text-[#0B0B0B] tracking-wide">
-          هدايا SULTA | صندوق السعادة والكمال لعروسكِ
+          هدايا Sulta | صندوق السعادة والكمال لعروسكِ
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
@@ -106,7 +106,7 @@ export default function LuxuryGifts({
                 </p>
               ) : (
                 <p className="text-gray-300 text-2xs italic">
-                  اكتبي هنا رسالتكِ الفاخرة للعروس أو الصديقة، وسيقوم خطاط سولتة بنقشها بماء الذهب وعناية بالغة...
+                  اكتبي هنا رسالتكِ الفاخرة للعروس أو الصديقة، وسيقوم خطاط سولته بنقشها بماء الذهب وعناية بالغة...
                 </p>
               )}
             </div>

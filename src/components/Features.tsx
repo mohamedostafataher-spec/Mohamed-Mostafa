@@ -60,7 +60,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
         <div className="text-center max-w-xl mx-auto mb-10">
           <RibbonBowDivider />
           <h2 className="text-2xl md:text-3xl font-extrabold text-[#111827] tracking-tight mt-4">
-            لماذا تختارين التسوق من SULTA؟
+            لماذا تختارين التسوق من Sulta؟
           </h2>
           <p className="text-gray-600 text-xs mt-2 font-bold tracking-wider">ضمان الجودة، سرعة الشحن، وراحة تليق بكِ</p>
         </div>

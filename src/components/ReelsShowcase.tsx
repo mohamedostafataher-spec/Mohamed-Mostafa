@@ -24,7 +24,7 @@ export default function ReelsShowcase({ products, onSelectProduct, onAddToCart }
           <div className="text-right">
             <h3 className="text-lg sm:text-2xl font-black text-gray-900 flex items-center gap-2">
               <Instagram size={24} className="text-[#A44C5C]" />
-              <span>معرض ريلز SULTA الملكي 🎬</span>
+              <span>معرض ريلز Sulta الملكي 🎬</span>
             </h3>
             <p className="text-gray-500 text-[11px] sm:text-xs mt-1">
               شاهدي انسيابية الأقمشة وفخامة التفاصيل في مقاطع قصيرة
@@ -121,6 +121,9 @@ function ReelCard({ product, muted, isActive, onInView, onSelect, onAddToCart }:
             src={cleanImgUrl(product.images[0], product.category)} 
             className="w-full h-full object-cover transition-transform duration-10000 group-hover:scale-125 group-hover:rotate-2" 
             alt={product.nameAr}
+            width={280}
+            height={498}
+            loading="lazy"
           />
           {/* Cinematic overlay for static images */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />

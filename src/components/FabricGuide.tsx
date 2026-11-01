@@ -30,7 +30,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
     careTitleAr: savedSection?.careTitleAr || 'إرشادات العناية الخاصة والوقاية (Care Instructions)',
     careDescAr: savedSection?.careDescAr || 'ننصح بتجنب درجات الحرارة المرتفعة أثناء الكي ويفضل الكي البخاري أو بدرجة حرارة معتدلة مخصصة للأقمشة الفاخرة. تجنبي المبيضات والمواد الكيميائية وحافظي على تهوية القطع وعطر الدار.',
     
-    benefitsTitleAr: savedSection?.benefitsTitleAr || 'مزايا فخامة خامات SULTA الممتازة (Fabric Benefits)',
+    benefitsTitleAr: savedSection?.benefitsTitleAr || 'مزايا فخامة خامات Sulta الممتازة (Fabric Benefits)',
     benefitsDescAr: savedSection?.benefitsDescAr || 'مضادة للحساسية، مقاومة للتجعد التلقائي، ثبات كلي للألوان الملكية حتى مع تكرار الغسيل، حياكة يدوية مزدوجة الحلقات تضمن عمرًا أطول للقطعة دون تلف للتمرير عبر الأجيال.',
     
     washingTitleAr: savedSection?.washingTitleAr || 'بروتوكول الغسيل والتطهير الملكي (Washing Instructions)',
@@ -43,7 +43,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
       <div className="text-center space-y-3 max-w-xl mx-auto mb-12">
         <span className="text-[10px] text-[#A44C5C] tracking-[0.25em] uppercase font-bold flex items-center justify-center gap-1">
           <Sparkles size={12} className="text-[#DF8A9D]/80" />
-          SULTA COUTURE FABRICS
+          Sulta COUTURE FABRICS
         </span>
         <h2 className="font-serif text-2xl md:text-4xl lg:text-5xl font-light text-[#0B0B0B] mb-2 uppercase tracking-wide">
           دليل الخامات الملكي الفاخر
@@ -155,7 +155,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
       {/* Trust Seal Footer */}
       <div className="mt-12 bg-white/50 backdrop-blur-xs p-5 rounded-2xl border border-gray-150 text-center max-w-xl mx-auto text-3xs md:text-xs space-y-1.5 leading-relaxed">
         <strong className="font-serif uppercase tracking-widest text-[#A44C5C] block mb-1">DESIGNER'S GUARANTEE:</strong>
-        جميع قطع SULTA معززة بخدمة ضمان الجودة لمدة عام كامل ضد العيوب المصنعية أو الارتخاء المفرط، تأكيداً لاهتمامنا البالغ بمتعة خلوتك وثقتك المطلقة.
+        جميع قطع Sulta معززة بخدمة ضمان الجودة لمدة عام كامل ضد العيوب المصنعية أو الارتخاء المفرط، تأكيداً لاهتمامنا البالغ بمتعة خلوتك وثقتك المطلقة.
       </div>
     </div>
   );

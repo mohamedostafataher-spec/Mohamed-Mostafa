@@ -173,14 +173,14 @@ const META_STANDARD_EVENTS_TABLE = [
   {
     nameAr: 'اشتراك',
     nameEn: 'Subscribe',
-    desc: 'بدء اشتراك بالنشرة البريدية أو عضوية سولتة الملكية.',
+    desc: 'بدء اشتراك بالنشرة البريدية أو عضوية سولته الملكية.',
     code: "fbq('track', 'Subscribe', {value: '0.00', currency: 'SAR', predicted_ltv: '0.00'});",
     category: 'lead'
   },
   {
     nameAr: 'الجدول الزمني',
     nameEn: 'Schedule',
-    desc: 'حجز موعد أو استشارة قياس خاصة مع خبيرات سولتة.',
+    desc: 'حجز موعد أو استشارة قياس خاصة مع خبيرات سولته.',
     code: "fbq('track', 'Schedule');",
     category: 'lead'
   },
@@ -201,7 +201,7 @@ const META_STANDARD_EVENTS_TABLE = [
   {
     nameAr: 'بحث عن الموقع',
     nameEn: 'FindLocation',
-    desc: 'البحث عن فرع بوتيك سولتة أو موقع الاستلام.',
+    desc: 'البحث عن فرع بوتيك سولته أو موقع الاستلام.',
     code: "fbq('track', 'FindLocation');",
     category: 'interaction'
   },
@@ -398,7 +398,7 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
 
     const dummyProduct = {
       id: 'sulta-test-silk-99',
-      nameAr: 'بيجامة سولتة الملكية الحريرية (فحص تجريبي)',
+      nameAr: 'بيجامة سولته الملكية الحريرية (فحص تجريبي)',
       nameEn: 'Sulta Royal Silk Pajama (Test Ping)',
       priceSA: 99,
       priceEG: 499,
@@ -484,7 +484,7 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
           break;
 
         case 'Lead':
-          trackLead('طلب استشارة كونسيرج سولتة', 0, 'SAR');
+          trackLead('طلب استشارة كونسيرج سولته', 0, 'SAR');
           setTestSuccessMessage('تم إرسال حدث Lead (بيانات العميل المحتمل) بنجاح!');
           break;
 
@@ -504,12 +504,12 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
           break;
 
         case 'SubmitApplication':
-          trackSubmitApplication('طلب انضمام لنادي سفيرات سولتة');
+          trackSubmitApplication('طلب انضمام لنادي سفيرات سولته');
           setTestSuccessMessage('تم إرسال حدث SubmitApplication (إرسال طلب) بنجاح!');
           break;
 
         case 'FindLocation':
-          trackFindLocation('الرياض', 'بوتيك سولتة سنتريا مول');
+          trackFindLocation('الرياض', 'بوتيك سولته سنتريا مول');
           setTestSuccessMessage('تم إرسال حدث FindLocation (بحث عن الموقع) بنجاح!');
           break;
 
@@ -535,7 +535,7 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
 
   // Copy Full Diagnostics Report
   const handleCopyReport = () => {
-    const reportText = `=== تقرير تشخيص ربط البيكسلات (SULTA PIXEL REPORT) ===
+    const reportText = `=== تقرير تشخيص ربط البيكسلات (Sulta PIXEL REPORT) ===
 تاريخ الفحص: ${new Date().toLocaleString('ar-SA')}
 الرابط المباشر: https://${targetDomain}
 

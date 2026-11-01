@@ -442,11 +442,11 @@ export default function AiMirror({
           // Write signature watermark 
           ctx.fillStyle = 'rgba(11, 11, 11, 0.7)';
           ctx.font = 'bold 12px sans-serif';
-          ctx.fillText('SULTA AI MIRROR | بوتيك سلطة', 30, canvas.height - 40);
+          ctx.fillText('Sulta AI MIRROR | بوتيك سولته', 30, canvas.height - 40);
 
           // Trigger direct client download
           const link = document.createElement('a');
-          link.download = `SULTA_Virtual_TryOn_${selectedProduct.id}.jpg`;
+          link.download = `Sulta_Virtual_TryOn_${selectedProduct.id}.jpg`;
           link.href = canvas.toDataURL('image/jpeg', 0.92);
           link.click();
         };
@@ -454,7 +454,7 @@ export default function AiMirror({
         dressImg.onerror = () => {
           alert('تعذر تحميل صورة الكوتور لرسمها على اللوحة الحية. تم حفظ اللوحة الأساسية.');
           const link = document.createElement('a');
-          link.download = `SULTA_Base_Canvas_${selectedProduct.id}.jpg`;
+          link.download = `Sulta_Base_Canvas_${selectedProduct.id}.jpg`;
           link.href = canvas.toDataURL('image/jpeg', 0.92);
           link.click();
         };
@@ -463,7 +463,7 @@ export default function AiMirror({
   };
 
   // Sharing links (Phases 7)
-  const shareText = encodeURIComponent(`شاهدي تجربتي المذهلة لإطلالة SULTA الملكية! جربت موديل "${selectedProduct?.nameAr || 'بيجامات كوتور'}" افتراضياً وحصلت على استشارة المقاس 🪞🪄 وبدون أي تكاليف.`);
+  const shareText = encodeURIComponent(`شاهدي تجربتي المذهلة لإطلالة Sulta الملكية! جربت موديل "${selectedProduct?.nameAr || 'بيجامات كوتور'}" افتراضياً وحصلت على استشارة المقاس 🪞🪄 وبدون أي تكاليف.`);
   const whatsappUrl = `https://api.whatsapp.com/send?text=${shareText}`;
   const snapchatUrl = `https://www.snapchat.com/`;
   const instagramUrl = `https://www.instagram.com/`;
@@ -494,10 +494,10 @@ export default function AiMirror({
       <div className="max-w-7xl mx-auto mb-8 text-center relative pt-4">
         <div className="inline-flex items-center gap-2 bg-[#A44C5C]/10 border border-[#A44C5C]/20 px-4 py-1.5 rounded-full text-[#A44C5C] text-xs font-bold tracking-widest uppercase mb-4 animate-pulse">
           <Sparkles size={13} className="text-[#DF8A9D]" />
-          <span>SULTA LABS • ابتكار الغد الملكي</span>
+          <span>Sulta LABS • ابتكار الغد الملكي</span>
         </div>
         <h2 className="font-serif text-3xl md:text-5xl lg:text-5xl text-[#0B0B0B] font-light tracking-wide uppercase">
-          👑 SULTA AI MIRROR
+          👑 Sulta AI MIRROR
         </h2>
         <p className="text-[#A44C5C] font-serif italic text-xs tracking-widest mt-2 max-w-2xl mx-auto leading-relaxed">
           غرفة قياس ملكية ثورية ذكية تعمل 100% داخل جهازكِ للحفاظ على خصوصيتكِ وممتلكاتكِ لتجربة الموديلات كأنكِ بالبوتيك الحقيقي.
@@ -513,7 +513,7 @@ export default function AiMirror({
                 : 'text-gray-500 hover:text-black hover:bg-gray-50'
             }`}
           >
-            🪞 غرفة قياس SULTA
+            🪞 غرفة قياس Sulta
           </button>
           
           <button
@@ -524,7 +524,7 @@ export default function AiMirror({
                 : 'text-gray-500 hover:text-black hover:bg-gray-50'
             }`}
           >
-            🏬 دخول بوتيك SULTA
+            🏬 دخول بوتيك Sulta
           </button>
         </div>
       </div>
@@ -553,7 +553,7 @@ export default function AiMirror({
               <div className="absolute top-4 left-0 right-0 flex justify-center pointer-events-none z-10">
                 <div className="bg-[#FAF5F0]/10 backdrop-blur-md border border-white/10 px-4 py-1.5 rounded-full text-[10px] text-[#F6E7A6]/90 font-mono flex items-center gap-1.5 shadow-sm">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                  <span>SULTA STUDIO - 5000K SOFT LIGHT</span>
+                  <span>Sulta STUDIO - 5000K SOFT LIGHT</span>
                 </div>
               </div>
 
@@ -812,7 +812,7 @@ export default function AiMirror({
 
               {/* Dynamic Interactive Watermark Overlay bottom */}
               <div className="absolute bottom-4 right-4 left-4 flex justify-between items-center z-30 pointer-events-none bg-black/45 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-white/5">
-                <span className="text-[9.5px] font-bold text-[#F6E7A6] tracking-wider font-serif">SULTA COUTURE</span>
+                <span className="text-[9.5px] font-bold text-[#F6E7A6] tracking-wider font-serif">Sulta COUTURE</span>
                 <span className="text-[8.5px] text-gray-300 font-sans">اسحبي القطعة باللمس لتحريكها ومطابقتها</span>
               </div>
             </div>
@@ -1165,7 +1165,7 @@ export default function AiMirror({
                       القطعة المحددة للقياس 👗
                     </span>
                     <h3 className="font-serif text-xl md:text-2xl font-bold text-gray-900 mt-1">
-                      {selectedProduct ? selectedProduct.nameAr : "جاري تحميل قطع SULTA..."}
+                      {selectedProduct ? selectedProduct.nameAr : "جاري تحميل قطع Sulta..."}
                     </h3>
                     <p className="text-gray-400 text-xs mt-1">
                       {selectedProduct ? selectedProduct.categoryAr : "التصنيف الفاخر"} | {selectedProduct?.sku || 'SKU-001'}
@@ -1284,7 +1284,7 @@ export default function AiMirror({
                   👑
                 </span>
                 <div>
-                  <h4 className="font-serif text-sm font-bold text-gray-950">مستشارة الأناقة لبيت الأزياء SULTA</h4>
+                  <h4 className="font-serif text-sm font-bold text-gray-950">مستشارة الأناقة لبيت الأزياء Sulta</h4>
                   <p className="text-[10px] text-gray-400">تحليل فوري لأبعاد قوامكِ لإعطاء القياس وحركة الموديل الأمثل.</p>
                 </div>
               </div>
@@ -1330,7 +1330,7 @@ export default function AiMirror({
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] text-gray-400 font-bold">المقاس المقترح كوتور:</span>
                     <span className="bg-[#A44C5C] text-[#F6E7A6] font-bold text-xs px-2.5 py-0.5 rounded">
-                      {stylistFeedback.size} SULTA FIT
+                      {stylistFeedback.size} Sulta FIT
                     </span>
                   </div>
                   <p className="text-xs text-gray-700 leading-relaxed font-sans font-medium">
@@ -1346,7 +1346,7 @@ export default function AiMirror({
             {/* SELECTION BAR: CATALOGUE GALLERY TO CHOOSE PRODUCTS (Phase 4) */}
             <div className="bg-white border border-[#f0ece1] rounded-3xl p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-2 border-b border-gray-100">
-                <span className="font-serif text-sm font-bold text-gray-800">تصفحي خزانة ملابس SULTA لتجربتها بالمرآة</span>
+                <span className="font-serif text-sm font-bold text-gray-800">تصفحي خزانة ملابس Sulta لتجربتها بالمرآة</span>
                 <input
                   type="text"
                   placeholder="ابحثي عن قطعة معينة..."
@@ -1460,10 +1460,10 @@ export default function AiMirror({
                 WELCOME TO THE WALK-IN COUTURE RETREAT
               </span>
               <h2 className="font-serif text-3xl md:text-5xl lg:text-3xl xl:text-5xl font-light text-[#FAF5F0] tracking-wide leading-tight">
-                🏬 بهو وبوتيك SULTA الافتراضي لملابس النوم
+                🏬 بهو وبوتيك Sulta الافتراضي لملابس النوم
               </h2>
               <p className="text-gray-300 text-xs leading-relaxed max-w-lg mx-auto">
-                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع المنسوجات المنسدلة من المشغل الفاخر، واجلسي مع مستشارة سلطة بلمسة واحدة.
+                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع المنسوجات المنسدلة من المشغل الفاخر، واجلسي مع مستشارة سولته بلمسة واحدة.
               </p>
             </div>
           </div>
@@ -1575,7 +1575,7 @@ export default function AiMirror({
       {/* FOOTER AUDITING SUMMARY REPORT REQUIREMENT */}
       <div className="max-w-7xl mx-auto mt-16 bg-[#A44C5C] text-[#FAFAF7]/95 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl border border-[#FAF5F0]/10 text-right">
         <h4 className="font-serif text-md sm:text-lg font-bold text-[#F6E7A6] flex items-center gap-2">
-          📑 تقرير الجاهزية التشغيلية | SULTA AI MIRROR REPORT
+          📑 تقرير الجاهزية التشغيلية | Sulta AI MIRROR REPORT
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2 font-sans text-xs">
           <div className="bg-white/5 p-4 rounded-xl border border-white/5">
@@ -1596,7 +1596,7 @@ export default function AiMirror({
           </div>
         </div>
         <p className="text-[10px] leading-relaxed text-gray-400 pt-2 font-sans">
-          ✔ تم ربط هذه الميزة لتعمل مباشرة على جلب صور وملفات المنتجات المسجلة في الـ Supabase Storage والـ Database الخاص بمتجر سلطة، دون تكبد أي مصاريف أو فواتير شهرية خارجية بفضل الخوارزميات الحسابية المعتمدة على محاكاة الأبعاد وتراكب الأنسجة ثنائية الأبعاد (Canvas Drawing) بمحيط المتصفح. الصور المرفوعة آمنة ولا تغادر هاتف العميل مطلقاً.
+          ✔ تم ربط هذه الميزة لتعمل مباشرة على جلب صور وملفات المنتجات المسجلة في الـ Supabase Storage والـ Database الخاص بمتجر سولته، دون تكبد أي مصاريف أو فواتير شهرية خارجية بفضل الخوارزميات الحسابية المعتمدة على محاكاة الأبعاد وتراكب الأنسجة ثنائية الأبعاد (Canvas Drawing) بمحيط المتصفح. الصور المرفوعة آمنة ولا تغادر هاتف العميل مطلقاً.
         </p>
       </div>
 

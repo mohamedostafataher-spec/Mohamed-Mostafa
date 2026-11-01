@@ -167,7 +167,7 @@ export default function Header({
               rel="noopener noreferrer"
               className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition-all shadow-2xs"
               title="تابعونا على انستغرام"
-              aria-label="سولتة على انستغرام"
+              aria-label="سولته على انستغرام"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -183,7 +183,7 @@ export default function Header({
               rel="noopener noreferrer"
               className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition-all shadow-2xs"
               title="تابعونا على تيك توك"
-              aria-label="سولتة على تيك توك"
+              aria-label="سولته على تيك توك"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
                 <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
@@ -227,7 +227,7 @@ export default function Header({
             </button>
           </div>
 
-          {/* SULTA Brand Logo (Centered on mobile, left/right on desktop) */}
+          {/* Sulta Brand Logo (Centered on mobile, left/right on desktop) */}
           <div 
             className="flex items-center cursor-pointer select-none" 
             onClick={() => setTab('home')}
@@ -235,12 +235,12 @@ export default function Header({
             <div className="flex flex-col items-center sm:items-start group">
               <div className="flex items-center gap-1.5">
                 <span className="text-lg sm:text-2xl font-black tracking-widest text-[#111827] group-hover:text-black transition-colors font-serif uppercase">
-                  {settings?.siteName || 'SULTA'}
+                  {settings?.siteName || 'Sulta'}
                 </span>
                 <span className="text-black text-xs sm:text-sm">👑</span>
               </div>
               <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-bold text-gray-500 font-sans -mt-0.5">
-                سُـلـطَـة · أزياء النوم الفاخرة
+                سولته · أزياء النوم الفاخرة
               </span>
             </div>
           </div>

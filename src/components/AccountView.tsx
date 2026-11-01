@@ -122,7 +122,7 @@ export default function AccountView({
   const [activeStepTab, setActiveStepTab] = useState<OrderStatus>("new");
   const [etaTimer, setEtaTimer] = useState(1455); // 24 mins and 15 seconds
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "user" | "driver"; text: string; time: string }>>([
-    { sender: "driver", text: "مرحباً بكِ في خدمة التوصيل الراقي من SULTA. أنا كابتن سفيان، شحنتكِ الثمينة معي الآن وباتت في طريقها إليكِ! 🌸 هل أنتم متواجدون في المنزل لاستلامها؟", time: "الآن" }
+    { sender: "driver", text: "مرحباً بكِ في خدمة التوصيل الراقي من Sulta. أنا كابتن سفيان، شحنتكِ الثمينة معي الآن وباتت في طريقها إليكِ! 🌸 هل أنتم متواجدون في المنزل لاستلامها؟", time: "الآن" }
   ]);
   const [isDriverTyping, setIsDriverTyping] = useState(false);
   const [customUserText, setCustomUserText] = useState("");
@@ -236,7 +236,7 @@ export default function AccountView({
       doc.setTextColor(246, 231, 166); // Cream light gold
       doc.setFont("helvetica", "bold");
       doc.setFontSize(22);
-      doc.text("SULTA COUTURE", 105, 18, { align: "center" });
+      doc.text("Sulta COUTURE", 105, 18, { align: "center" });
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
@@ -360,7 +360,7 @@ export default function AccountView({
       doc.setFont("helvetica", "oblique");
       doc.setFontSize(9);
       doc.text(
-        "Thank you for shopping at SULTA LUXURY COUTURE.",
+        "Thank you for shopping at Sulta LUXURY COUTURE.",
         105,
         currentY + 7,
         { align: "center" },
@@ -505,7 +505,7 @@ export default function AccountView({
       setActiveStepTab("shipped");
       setActiveTab("track");
       setChatMessages([
-        { sender: "driver", text: `أهلاً بكِ يا صانعة الأناقة! 🌸 لقد تسلمت الآن طلبيتك رقم ${demoOrder.id} وباتت معقمة داخل سيارة التوصيل لـ SULTA Express. أنا في الطريق إليكِ حالياً وفخور جداً بتقديم الخدمة لكِ. هل أنتم متواجدون حالياً بالمنزل؟`, time: "الآن" }
+        { sender: "driver", text: `أهلاً بكِ يا صانعة الأناقة! 🌸 لقد تسلمت الآن طلبيتك رقم ${demoOrder.id} وباتت معقمة داخل سيارة التوصيل لـ Sulta Express. أنا في الطريق إليكِ حالياً وفخور جداً بتقديم الخدمة لكِ. هل أنتم متواجدون حالياً بالمنزل؟`, time: "الآن" }
       ]);
     }
   };
@@ -514,7 +514,7 @@ export default function AccountView({
   const [addresses, setAddresses] = useState<any[]>([]);
 
   const activeUser = session?.user || localCustomer || {
-    displayName: "عميلة SULTA الكريمة",
+    displayName: "عميلة Sulta الكريمة",
     email: "client@sulta.atelier",
     phone: "+966 55 282 3677"
   };
@@ -524,8 +524,8 @@ export default function AccountView({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <SEO 
-        title="حسابي الملكي - نادي سولتة" 
-        description="إدارة طلبياتكِ الفاخرة، تتبع الشحنات، ونقاط الولاء في بوتيك سولتة للأزياء الراقية." 
+        title="حسابي الملكي - نادي سولته" 
+        description="إدارة طلبياتكِ الفاخرة، تتبع الشحنات، ونقاط الولاء في بوتيك سولته للأزياء الراقية." 
         path="/account" 
       />
       {/* Introduction with Loyalty quick status banner */}
@@ -538,7 +538,7 @@ export default function AccountView({
             <span className="text-gray-400 text-xs">|</span>
             <span className="text-[#0B0B0B] font-sans font-bold text-xs flex items-center gap-1">
               <Crown size={12} className="text-gray-400" />
-              <span>{activeUser?.phone || activeUser?.email || 'عميلة سولتة'}</span>
+              <span>{activeUser?.phone || activeUser?.email || 'عميلة سولته'}</span>
             </span>
 
 
@@ -551,7 +551,7 @@ export default function AccountView({
             </button>
           </div>
           <h2 className="font-serif text-2xl md:text-4xl font-light text-[#0B0B0B] mt-1">
-            مرحباً بكِ في نادي SULTA الملكي
+            مرحباً بكِ في نادي Sulta الملكي
           </h2>
           <p className="text-xs text-gray-500 font-sans mt-0.5">
             مساحتك الحصرية لإدارة طلبياتك ومفضلتك وتفاصيل نقاط الولاء والتبديل.
@@ -804,7 +804,7 @@ export default function AccountView({
             </div>
           )}
 
-          {/* TAB 0: LOYALTY PORTAL (SULTA COUTURE CLUB) */}
+          {/* TAB 0: LOYALTY PORTAL (Sulta COUTURE CLUB) */}
           {activeTab === "loyalty" && (
             <div className="text-right space-y-7">
               {/* Visual Card detailing points and tiers */}
@@ -815,7 +815,7 @@ export default function AccountView({
                   <div className="flex items-center gap-2">
                     <Award size={18} className="text-[#F6E7A6]" />
                     <span className="font-serif italic text-xs tracking-widest text-[#F6E7A6]">
-                      SULTA GOLD TIERS 👑
+                      Sulta GOLD TIERS 👑
                     </span>
                   </div>
                   <h3 className="font-sans font-black text-2xl sm:text-3xl text-zinc-100">
@@ -1307,7 +1307,7 @@ export default function AccountView({
                       e.stopPropagation();
                       if (onAddToCart) {
                         onAddToCart(p, defaultColor, defaultSize, 1);
-                        toast(`تم إضافة "${p.nameAr}" إلى حقيبة تسوق SULTA 🛍️`, 'success');
+                        toast(`تم إضافة "${p.nameAr}" إلى حقيبة تسوق Sulta 🛍️`, 'success');
                       } else {
                         // fallback open details
                         onSelectProduct(p);
@@ -1404,7 +1404,7 @@ export default function AccountView({
           {activeTab === "settings" && (
             <div className="text-right">
               <h3 className="font-serif text-lg font-light text-[#0B0B0B] pb-3 border-b border-gray-100 mb-6">
-                تهيئة الإعدادات لنادي SULTA
+                تهيئة الإعدادات لنادي Sulta
               </h3>
 
               <div className="space-y-4 font-sans text-xs">
@@ -1573,7 +1573,7 @@ export default function AccountView({
                         onClick={() => {
                           setTrackedOrder(null);
                           setChatMessages([
-                            { sender: "driver", text: "مرحباً بكِ في خدمة التوصيل الراقي من SULTA. أنا كابتن سفيان، شحنتكِ الثمينة معي الآن وباتت في طريقها إليكِ! 🌸 هل أنتم متواجدون في المنزل لاستلامها؟", time: "الآن" }
+                            { sender: "driver", text: "مرحباً بكِ في خدمة التوصيل الراقي من Sulta. أنا كابتن سفيان، شحنتكِ الثمينة معي الآن وباتت في طريقها إليكِ! 🌸 هل أنتم متواجدون في المنزل لاستلامها؟", time: "الآن" }
                           ]);
                         }}
                         className="text-xs text-[#DF8A9C] hover:text-[#0B0B0B] font-bold border border-[#DF8A9C]/20 px-4 py-2 rounded-xl hover:bg-neutral-50 flex items-center gap-1.5 cursor-pointer transition-all w-full sm:w-auto justify-center"
@@ -1704,10 +1704,10 @@ export default function AccountView({
                         <span className="text-base">💎</span>
                       </div>
                       <p className="text-right">
-                        {activeStepTab === "new" && "تم استلام طلبيتكِ الفاخرة واعتمادها بنجاح في أنظمة SULTA المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
+                        {activeStepTab === "new" && "تم استلام طلبيتكِ الفاخرة واعتمادها بنجاح في أنظمة Sulta المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
                         {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الكوتور الفاخرة لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط ملكي كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
-                        {activeStepTab === "shipped" && "بشرى سارة! تم تسليم باقتك لـ SULTA Fast Express وهي بصحبة سفير توصيل الأناقة كابتن سفيان الآن. تم تحسين مسار الرحلة ذكياً للوصول في دقة فائقة، الجوال متاح لتسهيل الاتصال والوصول المباشر."}
-                        {activeStepTab === "delivered" && "تم تسليم الطرد الملكي في منتهى الرقي. نتمنى لك دوماً تجربة نوم هانئة تملؤها السكينة والأناقة المفرطة مع منسوجات SULTA. سعدنا بثقتِك ونتشرف بزيارة تقيمية تذكرين فيها رأيك في القطعة!"}
+                        {activeStepTab === "shipped" && "بشرى سارة! تم تسليم باقتك لـ Sulta Fast Express وهي بصحبة سفير توصيل الأناقة كابتن سفيان الآن. تم تحسين مسار الرحلة ذكياً للوصول في دقة فائقة، الجوال متاح لتسهيل الاتصال والوصول المباشر."}
+                        {activeStepTab === "delivered" && "تم تسليم الطرد الملكي في منتهى الرقي. نتمنى لك دوماً تجربة نوم هانئة تملؤها السكينة والأناقة المفرطة مع منسوجات Sulta. سعدنا بثقتِك ونتشرف بزيارة تقيمية تذكرين فيها رأيك في القطعة!"}
                       </p>
                     </div>
                   </div>
@@ -1719,7 +1719,7 @@ export default function AccountView({
                       {/* Active SVG Route Map */}
                       <div className="bg-white border border-gray-200 rounded-3xl p-5 md:p-6 lg:col-span-2 space-y-4 text-right">
                         <div className="flex justify-between items-center pb-2 border-b border-gray-100">
-                          <span className="text-[10px] text-gray-400 font-sans font-bold">تتبع حي للمندوب الملكي SULTA Express 🧭</span>
+                          <span className="text-[10px] text-gray-400 font-sans font-bold">تتبع حي للمندوب الملكي Sulta Express 🧭</span>
                           <h4 className="font-serif text-sm font-light text-gray-950">الخريطة الحية للتوصيل والموقع الفوري</h4>
                         </div>
 
@@ -1834,7 +1834,7 @@ export default function AccountView({
                       <div className="bg-white border border-gray-200 rounded-3xl p-5 md:p-6 space-y-4 text-right">
                         <div className="text-right pb-2 border-b border-gray-100">
                           <h4 className="font-serif text-sm font-semibold text-gray-950">مندوب التوصيل المعتمد لطلبيتكِ</h4>
-                          <p className="text-[10.5px] text-gray-400 mt-0.5">سفير الأناقة الخاص لبراند SULTA الشريك</p>
+                          <p className="text-[10.5px] text-gray-400 mt-0.5">سفير الأناقة الخاص لبراند Sulta الشريك</p>
                         </div>
 
                         <div className="flex items-center gap-3.5 flex-row-reverse text-right pt-1">
@@ -1855,7 +1855,7 @@ export default function AccountView({
 
                         <div className="space-y-2 text-xs text-gray-600 font-sans pt-2">
                           <div className="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex-row-reverse text-right">
-                            <span className="font-bold text-gray-950">SULTA Express</span>
+                            <span className="font-bold text-gray-950">Sulta Express</span>
                             <span className="text-gray-400">شركة الشحن:</span>
                           </div>
                           <div className="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex-row-reverse text-right">
@@ -1921,7 +1921,7 @@ export default function AccountView({
                                 // Prevent multiple triggers during typing
                                 if (isDriverTyping) return;
                                 const userMsg = "أنا متواجدة بالمنزل حالياً وبانتظارك بشوق كامل لتسلم باقة الأناقة! 🌸";
-                                const replyText = "في منتهى السعادة لسماع ذلك يا سيدتي الموقرة! دقيقتين فقط وسأكون على باب منزلكِ لتسليمك أرقى تصاميم الكوتور من SULTA. نتمنى لك دوماً فخامة مطلقة!";
+                                const replyText = "في منتهى السعادة لسماع ذلك يا سيدتي الموقرة! دقيقتين فقط وسأكون على باب منزلكِ لتسليمك أرقى تصاميم الكوتور من Sulta. نتمنى لك دوماً فخامة مطلقة!";
                                 
                                 setChatMessages(prev => [...prev, { sender: "user", text: userMsg, time: "الآن" }]);
                                 setIsDriverTyping(true);
@@ -1940,7 +1940,7 @@ export default function AccountView({
                             <button
                               onClick={() => {
                                 if (isDriverTyping) return;
-                                const userMsg = "هل الطرد مغلف كهدية راقية وأنيقة تليق بـ SULTA؟ 🎁";
+                                const userMsg = "هل الطرد مغلف كهدية راقية وأنيقة تليق بـ Sulta؟ 🎁";
                                 const replyText = "نعم بكل تأكيد يا سيدتي الراقية! طردك موضوع داخل علبتنا الوردية البوتيك المحمية، مغلف بورق ملوكي معطر بالمسك الأبيض وبصحبة كرت الإهداء الأنيق كتحفة فنية متكاملة.";
                                 
                                 setChatMessages(prev => [...prev, { sender: "user", text: userMsg, time: "الآن" }]);
@@ -2000,7 +2000,7 @@ export default function AccountView({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
                       {[
                         { id: "coffee", text: "تجهيز فنجان القهوة أو الشاي الساخن للاحتفال بجمال فك الطرد ☕" },
-                        { id: "warranty", text: "الاستعداد لفحص كرت الضمان الأصيل والختم الفضي اللامع لـ SULTA 🏷️" },
+                        { id: "warranty", text: "الاستعداد لفحص كرت الضمان الأصيل والختم الفضي اللامع لـ Sulta 🏷️" },
                         { id: "camera", text: "ضبط إضاءة الغرفة الهادئة وتجهيز كاميرا الهاتف لتوثيق فديو فتح الصندوق (Unboxing Vlog) 📸" },
                         { id: "phone", text: "تهيئة الجوال والتأكد من شحن البطارية لتلقي الرمز الفوري وتسليمه للمندوب الملكي 📱" }
                       ].map((chk) => (
@@ -2076,7 +2076,7 @@ export default function AccountView({
                           {trackedOrder.paymentMethod}
                         </p>
                         <p>
-                          <strong>قنوات الشحن الفاخرة:</strong> شحن وتوصيل SULTA Express
+                          <strong>قنوات الشحن الفاخرة:</strong> شحن وتوصيل Sulta Express
                         </p>
                         <p>
                           <strong>تاريخ وتوقيت المعاملة:</strong>{" "}
@@ -2292,7 +2292,7 @@ export default function AccountView({
                   تقييم ومراجعة القطعة الملكية
                 </h3>
                 <p className="text-[10px] text-gray-500 font-sans mt-0.5 leading-relaxed">
-                  مشاركة تجربتكِ الرائعة تساعد صاحبات نادي SULTA الفاخر على
+                  مشاركة تجربتكِ الرائعة تساعد صاحبات نادي Sulta الفاخر على
                   اتجاهات الموضة واختيار القطعة المثالية.
                 </p>
               </div>

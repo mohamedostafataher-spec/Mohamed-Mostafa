@@ -343,7 +343,7 @@ export default function AdminMarketingCenter() {
     title: '', platform: 'Instagram', scheduledTime: '2026-06-15T18:00', status: 'draft', notes: ''
   });
   // Email template builder state
-  const [emailSubject, setEmailSubject] = useState('مجموعتكِ الملكية القادمة من SULTA ✨');
+  const [emailSubject, setEmailSubject] = useState('مجموعتكِ الملكية القادمة من Sulta ✨');
   const [emailBody, setEmailBody] = useState('<div style="font-family: sans-serif; text-align: right; direction: rtl; padding: 20px;"><h2>عزيزتي الملكة ✨</h2><p>نقدم لكِ أرقى مجموعة من ملابس النوم المصنوعة من القطن الفاخر...</p></div>');
   const [selectedSegment, setSelectedSegment] = useState<'all' | 'vip' | 'new'>('all');
 
@@ -407,7 +407,7 @@ export default function AdminMarketingCenter() {
           setFeedPosts(JSON.parse(localFeed));
         } else {
           const defaults: SocialFeedPost[] = [
-            { id: 'feed-1', platform: 'instagram', mediaUrl: '/img/sulta_product_1.png', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سلطة', likes: 1420, comments: 65, order: 1 },
+            { id: 'feed-1', platform: 'instagram', mediaUrl: '/img/sulta_product_1.png', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سولته', likes: 1420, comments: 65, order: 1 },
             { id: 'feed-2', platform: 'instagram', mediaUrl: '/img/sulta_loungewear.png', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة ملوكية ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
             { id: 'feed-3', platform: 'instagram', mediaUrl: '/img/sulta_product_2.png', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
           ];
@@ -426,8 +426,8 @@ export default function AdminMarketingCenter() {
           setWhatsAppTemplates(JSON.parse(localWa));
         } else {
           const defaults: WhatsAppTemplate[] = [
-            { id: 'wa-1', title: 'السلة المتروكة الملكية', triggerEvent: 'abandoned_cart', messageAr: 'يا هلا بملكتنا ✨ نلاحظ أنكِ تركتِ بعض القطع الفخمة في حقيبتكِ في SULTA. تفضلي هذا الكوبون الخاص (SULTA10) لتخفيض 10% لكِ حصرياً 👑', messageEn: 'Hello lovely! We noticed you left beautiful luxury sleepwear items in your cart. Apply code SULTA10 for 10% off design lines now!', isActive: true },
-            { id: 'wa-2', title: 'رسالة الترحيب الودودة', triggerEvent: 'welcome', messageAr: 'أهلاً بكِ في بيت أزياء SULTA 🌸 أصبحتي جزءاً من عائلتنا الملكية لملابس النوم الراقية. شاهدي أحدث التشكيلات عبر موقعنا.', messageEn: 'Welcome to the SULTA Family! Premium curated sleepwear and loungewear await you.', isActive: true },
+            { id: 'wa-1', title: 'السلة المتروكة الملكية', triggerEvent: 'abandoned_cart', messageAr: 'يا هلا بملكتنا ✨ نلاحظ أنكِ تركتِ بعض القطع الفخمة في حقيبتكِ في Sulta. تفضلي هذا الكوبون الخاص (Sulta10) لتخفيض 10% لكِ حصرياً 👑', messageEn: 'Hello lovely! We noticed you left beautiful luxury sleepwear items in your cart. Apply code Sulta10 for 10% off design lines now!', isActive: true },
+            { id: 'wa-2', title: 'رسالة الترحيب الودودة', triggerEvent: 'welcome', messageAr: 'أهلاً بكِ في بيت أزياء Sulta 🌸 أصبحتي جزءاً من عائلتنا الملكية لملابس النوم الراقية. شاهدي أحدث التشكيلات عبر موقعنا.', messageEn: 'Welcome to the Sulta Family! Premium curated sleepwear and loungewear await you.', isActive: true },
             { id: 'wa-3', title: 'تم تأكيد طلبكِ وشحنه', triggerEvent: 'support', messageAr: 'تم شحن طلبكِ الفخم ومعبأ بعنايتنا وبخصلات عطرنا المميز ✨ يمكنكِ التتبع عبر اللوحة من حسابكِ في سُلطة.', messageEn: 'Your luxurious package has been shipped and delicately packed with care.', isActive: true }
           ];
           setWhatsAppTemplates(defaults);
@@ -661,7 +661,7 @@ export default function AdminMarketingCenter() {
     localStorage.setItem('sulta_marketing_influencers', JSON.stringify(updated));
     await supabase.from('influencers').insert([newInf]).select();
     setInfluencerForm({ name: '', platform: 'Instagram', handle: '', followers: 50000, engagement: 5.2, cost: 1500, campaignStatus: 'active' });
-    showToast('🌹 تم تسجيل نجم المؤثرات الفاخر في سجل SULTA CRM!');
+    showToast('🌹 تم تسجيل نجم المؤثرات الفاخر في سجل Sulta CRM!');
   };
 
   const deleteInfluencer = async (id: string) => {
@@ -742,7 +742,7 @@ export default function AdminMarketingCenter() {
         <div>
           <h2 className="font-serif text-3xl font-light text-[#0B0B0B] flex items-center gap-3">
             <Radio className="text-[#DF8A9D] animate-pulse" size={28} />
-            بوابة الإشراف والتسويق والترويج الملكي (SULTA Command Center)
+            بوابة الإشراف والتسويق والترويج الملكي (Sulta Command Center)
           </h2>
           <p className="text-gray-400 text-xs mt-1">
             إدارة متكاملة لحسابات التواصل، حملات الواتساب والمؤثرات، كود الإحالات والـ Affiliate مع محرك UTM ذكي وقاعدة بيانات سوبابيس.
@@ -766,11 +766,11 @@ export default function AdminMarketingCenter() {
           { id: 'calendar', icon: Calendar, label: 'تقويم تخطيط المحتوى 📅' },
           { id: 'email', icon: Mail, label: 'إطلاق البريد الملكي ✉️' },
           { id: 'automations', icon: Bell, label: 'أتمتة الإجراءات الذكية ⚡' },
-          { id: 'seo', icon: Chrome, label: 'سيو SULTA والميتا 🔍' },
+          { id: 'seo', icon: Chrome, label: 'سيو Sulta والميتا 🔍' },
           { id: 'ugc', icon: Eye, label: 'إدارة أصول المستخدمين (UGC) 📷' },
           { id: 'ai', icon: Sparkles, label: 'مساعد المحتوى الذكي 🤖' },
           { id: 'health', icon: AlertTriangle, label: 'مراقب صحة التسويق 🩺' },
-          { id: 'stickers_memes', icon: Smile, label: 'ملصقات وميمز SULTA 🎭' }
+          { id: 'stickers_memes', icon: Smile, label: 'ملصقات وميمز Sulta 🎭' }
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -1411,14 +1411,14 @@ export default function AdminMarketingCenter() {
                       className="w-full border border-gray-250 bg-white p-2.5 rounded-lg"
                     >
                       <option value="all">كافة المسجلات والعرائس 👑</option>
-                      <option value="vip">عميلات SULTA VIP الفخمة</option>
+                      <option value="vip">عميلات Sulta VIP الفخمة</option>
                       <option value="new">المشتركات الجدد (نهاية الأسبوع)</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-gray-500 mb-1">رمز الخصم التلقائي المرفق بالرسالة</label>
                     <select className="w-full border border-gray-255 bg-white p-2.5 rounded-lg font-mono">
-                      <option>SULTA10</option>
+                      <option>Sulta10</option>
                       <option>MONA15</option>
                       <option>EID2026</option>
                     </select>
@@ -1473,9 +1473,9 @@ export default function AdminMarketingCenter() {
           <div className="bg-white border border-gray-150 rounded-2xl p-5">
             <h3 className="font-serif text-lg text-gray-900 mb-1 flex items-center gap-2">
               <Sparkles className="text-amber-500" size={18} />
-              محرك وأتمتة إجراءات التحرير والمبيعات التلقائية (SULTA Automations V1.0)
+              محرك وأتمتة إجراءات التحرير والمبيعات التلقائية (Sulta Automations V1.0)
             </h3>
-            <p className="text-gray-400 text-xs mb-4">أتمي العمليات الصعبة والمبيعات بدون تدخل يدوي لزيادة تفرغ فريق خدمة عملاء SULTA.</p>
+            <p className="text-gray-400 text-xs mb-4">أتمي العمليات الصعبة والمبيعات بدون تدخل يدوي لزيادة تفرغ فريق خدمة عملاء Sulta.</p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans text-xs">
               {automationRules.map((rule) => (
@@ -1513,7 +1513,7 @@ export default function AdminMarketingCenter() {
               <Search className="text-[#DF8A9D]" size={20} />
                صحة وتحسين محركات البحث والأرشفة الذكية (SEO Marketing Hub)
             </h3>
-            <p className="text-gray-400 text-xs mb-6">تحقق مستمر وتحديث لعلامات ميتا و سلف الفهرسة لبوتيك SULTA لضمان التربع في صدارة قوقل بالخليج العربي.</p>
+            <p className="text-gray-400 text-xs mb-6">تحقق مستمر وتحديث لعلامات ميتا و سلف الفهرسة لبوتيك Sulta لضمان التربع في صدارة قوقل بالخليج العربي.</p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
@@ -1523,7 +1523,7 @@ export default function AdminMarketingCenter() {
                   أوسمة الميتا في الصفحة الرئيسية
                 </h4>
                 <div className="space-y-2">
-                  <p>• <strong>العلامة:</strong> SULTA | بيجامات وملابس نوم العرائس الفاخرة بالرياض ومصر</p>
+                  <p>• <strong>العلامة:</strong> Sulta | بيجامات وملابس نوم العرائس الفاخرة بالرياض ومصر</p>
                   <p>• <strong>الوصف الملكي:</strong> تسوقي أرقى تصاميم البيجامات المصنوعة يدوياً من القطن البارد والنسيج الفاخر مع فيونكات أنيقة لراحة تسكن أحلامكِ.</p>
                   <p>• <strong>أكواد التتبع المدمجة:</strong> Snapchat Pixel, TikTok Pixel, Facebook CAPI</p>
                 </div>
@@ -1627,7 +1627,7 @@ export default function AdminMarketingCenter() {
                 <Share2 className="text-[#DF8A9D]" size={18} />
                  منشئ ومحرك الروابط التتبعية المدمجة (UTM Code Builder)
               </h3>
-              <p className="text-gray-400 text-xs leading-relaxed">أطلقي روابط فريدة لمؤثري ومندوبي SULTA لمتابعة نقرات المبيعات وحساب العائدات فورياً بكل شفافية.</p>
+              <p className="text-gray-400 text-xs leading-relaxed">أطلقي روابط فريدة لمؤثري ومندوبي Sulta لمتابعة نقرات المبيعات وحساب العائدات فورياً بكل شفافية.</p>
 
               <div className="space-y-3 text-xs font-sans">
                 <div>
@@ -1745,7 +1745,7 @@ export default function AdminMarketingCenter() {
 
               {/* SECTION: LATEST CUSTOMERS */}
               <div className="bg-white border border-[#f0ece1] rounded-2xl p-5 space-y-4 text-right">
-                <h3 className="font-serif text-md font-bold text-gray-900 border-b border-gray-100 pb-2">👥 سجل عميلات وولاء SULTA الأحدث (Latest Loyalty Clients)</h3>
+                <h3 className="font-serif text-md font-bold text-gray-900 border-b border-gray-100 pb-2">👥 سجل عميلات وولاء Sulta الأحدث (Latest Loyalty Clients)</h3>
                 
                 {isLoadingReal ? (
                   <p className="text-gray-400 text-xs text-center py-6 animate-pulse">جاري استدعاء سجل المشتريات والولاء...</p>
@@ -1902,7 +1902,7 @@ export default function AdminMarketingCenter() {
           <div className="bg-white border border-gray-150 rounded-3xl p-6 shadow-xs">
             <h3 className="font-serif text-xl font-bold text-gray-950 mb-2 flex items-center gap-2 justify-start">
               <Smile className="text-[#A44C5C]" size={20} />
-              إدارة وملصقات وميمز SULTA الملكية 🎭
+              إدارة وملصقات وميمز Sulta الملكية 🎭
             </h3>
             <p className="text-gray-400 text-xs mt-1 leading-relaxed">
               هنا يمكنك إضافة ميمز طريفة أو ملصقات رسمية لعرضها في معرض الواجهة الأمامية للعملاء لتسهيل الضحك الفاخر وتثبيت ملصقات تعبئة على هواتفهم أو سحبها لمجموعات التواصل.

@@ -36,7 +36,7 @@ export default function SmartNotificationsCenter({
       list.push({
         id: 'new-reviews-alert',
         title: `لديك ${pendingReviews.length} تقييمات جديدة بانتظار الموافقة ⭐`,
-        desc: `قام عملاؤك بمشاركة لحظاتهم الفاخرة مع منتجات SULTA، راجعيها الآن.`,
+        desc: `قام عملاؤك بمشاركة لحظاتهم الفاخرة مع منتجات Sulta، راجعيها الآن.`,
         type: 'review',
         time: 'الآن',
         actionLabel: 'مركز المراجعات',
@@ -78,7 +78,7 @@ export default function SmartNotificationsCenter({
       list.push({
         id: 'health-alert',
         title: `نظام التشخيص: تم رصد ملفات بحاجة للترميم الآلي 🛠️`,
-        desc: `تم اكتشاف ${healthIssuesCount} نواقص (SKU مفقود، وصف غير فخم، روابط صور فارغة) قد تضعف تجربة SULTA.`,
+        desc: `تم اكتشاف ${healthIssuesCount} نواقص (SKU مفقود، وصف غير فخم، روابط صور فارغة) قد تضعف تجربة Sulta.`,
         type: 'warning',
         time: 'منذ ساعتين',
         actionLabel: 'إصلاح المشاكل',
@@ -106,7 +106,7 @@ export default function SmartNotificationsCenter({
     // 5. Default General Announcement
     list.push({
       id: 'general-motd',
-      title: 'بوتيك SULTA مستعد لتوسعات الخليج العربي 🌍',
+      title: 'بوتيك Sulta مستعد لتوسعات الخليج العربي 🌍',
       desc: 'بوابة الدفع وبنية الشحن الموحدة مهيأة بالكامل لخدمة عميلاتنا في المملكة العربية السعودية.',
       type: 'info',
       time: 'مستمر',

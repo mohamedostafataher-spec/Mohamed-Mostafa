@@ -1,7 +1,7 @@
 import { Product, Category } from '../types';
 
 // ==========================================
-// SULTA OFFLINE SEO & CONTENT ENGINE V2.0
+// Sulta OFFLINE SEO & CONTENT ENGINE V2.0
 // ==========================================
 
 const FABRICS_AR: Record<string, string> = {
@@ -97,12 +97,12 @@ export const generateProductContent = (product: Product) => {
 
   // --- ARABIC CONTENT ---
   const shortDescriptionAr = `تألقي براحة لا مثيل لها مع ${nameAr}. صُمم هذا الطقم بعناية فائقة من ${fabricAr} ليمنحكِ نعومة خيالية ونوماً هانئاً في موسم ${season}.`;
-  const seoTitleAr = `شراء ${nameAr} | SULTA لملابس النوم الفاخرة | ${category}`;
-  const metaDescriptionAr = `اكتشفي فخامة ${nameAr} من SULTA. طقم نوم مصنوع من ${fabricAr} لراحة ونعومة مثالية. اطلبي الآن لتمتلكي قطعة كوتور فريدة من نوعها من أرقى بيوت الأزياء في مصر والسعودية.`;
-  const keywordsAr = `${nameAr}, ملابس نوم فاخرة, ${fabricAr}, SULTA, بيجامات عرايس, كوتور, ${category}`;
+  const seoTitleAr = `شراء ${nameAr} | Sulta لملابس النوم الفاخرة | ${category}`;
+  const metaDescriptionAr = `اكتشفي فخامة ${nameAr} من Sulta. طقم نوم مصنوع من ${fabricAr} لراحة ونعومة مثالية. اطلبي الآن لتمتلكي قطعة كوتور فريدة من نوعها من أرقى بيوت الأزياء في مصر والسعودية.`;
+  const keywordsAr = `${nameAr}, ملابس نوم فاخرة, ${fabricAr}, Sulta, بيجامات عرايس, كوتور, ${category}`;
 
   const fullDescriptionAr = `
-رؤية SULTA للمنتج:
+رؤية Sulta للمنتج:
 ارتقي بتجربة نومكِ إلى مستوى الكوتور الفاخر مع طقم ${nameAr}. قطعة فنية تجمع بين الأناقة المطلقة والراحة الفائقة، مصممة خصيصاً للمرأة التي لا ترضى بأقل من الكمال.
 
 تفاصيل النسيج (Fabric Details):
@@ -111,22 +111,22 @@ export const generateProductContent = (product: Product) => {
 مميزات التصميم (Design Features):
 • قصة مريحة (Relaxed Fit) تناسب انحناءات الجسم بأناقة.
 • خياطة يدوية مزدوجة لمتانة استثنائية.
-• تفاصيل فاخرة وأزرار مغلفة تعكس هوية SULTA الأصلية.
+• تفاصيل فاخرة وأزرار مغلفة تعكس هوية Sulta الأصلية.
 • مناسب لـ ${season} ليمنحكِ التوازن المثالي بين الدفء والتهوية.
 
-لماذا تختارين SULTA؟:
-نحن في SULTA نؤمن أن ملابس النوم هي أغلى ما ترتديه المرأة في خصوصيتها، لذا نجعل من كل قطعة حكاية ترف تبدأ من اختيار القماش وتنتهي بتغليف ملكي يصلكِ أينما كنتِ.
+لماذا تختارين Sulta؟:
+نحن في Sulta نؤمن أن ملابس النوم هي أغلى ما ترتديه المرأة في خصوصيتها، لذا نجعل من كل قطعة حكاية ترف تبدأ من اختيار القماش وتنتهي بتغليف ملكي يصلكِ أينما كنتِ.
 `;
 
   // --- ENGLISH CONTENT ---
-  const titleEn = `Premium ${nameEn} Sleepwear | ${fabric} Luxury Set | SULTA`;
+  const titleEn = `Premium ${nameEn} Sleepwear | ${fabric} Luxury Set | Sulta`;
   const shortDescriptionEn = `Experience unparalleled comfort with the ${nameEn}. Carefully crafted from ${fabric} to bring you dreamy softness and elegant nights in the ${season} collection.`;
-  const seoTitleEn = `Buy ${nameEn} Luxury Sleepwear | SULTA Official | Luxury ${product.category}`;
-  const metaDescriptionEn = `Discover the luxury of the ${nameEn} by SULTA. A sleepwear set made of ${fabric} for ultimate comfort and softness. Order your couture piece now from the leaders of luxury fashion in Egypt & Saudi Arabia.`;
-  const keywordsEn = `luxury sleepwear, ${nameEn}, ${fabric}, women's pajamas, SULTA pajamas, elegant loungewear, couture sleepwear, ${product.category}`;
+  const seoTitleEn = `Buy ${nameEn} Luxury Sleepwear | Sulta Official | Luxury ${product.category}`;
+  const metaDescriptionEn = `Discover the luxury of the ${nameEn} by Sulta. A sleepwear set made of ${fabric} for ultimate comfort and softness. Order your couture piece now from the leaders of luxury fashion in Egypt & Saudi Arabia.`;
+  const keywordsEn = `luxury sleepwear, ${nameEn}, ${fabric}, women's pajamas, Sulta pajamas, elegant loungewear, couture sleepwear, ${product.category}`;
 
   const fullDescriptionEn = `
-SULTA Product Vision:
+Sulta Product Vision:
 Elevate your lounging experience to luxury couture with the ${nameEn} set. A masterpiece that blends absolute elegance with supreme comfort, designed for the woman who demands perfection in every detail.
 
 Fabric Details:
@@ -135,11 +135,11 @@ Expertly woven with skin-friendly ${fabric}, promoting breathability and maintai
 Design Highlights:
 • Relaxed fit tailored to elegantly trace your silhouette with ease.
 • Precision hand-stitching for exceptional quality.
-• Luxurious accents and wrapped buttons reflecting the authentic SULTA brand DNA.
+• Luxurious accents and wrapped buttons reflecting the authentic Sulta brand DNA.
 • Perfect for ${season}, providing the ideal balance of temperature regulation.
 
-The SULTA Difference:
-At SULTA, we believe sleepwear is the most precious garment a woman wears in her private moments. Every piece is a tale of opulence, from fabric selection to the royal packaging delivered directly to your doorstep.
+The Sulta Difference:
+At Sulta, we believe sleepwear is the most precious garment a woman wears in her private moments. Every piece is a tale of opulence, from fabric selection to the royal packaging delivered directly to your doorstep.
 `;
 
   // --- FAQ & Schema ---
@@ -157,7 +157,7 @@ At SULTA, we believe sleepwear is the most precious garment a woman wears in her
     "description": metaDescriptionEn,
     "brand": {
       "@type": "Brand",
-      "name": "SULTA"
+      "name": "Sulta"
     },
     "offers": {
       "@type": "Offer",
@@ -182,7 +182,7 @@ At SULTA, we believe sleepwear is the most precious garment a woman wears in her
       keywords: keywordsEn,
       shortDescription: shortDescriptionEn,
       fullDescription: fullDescriptionEn,
-      altText: `${nameEn} by SULTA - Luxury Sleepwear`
+      altText: `${nameEn} by Sulta - Luxury Sleepwear`
     },
     schemaMarkup,
     faqs
@@ -193,14 +193,14 @@ export const generateCategorySeo = (category: Category) => {
   const name = category.name;
   return {
     ar: {
-      title: `طقم ${name} فاخر | تسوقي مجموعة ${name} - SULTA`,
-      description: `اكتشفي أرقى تصاميم ${name} في مصر والسعودية. مجموعة مُختارة بعناية من SULTA لتمنحكِ الأناقة والراحة المطلقة.`,
-      keywords: `${name}, تسوق ${name}, SULTA ${name}, ملابس نوم`
+      title: `طقم ${name} فاخر | تسوقي مجموعة ${name} - Sulta`,
+      description: `اكتشفي أرقى تصاميم ${name} في مصر والسعودية. مجموعة مُختارة بعناية من Sulta لتمنحكِ الأناقة والراحة المطلقة.`,
+      keywords: `${name}, تسوق ${name}, Sulta ${name}, ملابس نوم`
     },
     en: {
-      title: `Luxury ${name} Collection | Shop Elegant ${name} - SULTA`,
-      description: `Explore the finest ${name} designs in Egypt & KSA. A hand-picked collection by SULTA for ultimate elegance and comfort.`,
-      keywords: `${name}, shop ${name}, SULTA ${name}, luxury loungewear`
+      title: `Luxury ${name} Collection | Shop Elegant ${name} - Sulta`,
+      description: `Explore the finest ${name} designs in Egypt & KSA. A hand-picked collection by Sulta for ultimate elegance and comfort.`,
+      keywords: `${name}, shop ${name}, Sulta ${name}, luxury loungewear`
     }
   };
 };
@@ -211,19 +211,19 @@ export const generateBlogDrafts = () => {
       title: "أسرار النوم الملكي: كيف يغير النسيج الطبيعي جودة نومك؟",
       excerpt: "اكتشفي الفوائد الجمالية والصحية للنوم في بيجامات الكوتور وكيف تعزز نضارة بشرتك.",
       content: `نومكِ هو وقت الاستشفاء لجسدك، وعندما تختارين ملابس نوم ملوكية، فأنت تستثمرين في صحتك وجمالك. النسيج الملوكي يحافظ على ترطيب البشرة ولا يمتص الكريمات الليلية، كما أنه ينظم درجة حرارة الجسم بفضل أليافه الطبيعية...`,
-      seo: "النوم الملكي, فوائد الكوتور بيجامات, بيجامات ملكية, SULTA blog"
+      seo: "النوم الملكي, فوائد الكوتور بيجامات, بيجامات ملكية, Sulta blog"
     },
     {
       title: "دليل العروس لإعداد جهاز ملابس النوم المثالي",
-      excerpt: "اكتشفي القطع الأساسية التي لا غنى عنها في جهازكِ من SULTA لتتألقي في كل أيام زفافك.",
-      content: `إعداد جهاز العروس يتطلب ذكاءً واختيارات راقية. نحن في SULTA ننصح ببدء مجموعتك المكونة من: ٣ أطقم ملكية ناعمة للاستخدام اليومي، وقطعتين من الكوتور الملكي الفاخر للمناسبات، وروب دانتيل ملكي لاستقبال الصباحية...`,
-      seo: "دليل العروس ملابس نوم, جهاز العروس, بيجامات عرايس, SULTA جهاز عروس"
+      excerpt: "اكتشفي القطع الأساسية التي لا غنى عنها في جهازكِ من Sulta لتتألقي في كل أيام زفافك.",
+      content: `إعداد جهاز العروس يتطلب ذكاءً واختيارات راقية. نحن في Sulta ننصح ببدء مجموعتك المكونة من: ٣ أطقم ملكية ناعمة للاستخدام اليومي، وقطعتين من الكوتور الملكي الفاخر للمناسبات، وروب دانتيل ملكي لاستقبال الصباحية...`,
+      seo: "دليل العروس ملابس نوم, جهاز العروس, بيجامات عرايس, Sulta جهاز عروس"
     },
     {
       title: "كيفية اختيار المقاس الذهبي لملابس النوم؟",
       excerpt: "دليل شامل لكيفية استخدام مكتشف القياس الذكي واختيار ما يناسب شكل قوامك.",
       content: `راحة ملابس النوم تعتمد بشكل كلي على المقاس. القاعدة الذهبية في ملابس النوم هي "مساحة التنفس". عند اختيار بيجامات النوم الفاخرة، احرصي دائماً على إضافة 2 سم لضمان حرية الحركة ليلاً...`,
-      seo: "مقاس ملابس النوم, اختيار المقاس المثالي, دليل مقاسات SULTA"
+      seo: "مقاس ملابس النوم, اختيار المقاس المثالي, دليل مقاسات Sulta"
     }
   ];
 };

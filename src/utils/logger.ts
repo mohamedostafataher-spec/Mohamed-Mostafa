@@ -10,5 +10,5 @@ export const errorLogs: LogEntry[] = [];
 
 export const logSystemError = (type: string, message: string, details?: any) => {
   errorLogs.push({ timestamp: new Date(), type, message, details });
-  console.error(`[SULTA LOG - ${type}]`, message, details);
+  console.error(`[Sulta LOG - ${type}]`, message, details);
 };

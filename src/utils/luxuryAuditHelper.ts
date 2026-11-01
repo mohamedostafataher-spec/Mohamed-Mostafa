@@ -1,9 +1,9 @@
 import { Product, Order, BlogPost, Collection } from '../types';
 import jsPDF from 'jspdf';
 
-// 1. SULTA Brand Palette Guidelines
+// 1. Sulta Brand Palette Guidelines
 export const BRAND_COLORS = [
-  { name: 'Onyx Black (أسود سولتة الملكي)', hex: '#0B0B0B', role: 'اللون الرئاسي والفاخر للمساحات والخطوط العريضة' },
+  { name: 'Onyx Black (أسود سولته الملكي)', hex: '#0B0B0B', role: 'اللون الرئاسي والفاخر للمساحات والخطوط العريضة' },
   { name: 'Warm Gold (ذهب ملكي دافئ)', hex: '#F6E7A6', role: 'لون التمييز والأزرار الملكية ورموز الحسن' },
   { name: 'Pink Pearl (ورد حالم كوتور)', hex: '#DF8A9C', role: 'لون الأنسجة الرقيقة والأرواب الملكية المزركشة' },
   { name: 'Crimson Velvet (أحمر مخملي عتيق)', hex: '#A44C5C', role: 'لون اللمسات الرومانسية وحواف الدانتيل الفاخر' },
@@ -109,8 +109,8 @@ export const getSiteMapTree = (
   blogPosts: BlogPost[]
 ): mapNode => {
   return {
-    nameAr: '👑 منصة SULTA الملكية الكبرى',
-    nameEn: 'SULTA Royal Platform',
+    nameAr: '👑 منصة Sulta الملكية الكبرى',
+    nameEn: 'Sulta Royal Platform',
     type: 'group',
     children: [
       {
@@ -170,9 +170,9 @@ export const generateAiAuditReport = (
 ): string => {
   const dateStr = new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   
-  return `# 👑 تقرير التدقيق الذكي الشامل لمنصة SULTA الكوتور
+  return `# 👑 تقرير التدقيق الذكي الشامل لمنصة Sulta الكوتور
 **تاريخ التحليل المالي والتقني:** ${dateStr}  
-**المستشار الاستراتيجي:** مُحرك الذكاء الاصطناعي التوليدي الحصري لدار سولتة (SULTA AI-Audit Core v2.5)
+**المستشار الاستراتيجي:** مُحرك الذكاء الاصطناعي التوليدي الحصري لدار سولته (Sulta AI-Audit Core v2.5)
 
 ---
 
@@ -197,13 +197,13 @@ export const generateAiAuditReport = (
 
 ## 🚀 خطة تحسين معدلات التحويل وزيادة الأرباح (CRO Blueprint)
 * **المجموعة الفورية الحصرية:** تخصيص ماركي شريط ترويجي متحرك يعلن عن الشحن الإقليمي المجاني للطلبات فوق 600 SAR لتفادي انسحاب نسبة 64% من الزوار عند السلة.
-* **البناء البصري لقصة النسيج:** تفعيل تليفزيون سولتة (Video Lookbook) لربط الفيديوهات بشكل مباشر مع أزرار الشراء الفوري داخل الصالون لرفع متوسط قيمة الطلبية (AOV) بنسبة ٢٨٪.
-* **استراتيجية القطع الوردية:** إدراج منتج "بيجامة الدانتيل السولتة" كمنتج رائد بحملة الصيف لدفع عمليات البيع المقترن بالهدايا الملكية العائلية.
+* **البناء البصري لقصة النسيج:** تفعيل تليفزيون سولته (Video Lookbook) لربط الفيديوهات بشكل مباشر مع أزرار الشراء الفوري داخل الصالون لرفع متوسط قيمة الطلبية (AOV) بنسبة ٢٨٪.
+* **استراتيجية القطع الوردية:** إدراج منتج "بيجامة الدانتيل السولته" كمنتج رائد بحملة الصيف لدفع عمليات البيع المقترن بالهدايا الملكية العائلية.
 
 ---
 
-## 📜 شهادة الجودة الرسمية المعتمدة لدار سولتة
-**بناءً على هذا الفحص الرقمي الشامل، نعلن أن منصة SULTA الفاخرة المتربطة بقاعدة بيانات Supabase تعمل بكفاءة إنتاجية وهندسية بالغة، وتصنف البوابة كبنية تحتية ممتازة مهيأة لاستقبال وتجهيز طلبيات الكوتور الاستثنائية لجميع النبلاء.**`;
+## 📜 شهادة الجودة الرسمية المعتمدة لدار سولته
+**بناءً على هذا الفحص الرقمي الشامل، نعلن أن منصة Sulta الفاخرة المتربطة بقاعدة بيانات Supabase تعمل بكفاءة إنتاجية وهندسية بالغة، وتصنف البوابة كبنية تحتية ممتازة مهيأة لاستقبال وتجهيز طلبيات الكوتور الاستثنائية لجميع النبلاء.**`;
 };
 
 // 6. Luxury PDF Certificate Writer using jsPDF
@@ -293,7 +293,7 @@ export const downloadLuxuryCertificatePDF = (
   doc.setFont('Times', 'italic');
   doc.setFontSize(12);
   doc.setTextColor(11, 11, 11);
-  doc.text('We hereby certify that the SULTA digital flagship boutique is completely', 105, 202, { align: 'center' });
+  doc.text('We hereby certify that the Sulta digital flagship boutique is completely', 105, 202, { align: 'center' });
   doc.text('vetted, performance-optimized, and verified with zero critical warnings.', 105, 209, { align: 'center' });
   doc.text('The system exhibits seamless synchronization with its Supabase DB architecture.', 105, 216, { align: 'center' });
 
@@ -305,8 +305,8 @@ export const downloadLuxuryCertificatePDF = (
   doc.setFontSize(9);
   doc.setTextColor(100, 100, 100);
   doc.text('PRINCIPAL SOFTWARE ARCHITECT', 55, 260, { align: 'center' });
-  doc.text('SULTA COUTURE EXPERIENCE BOARD', 155, 260, { align: 'center' });
+  doc.text('Sulta COUTURE EXPERIENCE BOARD', 155, 260, { align: 'center' });
 
   // Save the PDF file
-  doc.save('SULTA-Luxury-Audit-Certificate.pdf');
+  doc.save('Sulta-Luxury-Audit-Certificate.pdf');
 };

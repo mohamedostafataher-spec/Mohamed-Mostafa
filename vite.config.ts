@@ -29,7 +29,7 @@ export default defineConfig(() => {
       },
     },
     build: {
-      sourcemap: true,
+      sourcemap: false,
     },
     server: {
       // HMR is disabled to avoid console errors, but we keep watching enabled.

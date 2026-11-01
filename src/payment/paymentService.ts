@@ -1,7 +1,7 @@
 /**
- * SULTA Unified Payment Service
+ * Sulta Unified Payment Service
  * 
- * Central coordinator for all payment processing in the SULTA Boutique:
+ * Central coordinator for all payment processing in the Sulta Boutique:
  * - Visa / Mastercard / Mada (PCI-DSS compliant gateway & 3D Secure)
  * - PayPal (Official Smart & Direct Checkout in SAR / USD)
  * - Direct Saudi Bank Transfer (IBAN & Receipt Verification)

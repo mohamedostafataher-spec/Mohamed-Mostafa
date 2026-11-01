@@ -75,7 +75,7 @@ export default function ProductDetailModal({
       "sku": product.id,
       "brand": {
         "@type": "Brand",
-        "name": "SULTA Atelier"
+        "name": "Sulta Atelier"
       },
       "offers": {
         "@type": "Offer",
@@ -105,7 +105,7 @@ export default function ProductDetailModal({
 
   const [bundleItems, setBundleItems] = useState([
     { id: 'b1', name: product.nameAr, price: effectiveProductPrice, image: product.images?.[0] || '', checked: true },
-    { id: 'b2', name: 'شمعة SULTA العطرية الملكية للتوليفة الفاخرة', price: country === 'EG' ? 120 : 65, image: '/img/sulta_default_1_1781140865386.png', checked: true },
+    { id: 'b2', name: 'شمعة Sulta العطرية الملكية للتوليفة الفاخرة', price: country === 'EG' ? 120 : 65, image: '/img/sulta_default_1_1781140865386.png', checked: true },
     { id: 'b3', name: 'علبة هدايا كوتور الفخمة مع الختم الشمعي', price: country === 'EG' ? 150 : 80, image: '/img/sulta_collections_1_1781140831329.png', checked: false }
   ]);
 
@@ -210,7 +210,7 @@ export default function ProductDetailModal({
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
   
-  // SULTA V3.0 Ultimate 360-rotation view states
+  // Sulta V3.0 Ultimate 360-rotation view states
   const [is360Active, setIs360Active] = useState(false);
   const [rotationFrameIndex, setRotationFrameIndex] = useState(0);
   
@@ -231,13 +231,13 @@ export default function ProductDetailModal({
     },
     {
       q: 'هل الدانتيل ناعم على الجسم أم يسبب حكة؟',
-      a: 'نصنع دانتيل Sulta من خيوط جيفنشي المريحة والخالية تماماً من البوليستر الخشن. ناعم جداً على البشرة الحساسة ومطاطي بلطف ✨.',
+      a: 'نصنع دانتيل Solte من خيوط جيفنشي المريحة والخالية تماماً من البوليستر الخشن. ناعم جداً على البشرة الحساسة ومطاطي بلطف ✨.',
       date: 'منذ ٤ أيام',
       author: 'منى ع. (القاهرة)'
     }
   ]);
   
-  // SULTA V2.0 Interactive States
+  // Sulta V2.0 Interactive States
   const [calibratedSkin, setCalibratedSkin] = useState<'fair' | 'wheatish' | 'bronze'>('wheatish');
   const [isMacroZoomActive, setIsMacroZoomActive] = useState(false);
   const [macroMagnification, setMacroMagnification] = useState(50);
@@ -269,7 +269,7 @@ export default function ProductDetailModal({
     setAlertError('');
 
     try {
-      const generatedId = `SULTA-ALERT-${Math.floor(100000 + Math.random() * 900000)}`;
+      const generatedId = `Sulta-ALERT-${Math.floor(100000 + Math.random() * 900000)}`;
       await dbService.saveStockAlert({
         id: generatedId,
         productId: product.id,
@@ -298,7 +298,7 @@ export default function ProductDetailModal({
   const [isQuizMode, setIsQuizMode] = useState(true);
 
   const runFitCalculation = () => {
-    // 👑 LUXURY SULTA RULE-BASED INTELLIGENCE FOR BED COUTURE
+    // 👑 LUXURY Sulta RULE-BASED INTELLIGENCE FOR BED COUTURE
     // Calculate BMI as base reference
     const heightInMeters = fitHeight / 100;
     const bmi = fitWeight / (heightInMeters * heightInMeters);
@@ -405,7 +405,7 @@ export default function ProductDetailModal({
   const handleOrderWhatsApp = () => {
     const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
     const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : (targetPhone.startsWith('966') ? targetPhone : '966552823677');
-    const text = `مرحباً براند SULTA للأزياء الملكية 🌸، أود حجز القطعة التالية:
+    const text = `مرحباً براند Sulta للأزياء الملكية 🌸، أود حجز القطعة التالية:
 • المنتج: ${product.nameAr}
 • اللون المطلوب: ${selectedCol.name}
 • المقاس المطلوب: ${selectedSz}
@@ -456,16 +456,16 @@ export default function ProductDetailModal({
         </button>
 
         {/* Column Left: Visual Assets Center */}
-        <div className="md:w-1/2 bg-gray-50 flex flex-col justify-start p-4 sm:p-6 border-b md:border-b-0 md:border-l border-gray-100 md:overflow-y-auto md:max-h-none shrink-0 w-full min-w-0">
+        <div className="md:w-1/2 bg-white flex flex-col justify-start p-4 sm:p-6 border-b md:border-b-0 md:border-l border-gray-100 md:overflow-y-auto md:max-h-none shrink-0 w-full min-w-0">
           
-          {/* Main Visual box */}
+          {/* Main Visual box - Use aspect-[2/3] for fashion photography */}
           <div
             onMouseMove={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleMouseMove}
             onMouseLeave={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleMouseLeave}
             onTouchStart={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleTouchStart}
             onTouchMove={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleTouchMove}
             onTouchEnd={is360Active || videoPlaying || isMacroZoomActive ? undefined : handleTouchEnd}
-            className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#FAF9F6] border border-gray-150 shadow-xs mb-4 select-none cursor-zoom-in"
+            className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shadow-xs mb-4 select-none cursor-zoom-in"
           >
             
             {/* Dynamic Instagram-style story indicator bars */}
@@ -513,7 +513,7 @@ export default function ProductDetailModal({
                         >
                           <SultaImage 
                             src={displayImages[activeImageIdx]} 
-                            className="w-full h-full object-cover opacity-60" 
+                            className="w-full h-full object-cover" 
                           />
                         </motion.div>
 
@@ -525,7 +525,7 @@ export default function ProductDetailModal({
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="space-y-2"
                           >
-                            <span className="text-[10px] text-[#F4B6C2] font-black tracking-[0.3em] uppercase block">SULTA HAUTE COUTURE</span>
+                            <span className="text-[10px] text-[#F4B6C2] font-black tracking-[0.3em] uppercase block">Sulta HAUTE COUTURE</span>
                             <h4 className="text-xl font-serif text-white leading-tight">أناقة ملكية تتنفس الرقي</h4>
                             <div className="w-12 h-0.5 bg-[#F4B6C2] mx-auto my-3" />
                             <p className="text-[10px] text-gray-300 max-w-[200px] mx-auto leading-relaxed">أقمشة فاخرة، حياكة يدوية دقيقة، وراحة تدوم طوال الليل 🌸</p>
@@ -559,7 +559,7 @@ export default function ProductDetailModal({
                             className="w-full h-full border-0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
-                            title="SULTA Product Video"
+                            title="Sulta Product Video"
                           ></iframe>
                         );
                       }
@@ -572,7 +572,7 @@ export default function ProductDetailModal({
                             className="w-full h-full border-0"
                             allow="autoplay; fullscreen; picture-in-picture"
                             allowFullScreen
-                            title="SULTA Product Video"
+                            title="Sulta Product Video"
                           ></iframe>
                         );
                       }
@@ -945,10 +945,13 @@ export default function ProductDetailModal({
                           autoPlay muted loop playsInline
                        />
                     ) : (
-                       <SultaImage
+                     <SultaImage
                          src={displayImages[activeImageIdx]}
                          alt={product.nameAr}
-                         imgClassName="w-full h-full object-cover object-center"
+                         contain={false}
+                         alignment="top"
+                         width={1000}
+                         imgClassName="w-full h-full object-cover object-top"
                          className="w-full h-full"
                        />
                     )}
@@ -1015,7 +1018,7 @@ export default function ProductDetailModal({
                   {img?.match(/\.(mp4|webm|ogg|mov)$/i) || img?.includes('video') ? (
                      <video src={img} className="w-full h-full object-cover object-center" muted playsInline />
                   ) : (
-                     <SultaImage src={img} alt="Thumb" className="w-full h-full object-cover object-center" referrerPolicy="no-referrer" />
+                     <SultaImage src={img} alt="Thumb" width={100} contain={true} className="w-full h-full object-contain object-center" referrerPolicy="no-referrer" />
                   )}
                 </button>
               ))}
@@ -1337,7 +1340,7 @@ export default function ProductDetailModal({
                       </div>
                       <div>
                         <span className="text-gray-400 block text-[9.5px]">ما يشمله الطقم:</span>
-                        <span className="font-bold text-gray-900">طقم بيجامة كامل + تغليف SULTA الملكي الفاخر</span>
+                        <span className="font-bold text-gray-900">طقم بيجامة كامل + تغليف Sulta الملكي الفاخر</span>
                       </div>
                     </div>
                   </div>
@@ -1501,7 +1504,7 @@ export default function ProductDetailModal({
                       <div className="bg-gray-50 p-3 rounded-lg border border-gray-150 text-[11px]">
                          <span className="font-bold text-gray-950 block mb-1">📏 المقاس:</span>
                          <p className="text-gray-700 font-sans">
-                            جميع قطع سولتة مصممة بنظام القياس الموحد (One Size) لتناسب مختلف القوامات بانسدالية فاخرة ومريحة.
+                            جميع قطع سولته مصممة بنظام القياس الموحد (One Size) لتناسب مختلف القوامات بانسدالية فاخرة ومريحة.
                          </p>
                       </div>
 
@@ -1686,7 +1689,7 @@ export default function ProductDetailModal({
                             <div className="flex-1">
                               <h5 className="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5 flex-row-reverse">
                                 <ShieldCheck size={14} />
-                                <span>ضمان الرضا 100% من SULTA</span>
+                                <span>ضمان الرضا 100% من Sulta</span>
                               </h5>
                               <p className="text-[10px] text-emerald-600 font-medium">جميع التقييمات أدناه من عميلات قمن بشراء وتجربة القطعة فعلياً.</p>
                             </div>
@@ -1886,7 +1889,7 @@ export default function ProductDetailModal({
                         const targetPhone = (settings?.whatsappSaudi || settings?.whatsapp || '966552823677').replace(/\D/g, '');
                         const phoneNumber = targetPhone.startsWith('05') ? ('966' + targetPhone.slice(1)) : (targetPhone.startsWith('966') ? targetPhone : '966552823677');
                         const productCode = product.sku || product.id.slice(0, 8);
-                        const text = `مرحباً براند SULTA الملكي 🌸، أود الاستفسار عن القطعة التالية:
+                        const text = `مرحباً براند Sulta الملكي 🌸، أود الاستفسار عن القطعة التالية:
 • اسم المنتج: ${product.nameAr}
 • كود القطعة (SKU): ${productCode}
 • اللون المطلوب: ${selectedCol.name}
@@ -2005,7 +2008,7 @@ export default function ProductDetailModal({
                     type="button"
                     onClick={() => {
                       const shareUrl = `${window.location.origin}?product=${product.id}`;
-                      const text = `🌸 مرحباً! شاهدت هذا التصميم الراقي من SULTA للأزياء وملابس النوم الفاخرة:\n*${product.nameAr}*\n💰 السعر: ${price.toLocaleString()} ${currencyLabel}\n🎨 الألوان: ${product.colors.map(c => c.name).join(' - ')}\n🔗 رابط المنتج المباشر للاستعراض والطلب:\n${shareUrl}`;
+                      const text = `🌸 مرحباً! شاهدت هذا التصميم الراقي من Sulta للأزياء وملابس النوم الفاخرة:\n*${product.nameAr}*\n💰 السعر: ${price.toLocaleString()} ${currencyLabel}\n🎨 الألوان: ${product.colors.map(c => c.name).join(' - ')}\n🔗 رابط المنتج المباشر للاستعراض والطلب:\n${shareUrl}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
                     className="bg-[#25D366] hover:bg-[#20ba59] active:scale-98 text-white py-2.5 px-3 rounded-xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
@@ -2065,7 +2068,7 @@ export default function ProductDetailModal({
                 {/* Elegant Instagram / Stories sharing guide */}
                 <div className="bg-white/80 p-3 rounded-xl border border-[#DF8A9C]/15 space-y-2">
                   <div className="flex items-center gap-1.5 justify-end">
-                    <span className="text-[10px] font-black text-gray-900">نصيحة التألق من SULTA على انستغرام (Instagram) 📸</span>
+                    <span className="text-[10px] font-black text-gray-900">نصيحة التألق من Sulta على انستغرام (Instagram) 📸</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-[#DF8A9C]" />
                   </div>
                   
@@ -2077,7 +2080,7 @@ export default function ProductDetailModal({
                     <button
                       type="button"
                       onClick={() => {
-                        const caption = `بيجامة SULTA لملابس النوم الفاخرة ✨ تصاميم خيالية تجمع النعومة الفائقة والرقي الملكي 🌸. الموديل المفضل لدي: "${product.nameAr}". تدرجات الألوان الفاخرة متاحة الآن!`;
+                        const caption = `بيجامة Sulta لملابس النوم الفاخرة ✨ تصاميم خيالية تجمع النعومة الفائقة والرقي الملكي 🌸. الموديل المفضل لدي: "${product.nameAr}". تدرجات الألوان الفاخرة متاحة الآن!`;
                         navigator.clipboard.writeText(caption);
                         setCaptionCopied(true);
                         setTimeout(() => setCaptionCopied(false), 2500);

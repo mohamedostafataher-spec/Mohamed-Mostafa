@@ -133,12 +133,12 @@ export default function SultaExperienceScore({
         <div>
           <div className="flex items-center gap-2">
             <span className="bg-[#A44C5C]/10 text-[#A44C5C] text-[10px] font-sans font-bold tracking-widest px-2.5 py-0.5 rounded-full uppercase">
-              SULTA LUXURY SCORE INDEX
+              Sulta LUXURY SCORE INDEX
             </span>
             <span className="text-[10px] text-gray-400 font-sans">معيار الجاذبية ووقار البوتيك</span>
           </div>
           <h3 className="text-xl md:text-2xl font-serif font-light text-gray-900 mt-2">
-            مؤشر فخامة وجاذبية SULTA الرقمي
+            مؤشر فخامة وجاذبية Sulta الرقمي
           </h3>
           <p className="text-gray-400 text-xs mt-1 leading-relaxed">
             مقياس تقييمي رقمي ذكي يدمج بين تباينات السلاليد الفاخرة، سلامة الروابط، اكتمال بيانات الـ SEO ومعدلات الإغراء المظهرية للمنتجات.
@@ -195,7 +195,7 @@ export default function SultaExperienceScore({
               {report.issues.length === 0 ? (
                 <div className="p-10 text-center bg-emerald-50 rounded-2xl border border-emerald-100 text-emerald-850 text-xs">
                   <CheckCircle size={32} className="mx-auto mb-2 text-emerald-500" />
-                  منصة SULTA في قمة وقارها وكمالها الفاخر! صفر مشاكل تشغيلية أو نواقص.
+                  منصة Sulta في قمة وقارها وكمالها الفاخر! صفر مشاكل تشغيلية أو نواقص.
                 </div>
               ) : (
                 report.issues.map((iss, i) => (

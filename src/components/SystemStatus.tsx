@@ -12,7 +12,7 @@ export default function SystemStatus() {
   });
 
   const [systems, setSystems] = useState([
-    { id: 1, name: 'SULTA Core Platform', status: 'operational', uptime: '100%', description: 'الواجهة الرئيسية لتسوق البيجامات الفاخرة' },
+    { id: 1, name: 'Sulta Core Platform', status: 'operational', uptime: '100%', description: 'الواجهة الرئيسية لتسوق البيجامات الفاخرة' },
     { id: 2, name: 'Secure Checkout Flow', status: 'operational', uptime: '100%', description: 'نظام الدفع المشفر والمرخص لعمليات الشراء' },
     { id: 3, name: 'Supabase PostgreSQL AI Engine', status: 'operational', uptime: '99.99%', description: 'قاعدة البيانات المركزية ومحرك الذكاء الاصطناعي' },
     { id: 4, name: 'Order Fulfillment & Logistics API', status: 'operational', uptime: '100%', description: 'نظام ربط شركات الشحن والتوصيل الداخلي' },
@@ -62,7 +62,7 @@ export default function SystemStatus() {
             <ShieldCheck size={16} className="text-emerald-500" />
             منصة معتمدة ومؤمنة بالكامل
           </span>
-          <h1 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] mb-6">حالة نظام <span className="font-bold">SULTA</span> الرقمي</h1>
+          <h1 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] mb-6">حالة نظام <span className="font-bold">Sulta</span> الرقمي</h1>
           <p className="text-gray-500 max-w-xl mx-auto leading-relaxed">
             الشفافية الكاملة هي جزء من تجربتنا الملكية. يمكنك من خلال هذه الصفحة متابعة حالة كافة خوادمنا وخدماتنا التقنية التي تضمن لك تجربة تسوق سلسة وآمنة.
           </p>

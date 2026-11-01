@@ -91,7 +91,7 @@ export default function ProductPerformance({
         <div>
           <h3 className="text-sm font-bold text-[#A44C5C] flex items-center gap-1.5 justify-start">
             <Flame size={16} />
-            <span>نظام مراقبة أداء وتفاعلية معروضات SULTA ⚜️</span>
+            <span>نظام مراقبة أداء وتفاعلية معروضات Sulta ⚜️</span>
           </h3>
           <p className="text-[11px] text-gray-500 mt-1 max-w-2xl leading-relaxed">
             تتم مزامنة إثباتات المظهر والمشاهدات فورياً عبر البوتيك. يمكنك معرفة القطعة الأكثر جاذبية وما الذي يثير اهتمام السيدات في المملكة العربية السعودية والخليج.
@@ -210,7 +210,7 @@ export default function ProductPerformance({
           <div className="space-y-3.5">
             {performance.needsOptimization.length === 0 ? (
               <div className="p-10 text-center bg-emerald-50 text-emerald-850 rounded-2xl border border-emerald-100 text-xs font-bold font-sans">
-                ⚜️ لا يوجد منتجات مهددة. كل معروض SULTA مكتمل الأوصاف والصور!
+                ⚜️ لا يوجد منتجات مهددة. كل معروض Sulta مكتمل الأوصاف والصور!
               </div>
             ) : (
               performance.needsOptimization.map((m) => (

@@ -216,7 +216,7 @@ export default function RoyalSensesSalon({
       waxInitial: customInitial,
       waxColor: waxColor.nameAr,
       ribbonColor: ribbonColor.nameAr,
-      customNote: `تم تصميم القطعة وتجهيزها عبر صالون الأناقة لـ SULTA koutour.`
+      customNote: `تم تصميم القطعة وتجهيزها عبر صالون الأناقة لـ Sulta koutour.`
     };
 
     onAddToCart(prod, defaultColor, defaultSize, 1, extraMetadata);
@@ -404,7 +404,7 @@ export default function RoyalSensesSalon({
 
                   <div className="relative space-y-4">
                     {/* Royal Box Cover preview with ribbon */}
-                    <span className="text-[10px] text-amber-500 font-sans tracking-[0.2em] uppercase block">SULTA COUTURE BOX</span>
+                    <span className="text-[10px] text-amber-500 font-sans tracking-[0.2em] uppercase block">Sulta COUTURE BOX</span>
                     
                     {/* Customized Wax Seal Stamp Container */}
                     <div className="relative mx-auto w-36 h-36 rounded-full border-4 border-dashed border-[#F6E7A6]/20 flex items-center justify-center">
@@ -548,7 +548,7 @@ export default function RoyalSensesSalon({
             <div className="relative z-10 flex justify-between items-center text-[10.5px] font-sans border-t border-gray-200/50 pt-5 mt-4">
               <span className="text-gray-400">موصى باستخدامه عبر الهواتف بوضع الشاشة العمودي</span>
               <span className="text-[#A44C5C] font-semibold flex items-center gap-1">
-                <span>✦ صمم بحب في أتيلييه SULTA 👑</span>
+                <span>✦ صمم بحب في أتيلييه Sulta 👑</span>
               </span>
             </div>
 

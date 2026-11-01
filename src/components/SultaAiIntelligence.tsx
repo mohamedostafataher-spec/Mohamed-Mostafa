@@ -280,9 +280,9 @@ export default function SultaAiIntelligence({
 📦 استبدال مجاني مجنّد لباب دارك تيسيراً لأناقتك.
 
 تألقي كإمبراطورة الحسن والدلال وميزي إطلالتك اليوم. دعي النعومة تتلمس وجدانكِ... 👑✨
-#سولتة #ملابس_نوم_فاخرة #لانجري_عروس #أناقة_ملكي #كوتور_سولتة`;
+#سولته #ملابس_نوم_فاخرة #لانجري_عروس #أناقة_ملكي #كوتور_سولته`;
       } else if (promoChannel === 'facebook') {
-        copy = `👑 الأناقة تكمن في أرقى التصاميم الطبيعية من SULTA 👑
+        copy = `👑 الأناقة تكمن في أرقى التصاميم الطبيعية من Sulta 👑
 لكل عروس تبحث عن الكمال والنعومة الدائمة في الصيف والاسترخاء اليومي العذب. نقدم لكِ بيجامة وباقة نوم *${targetProd.nameAr}* المصممة بنهج رويال خاص يليق ببشرتكِ ليتنفس جسدكِ بحرية وتنامين بعمق ملكي رغيد 💤.
 
 💎 متوفر بجميع المقاسات (XS وحتى XXL) مع إمكانية تحديد المقاس التلقائي الذكي عبر موقعنا.
@@ -292,10 +292,10 @@ export default function SultaAiIntelligence({
 🔗 ${window.location.origin}?product=${targetProd.id}`;
       } else if (promoChannel === 'seo') {
         copy = `عنوان الصفحة: ملابس نوم راقية للعرائس كوتور - بيجامة وباقة نوم ${targetProd.nameAr} الفاخرة
-وصف الميتا (Meta Description): تسوقي بيجامة ${targetProd.nameAr} الفاخرة من النسيج الملكي الطبيعي المعالج والجاهزة للتسليم الفوري والهدية الملكية بضمان استبدال منزلي مجاني من SULTA.
+وصف الميتا (Meta Description): تسوقي بيجامة ${targetProd.nameAr} الفاخرة من النسيج الملكي الطبيعي المعالج والجاهزة للتسليم الفوري والهدية الملكية بضمان استبدال منزلي مجاني من Sulta.
 
 نص المقالة الأساسية (SEO Optimized Article):
-تتربع ملابس النوم الفاخرة على عرش الاسترخاء المنزلي وأناقة العرائس في ليلة العمر. وتعتبر قطعة "${targetProd.nameAr}" المنسوجة يدوياً بكوتور سولتة نقلة نوعية في علم المنسوجات المترفة المصممة للتعامل اللطيف مع البشرة الحساسة لتقليل ذرات الحرارة المزعجة. تتميز هذه البيجامة بقصة فضفاضة وخياطة متينة ومقاومة للغسيل لضمان نعومة الملمس ولمعان النسيج الدائم.`;
+تتربع ملابس النوم الفاخرة على عرش الاسترخاء المنزلي وأناقة العرائس في ليلة العمر. وتعتبر قطعة "${targetProd.nameAr}" المنسوجة يدوياً بكوتور سولته نقلة نوعية في علم المنسوجات المترفة المصممة للتعامل اللطيف مع البشرة الحساسة لتقليل ذرات الحرارة المزعجة. تتميز هذه البيجامة بقصة فضفاضة وخياطة متينة ومقاومة للغسيل لضمان نعومة الملمس ولمعان النسيج الدائم.`;
       } else {
         copy = `مرحباً بكِ في البوتيك الاستشاري الفاخر لبراند Sulta لملابس النوم الراقية 👑
 
@@ -422,7 +422,7 @@ export default function SultaAiIntelligence({
               <div className="absolute top-0 right-0 h-1 bg-[#A44C5C] w-full" />
               <div className="space-y-1.5 max-w-xl text-right">
                 <span className="text-[9px] bg-[#A44C5C] text-white px-2 py-0.5 rounded-full font-serif font-black tracking-widest block w-fit">AI BUSINESS COMMAND SYSTEM ACTIVE</span>
-                <h4 className="font-serif text-lg font-bold text-stone-900">رادار المراقبة الملكية الفوري لـ SULTA</h4>
+                <h4 className="font-serif text-lg font-bold text-stone-900">رادار المراقبة الملكية الفوري لـ Sulta</h4>
                 <p className="text-gray-500 text-xs leading-relaxed font-sans mt-1">
                   أهلاً بكِ في مركز القيادة والذكاء الشامل. تدمج هذه شاشة بين تحليلات المبيعات اللحظية، وتنبؤات نفاد المخزون، وتنبيهات أداء القطع الفاخرة لتحققي أقصى كفاءة تشغيل.
                 </p>
@@ -445,7 +445,7 @@ export default function SultaAiIntelligence({
               <div className="flex justify-between items-center flex-row-reverse pb-2 border-b border-gray-100">
                 <span className="text-[10px] text-gray-450 font-sans font-bold">توليد تلقائي للمؤشرات التشغيلية</span>
                 <h4 className="font-serif text-sm font-black text-gray-950 flex items-center gap-1.5">
-                  📥 مركز التنبيهات والأداء الذكي SULTA AI Alerts
+                  📥 مركز التنبيهات والأداء الذكي Sulta AI Alerts
                 </h4>
               </div>
 
@@ -579,7 +579,7 @@ export default function SultaAiIntelligence({
                         <td className="py-3 text-center">
                           <button
                             onClick={() => {
-                              const targetUrl = `https://wa.me/${cust.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`أهلاً بكِ ملكة SULTA الجميلة 🌸، يسعدنا في صالون الاستشارات الملكي تخصيص هدية ونقاط ولاء مضاعفة تفوق تطلعاتك بمقاسكِ المثالي. يسعدنا الاستجابة لكِ دوماً!`)}`;
+                              const targetUrl = `https://wa.me/${cust.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`أهلاً بكِ ملكة Sulta الجميلة 🌸، يسعدنا في صالون الاستشارات الملكي تخصيص هدية ونقاط ولاء مضاعفة تفوق تطلعاتك بمقاسكِ المثالي. يسعدنا الاستجابة لكِ دوماً!`)}`;
                               window.open(targetUrl, '_blank');
                             }}
                             className="bg-[#25D366] text-white font-bold px-2 py-1 rounded-lg text-[9px] hover:bg-[#20ba59] transition-all cursor-pointer"
@@ -650,7 +650,7 @@ export default function SultaAiIntelligence({
                     {aiStats.depletingSoon.map(item => (
                       <tr key={item.product.id} className="hover:bg-amber-50/10">
                         <td className="py-3 font-bold text-gray-900">{item.product.nameAr}</td>
-                        <td className="py-3 text-gray-500 font-mono">{item.product.sku || 'SULTA-TEMP'}</td>
+                        <td className="py-3 text-gray-500 font-mono">{item.product.sku || 'Sulta-TEMP'}</td>
                         <td className="py-3 text-center text-rose-500 font-bold font-mono">{item.currentStock} قطع متبقية ⚠️</td>
                         <td className="py-3 text-center font-bold font-mono text-gray-700">{item.product.views > 200 ? 'مرتفع جداً 📈' : 'معتدل'}</td>
                         <td className="py-3 text-center font-semibold text-rose-600 font-sans">خلال الـ {item.estDepletionDays} أيام القادمة! 🚨</td>
@@ -663,7 +663,7 @@ export default function SultaAiIntelligence({
                     ))}
                     {aiStats.depletingSoon.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="p-8 text-center text-emerald-600 font-bold">جميع مستويات خط إمداد ومخزون SULTA بحالة ممتازة ومستقرة! ✓</td>
+                        <td colSpan={6} className="p-8 text-center text-emerald-600 font-bold">جميع مستويات خط إمداد ومخزون Sulta بحالة ممتازة ومستقرة! ✓</td>
                       </tr>
                     )}
                   </tbody>
@@ -867,7 +867,7 @@ export default function SultaAiIntelligence({
                     </button>
                   </div>
                   
-                  <span className="text-[10px] text-[#A44C5C] font-black block border-b border-stone-200 pb-2 mb-3">✦ مسوّدة كوتور من SULTA AI Marketing Center:</span>
+                  <span className="text-[10px] text-[#A44C5C] font-black block border-b border-stone-200 pb-2 mb-3">✦ مسوّدة كوتور من Sulta AI Marketing Center:</span>
                   <pre className="text-xs text-stone-800 leading-relaxed font-sans whitespace-pre-line text-right" dir="rtl">{generatedPromoText}</pre>
                 </div>
               )}
@@ -883,7 +883,7 @@ export default function SultaAiIntelligence({
               <div>
                 <h4 className="font-serif text-sm font-black text-gray-900">🛒 نظام كشف واسترداد السِلات المتروكة (Abandoned Cart Recovery)</h4>
                 <p className="text-[10px] text-gray-400 font-sans mt-0.5 leading-relaxed">
-                  يقوم موقع SULTA بتسجيل المحاولات والعميلات اللواتي أضفن قطعاً فاخرة إلى حقيبة سلة المشتريات وتوقفن طويلاً قبل إكمال الدفع الآمن.
+                  يقوم موقع Sulta بتسجيل المحاولات والعميلات اللواتي أضفن قطعاً فاخرة إلى حقيبة سلة المشتريات وتوقفن طويلاً قبل إكمال الدفع الآمن.
                 </p>
               </div>
 
@@ -908,7 +908,7 @@ export default function SultaAiIntelligence({
                         <td className="py-3.5 text-center">
                           <button
                             onClick={() => {
-                              const recoveryText = `مرحباً بكِ ملكتنا الجميلة ${cart.name} في SULTA لملابس النوم الفاخرة 🌸. رصدت مستشارتنا تفضيلك وحفظك لقطعة:
+                              const recoveryText = `مرحباً بكِ ملكتنا الجميلة ${cart.name} في Sulta لملابس النوم الفاخرة 🌸. رصدت مستشارتنا تفضيلك وحفظك لقطعة:
 💎 *${cart.item}*
 في سلتكِ. لنسعدكِ ونمنحك الرداء الملكي المناسب، متاح لدينا التوصيل الرويال السريع بمقاسك الفعلي المريح وضمان مجاني تام للاستبدال! يسرنا الرد على أي تطلع خاص بكِ ✨`;
                               const targetUrl = `https://wa.me/${cart.phone}?text=${encodeURIComponent(recoveryText)}`;
@@ -941,7 +941,7 @@ export default function SultaAiIntelligence({
               <div className="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                 <div className="space-y-2 max-w-2xl">
                   <div className="inline-flex items-center gap-1.5 bg-[#A44C5C]/10 text-[#A44C5C] px-3 py-1 rounded-full text-[10.5px] font-bold">
-                    <span>👑 مستشار SULTA لمستوى الأناقة بأقل تكلفة</span>
+                    <span>👑 مستشار Sulta لمستوى الأناقة بأقل تكلفة</span>
                     <span className="animate-pulse">•</span>
                     <span>محدّث لعام 2026</span>
                   </div>
@@ -1119,7 +1119,7 @@ export default function SultaAiIntelligence({
                         {/* Custom Stamped Ink effect */}
                         <div className="my-auto space-y-1 flex flex-col items-center scale-95 border border-dashed border-[#A44C5C]/30 p-2.5 rounded-lg bg-[#E3D4C4]/20">
                           <span className="text-xl font-serif font-black text-[#A44C5C] tracking-wide" style={{ textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
-                            SULTA 👑
+                            Sulta 👑
                           </span>
                           <span className="text-[10px] font-sans text-stone-700 font-bold tracking-widest leading-none">
                             - SLEEPWEAR COUTUR -
@@ -1140,7 +1140,7 @@ export default function SultaAiIntelligence({
                         <div className="my-auto w-[85%] h-[80%] bg-[#FFF1F3] border-2 border-[#DF8A9D] rounded-xl flex flex-col justify-between p-2 shadow-xs transition-scale-up">
                           <span className="text-[8px] text-[#DF8A9D] font-bold">LIMITED COLLECTION</span>
                           <div className="space-y-0.5">
-                            <h5 className="text-md font-serif font-black text-[#A44C5C]">SULTA COUTUR</h5>
+                            <h5 className="text-md font-serif font-black text-[#A44C5C]">Sulta COUTUR</h5>
                             <p className="text-[7px] text-stone-500 font-sans">لأن الأناقة تبدأ من راحتك 🌸</p>
                           </div>
                           <span className="text-[7.5px] text-[#DF8A9D] font-mono leading-none border-t border-[#DF8A9D]/30 pt-1">
@@ -1155,7 +1155,7 @@ export default function SultaAiIntelligence({
                       <div className="w-full h-full flex flex-col justify-between p-2 items-center text-center select-none bg-radial from-[#FFF0F2] to-[#FFF6F7]">
                         <div className="text-[#A44C5C] text-[8px] font-bold tracking-wider">★ THE PIZZA SELECTION ★</div>
                         <div className="my-auto text-center space-y-1">
-                          <span className="text-2xl font-serif text-[#A44C5C] font-black block">SULTA</span>
+                          <span className="text-2xl font-serif text-[#A44C5C] font-black block">Sulta</span>
                           <p className="text-[8.5px] leading-relaxed text-[#A44C5C] font-sans px-1 bg-[#A44C5C]/5 py-0.5 rounded">
                             "Zero Calories. Full Comfort."
                           </p>
@@ -1277,7 +1277,7 @@ export default function SultaAiIntelligence({
               <div className="bg-white border border-stone-200/80 p-5 rounded-2.5xl space-y-3.5">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🏷️</span>
-                  <h4 className="text-xs font-bold text-stone-850">كارت الشكر المخملي الفاخر (SULTA Luxury Gift Card)</h4>
+                  <h4 className="text-xs font-bold text-stone-850">كارت الشكر المخملي الفاخر (Sulta Luxury Gift Card)</h4>
                 </div>
                 
                 <p className="text-[11px] text-stone-605 leading-relaxed">
@@ -1294,7 +1294,7 @@ export default function SultaAiIntelligence({
                       <b>سلوفان بلمس قطيفة مخملي (Velvet Lamination):</b> اطلبي من المطبعة الفورية عمل طبقة "سلوفان قطيفة" على وزن ورقة 350 جرام. يعطي الكارت ملمس شامواه مذهل.
                     </li>
                     <li>
-                      <b>تطبيق حبر الـ Spot UV:</b> لجعل لوجو SULTA والفيونكة الوردية يلمعان ببريق بارز فوق الملمس الأسود المطفي، تكفي علبة من 100 كارت ديجيتال مطلي بسعر لا يتجاوز <b>180 إلى 250 ج.م</b> كبداية للمشروع بدلاً من حجز ألواح طباعة زنك غالية!
+                      <b>تطبيق حبر الـ Spot UV:</b> لجعل لوجو Sulta والفيونكة الوردية يلمعان ببريق بارز فوق الملمس الأسود المطفي، تكفي علبة من 100 كارت ديجيتال مطلي بسعر لا يتجاوز <b>180 إلى 250 ج.م</b> كبداية للمشروع بدلاً من حجز ألواح طباعة زنك غالية!
                     </li>
                   </ul>
                 </div>
@@ -1325,7 +1325,7 @@ export default function SultaAiIntelligence({
                     طلب الختم الخشبي المخصص
                   </h5>
                   <p className="text-stone-600">
-                    • خذي لوجو SULTA والرسومات اللطيفة التي قمنا بتصميمها لكِ مجاناً في Sulta Brand باللون الأسود بالكامل (قالب مفرغ Silhoutte).
+                    • خذي لوجو Sulta والرسومات اللطيفة التي قمنا بتصميمها لكِ مجاناً في Sulta Brand باللون الأسود بالكامل (قالب مفرغ Silhoutte).
                     <br />
                     • ابحثي في منطقتكِ عن ورش <b>الحفر بالليزر والزنكغراف</b> (مثلاً عبر منصات الطباعة أونلاين أو المطابع المختصة بالرياض وجدة). اطلبي ختم خشبي جامبو مقاس 15x15 سم أو 20x15 سم بمقبض عريض.
                     <br />

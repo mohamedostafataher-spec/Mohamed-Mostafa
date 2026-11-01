@@ -9,14 +9,14 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png",
+      "src": "/img/sulta_default_1_1781140865386.webp",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
-      "src": "/assets/images/sulta_luxury_pajama_hero_2_1780682794821.png",
+      "src": "/img/sulta_default_1_1781140865386.webp",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/webp"
     }
   ]
 }

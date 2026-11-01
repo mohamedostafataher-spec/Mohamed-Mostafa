@@ -105,7 +105,7 @@ export default function RealPackagingPreview() {
         <div className="flex items-center gap-1.5 justify-start flex-row-reverse">
           <span className="bg-pink-100 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">معاينة التغليف التفاعلي الفوري 🎁</span>
         </div>
-        <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold select-none">٤. محاكاة الطرود والعلب كوتور (SULTA Unboxing Preview)</h3>
+        <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold select-none">٤. محاكاة الطرود والعلب كوتور (Sulta Unboxing Preview)</h3>
         <p className="text-gray-500 text-xs mt-1 leading-relaxed">
           شاهدي تفاصيل وفخامة الباقة وكيف ستصل إليكِ أو لمن تحبين. اضغطي على النوافذ لتشريح المكونات وعرض ملمس علبة الشحن وبطاقة الشمع الملكية والشنطة الأنيقة.
         </p>
@@ -132,8 +132,8 @@ export default function RealPackagingPreview() {
             )}
           </AnimatePresence>
 
-          {/* SULTA Gold Crest Logo Backplate */}
-          <div className="absolute top-4 left-4 opacity-5 select-none font-serif text-6xl pointer-events-none">SULTA</div>
+          {/* Sulta Gold Crest Logo Backplate */}
+          <div className="absolute top-4 left-4 opacity-5 select-none font-serif text-6xl pointer-events-none">Sulta</div>
 
           <div className="flex-1 flex flex-col items-center justify-center p-4">
             <AnimatePresence mode="wait">
@@ -151,7 +151,7 @@ export default function RealPackagingPreview() {
                     {/* Simulated Box Rendering */}
                     <div className="w-full h-full flex flex-col items-center justify-center p-6 relative" style={{ backgroundColor: boxTheme === 'rose' ? '#FDF2F4' : '#1F1F1F' }}>
                       <span className={`text-4xl ${boxTheme === 'rose' ? 'text-[#A44C5C]' : 'text-[#F6E7A6]'}`}>⚜️</span>
-                      <span className={`text-xs font-serif font-black tracking-widest mt-2 block ${boxTheme === 'rose' ? 'text-stone-800' : 'text-[#F6E7A6]'}`}>SULTA</span>
+                      <span className={`text-xs font-serif font-black tracking-widest mt-2 block ${boxTheme === 'rose' ? 'text-stone-800' : 'text-[#F6E7A6]'}`}>Sulta</span>
                       {/* Ribbon Loop overlay */}
                       <div className="absolute inset-y-0 w-5 bg-gradient-to-r from-pink-400 to-pink-500 opacity-80" style={{ left: '46%', backgroundColor: boxTheme === 'rose' ? '#E11D48' : '#000000' }} />
                     </div>
@@ -240,7 +240,7 @@ export default function RealPackagingPreview() {
                     </div>
                     
                     <div className="pt-2 text-center">
-                      <span className="text-[7px] text-stone-500 uppercase tracking-widest font-mono block">SULTA BOUTIQUE</span>
+                      <span className="text-[7px] text-stone-500 uppercase tracking-widest font-mono block">Sulta BOUTIQUE</span>
                       <div className="w-4 h-0.25 bg-stone-500 mx-auto my-1" />
                     </div>
                     

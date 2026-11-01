@@ -7,7 +7,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameAr: 'بيجامة روج المنقّطة بحمالات',
     nameEn: 'Red Polka Dot Strappy Cotton Pajama',
     h1: 'بيجامة نسائية حمراء منقّطة بحمالات — قطن وان سايز',
-    seoTitle: 'بيجامة نسائية حمراء منقّطة بحمالات قطن | سولتة',
+    seoTitle: 'بيجامة نسائية حمراء منقّطة بحمالات قطن | سولته',
     slug: 'red-polka-dot-strappy-cotton-pajama',
     category: 'sleepwear',
     categoryAr: 'ملابس نوم نسائية',
@@ -17,8 +17,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     salePriceEG: 899,
     compareAtPrice: undefined,
     saleEndsAt: undefined,
-    shortDescription: 'بيجامة نسائية حمراء منقّطة بحمالات من قطن ناعم ومريح. وان سايز من 45 إلى 80 كيلو. الكمية محدودة، اطلبيها من سولتة.',
-    descriptionAr: `بيجامة نسائية حمراء منقّطة بحمالات من سولتة، بلون أحمر جريء ونقط بيضاء ناعمة. الحمالات تربطينها على الكتف وفيها تجميعة عند الصدر تعطي شكلًا أنثويًا مريحًا. مصنوعة من قطن ناعم ومريح على البشرة للنوم وجلسات البيت.
+    shortDescription: 'بيجامة نسائية حمراء منقّطة بحمالات من قطن ناعم ومريح. وان سايز من 45 إلى 80 كيلو. الكمية محدودة، اطلبيها من سولته.',
+    descriptionAr: `بيجامة نسائية حمراء منقّطة بحمالات من سولته، بلون أحمر جريء ونقط بيضاء ناعمة. الحمالات تربطينها على الكتف وفيها تجميعة عند الصدر تعطي شكلًا أنثويًا مريحًا. مصنوعة من قطن ناعم ومريح على البشرة للنوم وجلسات البيت.
 • الخامة: قطن ناعم ومريح
 • المقاس: وان سايز يناسب من 45 إلى 80 كيلو
 • الكمية محدودة
@@ -49,7 +49,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameAr: 'بيجامة فلورا — توليب',
     nameEn: 'Flora Tulip Crinkle Cotton Pajama',
     h1: 'بيجامة نسائية قطن كوريشة بطبعة التوليب — وان سايز',
-    seoTitle: 'بيجامة نسائية قطن كوريشة بطبعة التوليب | سولتة',
+    seoTitle: 'بيجامة نسائية قطن كوريشة بطبعة التوليب | سولته',
     slug: 'tulip-crinkle-cotton-womens-pajama',
     category: 'sleepwear',
     categoryAr: 'ملابس نوم نسائية',
@@ -59,8 +59,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     salePriceEG: 899,
     compareAtPrice: undefined,
     saleEndsAt: undefined,
-    shortDescription: 'بيجامة نسائية من قطن كوريشة ناعم بطبعة التوليب الوردي وحواف وردية. وان سايز من 45 إلى 80 كيلو. اطلبيها من سولتة.',
-    descriptionAr: `بيجامة نسائية قطن كوريشة بطبعة التوليب الوردي من سولتة، على قماش ناعم ومريح بقصّة قميص بأكمام قصيرة وحواف وردية تضيف لمسة أنثوية هادئة.
+    shortDescription: 'بيجامة نسائية من قطن كوريشة ناعم بطبعة التوليب الوردي وحواف وردية. وان سايز من 45 إلى 80 كيلو. اطلبيها من سولته.',
+    descriptionAr: `بيجامة نسائية قطن كوريشة بطبعة التوليب الوردي من سولته، على قماش ناعم ومريح بقصّة قميص بأكمام قصيرة وحواف وردية تضيف لمسة أنثوية هادئة.
 • الخامة: قطن كوريشة ناعم ومريح
 • المقاس: وان سايز يناسب من 45 إلى 80 كيلو
 • الكمية محدودة
@@ -86,13 +86,13 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     stock: 12
   },
 
-  // المنتج (ج) - روزي: زهور في بوكس سولتة
+  // المنتج (ج) - روزي: زهور في بوكس سولته
   {
     id: '78f851f3-5f75-4153-9fbe-0e8ad54825be',
     nameAr: 'بيجامة روزي — زهور',
     nameEn: 'Rosy Floral Crinkle Cotton Pajama',
-    h1: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة — في بوكس سولتة',
-    seoTitle: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة | سولتة',
+    h1: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة — في بوكس سولته',
+    seoTitle: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة | سولته',
     slug: 'pink-floral-crinkle-cotton-womens-pajama',
     category: 'sleepwear',
     categoryAr: 'ملابس نوم نسائية',
@@ -102,13 +102,13 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     salePriceEG: 899,
     compareAtPrice: undefined,
     saleEndsAt: undefined,
-    shortDescription: 'بيجامة نسائية وردية بنقشة زهور من قطن كوريشة ناعم ومريح. وان سايز من 45 إلى 80 كيلو، وتصل في بوكس سولتة.',
-    descriptionAr: `بيجامة نسائية وردية بنقشة زهور من سولتة، بدرجة وردية ناعمة ونقشة زهور صغيرة على قماش قطن كوريشة ناعم ومريح. تصلك في بوكس سولتة مع ستيكرز، فهي اختيار لطيف كهدية.
+    shortDescription: 'بيجامة نسائية وردية بنقشة زهور من قطن كوريشة ناعم ومريح. وان سايز من 45 إلى 80 كيلو، وتصل في بوكس سولته.',
+    descriptionAr: `بيجامة نسائية وردية بنقشة زهور من سولته، بدرجة وردية ناعمة ونقشة زهور صغيرة على قماش قطن كوريشة ناعم ومريح. تصلك في بوكس سولته مع ستيكرز، فهي اختيار لطيف كهدية.
 • الخامة: قطن كوريشة ناعم ومريح
 • المقاس: وان سايز يناسب من 45 إلى 80 كيلو
 • الكمية محدودة
 طريقة الغسيل: تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.`,
-    descriptionEn: 'Rosy Floral Crinkle Cotton Pajama presented in signature SULTA gift box with stickers sheet.',
+    descriptionEn: 'Rosy Floral Crinkle Cotton Pajama presented in signature Sulta gift box with stickers sheet.',
     fabricAr: 'قطن كوريشة ناعم ومريح',
     fabricEn: 'Soft & Comfortable Crinkle Cotton',
     material: 'قطن كوريشة',
@@ -134,7 +134,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameAr: 'بيجامة سُكّر بالفيونكة — وردي ملكي',
     nameEn: 'Sugar Bow Pajama Set — Royal Pink',
     h1: 'بيجامة نسائية بطبعة الفيونكة — وردي ملكي',
-    seoTitle: 'بيجامة نسائية بطبعة الفيونكة وردي ملكي | سولتة',
+    seoTitle: 'بيجامة نسائية بطبعة الفيونكة وردي ملكي | سولته',
     slug: 'sugar-bow-pajama-set-royal-pink',
     category: 'new',
     categoryAr: 'أزياء النوم النسائية',
@@ -178,7 +178,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     nameAr: 'بيجامة سُكّر بالفيونكة — أبيض عاجي',
     nameEn: 'Sugar Bow Pajama Set — Ivory White',
     h1: 'بيجامة نسائية بطبعة الفيونكة — أبيض عاجي',
-    seoTitle: 'بيجامة نسائية بطبعة الفيونكة أبيض عاجي | سولتة',
+    seoTitle: 'بيجامة نسائية بطبعة الفيونكة أبيض عاجي | سولته',
     slug: 'sugar-bow-pajama-set-ivory-white',
     category: 'new',
     categoryAr: 'أزياء النوم النسائية',
@@ -190,7 +190,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     saleEndsAt: undefined,
     shortDescription: 'بيجامة نسائية بطبعة الفيونكة باللون الأبيض العاجي الناصع، مظهر مريح ومشرق لأوقات البيت.',
     descriptionAr: `أناقة ناعمة بتفاصيل تلفت النظر.
-تأتي بيجامة سُكّر باللون الأبيض العاجي بلمسة فيونكة أنثوية تضفي طابعًا رقيقًا لإطلالتك المنزلية. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف سولتة الأنيق.
+تأتي بيجامة سُكّر باللون الأبيض العاجي بلمسة فيونكة أنثوية تضفي طابعًا رقيقًا لإطلالتك المنزلية. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف سولته الأنيق.
 
 • اللون: أبيض عاجي نقي (Ivory White)
 • المقاس: وان سايز مريح
@@ -221,8 +221,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     id: 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc',
     nameAr: 'بيجامة روزا — ورد المساء',
     nameEn: 'Rosa Evening Bloom Pajama Set',
-    h1: 'بيجامة نسائية روزا ورد المساء — سولتة',
-    seoTitle: 'بيجامة نسائية روزا ورد المساء | سولتة',
+    h1: 'بيجامة نسائية روزا ورد المساء — سولته',
+    seoTitle: 'بيجامة نسائية روزا ورد المساء | سولته',
     slug: 'rosa-evening-bloom-pajama-set',
     category: 'new',
     categoryAr: 'أزياء النوم النسائية',
@@ -265,8 +265,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     id: '1d4e8104-17c9-4b64-8300-38340bdeaa18',
     nameAr: 'بيجامة كلاسيك دوت',
     nameEn: 'Classic Dot Pajama Set',
-    h1: 'بيجامة نسائية كلاسيك دوت — سولتة',
-    seoTitle: 'بيجامة نسائية كلاسيك دوت | سولتة',
+    h1: 'بيجامة نسائية كلاسيك دوت — سولته',
+    seoTitle: 'بيجامة نسائية كلاسيك دوت | سولته',
     slug: 'classic-dot-pajama-set',
     category: 'archive',
     categoryAr: 'أزياء النوم النسائية',

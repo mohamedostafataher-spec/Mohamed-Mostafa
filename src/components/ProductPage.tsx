@@ -174,7 +174,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   };
 
   const shortDesc = product.shortDescription || product.descriptionAr.slice(0, 150);
-  const formattedTitle = product.seoTitle || `${product.nameAr} | سولتة`;
+  const formattedTitle = product.seoTitle || `${product.nameAr} | سولته`;
   const productSlug = product.slug || getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr });
   const canonicalUrl = `https://sulta.vercel.app/product/${productSlug}/`;
 
@@ -184,7 +184,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const isOutOfStock = product.stock === 0;
 
   // WhatsApp inquiry link
-  const whatsappText = encodeURIComponent(`مرحباً سولتة، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالسعر الحالي: ${discountInfo.effectivePrice} ر.س\nالرابط: ${canonicalUrl}`);
+  const whatsappText = encodeURIComponent(`مرحباً سولته، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالسعر الحالي: ${discountInfo.effectivePrice} ر.س\nالرابط: ${canonicalUrl}`);
   const whatsappUrl = `https://wa.me/966552823677?text=${whatsappText}`;
 
   // JSON-LD for Product (STRICT: NO reviews, NO aggregateRating)
@@ -197,7 +197,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     "sku": product.sku || product.id,
     "brand": {
       "@type": "Brand",
-      "name": "سولتة"
+      "name": "سولته"
     },
     "material": product.material || product.fabricAr,
     "audience": {
@@ -309,7 +309,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           <Truck size={16} className="text-emerald-700" />
           <span>شحن مجاني لكافة مدن المملكة للطلبات فوق 299 ر.س 🇸🇦</span>
         </span>
-        <span className="text-emerald-700 font-sans text-xs">سولتة SULTA</span>
+        <span className="text-emerald-700 font-sans text-xs">سولته Sulta</span>
       </div>
 
       {/* Back to store shortcut */}
@@ -334,8 +334,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           >
             <SultaImage 
               src={currentMainImage} 
-              alt={product.h1 || `${product.nameAr} من سولتة`} 
+              alt={product.h1 || `${product.nameAr} من سولته`} 
               className="w-full h-full"
+              contain={false}
+              width={1000}
               imgClassName="w-full h-full object-cover object-center"
               priority={true}
             />
@@ -389,7 +391,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                       src={img} 
                       alt={`${product.h1 || product.nameAr} - صورة ${idx + 1}`} 
                       className="w-full h-full"
-                      imgClassName="object-cover"
+                      contain={true}
+                      width={200}
+                      imgClassName="object-contain"
                     />
                   </button>
                 );
@@ -632,11 +636,14 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                       }}
                       className="group block bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
                     >
-                      <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
-                        <img 
-                          src={cleanImgUrl(sim.images?.[0])} 
+                      <div className="aspect-[3/4] bg-white overflow-hidden">
+                        <SultaImage 
+                          src={sim.images?.[0]} 
                           alt={sim.nameAr} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          className="w-full h-full"
+                          contain={true}
+                          width={400}
+                          imgClassName="w-full h-full object-contain group-hover:scale-105 transition-transform" 
                           loading="lazy" 
                         />
                       </div>

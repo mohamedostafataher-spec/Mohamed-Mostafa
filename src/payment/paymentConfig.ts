@@ -1,5 +1,5 @@
 /**
- * SULTA Payment Architecture - Configuration & Gateway Endpoints
+ * Sulta Payment Architecture - Configuration & Gateway Endpoints
  * 
  * SECURITY MANDATE:
  * - NO API secrets, secret keys, or HMAC secrets are placed in the frontend!

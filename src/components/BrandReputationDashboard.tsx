@@ -97,7 +97,7 @@ export default function BrandReputationDashboard({
               <span className="text-[10px] text-gray-400 font-sans">مؤشر رضا العميل التراكمي الفخر</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-serif font-light text-[#F6E7A6] mt-2">
-              لوحة متابعة سمعة ووقار براند SULTA
+              لوحة متابعة سمعة ووقار براند Sulta
             </h2>
             <p className="text-gray-400 text-xs mt-1 leading-relaxed">
               تحليل شامل ومستمر لجميع التقارير والتقييمات الحية الواردة من سيدات المجتمع لضمان الحفاظ على الجودة الخالدة للبوتيك.
@@ -254,7 +254,7 @@ export default function BrandReputationDashboard({
               className="w-full py-2.5 bg-[#A44C5C] hover:bg-[#A44C5C] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
             >
               <Send size={12} />
-              <span>تسجيل الملحوظة للعمل مع فريق SULTA</span>
+              <span>تسجيل الملحوظة للعمل مع فريق Sulta</span>
             </button>
           </form>
 

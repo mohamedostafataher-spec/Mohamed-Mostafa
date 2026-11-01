@@ -11,7 +11,7 @@ interface AboutUsProps {
 
 export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
   const fallbackStory = {
-    title: 'دار سُلْطَة | SULTA HOUSE',
+    title: 'دار سُلْطَة | Sulta HOUSE',
     quote: 'نؤمن أن ملابس النوم ليست مجرد روتين يومي — بل هي طقس يومي لتجديد الطاقة والاعتناء بالذات.',
     section1: {
       title: 'إرثنا الملكي / Our Exquisite Heritage',
@@ -36,8 +36,8 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
   return (
     <div className="bg-[#FAF4F5] min-h-screen animate-fade-in py-12" dir="rtl">
       <SEO 
-        title="قصتنا وإرثنا - دار سولتة SULTA House" 
-        description="تعرفي على إرث سولتة في تصميم أزياء النوم الراقية. نؤمن أن الراحة والأناقة وجهان لعملة واحدة تليق بملكة." 
+        title="قصتنا وإرثنا - دار سولته Sulta House" 
+        description="تعرفي على إرث سولته في تصميم أزياء النوم الراقية. نؤمن أن الراحة والأناقة وجهان لعملة واحدة تليق بملكة." 
         path="/about" 
       />
       
@@ -45,7 +45,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
       <div className="bg-[#FAF5F0] py-20 border-b border-[#DF8A9D]/20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] tracking-widest mb-4 uppercase">
-            {aboutData.title || 'SULTA HOUSE'}
+            {aboutData.title || 'Sulta HOUSE'}
           </h2>
           <div className="py-2">
             <RibbonBowDivider />
@@ -167,7 +167,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
           </div>
           <h4 className="font-serif text-2xl md:text-3xl text-[#0B0B0B] font-light">نصل إليكِ أينما كنتِ 🌍</h4>
           <p className="text-xs md:text-sm text-gray-500 max-w-2xl mx-auto leading-relaxed font-sans">
-            نفخر في **SULTA** بخدمة سيداتنا في كافة أنحاء **المملكة العربية السعودية** (الرياض، جدة، مكة المكرمة، المدينة المنورة، الدمام، الخبر، القصيم، وكافة المناطق) ودول **الخليج العربي** (الإمارات العربية المتحدة، الكويت، قطر، البحرين) بالإضافة إلى **مصر**. 
+            نفخر في **Sulta** بخدمة سيداتنا في كافة أنحاء **المملكة العربية السعودية** (الرياض، جدة، مكة المكرمة، المدينة المنورة، الدمام، الخبر، القصيم، وكافة المناطق) ودول **الخليج العربي** (الإمارات العربية المتحدة، الكويت، قطر، البحرين) بالإضافة إلى **مصر**. 
             نوفر شحناً سريعاً ومؤمناً بالكامل لضمان وصول قطعكِ الفاخرة بأبهى صورة.
           </p>
           <div className="flex flex-wrap justify-center gap-2 pt-4">
@@ -179,14 +179,14 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
           </div>
         </div>
 
-        {/* 🎀 SULTA BRAND STRATEGY & VISUAL IDENTITY SYSTEM 🎀 */}
+        {/* 🎀 Sulta BRAND STRATEGY & VISUAL IDENTITY SYSTEM 🎀 */}
         <div className="mt-20 border-t border-[#DF8A9D]/20 pt-16">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
             <span className="text-[10px] text-[#A44C5C] tracking-[0.3em] font-bold uppercase block">
-              SULTA ATELIER BRAND GUIDELINES
+              Sulta ATELIER BRAND GUIDELINES
             </span>
             <h3 className="font-serif text-3xl md:text-4xl text-[#0B0B0B] font-light">
-              نظام الهوية البصرية والاستراتيجية الموحدة لعلامة SULTA 👑
+              نظام الهوية البصرية والاستراتيجية الموحدة لعلامة Sulta 👑
             </h3>
             <p className="text-xs md:text-sm text-gray-500 max-w-xl mx-auto leading-relaxed">
               وفقاً لاستراتيجيتنا الموحدة، تم تصميم ألوان وصور المتجر لتعكس الفخامة المطلقة (Couture Luxury) والتفرد من خلال تباين ملكي مدروس وتصوير فني دافئ.
@@ -207,7 +207,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                   <h4 className="font-serif text-lg font-semibold text-[#0B0B0B]">لوحة الألوان الملكية الموحدة</h4>
                 </div>
                 <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-                  هذه هي اللوحة الرسمية التي توحد جميع زوايا SULTA. انقري على أي مربع لون لنسخ رمز اللون الـ (Hex Code) فوراً واستخدامه في حملاتك التسويقية:
+                  هذه هي اللوحة الرسمية التي توحد جميع زوايا Sulta. انقري على أي مربع لون لنسخ رمز اللون الـ (Hex Code) فوراً واستخدامه في حملاتك التسويقية:
                 </p>
                 
                 <div className="space-y-4">
@@ -253,7 +253,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
               </div>
               
               <div className="mt-6 pt-6 border-t border-stone-100 text-[10px] text-stone-400 text-center font-mono uppercase tracking-widest">
-                SULTA COLOR METRICS — OFFICIALLY VERIFIED
+                Sulta COLOR METRICS — OFFICIALLY VERIFIED
               </div>
             </div>
 
@@ -267,7 +267,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                   <h4 className="font-serif text-lg font-semibold text-[#0B0B0B]">استراتيجية الصور الموحدة</h4>
                 </div>
                 <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-                  للحفاظ على رونق ملوكي موحد، تخضع جميع لقطات ومنتجات دار SULTA لثلاث قواعد ذهبية للتصوير الفني:
+                  للحفاظ على رونق ملوكي موحد، تخضع جميع لقطات ومنتجات دار Sulta لثلاث قواعد ذهبية للتصوير الفني:
                 </p>
                 <ul className="space-y-3.5 text-right">
                   <li className="flex items-start gap-2.5">
@@ -339,9 +339,9 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                       <div className={`p-4 rounded-2xl ${currentFab.bg} border ${currentFab.border} transition-all duration-500 text-center space-y-2 relative overflow-hidden min-h-[90px] flex flex-col justify-center`}>
                         {/* Elegant watermark */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-                          <span className="font-serif text-5xl uppercase tracking-[0.2em] font-bold text-white">SULTA</span>
+                          <span className="font-serif text-5xl uppercase tracking-[0.2em] font-bold text-white">Sulta</span>
                         </div>
-                        <span className="text-[10px] text-[#DBC082] tracking-widest font-mono uppercase block z-1">SULTA ATELIER STANDARD</span>
+                        <span className="text-[10px] text-[#DBC082] tracking-widest font-mono uppercase block z-1">Sulta ATELIER STANDARD</span>
                         <h5 className="font-serif text-base font-light z-1" style={{ color: currentFab.fontColor }}>
                           نعومةٌ تليقُ بِمَلِكَة
                         </h5>

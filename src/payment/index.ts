@@ -1,5 +1,5 @@
 /**
- * SULTA Payment Module Exports
+ * Sulta Payment Module Exports
  */
 
 export * from './types';

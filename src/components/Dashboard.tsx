@@ -131,7 +131,7 @@ export default function Dashboard({
     } catch {}
     return {
       email: 'owner@sulta.sa',
-      name: 'إدارة SULTA الملكية',
+      name: 'إدارة Sulta الملكية',
       role: 'owner'
     };
   });
@@ -210,7 +210,7 @@ export default function Dashboard({
 
   // Settings form states
   const [settingsForm, setSettingsForm] = useState({
-    siteName: settings?.siteName || 'SULTA',
+    siteName: settings?.siteName || 'Sulta',
     whatsapp: settings?.whatsappSaudi || settings?.whatsapp || '966552823677',
     contactPhone: settings?.contactPhoneSaudi || settings?.contactPhone || '+966 55 282 3677',
     contactEmail: settings?.contactEmail || 'concierge@sulta.sa',
@@ -669,7 +669,7 @@ export default function Dashboard({
       const testOrderId = crypto.randomUUID();
       const testOrder: Order = {
         id: testOrderId,
-        trackingNumber: `SULTA-${Math.floor(100000 + Math.random() * 900000)}`,
+        trackingNumber: `Sulta-${Math.floor(100000 + Math.random() * 900000)}`,
         customerName: 'فحص تجريبي للنظام 🧪',
         phone: '0552823677',
         country: 'SA',
@@ -963,7 +963,7 @@ export default function Dashboard({
     const newCoupon: DiscountCoupon = {
       code,
       discountPercent: Number(newCouponDiscount) || 15,
-      description: newCouponDesc.trim() || `خصم ${newCouponDiscount}% لعميلات SULTA`,
+      description: newCouponDesc.trim() || `خصم ${newCouponDiscount}% لعميلات Sulta`,
       expiresAt: newCouponExpiry ? newCouponExpiry : undefined,
       isActive: true
     };
@@ -1141,7 +1141,7 @@ export default function Dashboard({
               </span>
               <div>
                 <h1 className="text-base sm:text-lg font-bold text-gray-950 flex items-center gap-1.5 font-serif">
-                  <span>لوحة إدارة SULTA الملكية</span>
+                  <span>لوحة إدارة Sulta الملكية</span>
                   <span className="flex items-center gap-1 bg-emerald-100 text-emerald-800 font-sans font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-tighter">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     بيانات حقيقية 100% ⚡
@@ -1801,13 +1801,13 @@ export default function Dashboard({
                         {abandonedLeads.filter(l => !l.converted).map((lead) => {
                           const cleanPhone = (lead.phone || '').replace(/\D/g, '');
                           const itemsSummary = lead.items?.map((it: any) => `${it.productName || 'قطعة كوتور'} (${it.size || ''})`).join('، ') || 'منتجات كوتور فاخرة';
-                          const leadMsg = `يا هلا بالسلطانة ${lead.customerName || 'الكريمة'} 🌸👑، معكِ خدمة عملاء متجر SULTA للأزياء وملابس النوم الملكية.
+                          const leadMsg = `يا هلا بالسلطانة ${lead.customerName || 'الكريمة'} 🌸👑، معكِ خدمة عملاء متجر Sulta للأزياء وملابس النوم الملكية.
 
 لاحظنا وصولكِ لخطوة إتمام الطلب والتحويل البنكي لحساب الراجحي ولم يتم تأكيد التحويل بعد:
 📦 القطع المختارة: ${itemsSummary}
 💰 المبلغ الإجمالي: ${lead.totalAmount || 0} ر.س
 
-هل نساعدكِ في تزويدك ببيانات الحساب البنكي أو تقديم كود خصم خاص (SULTA20 بخصم 20%) لتأكيد شحن طلبكِ الملكي فوراً؟ يسعدنا خدمتكِ دائماً ✨`;
+هل نساعدكِ في تزويدك ببيانات الحساب البنكي أو تقديم كود خصم خاص (Sulta20 بخصم 20%) لتأكيد شحن طلبكِ الملكي فوراً؟ يسعدنا خدمتكِ دائماً ✨`;
 
                           return (
                             <div key={lead.id} className="bg-white p-3 rounded-2xl border border-amber-200 shadow-2xs space-y-2 text-right">
@@ -1874,10 +1874,10 @@ export default function Dashboard({
                     <button
                       type="button"
                       onClick={() => {
-                        const msg = `يا هلا بالسلطانة 👑🌸، لاحظنا أنكِ اخترتِ قطع كوتور مميزة في سلة مشترياتكِ من SULTA ولم تكملي التحويل البنكي بعد.
+                        const msg = `يا هلا بالسلطانة 👑🌸، لاحظنا أنكِ اخترتِ قطع كوتور مميزة في سلة مشترياتكِ من Sulta ولم تكملي التحويل البنكي بعد.
 
 يسعدنا تقديم كود خصم إضافي وشحن مجاني لإتمام طلبكِ الآن:
-🎁 كود الخصم: SULTA20 (خصم 20%)
+🎁 كود الخصم: Sulta20 (خصم 20%)
 🚚 شحن مجاني وسريع لكافة مدن المملكة.
 🏦 تحويل مباشر لحساب الراجحي عبر الآيبان أو رقم الحساب.
 
@@ -2369,7 +2369,7 @@ export default function Dashboard({
 
                               {/* 2. Direct WhatsApp Chat Button */}
                               <a
-                                href={`https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً أستاذة ${order.customerName}، معك خدمة عملاء بوتيك SULTA 👑 بخصوص طلبكِ رقم #${order.id.slice(0, 8)}...`)}`}
+                                href={`https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً أستاذة ${order.customerName}، معك خدمة عملاء بوتيك Sulta 👑 بخصوص طلبكِ رقم #${order.id.slice(0, 8)}...`)}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="bg-gray-100 hover:bg-gray-200 text-gray-900 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
@@ -2780,7 +2780,7 @@ export default function Dashboard({
                     <input
                       type="text"
                       required
-                      placeholder="مثال: SULTA25"
+                      placeholder="مثال: Sulta25"
                       value={newCouponCode}
                       onChange={(e) => setNewCouponCode(e.target.value.toUpperCase())}
                       className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-black uppercase tracking-wider focus:bg-white focus:outline-none focus:border-[#A44C5C] shadow-inner"
@@ -3906,6 +3906,36 @@ export default function Dashboard({
                   <option value="cotton">قطنيات فاخرة 🌸</option>
                   <option value="loungewear">ملابس استرخاء 🕊️</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">اسم اللون (مثال: أبيض عاجي أو وردي ملكي)</label>
+                <input
+                  type="text"
+                  placeholder="وردي ملكي"
+                  value={productForm.colorName || 'وردي ملكي'}
+                  onChange={(e) => setProductForm(prev => ({ ...prev, colorName: e.target.value }))}
+                  className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">درجة لون دائرية (Hex Code)</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={productForm.colorHex || '#DF8A9D'}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, colorHex: e.target.value }))}
+                    className="w-12 h-10 rounded-xl border border-gray-200 cursor-pointer bg-white p-1"
+                  />
+                  <input
+                    type="text"
+                    placeholder="#DF8A9D"
+                    value={productForm.colorHex || '#DF8A9D'}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, colorHex: e.target.value }))}
+                    className="flex-1 bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
+                  />
+                </div>
               </div>
 
               <div>

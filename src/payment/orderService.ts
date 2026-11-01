@@ -1,5 +1,5 @@
 /**
- * SULTA Payment Architecture - Order Management Service
+ * Sulta Payment Architecture - Order Management Service
  * 
  * Manages order creation, lifecycle states, and persistence.
  * Strictly adheres to verified statuses:
@@ -35,7 +35,7 @@ export const orderService = {
    */
   generateOrderCode(): string {
     const randomDigits = Math.floor(100000 + Math.random() * 900000);
-    return `SULTA-${randomDigits}`;
+    return `Sulta-${randomDigits}`;
   },
 
   /**

@@ -218,7 +218,7 @@ export default function SupportTicketsClient({ session }: { session: any }) {
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-gray-150 shadow-xs">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-[#0B0B0B] mb-1">مركز مساعدة SULTA</h2>
+          <h2 className="font-serif text-2xl font-bold text-[#0B0B0B] mb-1">مركز مساعدة Sulta</h2>
           <p className="text-gray-500 font-medium text-sm">تتبع استفساراتك، وتواصل مع فريق العناية بالعملاء</p>
         </div>
         <button

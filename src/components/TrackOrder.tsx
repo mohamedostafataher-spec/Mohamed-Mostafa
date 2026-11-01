@@ -206,8 +206,8 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
   return (
     <div className="py-24 px-4 bg-[#FCFAF7] min-h-screen relative overflow-hidden flex items-center justify-center">
       <SEO 
-        title="تتبع الطلبية الملكية - سولتة" 
-        description="تابعي حالة شحنتكِ الملكية من سولتة مباشرة. أدخلي رقم الطلب أو الجوال لمعرفة أين وصلت باقتكِ الفاخرة." 
+        title="تتبع الطلبية الملكية - سولته" 
+        description="تابعي حالة شحنتكِ الملكية من سولته مباشرة. أدخلي رقم الطلب أو الجوال لمعرفة أين وصلت باقتكِ الفاخرة." 
         path="/track-order" 
       />
       {/* Decorative luxury vector highlights */}
@@ -224,7 +224,7 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
           <div className="inline-flex p-3 bg-white/80 rounded-2.5xl shadow-xs border border-amber-900/5 mb-4 items-center justify-center shrink-0">
             <PackageSearch size={36} className="text-[#A44C5C] stroke-1.25" />
           </div>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#A44C5C]/70 block mb-1 font-sans">SULTA Atelier & Boutique</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#A44C5C]/70 block mb-1 font-sans">Sulta Atelier & Boutique</span>
           <h1 className="font-serif text-3.5xl text-gray-950 font-light tracking-tight mb-2.5">بوابة التتبع المباشرة</h1>
           <p className="text-gray-500 font-sans text-xs max-w-sm mx-auto leading-relaxed">أدخلي بيانات طلبكِ الملكي للاستعلام العاجل ومتابعة رحلة الباقة الملكية حتى عتبة داركم.</p>
         </motion.div>

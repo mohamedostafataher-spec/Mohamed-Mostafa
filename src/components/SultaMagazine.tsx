@@ -55,10 +55,10 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
         {/* Vogue/Harper Bazaar style header */}
         <div className="border-b-2 border-double border-gray-900 py-6 mb-12 text-center">
           <span className="text-[9px] text-[#A44C5C] font-semibold tracking-[0.4em] uppercase block mb-2">
-            ✦ L'ÉDITION ROYAL DE SULTA ATELIER ✦
+            ✦ L'ÉDITION ROYAL DE Sulta ATELIER ✦
           </span>
           <h1 className="font-serif text-5xl md:text-7xl font-light text-[#0B0B0B] tracking-[0.2em] translate-x-[4px] uppercase select-none">
-            SULTA JOURNAL
+            Sulta JOURNAL
           </h1>
           <div className="flex justify-between items-center text-[9px] text-gray-500 font-mono tracking-widest mt-4 uppercase border-t border-gray-300 pt-2 px-1 max-w-2xl mx-auto">
             <span>عدد الصيف الفاخر ٢٠٢٦</span>
@@ -219,7 +219,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
                         
                         <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between text-[9px] text-gray-400 font-mono">
                           <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
-                          <span>بأقلام SULTA ★</span>
+                          <span>بأقلام Sulta ★</span>
                         </div>
                       </div>
                     </div>

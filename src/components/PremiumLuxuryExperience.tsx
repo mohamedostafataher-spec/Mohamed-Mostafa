@@ -109,7 +109,7 @@ export default function PremiumLuxuryExperience({
   };
 
   const handleSaveOutfit = async () => {
-    const outfitName = `إطلالة SULTA الملكية #${Math.floor(100 + Math.random() * 900)}`;
+    const outfitName = `إطلالة Sulta الملكية #${Math.floor(100 + Math.random() * 900)}`;
     const outfitData = {
       name: outfitName,
       pajama_id: selectedPajama?.id || null,
@@ -221,7 +221,7 @@ export default function PremiumLuxuryExperience({
       );
     });
 
-    toast('🎉 تم بناء وتغليف علبة الهدايا الفخمة من SULTA وإضافتها لسلة المشتريات للتوصيل كوتور المباشر!', 'success');
+    toast('🎉 تم بناء وتغليف علبة الهدايا الفخمة من Sulta وإضافتها لسلة المشتريات للتوصيل كوتور المباشر!', 'success');
   };
 
 
@@ -275,7 +275,7 @@ export default function PremiumLuxuryExperience({
   const defaultMoods = [
     { slug: 'cozy', nameAr: 'ليالي مريحة ودافئة (Cozy Night)', icon: '🕯️', desc: 'بجايم وفساتين قطن مضلع معالج بنعومة عالية تمنحك استكناناً وهدوءاً.' },
     { slug: 'luxury', nameAr: 'قمة الترف والوقار (Luxury Night)', icon: '👑', desc: 'أطقم كوتور فاخرة مع دانتيل راقي مطرز يدوياً لتكوني نجمة ساطعة.' },
-    { slug: 'bride', nameAr: 'جناح سولتة للعروس (Bride Suite)', icon: '👰', desc: 'مزيج من الروز ناصع البياض والقطع الملكية للأوقات الخاصة الخالدة.' },
+    { slug: 'bride', nameAr: 'جناح سولته للعروس (Bride Suite)', icon: '👰', desc: 'مزيج من الروز ناصع البياض والقطع الملكية للأوقات الخاصة الخالدة.' },
     { slug: 'travel', nameAr: 'سفر دائم الترطيب (Travel Collection)', icon: '✈️', desc: 'تصاميم خفيفة للتوضيب، مريحة وأنيقة في ردهات الفنادق العالمية.' }
   ];
 
@@ -382,7 +382,7 @@ export default function PremiumLuxuryExperience({
   };
 
   const handleShareReferral = () => {
-    const refCode = `SULTA-ROYAL-${Math.floor(1000 + Math.random() * 9000)}`;
+    const refCode = `Sulta-ROYAL-${Math.floor(1000 + Math.random() * 9000)}`;
     const link = `${window.location.origin}/?ref=${refCode}`;
     navigator.clipboard.writeText(link);
     setPoints(prev => prev + 50);
@@ -397,7 +397,7 @@ export default function PremiumLuxuryExperience({
         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[#DF8A9C]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="space-y-2">
-            <span className="text-[10px] text-[#DF8A9C] font-mono tracking-widest font-bold block">✦ SULTA LUXURY EXPERIENCE SALON ✦</span>
+            <span className="text-[10px] text-[#DF8A9C] font-mono tracking-widest font-bold block">✦ Sulta LUXURY EXPERIENCE SALON ✦</span>
             <h1 className="text-3xl md:text-5xl font-serif font-light text-[#F6E7A6]">أتيليه التجربة والرفاهية الملكية</h1>
             <p className="text-gray-400 text-xs md:text-sm max-w-2xl leading-relaxed">
               مكان مخصص لعشاق المنسوجات المترفة وسحر التصميم. هنا يمكنك تنسيق إطلالتك الشاملة، صناعة الهدايا المغلفة، كشف روتين نومك الأمثل، استحقاق مكافآت نادي السوار وغيرها بلمسات تفاعلية كالحلم.
@@ -433,7 +433,7 @@ export default function PremiumLuxuryExperience({
             📕 لوك بوك السحر (Lookbook)
           </button>
           <button onClick={() => setActiveSegment('video')} className={`px-4 py-2.5 rounded-xl transition-all ${activeSegment === 'video' ? 'bg-[#F6E7A6] text-black font-semibold' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}>
-            🎬 تليفزيون سولتة (SULTA TV)
+            🎬 تليفزيون سولته (Sulta TV)
           </button>
           <button onClick={() => setActiveSegment('gallery')} className={`px-4 py-2.5 rounded-xl transition-all ${activeSegment === 'gallery' ? 'bg-[#F6E7A6] text-black font-semibold' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}>
             📸 معرض الأضواء (Style Gallery)
@@ -601,7 +601,7 @@ export default function PremiumLuxuryExperience({
                   {/* Saved Outfits List (Sypabase Feed) */}
                   {savedOutfits.length > 0 && (
                     <div className="pt-4 border-t border-gray-200">
-                      <h4 className="text-[11px] font-bold text-gray-600 mb-2.5">إطلالات منسقة مسبقاً من قبل عشاق سولتة:</h4>
+                      <h4 className="text-[11px] font-bold text-gray-600 mb-2.5">إطلالات منسقة مسبقاً من قبل عشاق سولته:</h4>
                       <div className="space-y-2 overflow-y-auto max-h-40">
                         {savedOutfits.slice(0, 3).map((ou, idx) => (
                           <div key={idx} className="bg-white p-2.5 rounded-lg border border-gray-100 flex justify-between items-center text-[10px]">
@@ -623,9 +623,9 @@ export default function PremiumLuxuryExperience({
               <div>
                 <h3 className="font-serif text-xl text-gray-900 flex items-center gap-2">
                   <Gift className="text-yellow-600" />
-                  أتيليه علب الهدايا وصناديق الحب والامتنان (The SULTA Gift Gifting Suite)
+                  أتيليه علب الهدايا وصناديق الحب والامتنان (The Sulta Gift Gifting Suite)
                 </h3>
-                <p className="text-gray-400 text-xs mt-1">نسق صندوق الهدايا الفريد لتهديه من تحب، مغلّفاً بلمسات الأنوثة والدانتيل المعطر وعطر دار سولتة مع كرت إهداء شخصي ملون.</p>
+                <p className="text-gray-400 text-xs mt-1">نسق صندوق الهدايا الفريد لتهديه من تحب، مغلّفاً بلمسات الأنوثة والدانتيل المعطر وعطر دار سولته مع كرت إهداء شخصي ملون.</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -640,7 +640,7 @@ export default function PremiumLuxuryExperience({
                         className={`p-4 border rounded-2xl cursor-pointer transition-all ${packaging === 'midnight-box' ? 'border-[#DF8A9C] bg-[#DF8A9C]/5' : 'border-gray-100 hover:border-gray-200'}`}
                       >
                         <div className="text-xl mb-1">🖤</div>
-                        <div className="text-xs font-bold text-gray-950">صندوق SULTA الأسود الملوكي</div>
+                        <div className="text-xs font-bold text-gray-950">صندوق Sulta الأسود الملوكي</div>
                         <p className="text-[10px] text-gray-400 mt-1">صندوق خشبي فاخر مكسو بالكتان المعطر برذاذ العود الخالص (60 ر.س)</p>
                       </div>
 
@@ -710,7 +710,7 @@ export default function PremiumLuxuryExperience({
                       <textarea 
                         value={giftMessage}
                         onChange={(e) => setGiftMessage(e.target.value)}
-                        placeholder="اكتب تهنئتك هنا بحب لتدوينها بخط اليد المترف من قبل منسقينا بدار سولتة..."
+                        placeholder="اكتب تهنئتك هنا بحب لتدوينها بخط اليد المترف من قبل منسقينا بدار سولته..."
                         rows={3}
                         className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs focus:outline-none focus:border-[#DF8A9C]"
                       />
@@ -777,7 +777,7 @@ export default function PremiumLuxuryExperience({
             <div className="space-y-6 max-w-3xl mx-auto">
               <div className="text-center pb-4 border-b border-gray-100">
                 <span className="text-[#DF8A9C] text-xs font-mono tracking-widest font-bold block uppercase">✦ CHOOSE COMFORT UNDERSTANDING ✦</span>
-                <h3 className="font-serif text-2xl text-gray-900 mt-1">مشخص وخبير النوم الملكي الذكي SULTA Quiz</h3>
+                <h3 className="font-serif text-2xl text-gray-900 mt-1">مشخص وخبير النوم الملكي الذكي Sulta Quiz</h3>
                 <p className="text-gray-400 text-xs mt-1">أجيبي بصدق عن طبيعة نومك ومحيطك لنكتشف توليفة المنسوجات والأطقم التي تمنحك أحلاماً وردية متدفقة.</p>
               </div>
 
@@ -919,7 +919,7 @@ export default function PremiumLuxuryExperience({
                 <div>
                   <h3 className="font-serif text-xl text-gray-900 flex items-center gap-2">
                     <Compass className="text-indigo-600" />
-                    تسوق الأجواء والحالات الوجدانية (SULTA Mood-Based Collections)
+                    تسوق الأجواء والحالات الوجدانية (Sulta Mood-Based Collections)
                   </h3>
                   <p className="text-gray-400 text-xs mt-1">تسوّقي بجاجتك بناء على شعورك اليوم، مستكشفة تجمعات الأنس والانتماء التي صممناها بكل دفء.</p>
                 </div>
@@ -975,9 +975,9 @@ export default function PremiumLuxuryExperience({
               <div>
                 <h3 className="font-serif text-xl text-gray-900 flex items-center gap-2">
                   <Layers className="text-[#DF8A9C]" />
-                  محرك خصومات الباقات والشراء التراكمي (The SULTA Smart Bundle Engine)
+                  محرك خصومات الباقات والشراء التراكمي (The Sulta Smart Bundle Engine)
                 </h3>
-                <p className="text-gray-400 text-xs mt-1">وفري أكثر مع باقات سولتة الذكية. تتيح لك اختيار قطعتين أو ثلاث من البوتيك والحصول على خصم عائلي فخم يصل إلى ٢٥%.</p>
+                <p className="text-gray-400 text-xs mt-1">وفري أكثر مع باقات سولته الذكية. تتيح لك اختيار قطعتين أو ثلاث من البوتيك والحصول على خصم عائلي فخم يصل إلى ٢٥%.</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -1058,7 +1058,7 @@ export default function PremiumLuxuryExperience({
               <div>
                 <h3 className="font-serif text-xl text-gray-900 flex items-center gap-2">
                   <Compass className="text-[#c5a059]" />
-                  أتيليه لوك بوك سولتة الملكي (Seasonal Lookbook Atelier)
+                  أتيليه لوك بوك سولته الملكي (Seasonal Lookbook Atelier)
                 </h3>
                 <p className="text-gray-400 text-xs mt-1">تصفحي جلسات تصوير الأزياء وصور الكوتور الملكية بمواقع ساحرة بالشرق الأوسط مع تفاعل ومؤشرات تسوق لكل وسم بالصورة.</p>
               </div>
@@ -1135,7 +1135,7 @@ export default function PremiumLuxuryExperience({
                   )}
 
                   <div className="border-t border-gray-200 pt-4 text-3xs text-gray-500">
-                    <p>• جميع Lookbooks تسري تحت رخصة SULTA للملكية الفكرية لتصميم الأزياء.</p>
+                    <p>• جميع Lookbooks تسري تحت رخصة Sulta للملكية الفكرية لتصميم الأزياء.</p>
                   </div>
                 </div>
               </div>
@@ -1148,7 +1148,7 @@ export default function PremiumLuxuryExperience({
               <div>
                 <h3 className="font-serif text-xl text-gray-900 flex items-center gap-2">
                   <Tv className="text-rose-600" />
-                  قناة وشاشة تليفزيون سولتة لايف (SULTA TV - Luxury Video Commerce)
+                  قناة وشاشة تليفزيون سولته لايف (Sulta TV - Luxury Video Commerce)
                 </h3>
                 <p className="text-gray-400 text-xs mt-1">تسوّقي بكل سهولة من معارض الفيديو المستمرة. مع كل حركة وتفاصيل انسياب المنسوجات، أضيفي المنتج الظاهر في الفيديو بلمسة واحدة.</p>
               </div>
@@ -1183,7 +1183,7 @@ export default function PremiumLuxuryExperience({
                             onClick={() => {
                               if (pr) {
                                 onAddToCart(pr, pr.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' }, pr.sizes?.[0] || 'M', 1);
-                                toast('تم إضافة قطعة تليفزيون سولتة للسلة الفائقة!', 'success');
+                                toast('تم إضافة قطعة تليفزيون سولته للسلة الفائقة!', 'success');
                               }
                             }}
                             className="bg-white text-black hover:bg-slate-100 px-4 py-2 rounded-xl text-xs font-bold w-full"
@@ -1209,7 +1209,7 @@ export default function PremiumLuxuryExperience({
                     <Camera className="text-[#DF8A9C]" />
                     شاركي بمظهرك الفخم (Submit Styled Look)
                   </h3>
-                  <p className="text-gray-500 text-3xs leading-relaxed">كجزء من مجتمع SULTA الراقي، لقطتك لبيجامة أو روب الدانتيل تلهم الباقين وتكسبك مكافأة فورية في محفظتك الولائية.</p>
+                  <p className="text-gray-500 text-3xs leading-relaxed">كجزء من مجتمع Sulta الراقي، لقطتك لبيجامة أو روب الدانتيل تلهم الباقين وتكسبك مكافأة فورية في محفظتك الولائية.</p>
                   
                   <form onSubmit={handleSubmitGalleryLook} className="space-y-4 text-xs">
                     <div>
@@ -1233,7 +1233,7 @@ export default function PremiumLuxuryExperience({
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-400 mb-1">انطباعك الأنيق عن خيارات سولتة الفاخرة:</label>
+                      <label className="block text-gray-400 mb-1">انطباعك الأنيق عن خيارات سولته الفاخرة:</label>
                       <textarea 
                         value={galleryReview}
                         onChange={(e) => setGalleryReview(e.target.value)}
@@ -1280,7 +1280,7 @@ export default function PremiumLuxuryExperience({
                           <SultaImage src={cleanImgUrl("/img/sulta_product_2.png", "homewear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">دينا جلال - القاهرة</span>
-                            <p className="text-[9px] text-gray-400 line-clamp-2">" منسق كوتور للأطقم فادني لتجهيز جهازي، شكراً دار سولتة. "</p>
+                            <p className="text-[9px] text-gray-400 line-clamp-2">" منسق كوتور للأطقم فادني لتجهيز جهازي، شكراً دار سولته. "</p>
                           </div>
                         </div>
 
@@ -1288,7 +1288,7 @@ export default function PremiumLuxuryExperience({
                           <SultaImage src={cleanImgUrl("/img/sulta_sleepwear.png", "sleepwear")} className="w-full h-40 object-cover" alt="" />
                           <div className="p-3 space-y-1">
                             <span className="text-[10px] font-bold text-gray-950 block">حصة فهد - جدة</span>
-                            <p className="text-[9px] text-gray-400 line-clamp-2">" قطن السولتة مريح وصحي جداً أثناء النوم والترطيب مثالي. "</p>
+                            <p className="text-[9px] text-gray-400 line-clamp-2">" قطن السولته مريح وصحي جداً أثناء النوم والترطيب مثالي. "</p>
                           </div>
                         </div>
                       </>
@@ -1309,7 +1309,7 @@ export default function PremiumLuxuryExperience({
                   
                   <div className="flex justify-between items-start">
                     <div>
-                      <span className="text-[9px] text-pink-400 font-mono tracking-widest block uppercase font-bold">✦ SULTA GOLD WALLET ATELIER</span>
+                      <span className="text-[9px] text-pink-400 font-mono tracking-widest block uppercase font-bold">✦ Sulta GOLD WALLET ATELIER</span>
                       <h4 className="font-serif text-lg text-yellow-100 mt-1">كارت العضوية والوشاح الفخم</h4>
                     </div>
                     <span className="bg-[#DF8A9C] text-white text-[9px] py-1 px-2.5 rounded-full uppercase font-bold tracking-widest font-mono">
@@ -1318,7 +1318,7 @@ export default function PremiumLuxuryExperience({
                   </div>
 
                   <div>
-                    <span className="text-3xl font-serif font-light text-[#F6E7A6] font-sans">{points} <span className="text-xs text-slate-300">نقاط سولتة</span></span>
+                    <span className="text-3xl font-serif font-light text-[#F6E7A6] font-sans">{points} <span className="text-xs text-slate-300">نقاط سولته</span></span>
                     <p className="text-[10px] text-slate-400 mt-1">رقم العضوية المشفرة: SLT-{Math.floor(82729112 + Math.random() * 90000)}</p>
                   </div>
 

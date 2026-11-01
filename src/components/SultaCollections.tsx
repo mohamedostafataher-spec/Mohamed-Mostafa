@@ -51,10 +51,10 @@ export default function SultaCollections({
       {/* Editorial Header */}
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <span className="text-[10px] text-[#A44C5C] font-semibold tracking-[0.3em] uppercase block">
-          ✦ LES CHEFS-D'ŒUVRE DE SULTA ✦
+          ✦ LES CHEFS-D'ŒUVRE DE Sulta ✦
         </span>
         <h2 className="font-serif text-4xl font-light text-[#0B0B0B] tracking-wide">
-          مجموعات وتشكيلات SULTA الحصرية
+          مجموعات وتشكيلات Sulta الحصرية
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">

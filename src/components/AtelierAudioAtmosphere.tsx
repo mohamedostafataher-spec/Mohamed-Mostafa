@@ -39,10 +39,10 @@ interface AtelierAudioAtmosphereProps {
 
 // Phase 3 & 4 Luxury quotes and Tips data
 const LUXURY_BRAND_MESSAGES = [
-  "✨ أهلاً بكِ في عوالم SULTA حيث تلتقي الراحة المطلقة بترف التفاصيل.",
+  "✨ أهلاً بكِ في عوالم Sulta حيث تلتقي الراحة المطلقة بترف التفاصيل.",
   "✨ جميع منتجاتنا مغزولة بعناية فائقة لتمنح جسدك تجربة نوم ملوكية تليق بكِ.",
   "✨ خاماتنا من المنسوجات المبردة والقطيفة مصممة لتوفر روعة الملمس ونعومة فائقة في كل لحظة.",
-  "✨ شكراً لثقتكِ الغالية ببراند SULTA. يسعدنا دائماً مرافقة طقوس أناقتك اليومية."
+  "✨ شكراً لثقتكِ الغالية ببراند Sulta. يسعدنا دائماً مرافقة طقوس أناقتك اليومية."
 ];
 
 const LUXURY_TIPS = [
@@ -219,7 +219,7 @@ export default function AtelierAudioAtmosphere({
   const getCountryGreeting = () => {
     return {
       flag: "🇸🇦",
-      text: "أهلاً وسهلاً بعميلاتنا الراقيات في المملكة العربية السعودية 🤍 ركن كوتور SULTA الملكي يرحب بحضورك الفخم."
+      text: "أهلاً وسهلاً بعميلاتنا الراقيات في المملكة العربية السعودية 🤍 ركن كوتور Sulta الملكي يرحب بحضورك الفخم."
     };
   };
 
@@ -352,8 +352,8 @@ export default function AtelierAudioAtmosphere({
                   <span className="text-sm">👑</span>
                 </div>
                 <div className="text-right min-w-0">
-                  <h4 className="text-xs sm:text-[13px] font-bold text-[#F6E7A6] tracking-wide font-serif truncate">SULTA Concierge</h4>
-                  <span className="text-[9px] text-gray-300 font-serif italic block truncate">مرشد SULTA الملكي الفاخر</span>
+                  <h4 className="text-xs sm:text-[13px] font-bold text-[#F6E7A6] tracking-wide font-serif truncate">Sulta Concierge</h4>
+                  <span className="text-[9px] text-gray-300 font-serif italic block truncate">مرشد Sulta الملكي الفاخر</span>
                 </div>
               </div>
 
@@ -509,9 +509,9 @@ export default function AtelierAudioAtmosphere({
                       </div>
                     </div>
 
-                    {/* Why SULTA (Phase 8) */}
+                    {/* Why Sulta (Phase 8) */}
                     <div className="bg-white/50 p-4 rounded-2xl border border-gray-100 space-y-2.5">
-                      <span className="text-[9.5px] uppercase font-bold tracking-widest text-[#A44C5C] block border-b border-gray-50 pb-1">لماذا تتألقين مع SULTA؟ ✨</span>
+                      <span className="text-[9.5px] uppercase font-bold tracking-widest text-[#A44C5C] block border-b border-gray-50 pb-1">لماذا تتألقين مع Sulta؟ ✨</span>
                       <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold text-gray-700">
                         <div className="flex items-center gap-1.5 justify-end">
                           <span>خامات فاخرة</span>
@@ -728,7 +728,7 @@ export default function AtelierAudioAtmosphere({
 
                 {/* FOOTER COUNTER */}
                 <div className="text-center pt-3 border-t border-gray-100 font-sans text-[8.5px] text-gray-400">
-                  SULTA Boutique Concierge © {new Date().getFullYear()} • دائم الخدمة لجمالكِ الرفيع
+                  Sulta Boutique Concierge © {new Date().getFullYear()} • دائم الخدمة لجمالكِ الرفيع
                 </div>
 
               </div>
@@ -754,7 +754,7 @@ export default function AtelierAudioAtmosphere({
             layoutId="atelier-radio-btn"
             onClick={() => setIsOpen(true)}
             className="hidden md:flex items-center gap-2 bg-[#DF8A9D] text-white hover:bg-[#A44C5C] px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-white/20 ring-4 ring-neutral-500/10"
-            title="افتح مرشد SULTA الملكي الفاخر 👑"
+            title="افتح مرشد Sulta الملكي الفاخر 👑"
           >
             <div className="relative flex items-center justify-center">
               <span className="text-xs sm:text-sm group-hover:scale-110 transition-transform">👑</span>
@@ -762,7 +762,7 @@ export default function AtelierAudioAtmosphere({
             </div>
             
             <div className="flex flex-col text-right pr-0.5 leading-none">
-              <span className="text-[8.5px] sm:text-[9px] font-serif font-black tracking-wide">SULTA Concierge</span>
+              <span className="text-[8.5px] sm:text-[9px] font-serif font-black tracking-wide">Sulta Concierge</span>
               <span className="text-[6.5px] text-gray-300 font-sans block mt-0.5 font-medium">استشارتك الملكية ✦</span>
             </div>
           </motion.button>

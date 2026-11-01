@@ -45,7 +45,7 @@ export default function FabricRealityCenter() {
   return (
     <div className="bg-white rounded-3.5xl border border-stone-150 p-6 md:p-8 space-y-8 text-right font-sans shadow-sm" id="fabric_reality_center">
       <div className="border-b border-gray-100 pb-5">
-        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">الأقمشة الملوكية الفاخرة • SULTA Fabric Reality Center</span>
+        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">الأقمشة الملوكية الفاخرة • Sulta Fabric Reality Center</span>
         <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold select-none">٥. مركز واقع وخامات المنسوجات (Fabric Reality Center)</h3>
         <p className="text-gray-500 text-xs mt-1 leading-relaxed">
           انغمسي في كواليس الألياف الطبيعية وخيوط الكوتور. حللي نعومة ومرونة وسمك الخامة المختارة لقطع pajamas الخاصة بكِ، وعايني الألياف الدقيقة الافتراضية.
@@ -188,7 +188,7 @@ export default function FabricRealityCenter() {
           </div>
 
           <div className="bg-white border border-stone-150 p-4 rounded-2.5xl text-right space-y-2">
-            <span className="text-xs font-bold text-gray-850 block">🔬 شهادة الجودة العضوية SULTA Thread Certified</span>
+            <span className="text-xs font-bold text-gray-850 block">🔬 شهادة الجودة العضوية Sulta Thread Certified</span>
             <p className="text-[10px] text-gray-400 leading-normal">
               جميع الأرواب والبجامات لدينا مصنوعة ومختبرة في اختبارات الفك التلقائي لضمان خلوها من مسببات الحساسية الجلدية وتوفير تبريد لطيف للجلد بمقدار 2 درجة مئوية عن الأقمشة الصناعية الأخرى.
             </p>

@@ -94,8 +94,8 @@ export default function ReturnsExchanges() {
   return (
     <div className="bg-gray-50 min-h-screen pb-20 font-sans" dir="rtl">
       <SEO 
-        title="سياسة الاستبدال والاسترجاع - سولتة" 
-        description="تعرفي على سياسة سولتة المرنة للاستبدال والاسترجاع خلال ١٤ يوماً. نضمن لكِ الجودة والرضا التام في كل قطعة." 
+        title="سياسة الاستبدال والاسترجاع - سولته" 
+        description="تعرفي على سياسة سولته المرنة للاستبدال والاسترجاع خلال ١٤ يوماً. نضمن لكِ الجودة والرضا التام في كل قطعة." 
         path="/returns" 
       />
       {/* Hero Section */}
@@ -108,7 +108,7 @@ export default function ReturnsExchanges() {
             سياسة الاستبدال والاسترجاع
           </h1>
           <p className="text-lg md:text-xl text-gray-600 font-sans mt-4">
-            رضاكِ هو أولويتنا في SULTA ✨
+            رضاكِ هو أولويتنا في Sulta ✨
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function ReturnsExchanges() {
             <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">ضمان الجودة 💎</h2>
           </div>
           <p className="text-gray-600 mb-6 text-base md:text-lg leading-relaxed">
-            جميع منتجات SULTA يتم فحصها بعناية قبل الشحن لضمان:
+            جميع منتجات Sulta يتم فحصها بعناية قبل الشحن لضمان:
           </p>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {['جودة الخامات', 'سلامة المنتج', 'دقة المقاسات', 'مطابقة المنتج للصور والوصف'].map((item, idx) => (
@@ -177,7 +177,7 @@ export default function ReturnsExchanges() {
             <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">شروط الاستبدال والاسترجاع (خلال 14 يوماً) 🔄</h2>
           </div>
           <p className="text-gray-600 mb-6 text-base leading-relaxed">
-            نحرص في SULTA على تجربة تسوق راقية ومرنة ترضيكِ تماماً، وفق الضوابط التالية:
+            نحرص في Sulta على تجربة تسوق راقية ومرنة ترضيكِ تماماً، وفق الضوابط التالية:
           </p>
           <ul className="grid grid-cols-1 gap-4">
             {[
@@ -187,7 +187,7 @@ export default function ReturnsExchanges() {
               },
               {
                 title: 'شروط سلامة القطع والملابس 🏷️',
-                desc: 'يجب أن تكون القطعة بحالتها الأصلية غير ملبوسة، غير مغسولة، ببطاقات الأسعار وداخل كيس وتغليف SULTA الفاخر دون تلف.'
+                desc: 'يجب أن تكون القطعة بحالتها الأصلية غير ملبوسة، غير مغسولة، ببطاقات الأسعار وداخل كيس وتغليف Sulta الفاخر دون تلف.'
               },
               {
                 title: 'استثناءات الملابس الداخلية والقطع المفتوحة 🔒',
@@ -279,7 +279,7 @@ export default function ReturnsExchanges() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors">
                 <span className="text-[#F6E7A6] block mb-2 text-sm uppercase tracking-wider font-bold">واتساب كونسيرج المملكة 🇸🇦:</span>
-                <a href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20SULTA%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84%20%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9" target="_blank" rel="noopener noreferrer" dir="ltr" className="text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-mono">
+                <a href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20Sulta%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84%20%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9" target="_blank" rel="noopener noreferrer" dir="ltr" className="text-xl font-bold hover:text-[#DF8A9D] transition-colors inline-block text-right w-full font-mono">
                   0552823677
                 </a>
                 <span className="text-[10px] text-gray-400 block mt-1">+966 55 282 3677 (خدمة عميلات النخبة)</span>
@@ -295,12 +295,12 @@ export default function ReturnsExchanges() {
           </div>
         </section>
 
-        {/* SULTA Promise */}
+        {/* Sulta Promise */}
         <section className="bg-gradient-to-br from-white to-[#FAF5F0] p-10 md:p-12 rounded-3xl shadow-sm border border-[#DF8A9D]/20 text-center relative">
           <div className="w-20 h-20 mx-auto bg-white rounded-full flex items-center justify-center mb-6 shadow-md border border-gray-100">
             <span className="text-4xl">👑</span>
           </div>
-          <h2 className="font-serif text-3xl font-black text-[#0B0B0B] mb-6 tracking-wide">وعد SULTA</h2>
+          <h2 className="font-serif text-3xl font-black text-[#0B0B0B] mb-6 tracking-wide">وعد Sulta</h2>
           <p className="text-gray-600 mb-8 text-lg md:text-xl max-w-lg mx-auto">
             نلتزم بتقديم تجربة تسوق تجمع بين:
           </p>

@@ -169,7 +169,7 @@ export const stickersMetadata = [
         <path d="M42,20 L58,20 C58,24 54,28 48,28 L42,28 Z" fill="#FFF" stroke="#DF8A9D" strokeWidth="2.5" />
         <circle cx="39" cy="24" r="1.5" fill="#E5C470" />
         <rect x="40" y="48" width="20" height="26" rx="2" fill="#FAF5F3" stroke="#E5C470" strokeWidth="1.2" />
-        <text x="50" y="58" fontFamily="serif" fontSize="6" fontWeight="bold" fill="#A44C5C" textAnchor="middle">SULTA</text>
+        <text x="50" y="58" fontFamily="serif" fontSize="6" fontWeight="bold" fill="#A44C5C" textAnchor="middle">Sulta</text>
         <text x="50" y="66" fontFamily="sans-serif" fontSize="4.5" fill="#A44C5C" textAnchor="middle">PARFUM</text>
         <path d="M42,32 C40,29 45,29 46,31 C47,29 52,29 50,32" fill="#DF8A9D" stroke="#DF8A9D" strokeWidth="0.5" />
       </svg>
@@ -401,7 +401,7 @@ export default function SultaAutomationStudio({
   const [qrSocial, setQrSocial] = useState<string>('');
 
   // Girlhood Luxury Sticker Sheet State (Custom Requested Collection of 15 Stickers)
-  const [girlhoodSheetTitle, setGirlhoodSheetTitle] = useState<string>('SULTA ATELIER');
+  const [girlhoodSheetTitle, setGirlhoodSheetTitle] = useState<string>('Sulta ATELIER');
   const [girlhoodSheetSubtitle, setGirlhoodSheetSubtitle] = useState<string>('GIRLHOOD LUXURY STICKERS');
   const [girlhoodSheetBottomText, setGirlhoodSheetBottomText] = useState<string>('Filipenses 4:13');
   const [girlhoodSheetInstagram, setGirlhoodSheetInstagram] = useState<string>('@sulta.sleepwear');
@@ -409,27 +409,27 @@ export default function SultaAutomationStudio({
   const [activeStickerTab, setActiveStickerTab] = useState<'sheet' | 'inspect'>('sheet');
   const [selectedInspectStickerIndex, setSelectedInspectStickerIndex] = useState<number>(0);
   const [stickerQuotes, setStickerQuotes] = useState<string[]>([
-    "Pajamas all day, SULTA all night! 🎀",
-    "Walking on SULTA clouds ☁️",
+    "Pajamas all day, Sulta all night! 🎀",
+    "Walking on Sulta clouds ☁️",
     "More Matcha, More Sleepwear 🍵",
-    "Sweet Dreams Are Made of SULTA 🌟",
+    "Sweet Dreams Are Made of Sulta 🌟",
     "لا توقظي الأميرة قبل الظهر من فضلك! 😴",
     "Cozy Girlhood Forever ✨",
     "نصفي ممتلئ بالقهوة.. والنصف الآخر بالدلال ☕",
-    "Eau De Sleep: 100% SULTA 🌸",
+    "Eau De Sleep: 100% Sulta 🌸",
     "مستوى الدلال اليومي: ملكي متوج 👑",
     "Sleeping is my cardio 🛌",
     "أعطوني بيجامة وسأغير العالم.. غداً! 🦄",
-    "SULTA Sweetheart ❤️",
+    "Sulta Sweetheart ❤️",
     "عالم مليء بالفيونكات والجمال الخالص 🎀",
     "Overthinking is canceled, Bedtime is active! 🚫",
-    "دائماً متألقة ببيجامتي الوردية ★ SULTA 💖"
+    "دائماً متألقة ببيجامتي الوردية ★ Sulta 💖"
   ]);
 
   // Packaging Box Design Studio State Variables
   const [boxModelType, setBoxModelType] = useState<'pizza_box' | 'drawer_box' | 'rigid_shirt' | 'shopping_bag'>('pizza_box');
   const [boxColorTheme, setBoxColorTheme] = useState<'pink' | 'kraft' | 'midnight' | 'mint' | 'white'>('pink');
-  const [boxBrandTitle, setBoxBrandTitle] = useState<string>('SULTA ATELIER');
+  const [boxBrandTitle, setBoxBrandTitle] = useState<string>('Sulta ATELIER');
   const [boxTagline, setBoxTagline] = useState<string>('Zero Calories Sleepwear Studio 🎀');
   const [boxSideStamp, setBoxSideStamp] = useState<string>('جماليات دافئة تليق بنوم الأميرات 👑');
   const [boxPatternTheme, setBoxPatternTheme] = useState<'stars' | 'bows' | 'minimal'>('bows');
@@ -452,7 +452,7 @@ export default function SultaAutomationStudio({
   useEffect(() => {
     const activeProduct = products.find(p => p.id === selectedProductId) || products[0];
     if (activeProduct) {
-      setBoxBrandTitle(`SULTA ATELIER`);
+      setBoxBrandTitle(`Sulta ATELIER`);
       setBoxTagline(`Zero Calories [${activeProduct.nameAr || 'Sleepwear'}] 🎀`);
       setBoxSideStamp(`علامة سعودية ملكية تليق بأميرتنا ⚜️`);
 
@@ -460,7 +460,7 @@ export default function SultaAutomationStudio({
       setThankYouMsg(`صُنعت هذه القطعة الفاخرة [${activeProduct.nameAr}] خصيصاً لتمنحكِ تجربة نوم ملكية دافئة وهادئة بالمملكة.`);
       setThankYouGreeting(`فريق سُلطة كوتور الملكي ❤️`);
       
-      setStickerSub(`SULTA SAUDI SLEEPWEAR COUTURE`);
+      setStickerSub(`Sulta SAUDI SLEEPWEAR COUTURE`);
       setStickerMono(activeProduct.nameAr ? activeProduct.nameAr.charAt(0) : 'S');
       setStickerFoot(`صنع بعناية فائقة لأميرات سُلطة ★ المملكة العربية السعودية`);
       
@@ -474,7 +474,7 @@ export default function SultaAutomationStudio({
       setCareIroning(`يكوى بكيّ بارد خفيف وبخار ذكي من الناحية الداخلية وببطانة رقيقة لحفظ رقة دانتيل سولا.`);
       
       setFabricTitle(`⚜️ شهادة وثوقية نسيج [${activeProduct.fabricAr || 'كوتور المترف'}]`);
-      setFabricDesc(`تؤكد دار SULTA أن هذا المنتج منسوج كلياً من أجود خيوط النسيج الطبيعي الملمس الناعم. خيوط معالجة حرارياً لتلاؤم بشرتكم وتتنفس بحرية كاملة.`);
+      setFabricDesc(`تؤكد دار Sulta أن هذا المنتج منسوج كلياً من أجود خيوط النسيج الطبيعي الملمس الناعم. خيوط معالجة حرارياً لتلاؤم بشرتكم وتتنفس بحرية كاملة.`);
       
       setVipHolder(`صاحبة السمو أميرة سولا`);
       setVipTier(`العضوية الذهبية الملوكية (Gold Family)`);
@@ -568,7 +568,7 @@ export default function SultaAutomationStudio({
         <circle cx="50" cy="40" r="14" fill="#E5C470" opacity="0.3"/>
         <text x="50" y="45" font-family="serif" font-size="16" fill="#E5C470" font-weight="bold" text-anchor="middle">S</text>
         <path d="M30,68 C40,55 60,55 70,68" stroke="#E5C470" stroke-width="1.8" fill="none"/>
-        <text x="50" y="82" font-family="sans-serif" font-size="6" fill="#FFF" text-anchor="middle">SULTA COUTURE</text>
+        <text x="50" y="82" font-family="sans-serif" font-size="6" fill="#FFF" text-anchor="middle">Sulta COUTURE</text>
       </svg>`;
       const blob = new Blob([svgHeader], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(blob);
@@ -649,7 +649,7 @@ export default function SultaAutomationStudio({
           doc.setTextColor(247, 244, 235); // Ivory cream
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(13);
-          doc.text(`SULTA COUTURE AUTOMATED PACKAGING SUITE | ${productName.toUpperCase()}`, 15, 12);
+          doc.text(`Sulta COUTURE AUTOMATED PACKAGING SUITE | ${productName.toUpperCase()}`, 15, 12);
 
           doc.setTextColor(230, 215, 185); // Cream gold
           doc.setFont('helvetica', 'normal');
@@ -665,13 +665,13 @@ export default function SultaAutomationStudio({
           // Footer
           doc.setFontSize(7.5);
           doc.setTextColor(110, 110, 115);
-          doc.text(`Production Notice: SULTA sleepwear branding assets require textured ivory soft stock for ultimate elegance of print.`, 15, 194);
-          doc.text(`SULTA Packaging Studio Engine v2.0`, 225, 194);
+          doc.text(`Production Notice: Sulta sleepwear branding assets require textured ivory soft stock for ultimate elegance of print.`, 15, 194);
+          doc.text(`Sulta Packaging Studio Engine v2.0`, 225, 194);
         }
       }
 
       setGenerationProgress(100);
-      doc.save(`SULTA-Automation-${productName.replace(/\s+/g, '-')}-PackageKit.pdf`);
+      doc.save(`Sulta-Automation-${productName.replace(/\s+/g, '-')}-PackageKit.pdf`);
       setLoadingType(null);
       triggerAlert(`🏆 تم بنجاح تصدير حقيبة التغليف المؤتمتة الكاملة (8-in-1 PDF) لـ [${productName}] بجودة 300 DPI جاهزة تماماً للمطابع!`);
     } catch (error) {
@@ -685,12 +685,12 @@ export default function SultaAutomationStudio({
   const sharePackagingWithPrinter = () => {
     const currentProduct = products.find(p => p.id === selectedProductId) || products[0];
     const productName = currentProduct ? currentProduct.nameAr : 'منتجات سولا الفاخرة';
-    const specSheet = `*مواصفات طباعة كيت التغليف المؤتمت لبراند SULTA SLEEPWEAR*
+    const specSheet = `*مواصفات طباعة كيت التغليف المؤتمت لبراند Sulta SLEEPWEAR*
 المنتج المختار: ${productName}
 كود البكج البصري (SKU): ${tagSku || 'SLT-MASTER'}
 خيوط النسيج المختارة: ${tagFabric || 'قطن ملكي كوتور'}
 مقاس المعتمَد: ${tagSize || 'M / L'}
-جهة التوريد التقنية: SULTA Packaging Studio Auto-Generate
+جهة التوريد التقنية: Sulta Packaging Studio Auto-Generate
 
 تفاصيل المقاسات والمواد المطلوبة لكل من العناصر الـ 8 الفنية:
 1- كارت الشكر الفاخر (Thank You Card): مقاس 14.8 × 10.5 سم | ورق محبب (Textured Cardstock) بوزن 350 جرام.
@@ -739,7 +739,7 @@ export default function SultaAutomationStudio({
               كتالوج المنتجات النشط والمزامن مع Supabase تلقائياً
             </h2>
             <p className="text-xs text-stone-500 mt-1">
-              اختر أي منتج من منتجات SULTA الحالية لتوليد حزمة التغليف الإنشائية المطابقة لهويتها فوراً.
+              اختر أي منتج من منتجات Sulta الحالية لتوليد حزمة التغليف الإنشائية المطابقة لهويتها فوراً.
             </p>
           </div>
 
@@ -1463,7 +1463,7 @@ export default function SultaAutomationStudio({
               
               {/* Absolute Bleed Overlays */}
               <div className="absolute top-2 left-2 text-[8px] font-mono text-stone-400 select-none hidden sm:block">✂️ Bleed Safe margin [3.5mm]</div>
-              <div className="absolute bottom-2 right-2 text-[8px] font-mono text-[#A44C5C] font-semibold select-none hidden sm:block">SULTA AUTHENTIC DIGITAL STAGE</div>
+              <div className="absolute bottom-2 right-2 text-[8px] font-mono text-[#A44C5C] font-semibold select-none hidden sm:block">Sulta AUTHENTIC DIGITAL STAGE</div>
 
               <div 
                 style={{ transform: `scale(${zoomScale})`, transformOrigin: 'center' }} 
@@ -1624,7 +1624,7 @@ export default function SultaAutomationStudio({
                           </div>
 
                           <div className="space-y-1">
-                            <span className="text-[8px] font-black text-stone-400 font-mono tracking-widest block">SULTA COUTURE</span>
+                            <span className="text-[8px] font-black text-stone-400 font-mono tracking-widest block">Sulta COUTURE</span>
                             <p className="text-xs font-black text-[#A44C5C] font-sans px-4 leading-normal" dir="rtl">
                               {stickerQuotes[selectedInspectStickerIndex]}
                             </p>
@@ -1690,7 +1690,7 @@ export default function SultaAutomationStudio({
                       <div className="flex flex-col justify-between h-full w-full py-2">
                         {/* Header Details */}
                         <div className="flex justify-between items-center text-[9px] text-stone-400 font-mono tracking-widest uppercase border-b border-stone-100 pb-2">
-                          <span>SULTA 3D PACKAGING MOCKUP v3.0</span>
+                          <span>Sulta 3D PACKAGING MOCKUP v3.0</span>
                           <span>READY VIEW</span>
                         </div>
 
@@ -1793,7 +1793,7 @@ export default function SultaAutomationStudio({
                                   backgroundSize: '8px 8px'
                                 }}
                               >
-                                <span className="text-[8px] font-black text-[#A44C5C] font-mono leading-none">SULTA</span>
+                                <span className="text-[8px] font-black text-[#A44C5C] font-mono leading-none">Sulta</span>
                                 <span className="text-[6px] text-stone-400 mt-1 uppercase">SILK WRAP</span>
                                 <div className="w-4 h-4 rounded-full bg-pink-400/95 absolute -right-2 top-10 flex items-center justify-center text-[8px] text-white select-none">🎀</div>
                               </div>
@@ -1943,7 +1943,7 @@ export default function SultaAutomationStudio({
                             <div className="border border-dashed border-stone-300 p-1 flex items-center justify-center bg-white">قاعدة الكرتونة</div>
                             <div className="border border-stone-300 p-1 flex items-center justify-center flex-col bg-stone-200">
                               <span className="font-bold">القفل السفلي</span>
-                              <span className="text-[4px] font-mono">SULTA SAFE</span>
+                              <span className="text-[4px] font-mono">Sulta SAFE</span>
                             </div>
                             <div className="border border-dashed border-stone-300 p-1 flex items-center justify-center bg-white">قاعدة الكرتونة</div>
                           </div>
@@ -1983,7 +1983,7 @@ export default function SultaAutomationStudio({
                   <div className="flex justify-between items-center border-b border-stone-150 pb-2.5">
                     <div className="flex items-center gap-1">
                       <span className="text-lg">👑</span>
-                      <span className="text-[10px] uppercase font-serif tracking-widest text-[#A44C5C] font-black">SULTA Atelier Private Card</span>
+                      <span className="text-[10px] uppercase font-serif tracking-widest text-[#A44C5C] font-black">Sulta Atelier Private Card</span>
                     </div>
                     <span className="text-[8px] text-stone-400 font-mono font-bold">A6 Cardstock Spec</span>
                   </div>
@@ -2021,7 +2021,7 @@ export default function SultaAutomationStudio({
                   <div className="absolute inset-2 border border-dashed border-[#A44C5C]/40 rounded-full pointer-events-none" />
                   
                   <span className="text-3xl text-[#A44C5C]">👑</span>
-                  <h4 className="text-[13px] font-serif font-black tracking-widest text-[#A44C5C] uppercase mt-1 leading-none">SULTA</h4>
+                  <h4 className="text-[13px] font-serif font-black tracking-widest text-[#A44C5C] uppercase mt-1 leading-none">Sulta</h4>
                   
                   <div className="w-10 h-10 rounded-full bg-[#A44C5C] text-white flex items-center justify-center font-serif text-lg font-black my-2 shadow-xs">
                     {stickerMono}
@@ -2044,7 +2044,7 @@ export default function SultaAutomationStudio({
                   <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-stone-200 rounded-full border border-stone-100 shadow-inner" />
                   
                   <div className="mt-4 text-center">
-                    <span className="text-[8.5px] font-bold text-stone-400 font-serif tracking-widest uppercase block">SULTA COUTURE</span>
+                    <span className="text-[8.5px] font-bold text-stone-400 font-serif tracking-widest uppercase block">Sulta COUTURE</span>
                     <h4 className="text-xs font-serif font-black tracking-widest text-[#A44C5C] leading-none mt-0.5">ATELIER</h4>
                   </div>
 
@@ -2085,7 +2085,7 @@ export default function SultaAutomationStudio({
                       <div className="bg-white flex-none w-1" />
                       <div className="bg-white flex-1" />
                     </div>
-                    <span className="text-[7.5px] font-mono text-stone-400 text-center block">SULTA*{tagSku}*</span>
+                    <span className="text-[7.5px] font-mono text-stone-400 text-center block">Sulta*{tagSku}*</span>
                   </div>
                 </div>
               )}
@@ -2097,7 +2097,7 @@ export default function SultaAutomationStudio({
                   className="w-72 h-72 bg-[#FAFAF9] border border-stone-200 rounded-2xl p-5 flex flex-col justify-between text-right shadow-md text-stone-900 animate-fade-in-rapid"
                 >
                   <div className="text-center font-serif text-[11px] font-black border-b border-stone-200 pb-2 w-full text-[#A44C5C] tracking-wide">
-                    🧴 دليل الرعاية والحفاظ على منتجات SULTA كوتور
+                    🧴 دليل الرعاية والحفاظ على منتجات Sulta كوتور
                   </div>
 
                   <div className="my-auto space-y-2">
@@ -2136,7 +2136,7 @@ export default function SultaAutomationStudio({
                   className="w-11/12 max-w-[400px] aspect-[12/8] bg-[#FAFAF9] border border-stone-250 rounded-2xl p-6 flex flex-col justify-between text-right shadow-md text-stone-900 animate-fade-in-rapid"
                 >
                   <div className="flex justify-between items-center border-b border-stone-150 pb-2.5">
-                    <span className="text-[10px] font-serif font-black tracking-widest text-[#A44C5C] uppercase">SULTA FABRIC COUTURE CERTIFICATE</span>
+                    <span className="text-[10px] font-serif font-black tracking-widest text-[#A44C5C] uppercase">Sulta FABRIC COUTURE CERTIFICATE</span>
                     <span className="text-[8px] text-stone-400 font-mono">Document Id v2.0</span>
                   </div>
 
@@ -2150,7 +2150,7 @@ export default function SultaAutomationStudio({
 
                   <div className="border-t border-stone-150 pt-2 flex justify-between items-center text-[8.5px] text-stone-450 font-serif">
                     <span className="font-bold">100% Guaranteed Premium Material</span>
-                    <span>SULTA SLEEPWEAR INDUSTRY</span>
+                    <span>Sulta SLEEPWEAR INDUSTRY</span>
                   </div>
                 </div>
               )}
@@ -2166,7 +2166,7 @@ export default function SultaAutomationStudio({
 
                   <div className="flex justify-between items-center border-b border-stone-800 pb-2 flex-row-reverse">
                     <div className="text-left leading-none">
-                      <span className="text-[10.5px] font-serif font-black tracking-widest block text-right">SULTA</span>
+                      <span className="text-[10.5px] font-serif font-black tracking-widest block text-right">Sulta</span>
                       <span className="text-[7px] text-stone-400 block tracking-wider uppercase text-right">Royal Couture Sleepwear</span>
                     </div>
                     <span className="text-[9px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">VIP CARD</span>
@@ -2180,7 +2180,7 @@ export default function SultaAutomationStudio({
 
                   <div className="flex justify-between items-center border-t border-stone-800 pt-2 text-[7.5px] text-stone-400 uppercase font-mono tracking-widest">
                     <span>{vipTier}</span>
-                    <span className="text-amber-500 font-bold">★ SULTA PRIVATE HUB ★</span>
+                    <span className="text-amber-500 font-bold">★ Sulta PRIVATE HUB ★</span>
                   </div>
                 </div>
               )}
@@ -2192,7 +2192,7 @@ export default function SultaAutomationStudio({
                   className="w-11/12 max-w-[420px] aspect-[210/148] bg-[#FAFAF9] border border-stone-200 rounded-2xl p-6 flex flex-col justify-between text-right shadow-md text-stone-900 animate-fade-in-rapid"
                 >
                   <div className="text-center">
-                    <span className="text-[8.5px] font-black text-stone-400 font-serif tracking-widest uppercase block">SULTA SLEEPWEAR CO.</span>
+                    <span className="text-[8.5px] font-black text-stone-400 font-serif tracking-widest uppercase block">Sulta SLEEPWEAR CO.</span>
                     <h4 className="text-xs font-serif font-semibold text-[#A44C5C] tracking-wide mt-0.5">THE COZY BEDTIME PHILOSOPHY</h4>
                   </div>
 
@@ -2219,7 +2219,7 @@ export default function SultaAutomationStudio({
                   className="w-80 h-48 bg-[#FAFAF9] border border-stone-250 rounded-2xl p-5 flex flex-col justify-between text-right shadow-md text-stone-900 animate-fade-in-rapid"
                 >
                   <div className="text-center font-serif text-[10px] font-black text-[#A44C5C] tracking-wider border-b border-stone-150 pb-2">
-                    ⭐ بوابات اللمس المزدوجة والمبيعات الفورية SULTA INSTANT CONNECT
+                    ⭐ بوابات اللمس المزدوجة والمبيعات الفورية Sulta INSTANT CONNECT
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 my-auto items-center text-center">
@@ -2302,11 +2302,11 @@ export default function SultaAutomationStudio({
 
           </div>
 
-          {/* SULTA Guide tip */}
+          {/* Sulta Guide tip */}
           <div className="mt-4 p-4 bg-amber-50/40 border border-amber-150 rounded-2xl text-stone-700 text-[11px] leading-relaxed flex items-start gap-2.5 shadow-2xs">
             <InfoIcon size={16} className="text-[#A44C5C] shrink-0 mt-0.5" />
             <div>
-              <p className="font-bold text-stone-900">💡 أتمتة مستندات الطباعة بالكامل لبراند SULTA:</p>
+              <p className="font-bold text-stone-900">💡 أتمتة مستندات الطباعة بالكامل لبراند Sulta:</p>
               <p className="mt-1 text-stone-600">
                 عند إضافتكِ لأي منتج جديد كلياً في قاعدة بيانات Supabase، يتعرّف محرك الذكاء الاصطناعي <b>Creative Packaging AI Engine</b> على خصائص القطعة ميكانيكياً ويقوم برسم الكروت وخطوط رعاية الكوتور وتجهيز القماش والملصقات تلقائياً دون أي حاجة للاستعانة ببرامج تصميم خارجية.
               </p>
@@ -2357,7 +2357,7 @@ export default function SultaAutomationStudio({
             <span className="text-[10px] font-bold text-[#A44C5C] block">🔖 بطاقة Hang Tag</span>
             <div className="h-24 bg-white rounded-lg border border-stone-150 flex items-center justify-center overflow-hidden scale-90">
               <div className="w-10 h-20 border border-stone-300 rounded flex flex-col justify-between p-1 text-[7px] text-right ml-auto mr-auto">
-                <span className="text-[6.5px] font-black text-center text-[#A44C5C]">SULTA</span>
+                <span className="text-[6.5px] font-black text-center text-[#A44C5C]">Sulta</span>
                 <span className="font-mono text-center">*BARCODE*</span>
               </div>
             </div>

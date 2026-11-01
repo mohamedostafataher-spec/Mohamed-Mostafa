@@ -1,5 +1,5 @@
 /**
- * SULTA Payment Architecture - Types Definition
+ * Sulta Payment Architecture - Types Definition
  * Strictly isolates payment structures and status definitions.
  * Follows PCI-DSS: NEVER stores card numbers, CVVs, or secret tokens on frontend.
  */

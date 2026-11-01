@@ -17,7 +17,7 @@ export interface VipCustomer {
   totalSpent: number;
   ordersCount: number;
   currency: string;
-  vipTier: 'SULTA VIP';
+  vipTier: 'Sulta VIP';
   since: string;
 }
 
@@ -77,11 +77,11 @@ export const agentSystem = {
     localStorage.removeItem('sulta_agent_activity_logs');
   },
 
-  // 1. SULTA Order Agent
+  // 1. Sulta Order Agent
   onOrderCreated: async (order: Order) => {
     agentSystem.addLog(
       'order_agent',
-      'SULTA Order Agent',
+      'Sulta Order Agent',
       `تم تلقي الطلب الجديد رقم ${order.id} للعميلة الموقرة ${order.customerName}. جاري تسجيل الطلب وتخصيص خط معالجة تتبع فوري.`,
       'success',
       { orderId: order.id, customerName: order.customerName }
@@ -93,7 +93,7 @@ export const agentSystem = {
     
     agentSystem.addLog(
       'order_agent',
-      'SULTA Order Agent',
+      'Sulta Order Agent',
       `تم إصدار كود التتبع الملكي: ${trackingId} وربط صفحة التتبع الفورية المباشرة للعميلة بالطلب والملف التعريفي بنجاح.`,
       'success',
       { trackingId, trackingUrl }
@@ -135,7 +135,7 @@ export const agentSystem = {
       bankSection = `💵 وسيلة السداد: الدفع عند الاستلام (نقداً عند استلام شحنتكِ من مندوب التوصيل لباب منزلكِ).\n\n`;
     }
 
-    const whatsappContent = `✦ بوابـة SULTA الملكـية لتأكيد الطلبات ✦\n\n` +
+    const whatsappContent = `✦ بوابـة Sulta الملكـية لتأكيد الطلبات ✦\n\n` +
       `أميرتنا الموقرة: ${order.customerName} 🌸\n` +
       `نسعد لتأكيد طلبكِ المترف تحت الرقم: ${order.id}\n\n` +
       `📋 كود التتبع الملكي: ${trackingId}\n\n` +
@@ -145,7 +145,7 @@ export const agentSystem = {
       `${trackingUrl}\n\n` +
       `المصنوعات المحجوزة لكِ:\n${productsText}\n\n` +
       `القيمة الإجمالية المفوترة: ${order.totalPrice.toLocaleString()} ${order.currency}\n\n` +
-      `يجري الآن فحص جودة المنتج والوضع في الصندوق الملكي المعطر بالشريط الملكي المميز تمهيداً للتوصيل السريع عتبة دارك. شكراً لاختيارك رقي SULTA 👑`;
+      `يجري الآن فحص جودة المنتج والوضع في الصندوق الملكي المعطر بالشريط الملكي المميز تمهيداً للتوصيل السريع عتبة دارك. شكراً لاختيارك رقي Sulta 👑`;
 
     const mockMessage: SimulatedWhatsAppMessage = {
       id: `WA-${Date.now()}`,
@@ -210,7 +210,7 @@ export const agentSystem = {
     const trackingUrl = `${window.location.origin}/?tab=track-order&id=${order.id}`;
     const trackingId = order.trackingNumber || `SUL-TRK-ACTIVE`;
     
-    let updateMessage = `✦ تحديث رسمي من بوتيك SULTA ✦\n\n` +
+    let updateMessage = `✦ تحديث رسمي من بوتيك Sulta ✦\n\n` +
       `أميرتنا العزيزة: ${order.customerName} 🌸\n` +
       `يسعدنا إعلامك بأن حالة طلبك رقم ${order.id} قد تبدلت الآن لتصبح:\n` +
       `👈 [ ${labelAr.toUpperCase()} ] 👉\n\n` +
@@ -316,7 +316,7 @@ export const agentSystem = {
 
           // Generate automated apology + discount coupon to customer
           const apologyCoupon = 'APOLOGY20';
-          const apologyMessage = `✦ اعتذار بالغ ورجاء بالقبول من SULTA ✦\n\n` +
+          const apologyMessage = `✦ اعتذار بالغ ورجاء بالقبول من Sulta ✦\n\n` +
             `أميرتنا العزيزة: ${order.customerName} 🌸\n` +
             `نعلم تماماً أن الشغف بانتظار باقة الكوتور الخاصة بكِ يفوق الوصف. نعتذر ببالغ الأسف لملاحظة نظامنا حدوث تأخير طفيف في معالجة طلبكِ رقم ${order.id} بسبب الضغط الاستثنائي على مصممينا بورشة الكوتور.\n\n` +
             `لكِ منا اعتذار ملكي خالص، وباقة تعويض خاصة:\n` +
@@ -396,7 +396,7 @@ export const agentSystem = {
             totalSpent,
             ordersCount: matched.length,
             currency,
-            vipTier: 'SULTA VIP',
+            vipTier: 'Sulta VIP',
             since: new Date().toISOString().split('T')[0]
           };
 
@@ -406,17 +406,17 @@ export const agentSystem = {
           agentSystem.addLog(
             'vip_agent',
             'VIP Customer Agent',
-            `👑 ترقية ملكية استثنائية! تجاوزت قيمة مشتريات العميلة ${customerName} حاجز ${vipThreshold.toLocaleString()} ${currency} (الإجمالي: ${totalSpent.toLocaleString()} ${currency}). تم ترقيتها تلقائياً لدرجة SULTA VIP الفاخرة بنجاح.`,
+            `👑 ترقية ملكية استثنائية! تجاوزت قيمة مشتريات العميلة ${customerName} حاجز ${vipThreshold.toLocaleString()} ${currency} (الإجمالي: ${totalSpent.toLocaleString()} ${currency}). تم ترقيتها تلقائياً لدرجة Sulta VIP الفاخرة بنجاح.`,
             'success',
             newVip
           );
 
           // Send welcome message and VIP discount coupon
           const vipCoupon = 'VIPWELCOME15';
-          const vipWelcomeMsg = `✦ ترحيـب استثنائـي من مجلس إدارة SULTA ✦\n\n` +
+          const vipWelcomeMsg = `✦ ترحيـب استثنائـي من مجلس إدارة Sulta ✦\n\n` +
             `سيدتنا وأميرتنا الغالية: ${customerName} 👑\n` +
             `يسرنا ويشرفنا إشعاركِ بأنه تم ترقية ملفكِ التعريفي تلقائياً وبأقصى درجات الفخر إلى نخبة العميلات:\n` +
-            `👑 [ SULTA VIP CUSTOMER ] 👑\n\n` +
+            `👑 [ Sulta VIP CUSTOMER ] 👑\n\n` +
             `نظراً لولائكِ المرموق وثقتكِ الفائقة في قطعنا الفاخرة، ستحصلين الآن بشكل مستمر على:\n` +
             `✨ خصم ثابت بقيمة ١٥٪ على جميع التصاميم باستخدام الكود الخاص بكِ: [ ${vipCoupon} ]\n` +
             `✨ أولوية تامة وتفصيل مجاني مخصص بقسم الدعم والصالون وصيانة القطع.\n` +
@@ -467,8 +467,8 @@ export const agentSystem = {
       { customerName, phone, cartItems }
     );
 
-    // Sequence Message 1: Gentle reminder without discount (as per Meta/SULTA guidelines)
-    const hourOneMessage = `أهلًا ${customerName}، تركتِ قطعة جميلة في سلتكِ من SULTA 🌸\n\n` +
+    // Sequence Message 1: Gentle reminder without discount (as per Meta/Sulta guidelines)
+    const hourOneMessage = `أهلًا ${customerName}، تركتِ قطعة جميلة في سلتكِ من Sulta 🌸\n\n` +
       `سلتكِ بانتظاركِ هنا لتكملة أناقتكِ: ${window.location.origin}\n\n` +
       `لقد اخترتِ قطعاً مميزة:\n${productsList}\n\n` +
       `إذا كان عندكِ سؤال عن المقاس أو الخامة، يسعدنا نساعدكِ عبر الواتساب.`;

@@ -20,7 +20,7 @@ export default function SmartInventoryInsights({
       });
     });
 
-    // 1. Total valuation logic of SULTA warehouses
+    // 1. Total valuation logic of Sulta warehouses
     const totalEGPValue = products.reduce((sum, p) => sum + (p.priceEG * p.stock), 0);
     const totalSARValue = products.reduce((sum, p) => sum + (p.priceSA * p.stock), 0);
     const totalStockCount = products.reduce((sum, p) => sum + p.stock, 0);
@@ -70,7 +70,7 @@ export default function SmartInventoryInsights({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#FAF5F0] border border-[#DF8A9D]/15 p-6 rounded-2xl flex items-center justify-between">
           <div>
-            <span className="text-gray-400 text-[10px] uppercase font-bold block mb-1">حمولة المخازن ومستودع SULTA</span>
+            <span className="text-gray-400 text-[10px] uppercase font-bold block mb-1">حمولة المخازن ومستودع Sulta</span>
             <span className="text-2xl font-black text-[#A44C5C] font-sans">{insights.totalStockCount} قطعة</span>
           </div>
           <PackageOpen size={32} className="text-[#A44C5C] opacity-20" />

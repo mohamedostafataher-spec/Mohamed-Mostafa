@@ -86,7 +86,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
   };
 
   const handleShare = (item: StickerItem, platform: 'whatsapp' | 'twitter' | 'copy') => {
-    const text = `شاهد هذا الملصق الإبداعي الفاخر من دار أزياء SULTA الملكية 🎭✨: "${item.title}" - ${item.description}`;
+    const text = `شاهد هذا الملصق الإبداعي الفاخر من دار أزياء Sulta الملكية 🎭✨: "${item.title}" - ${item.description}`;
     const url = window.location.href;
 
     if (platform === 'whatsapp') {
@@ -119,15 +119,15 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
           <div>
             <div className="flex items-center gap-2 mb-2 justify-start">
               <span className="bg-[#A44C5C]/15 text-[#A44C5C] text-[10px] font-black tracking-widest px-2.5 py-0.5 rounded-full uppercase">
-                SULTA Fun & Royalty 🎭
+                Sulta Fun & Royalty 🎭
               </span>
               <span className="text-[10px] text-gray-400">معرض الأثاث الروحي المنعش</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-serif text-[#0B0B0B] font-light flex items-center gap-2">
-              ملصقات وميمز SULTA الملكية اللطيفة
+              ملصقات وميمز Sulta الملكية اللطيفة
             </h1>
             <p className="text-gray-500 text-xs mt-1 leading-relaxed max-w-2xl">
-              تمتّع بتحميل ومشاركة الملصقات الكوميدية والأنيقة المستخرجة من كواليس صالون SULTA الملكي الفاخر. انقر لتنزيل الملصق بخلفية شفافة فورية أو إرساله لصديقاتكِ على الواتساب!
+              تمتّع بتحميل ومشاركة الملصقات الكوميدية والأنيقة المستخرجة من كواليس صالون Sulta الملكي الفاخر. انقر لتنزيل الملصق بخلفية شفافة فورية أو إرساله لصديقاتكِ على الواتساب!
             </p>
           </div>
 
@@ -185,7 +185,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
         {loading ? (
           <div className="text-center py-24 space-y-3">
             <div className="w-10 h-10 border-4 border-[#A44C5C] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-xs text-gray-500 font-serif italic">جاري تجميع حزمة السخرية الرقيقة والرموز الملكية لـ SULTA...</p>
+            <p className="text-xs text-gray-500 font-serif italic">جاري تجميع حزمة السخرية الرقيقة والرموز الملكية لـ Sulta...</p>
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
