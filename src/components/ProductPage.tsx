@@ -609,7 +609,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50">
                 <summary className="font-bold cursor-pointer text-gray-900 text-sm">س: هل الكمية متوفرة؟</summary>
                 <p className="mt-2 text-sm text-gray-700 leading-relaxed">
-                  ج: الكمية محدودة، وتظهر المتبقية في الصفحة.
+                  ج: الكمية محدودة.
                 </p>
               </details>
             </div>

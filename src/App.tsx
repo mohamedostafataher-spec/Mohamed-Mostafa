@@ -798,6 +798,7 @@ function AppContent() {
                 subscribeEmail={subscribeEmail}
                 setSubscribeEmail={setSubscribeEmail}
                 handleSubscribe={handleSubscribe}
+                settings={settings}
               />
             } />
             
@@ -983,6 +984,7 @@ function AppContent() {
         onSelectProduct={handleSelectProduct}
         products={products}
         coupons={coupons}
+        settings={settings}
       />
 
       {/* OVERLAY MODAL 3: BILLING CHECKOUT FUNNEL */}

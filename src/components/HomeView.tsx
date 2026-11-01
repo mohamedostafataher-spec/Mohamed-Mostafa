@@ -24,6 +24,7 @@ interface HomeViewProps {
   subscribeEmail: string;
   setSubscribeEmail: (email: string) => void;
   handleSubscribe: (e: React.FormEvent) => void;
+  settings?: any;
 }
 
 const HomeView: React.FC<HomeViewProps> = ({
@@ -39,7 +40,8 @@ const HomeView: React.FC<HomeViewProps> = ({
   subscribeSuccess,
   subscribeEmail,
   setSubscribeEmail,
-  handleSubscribe
+  handleSubscribe,
+  settings
 }) => {
   return (
     <div className="space-y-0">
@@ -50,12 +52,9 @@ const HomeView: React.FC<HomeViewProps> = ({
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-right">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 mb-2">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 mb-0">
           بيجامات نسائية قطن ناعمة — سولتة
         </h1>
-        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-3xl">
-          أهلاً بكِ في سولتة، حيث نقدم لكِ تشكيلة بيجامات نسائية صُممت خصيصاً لتمنحكِ الراحة والهدوء في أوقات استرخائكِ اليومية بالمنزل. نعتمد في قطعنا على خامات القطن الناعم المريح والقطن الكوريشة بقصّات أنثوية مريحة بمقاس وان سايز يناسب الأوزان من 45 إلى 80 كيلو لتضمني التلاؤم التام والراحة المطلقة.
-        </p>
       </div>
 
       {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}
@@ -158,7 +157,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                         </div>
 
                         {/* Text details bottom */}
-                        <div className="p-2.5 sm:p-3 space-y-1 text-right">
+                        <div className="p-2.5 sm:p-3 space-y-1 text-right min-h-[72px]">
                           <span className="text-[10px] text-gray-600 font-medium block">
                             {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
                           </span>
@@ -183,9 +182,9 @@ const HomeView: React.FC<HomeViewProps> = ({
                       </div>
 
                       {/* Price & Add to Cart button */}
-                      <div className="p-2.5 sm:p-3 pt-0 space-y-2 mt-auto">
+                      <div className="p-2.5 sm:p-3 pt-0 space-y-2 mt-auto min-h-[82px]">
                         <div className="flex items-baseline justify-between border-t border-gray-100 pt-2">
-                          <ProductPrice product={prod} country="SA" size="sm" showBadge={false} />
+                          <ProductPrice product={prod} country="SA" settings={settings} size="sm" showBadge={false} />
                           <span className="text-[9.5px] text-gray-600">شامل الضريبة</span>
                         </div>
 

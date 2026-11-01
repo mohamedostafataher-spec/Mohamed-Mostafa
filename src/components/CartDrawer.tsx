@@ -15,6 +15,7 @@ interface CartDrawerProps {
   onSelectProduct: (product: Product) => void;
   products: Product[];
   coupons: DiscountCoupon[];
+  settings?: any;
 }
 
 export default function CartDrawer({
@@ -28,6 +29,7 @@ export default function CartDrawer({
   onSelectProduct,
   products,
   coupons,
+  settings
 }: CartDrawerProps) {
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<DiscountCoupon | null>(null);
@@ -40,7 +42,7 @@ export default function CartDrawer({
 
   // Total pricing logic
   const subtotal = cart.reduce((sum, item) => {
-    const effectiveInfo = calculateEffectiveDiscount(item.product, null, country);
+    const effectiveInfo = calculateEffectiveDiscount(item.product, settings, country);
     return sum + effectiveInfo.effectivePrice * item.quantity;
   }, 0);
 
@@ -156,7 +158,7 @@ export default function CartDrawer({
             ) : (
               <div className="space-y-4 divide-y divide-gray-100">
                 {cart.map((item, idx) => {
-                  const effectiveInfo = calculateEffectiveDiscount(item.product, null, country);
+                  const effectiveInfo = calculateEffectiveDiscount(item.product, settings, country);
                   const itemPrice = effectiveInfo.effectivePrice;
                   
                   return (
