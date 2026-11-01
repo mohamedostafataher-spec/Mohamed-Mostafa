@@ -25,7 +25,8 @@ export function calculateEffectiveDiscount(
   // 1. Check Product-Specific Discount
   let prodPercent = Number(product.discountPercent ?? 0);
   let prodValid = false;
-  if (prodPercent > 0 && prodPercent <= 90) {
+  const isExplicitlyInactive = product.discountStatus === 'inactive' || product.isDiscountActive === false;
+  if (prodPercent > 0 && prodPercent <= 90 && !isExplicitlyInactive) {
     const startsOk = !product.discountStartsAt || new Date(product.discountStartsAt) <= now;
     const endsOk = !product.discountEndsAt || new Date(product.discountEndsAt) >= now;
     if (startsOk && endsOk) {

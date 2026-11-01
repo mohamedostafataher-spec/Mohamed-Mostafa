@@ -111,6 +111,8 @@ export interface Product {
   discountPercent?: number; // 0 to 90
   discountStartsAt?: string; // ISO timestamptz
   discountEndsAt?: string; // ISO timestamptz
+  discountStatus?: 'active' | 'inactive';
+  isDiscountActive?: boolean;
   descriptionAr: string;
   descriptionEn: string;
   fabricAr: string;

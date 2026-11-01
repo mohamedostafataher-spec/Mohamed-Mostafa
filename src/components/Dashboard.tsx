@@ -798,6 +798,8 @@ export default function Dashboard({
         discountPercent,
         discountStartsAt: productForm.discountStartsAt || undefined,
         discountEndsAt: productForm.discountEndsAt || undefined,
+        discountStatus: productForm.discountStatus || (productForm.isDiscountActive === false ? 'inactive' : 'active'),
+        isDiscountActive: productForm.isDiscountActive ?? (productForm.discountStatus === 'inactive' ? false : true),
         priceSA: effectiveSA,
         priceEG,
         stock: Number(productForm.stock) || 0,
@@ -911,6 +913,36 @@ export default function Dashboard({
       toast?.(`تمت إضافة +${amount} قطع لمخزون "${product.nameAr}". المخزون الحالي: ${newStock} قطعة 📦`, 'success');
     } catch (err: any) {
       toast?.('فشل تحديث المخزون', 'error');
+    }
+  };
+
+  // Single-Click Quick Toggle for Product Discount Status (Updates Supabase & App State instantly)
+  const handleToggleProductDiscount = async (product: Product, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const isCurrentlyActive = product.discountStatus !== 'inactive' && product.isDiscountActive !== false;
+    const nextStatus: 'active' | 'inactive' = isCurrentlyActive ? 'inactive' : 'active';
+    const nextIsActive = !isCurrentlyActive;
+
+    const updatedProduct: Product = {
+      ...product,
+      discountStatus: nextStatus,
+      isDiscountActive: nextIsActive
+    };
+
+    // 1. Instantly update local state for all storefront components & checkout modal
+    setProducts(prev => prev.map(p => p.id === product.id ? updatedProduct : p));
+
+    try {
+      // 2. Persist directly to Supabase
+      await dbService.saveProduct(updatedProduct);
+      toast?.(
+        nextIsActive 
+          ? `تم تفعيل خصم "${product.nameAr}" بنجاح! ينعكس فوراً في السلة والمتجر 🟢`
+          : `تم إيقاف خصم "${product.nameAr}" مؤقتاً! سيعود السعر العادي فوراً 🔴`,
+        'success'
+      );
+    } catch (err: any) {
+      toast?.(`حدث خطأ أثناء تحديث حالة الخصم: ${err?.message || ''}`, 'error');
     }
   };
 
@@ -2538,13 +2570,40 @@ export default function Dashboard({
                                     <Edit2 size={12} />
                                   </button>
                                 </div>
-                                {eff.hasActiveDiscount ? (
-                                  <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#FFF0F2] text-[#A44C5C] border border-[#A44C5C]/20 rounded-md">
-                                    خصم {eff.discountPercent}٪ {eff.isStoreWide ? '(شامل)' : ''}
-                                  </span>
-                                ) : (
-                                  <span className="text-[9.5px] text-gray-400">سعر أساسي بدون خصم</span>
-                                )}
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  {eff.hasActiveDiscount ? (
+                                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#FFF0F2] text-[#A44C5C] border border-[#A44C5C]/20 rounded-md">
+                                      خصم {eff.discountPercent}٪ {eff.isStoreWide ? '(شامل)' : ''}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[9.5px] text-gray-400">سعر أساسي بدون خصم</span>
+                                  )}
+
+                                  {(p.discountPercent || 0) > 0 && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleToggleProductDiscount(p, e)}
+                                      className={`px-2 py-0.5 rounded-md text-[9.5px] font-bold transition-all cursor-pointer flex items-center gap-1 shadow-2xs ${
+                                        p.discountStatus !== 'inactive' && p.isDiscountActive !== false
+                                          ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300'
+                                          : 'bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-200'
+                                      }`}
+                                      title="نقرة واحدة: تفعيل أو إيقاف الخصم فوراً"
+                                    >
+                                      {p.discountStatus !== 'inactive' && p.isDiscountActive !== false ? (
+                                        <>
+                                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                                          <span>الخصم: مفعّل 🟢</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                          <span>الخصم: معطّل 🔴</span>
+                                        </>
+                                      )}
+                                    </button>
+                                  )}
+                                </div>
                                 {showWarning && (
                                   <span className="text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded-md mt-0.5 flex items-center gap-1" title={`السعر مسجل منذ ${daysDiff} يوم (أقل من ${minDays} يوم)`}>
                                     <AlertTriangle size={10} className="text-amber-600 shrink-0" />
@@ -3682,14 +3741,41 @@ export default function Dashboard({
 
               {/* Price & Discount Management Box */}
               <div className="bg-[#FAF8F8] border border-gray-200 rounded-2xl p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2 flex-wrap gap-2">
                   <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                     <Tag size={14} className="text-[#A44C5C]" />
                     <span>إدارة السعر الأساسي ونسبة الخصم المئوية (%)</span>
                   </h4>
-                  <span className="text-[10px] text-gray-500 font-sans">
-                    الحساب التلقائي من السعر الأساسي
-                  </span>
+                  
+                  {/* Discount Status Toggle Switch */}
+                  <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-xl border border-gray-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-gray-700">حالة الخصم:</span>
+                    <button
+                      type="button"
+                      onClick={() => setProductForm(prev => ({ 
+                        ...prev, 
+                        discountStatus: (prev.discountStatus === 'inactive' || prev.isDiscountActive === false) ? 'active' : 'inactive',
+                        isDiscountActive: (prev.discountStatus === 'inactive' || prev.isDiscountActive === false)
+                      }))}
+                      className={`px-2.5 py-1 rounded-lg text-[10.5px] font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                        (productForm.discountStatus !== 'inactive' && productForm.isDiscountActive !== false)
+                          ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                          : 'bg-rose-100 text-rose-800 border border-rose-200'
+                      }`}
+                    >
+                      {(productForm.discountStatus !== 'inactive' && productForm.isDiscountActive !== false) ? (
+                        <>
+                          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                          <span>مفعّل الآن 🟢</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="w-2 h-2 rounded-full bg-rose-500" />
+                          <span>إيقاف مؤقت 🔴</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
