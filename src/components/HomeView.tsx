@@ -8,7 +8,7 @@ import ReelsShowcase from './ReelsShowcase';
 import Features from './Features';
 import SEO from './SEO';
 import { getProductSlug } from '../utils/slugify';
-import { formatStockBadge, calculateEffectiveDiscount } from '../utils/discountUtils';
+import ProductCard from './ProductCard';
 
 interface HomeViewProps {
   products: Product[];
@@ -84,7 +84,8 @@ const HomeView: React.FC<HomeViewProps> = ({
                 </div>
                 <button
                   onClick={() => setTab('store')}
-                  className="text-xs font-bold text-gray-900 hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-bold text-gray-900 hover:underline flex items-center gap-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#A44C5C] focus-visible:ring-offset-2 rounded-lg px-2 py-1"
+                  aria-label={`عرض كل منتجات ${section.title}`}
                 >
                   <span>عرض الكل</span>
                   <span>←</span>
@@ -92,136 +93,23 @@ const HomeView: React.FC<HomeViewProps> = ({
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-                {section.data.length > 0 ? section.data.slice(0, 8).map((prod, prodIdx) => {
-                  const isFav = favorites.includes(prod.id);
-                  const prodSlug = getProductSlug({ id: prod.id, nameEn: prod.nameEn, nameAr: prod.nameAr });
-                  const stockBadge = formatStockBadge(prod.stock);
-                  const effDiscount = calculateEffectiveDiscount(prod, null, 'SA');
-
-                  return (
-                    <div
-                      key={prod.id}
-                      className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative select-none cursor-pointer justify-between"
-                      onClick={() => handleSelectProduct(prod)}
-                    >
-                      <a href={`/product/${prodSlug}/`} className="sr-only">
-                        {prod.nameAr}
-                      </a>
-                      <div>
-                        {/* Top Photo Frame - Full Bleed 2:3 for fashion */}
-                        <div className="relative aspect-[3/4] w-full overflow-hidden bg-white rounded-t-2xl flex items-center justify-center">
-                          {/* Badges */}
-                          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-                            {effDiscount.hasActiveDiscount && (
-                              <span className="bg-[#E11D48] text-white text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
-                                خصم {effDiscount.discountPercent}%
-                              </span>
-                            )}
-                            {stockBadge && (
-                              <span className={`text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs ${stockBadge.isOutOfStock ? 'bg-gray-200 text-gray-700' : 'bg-rose-50 text-rose-700'}`}>
-                                {stockBadge.text}
-                              </span>
-                            )}
-                            {prod.isBestSeller && (
-                              <span className="bg-[#F59E0B] text-black text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
-                                الأكثر طلباً 👑
-                              </span>
-                            )}
-                            {prod.featured && (
-                              <span className="bg-[#111827] text-white text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md shadow-xs">
-                                جديد ✨
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Favorite Heart Button */}
-                          <div className="absolute top-2 right-2 z-10">
-                            <button 
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                              className="w-7 h-7 sm:w-8 sm:h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-600 hover:text-red-500 transition-transform hover:scale-110 cursor-pointer"
-                              title="إضافة للمفضلة"
-                              aria-label={`إضافة ${prod.nameAr} للمفضلة`}
-                            >
-                              <Heart size={13} className={isFav ? "fill-red-500 text-red-500" : ""} />
-                            </button>
-                          </div>
-
-                          <SultaImage
-                            src={cleanImgUrl(prod.images?.[0] || '', prod.category)}
-                            alt={`${prod.nameAr} - ${prod.categoryAr || 'بيجامة'} سولته`}
-                            className="w-full h-full"
-                            contain={false}
-                            alignment="center"
-                            width={600}
-                            imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                            priority={sectionIdx === 0 && prodIdx < 2}
-                          />
-                        </div>
-
-                        {/* Text details bottom */}
-                        <div className="p-2.5 sm:p-3 space-y-1 text-right min-h-[72px]">
-                          <span className="text-[10px] text-gray-600 font-medium block">
-                            {prod.categoryAr || prod.category || 'ملابس نوم فاخرة'}
-                          </span>
-                          <h2 className="text-xs sm:text-sm font-bold text-gray-950 line-clamp-2 leading-snug group-hover:text-black transition-colors">
-                            {prod.nameAr || prod.nameEn}
-                          </h2>
-
-                          {/* Color Swatch Display */}
-                          {prod.colors && prod.colors.length > 0 && (
-                            <div className="flex items-center gap-1.5 pt-0.5">
-                              <span 
-                                className="w-3.5 h-3.5 rounded-full border border-gray-300 ring-1 ring-gray-400 inline-block shrink-0" 
-                                style={{ backgroundColor: prod.colors[0].hex }} 
-                                title={prod.colors[0].name}
-                              />
-                              <span className="text-[10px] text-gray-500 truncate font-medium">
-                                {prod.colors[0].name}
-                              </span>
-                            </div>
-                          )}
-                          
-                          {/* Rating (only if verified reviews exist) */}
-                          {Boolean(prod.reviewsCount && prod.reviewsCount > 0) && (
-                            <div className="flex items-center gap-1 justify-start pt-0.5">
-                              <div className="flex items-center text-amber-400">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <svg key={i} className={`w-2.5 h-2.5 ${i < Math.round(prod.rating || 5) ? "fill-current" : "text-gray-300"}`} viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                  </svg>
-                                ))}
-                              </div>
-                              <span className="text-[10px] text-gray-600 font-mono">({prod.reviewsCount})</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Price & Add to Cart button */}
-                      <div className="p-2.5 sm:p-3 pt-0 space-y-2 mt-auto min-h-[82px]">
-                        <div className="flex items-baseline justify-between border-t border-gray-100 pt-2">
-                          <ProductPrice product={prod} country="SA" settings={settings} size="sm" showBadge={false} />
-                          <span className="text-[9.5px] text-gray-600">شامل الضريبة</span>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const chosenCol = prod.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
-                            const chosenSz = prod.sizes?.[0] || 'S';
-                            handleAddToCart(prod, chosenCol, chosenSz, 1);
-                          }}
-                          className="w-full py-2 px-2.5 rounded-xl bg-[#111827] hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-98 cursor-pointer"
-                        >
-                          <ShoppingBag size={13} />
-                          <span>أضف للسلة</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                }) : (
+                {section.data.length > 0 ? section.data.slice(0, 8).map((prod) => (
+                  <ProductCard
+                    key={prod.id}
+                    product={prod}
+                    favorites={favorites || []}
+                    isFavorite={Array.isArray(favorites) ? favorites.includes(prod.id) : false}
+                    toggleFavorite={toggleFavorite}
+                    onToggleFavorite={() => toggleFavorite?.(prod.id)}
+                    onSelect={() => handleSelectProduct?.(prod)}
+                    onSelectProduct={handleSelectProduct}
+                    onAddToCart={(p, c, s, q) => {
+                      const chosenCol = c || prod.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
+                      const chosenSz = s || prod.sizes?.[0] || 'S';
+                      handleAddToCart(prod, chosenCol, chosenSz, q || 1);
+                    }}
+                  />
+                )) : (
                   <div className="col-span-full text-center text-gray-400 py-6 text-xs">
                     جاري تحديث تشكيلة القطع الحالية.
                   </div>
@@ -249,10 +137,11 @@ const HomeView: React.FC<HomeViewProps> = ({
                 <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                   <button
                     onClick={() => setTab('offers')}
-                    className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-6 py-3 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-6 py-3 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                    aria-label="استكشفي التشكيلة الملكية الحصرية"
                   >
                     <span>استكشفي التشكيلة الملكية</span>
-                    <ArrowLeft size={13} />
+                    <ArrowLeft size={13} aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -291,7 +180,8 @@ const HomeView: React.FC<HomeViewProps> = ({
               />
               <button
                 type="submit"
-                className="bg-[#111827] text-white hover:bg-black font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-xs cursor-pointer shrink-0"
+                className="bg-[#111827] text-white hover:bg-black font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-xs cursor-pointer shrink-0 focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                aria-label="اشتركي الآن في النشرة البريدية"
               >
                 اشتراك
               </button>

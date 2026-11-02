@@ -67,6 +67,7 @@ export default function CheckoutModal({
   const [phone, setPhone] = useState('');
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
+  const [notes, setNotes] = useState('');
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
 
   // Selected Payment Method: 'cod' (Saudi Cash On Delivery) or 'bank_transfer' (Al Rajhi)
@@ -166,13 +167,15 @@ export default function CheckoutModal({
   const validateSaudiPhone = (inputPhone: string): boolean => {
     const cleanPhone = normalizeDigits(inputPhone).replace(/[\s\-().+]/g, '');
     const digits = cleanPhone.replace(/\D/g, '');
-    // Accept Saudi formats: 05xxxxxxxx (10 digits), 5xxxxxxxx (9 digits), 9665xxxxxxxx (12 digits), 009665xxxxxxxx (14 digits)
-    if (digits.length === 9 && digits.startsWith('5')) return true;
+    
+    // Strict Saudi Mobile Number Logic (must be 9-10 digits and start with 05 or 5)
     if (digits.length === 10 && digits.startsWith('05')) return true;
+    if (digits.length === 9 && digits.startsWith('5')) return true;
+    
+    // International format support for Saudi (+9665...)
     if (digits.length === 12 && digits.startsWith('9665')) return true;
-    if (digits.length === 14 && digits.startsWith('009665')) return true;
-    // Accept any standard mobile phone with 9-15 digits
-    return digits.length >= 9 && digits.length <= 15;
+    
+    return false;
   };
 
   // Formats phone to normalized Saudi standard (+9665XXXXXXXX)
@@ -195,7 +198,7 @@ export default function CheckoutModal({
       return setErrorMsg('الرجاء إدخال رقم الجوال للتواصل والشحن.');
     }
     if (!validateSaudiPhone(phone)) {
-      return setErrorMsg('الرجاء كتابة رقم جوال صحيح (مثال: 0552823677 أو +966552823677).');
+      return setErrorMsg('الرجاء كتابة رقم جوال سعودي صحيح يبدأ بـ 05 (مثال: 0552823677).');
     }
     if (!city.trim()) {
       return setErrorMsg('الرجاء تحديد المدينة في المملكة العربية السعودية (مثال: الرياض، جدة، الدمام).');
@@ -276,7 +279,7 @@ export default function CheckoutModal({
         name: name.trim(),
         phone: normalizedPhone,
         city: city.trim(),
-        address: address.trim(),
+        address: notes.trim() ? `${address.trim()} (ملاحظات: ${notes.trim()})` : address.trim(),
         email: `${normalizedPhone.replace(/\D/g, '')}@sulta.sa`
       },
       country,
@@ -682,7 +685,8 @@ export default function CheckoutModal({
                     placeholder="مثال: نورة محمد العتيبي"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all"
+                    autoComplete="name"
+                    className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#A44C5C] focus:outline-none transition-all"
                     required
                   />
                 </div>
@@ -700,7 +704,9 @@ export default function CheckoutModal({
                       placeholder="0552823677"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all font-mono text-left pl-14"
+                      autoComplete="tel"
+                      inputMode="tel"
+                      className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#A44C5C] focus:outline-none transition-all font-mono text-left pl-14"
                       dir="ltr"
                       required
                     />
@@ -720,20 +726,21 @@ export default function CheckoutModal({
                       placeholder="مثال: الرياض، جدة، مكة، الدمام..."
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all"
+                      autoComplete="address-level2"
+                      className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#A44C5C] focus:outline-none transition-all"
                       required
                     />
                     {/* Quick City Selection Chips for Fast Mobile UX */}
-                    <div className="flex flex-wrap gap-1 mt-1.5">
-                      {['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة', 'الخبر', 'القصيم', 'الطائف'].map((c) => (
+                    <div className="flex flex-wrap gap-1 mt-2 max-h-24 overflow-y-auto pr-1">
+                      {['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة', 'الخبر', 'الجبيل', 'تبوك', 'بريدة', 'الأحساء', 'حائل', 'نجران', 'جازان', 'خميس مشيط', 'أبها'].map((c) => (
                         <button
                           key={c}
                           type="button"
                           onClick={() => setCity(c)}
-                          className={`text-[9.5px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer font-bold ${
+                          className={`text-[10px] px-2.5 py-1 rounded-xl border transition-all cursor-pointer font-bold ${
                             city === c 
-                              ? 'bg-[#111827] text-white border-[#111827]' 
-                              : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-200 shadow-2xs'
+                              ? 'bg-[#111827] text-white border-black' 
+                              : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-100 shadow-2xs'
                           }`}
                         >
                           {c}
@@ -750,18 +757,43 @@ export default function CheckoutModal({
                       placeholder="اسم الحي، رقم المبنى"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#111827] focus:outline-none transition-all"
+                      autoComplete="street-address"
+                      className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#A44C5C] focus:outline-none transition-all"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Saudi Fast Shipping Banner */}
-                <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 mt-2 flex items-center gap-2">
-                  <ShieldCheck size={16} className="text-emerald-700 shrink-0" />
-                  <p className="text-[11px] text-emerald-900 leading-snug">
-                    تغليف فاخر مجاني مع كل طلب + شحن سريع وتوصيل آمن لكافة مناطق المملكة.
-                  </p>
+                {/* Delivery Notes (Optional) */}
+                <div>
+                  <label className="text-[11px] font-bold text-gray-700 block mb-1">
+                    ملاحظات التوصيل (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="مثال: الاتصال قبل الوصول، أو تسليم الطلب للاستقبال"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    autoComplete="off"
+                    className="w-full text-xs border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 focus:bg-white focus:border-[#A44C5C] focus:outline-none transition-all"
+                  />
+                </div>
+
+                {/* Saudi Fast Shipping & Trust Banner */}
+                <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 mt-2 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-emerald-700 shrink-0" />
+                    <p className="text-[11px] text-emerald-900 font-bold leading-snug">
+                      تغليف فاخر مجاني مع كل طلب + شحن سريع وتوصيل آمن لكافة مناطق المملكة.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] text-emerald-800 font-semibold pt-1 border-t border-emerald-100">
+                    <span>✓ استبدال فوري وسهل</span>
+                    <span>•</span>
+                    <span>✓ دفع عند الاستلام أو تحويل بنكي</span>
+                    <span>•</span>
+                    <span>✓ تواصل مباشر عبر واتساب</span>
+                  </div>
                 </div>
 
                 {/* visible Payment Methods in Step 1 to eliminate uncertainty */}
@@ -999,24 +1031,18 @@ export default function CheckoutModal({
                   disabled={isSubmitting}
                   className="flex-1 bg-gray-950 hover:bg-black active:scale-98 text-white py-3.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>
-                        {selectedPayment === 'cod' 
-                          ? 'جاري تسجيل طلب الدفع عند الاستلام...' 
-                          : 'جاري تسجيل الطلب وتجهيز بيانات التحويل...'}
-                      </span>
-                    </>
-                  ) : (
-                    <>
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>جاري تأكيد طلبكِ الملكي...</span>
+                      </div>
+                    ) : (
                       <span>
                         {selectedPayment === 'cod' 
                           ? `إتمام طلب الدفع عند الاستلام (${totalAmount.toLocaleString()} ${currencyLabel})`
                           : `إتمام طلب التحويل البنكي (${totalAmount.toLocaleString()} ${currencyLabel})`}
                       </span>
-                    </>
-                  )}
+                    )}
                 </button>
               </div>
             )}

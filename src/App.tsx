@@ -51,6 +51,7 @@ const RoyalSensesSalon = React.lazy(() => import('./components/RoyalSensesSalon'
 const LiveTrafficMonitor = React.lazy(() => import('./components/LiveTrafficMonitor'));
 // LivePurchaseToasts removed to ensure 100% genuine data only
 const ReelsShowcase = React.lazy(() => import('./components/ReelsShowcase'));
+const SearchOverlay = React.lazy(() => import('./components/SearchOverlay'));
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
@@ -101,6 +102,7 @@ function AppContent() {
   const [session, setSession] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const [country, setCountry] = useState<Country>('SA');
   const [autoTrackId, setAutoTrackId] = useState<string | null>(null);
@@ -401,7 +403,6 @@ function AppContent() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<DiscountCoupon | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isBottomSearchOpen, setIsBottomSearchOpen] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
 
 
@@ -770,8 +771,12 @@ function AppContent() {
           }, 60);
         }} // wishlist is in Account screen tab
         onSearch={(query) => {
-          handleSearchQueryChange(query);
-          setTab('store');
+          if (!query) {
+            setIsSearchOpen(true);
+          } else {
+            handleSearchQueryChange(query);
+            setTab('store');
+          }
         }}
       />
 
@@ -828,6 +833,7 @@ function AppContent() {
                   favorites={favorites}
                   toggleFavorite={toggleFavorite}
                   onSelectProduct={handleSelectProduct}
+                  onAddToCart={(p, c, s, q) => handleAddToCart(p, c, s, q || 1)}
                 />
             } />
 
@@ -855,6 +861,7 @@ function AppContent() {
                   favorites={favorites}
                   toggleFavorite={toggleFavorite}
                   onSelectProduct={handleSelectProduct}
+                  onAddToCart={(p, c, s, q) => handleAddToCart(p, c, s, q || 1)}
                 />
             } />
 
@@ -1002,6 +1009,19 @@ function AppContent() {
           settings={settings}
         />
       )}
+      {/* OVERLAY MODAL 4: INSTANT SEARCH OVERLAY */}
+      {isSearchOpen && (
+        <SearchOverlay
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          onSelectProduct={(p) => {
+            handleSelectProduct(p);
+            setIsSearchOpen(false);
+          }}
+          products={products}
+          country={country}
+        />
+      )}
       </Suspense>
 
       {/* GLOBAL SALLA / NALAH STYLE CLEAN WHITE FOOTER */}
@@ -1020,31 +1040,38 @@ function AppContent() {
               سولته · أزياء النوم الفاخرة
             </span>
             <p className="text-gray-900 font-bold text-xs leading-relaxed max-w-xs pt-1">
-              علامة سعودية فاخرة رائدة في تصميم وتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية ودول الخليج العربي بأعلى معايير الجودة والأناقة.
+              علامة سعودية فاخرة رائدة في تصميم وتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية.
             </p>
-            <div className="pt-2">
-              <SocialLinksView settings={settings} className="flex gap-2 pt-2 justify-start" />
+            <div className="flex items-center gap-4 pt-2">
+              <a href="https://instagram.com/sulta.sa" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#A44C5C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A44C5C] rounded-md p-1" aria-label="سولته على انستغرام">
+                <Instagram size={20} aria-hidden="true" />
+              </a>
+              <a href="https://tiktok.com/@sulta.sa" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#A44C5C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A44C5C] rounded-md p-1" aria-label="سولته على تيك توك">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.03 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.98-.23-2.81.36-.54.38-.89.98-1.03 1.63-.12.53-.08 1.1.1 1.6.43 1.2 1.88 1.91 3.1 1.53.84-.26 1.5-.97 1.74-1.8.13-.41.13-.85.13-1.28.02-4.14.01-8.28.02-12.43z" />
+                </svg>
+              </a>
             </div>
           </div>
 
           {/* Quick Deep links */}
-          <div className="space-y-3.5">
+          <nav className="space-y-3.5" aria-label="روابط سريعة">
             <h3 className="font-bold text-sm text-gray-950 tracking-wide pb-1 border-b border-gray-100">
               روابط المتجر السريعة
             </h3>
             <div className="flex flex-col gap-2 font-sans items-start text-right text-gray-900">
-              <button type="button" onClick={() => setTab('home')} aria-label="الذهاب للرئيسية" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">الرئيسية</button>
-              <button type="button" onClick={() => setTab('offers')} aria-label="عرض العروض والتخفيضات" className="hover:text-[#A44C5C] font-black text-[#A44C5C] transition-colors cursor-pointer flex items-center gap-1">
+              <button type="button" onClick={() => setTab('home')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold focus-visible:text-[#A44C5C] focus-visible:outline-none">الرئيسية</button>
+              <button type="button" onClick={() => setTab('offers')} className="hover:text-[#A44C5C] font-black text-[#A44C5C] transition-colors cursor-pointer flex items-center gap-1 focus-visible:outline-none">
                 <span>العروض والتخفيضات الحصرية</span>
                 <span className="bg-red-50 text-red-600 text-[9px] px-1.5 py-0.2 rounded-full font-bold">خصومات</span>
               </button>
-              <button type="button" onClick={() => setTab('store')} aria-label="فتح المتجر الشامل" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">المتجر الشامل</button>
-              <button type="button" onClick={() => setTab('best-sellers')} aria-label="عرض الأكثر طلباً ومبيعاً" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">الأكثر طلباً ومبيعاً</button>
-              <button type="button" onClick={() => setTab('new-arrivals')} aria-label="عرض المنتجات الجديدة" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">وصل حديثاً</button>
-              <button type="button" onClick={() => setTab('account')} aria-label="فتح حسابي والطلبات" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">حسابي والطلبات</button>
-              <button type="button" onClick={() => setTab('dashboard')} aria-label="دخول لوحة الإدارة" className="text-gray-900 hover:text-black font-black text-xs transition-colors cursor-pointer mt-3 text-right flex items-center gap-1">⚙️ دخول الإدارة</button>
+              <button type="button" onClick={() => setTab('store')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold focus-visible:text-[#A44C5C] focus-visible:outline-none">المتجر الشامل</button>
+              <button type="button" onClick={() => setTab('best-sellers')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold focus-visible:text-[#A44C5C] focus-visible:outline-none">الأكثر طلباً ومبيعاً</button>
+              <button type="button" onClick={() => setTab('new-arrivals')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold focus-visible:text-[#A44C5C] focus-visible:outline-none">وصل حديثاً</button>
+              <button type="button" onClick={() => setTab('account')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold focus-visible:text-[#A44C5C] focus-visible:outline-none">حسابي والطلبات</button>
+              <button type="button" onClick={() => setTab('dashboard')} className="text-gray-400 hover:text-black font-medium text-[10px] transition-colors cursor-pointer mt-3 focus-visible:text-black focus-visible:outline-none">⚙️ دخول الإدارة</button>
             </div>
-          </div>
+          </nav>
 
           {/* Customer Service & Policies */}
           <div className="space-y-3.5 font-sans">
@@ -1052,54 +1079,36 @@ function AppContent() {
               خدمة العملاء والسياسات
             </h3>
             <div className="flex flex-col gap-2 items-start text-right text-gray-900">
-              <button type="button" onClick={() => setTab('faq')} aria-label="الأسئلة الشائعة" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">الأسئلة الشائعة للعرائس</button>
-              <button type="button" onClick={() => setTab('track-order')} aria-label="تتبع الطلب" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">تتبع طلبيتكِ</button>
-              <button type="button" onClick={() => setTab('returns')} aria-label="سياسة الاسترجاع" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">سياسة الاسترجاع والاستبدال (١٤ يوماً)</button>
-              <button type="button" onClick={() => setTab('fabrics')} aria-label="دليل الخامات" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">دليل الخامات والمنسوجات</button>
-              <button type="button" onClick={() => setTab('contact')} aria-label="تواصل معنا" className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">اتصلي بنا</button>
-              <div className="pt-2 text-[11px] text-gray-950 font-black leading-normal">
-                ✓ شحن سريع ومغلف بعناية فائقة<br />
-                ✓ منتجات أصلية 100% مضمونة
-              </div>
+              <button type="button" onClick={() => setTab('faq')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">الأسئلة الشائعة</button>
+              <button type="button" onClick={() => setTab('track-order')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">تتبع طلبيتكِ</button>
+              <button type="button" onClick={() => setTab('returns')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">سياسة الاسترجاع والاستبدال</button>
+              <button type="button" onClick={() => setTab('about')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">من نحن</button>
+              <button type="button" onClick={() => setTab('contact')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">اتصلي بنا</button>
             </div>
           </div>
 
-          {/* Direct WhatsApp & Payment Badges */}
-          <div className="space-y-3.5 font-sans">
-            <h3 className="font-bold text-sm text-gray-900 tracking-wide pb-1 border-b border-gray-100">
-              تواصل واتساب والدعم السريع
+          {/* Saudi Commitment & Payment */}
+          <div className="space-y-4 font-sans">
+            <h3 className="font-bold text-sm text-gray-950 tracking-wide pb-1 border-b border-gray-100">
+              العملة والدفع الآمن
             </h3>
-            <div className="space-y-2 text-xs">
-              <a 
-                href="https://wa.me/966552823677?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20Sulta%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%85%D9%88%D8%AF%D9%8A%D9%84%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D8%B7%D9%84%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors group shadow-2xs"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-base">🇸🇦</span>
-                  <div className="text-right">
-                    <span className="block font-bold text-gray-950 text-[11px]">خدمة العملاء والواتساب - السعودية</span>
-                    <span className="text-[10px] text-gray-500">متاح للمساعدة الفورية وتأكيد الطلبات</span>
-                  </div>
+            <div className="flex flex-col gap-3 items-start">
+              <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 w-full">
+                <span className="text-xl">🇸🇦</span>
+                <div className="flex flex-col items-start">
+                  <span className="text-[10px] font-bold text-gray-900">الريال السعودي</span>
+                  <span className="text-[9px] text-gray-500">العملة الرسمية (SAR)</span>
                 </div>
-                <span className="font-mono text-gray-900 font-black text-xs" dir="ltr">0552823677</span>
-              </a>
-              <a 
-                href="mailto:sultabrand962@gmail.com"
-                className="block p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors shadow-2xs text-right font-bold text-gray-950 text-[11px] mt-2"
-              >
-                📧 sultabrand962@gmail.com
-              </a>
-            </div>
-          </div>
-          
-          <div className="space-y-3.5">
-              <h4 className="font-bold text-[11px] text-gray-900 mb-2">طريقة السداد المعتمدة</h4>
-              <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-1 rounded text-[10px] font-bold shadow-2xs">تحويل بنكي مباشر (مصرف الراجحي والبنك العربي الوطني مدى عبر IBAN) 🇸🇦</span>
-                <span className="bg-emerald-50 text-emerald-850 border border-emerald-200 px-2.5 py-1 rounded text-[10px] font-bold text-emerald-700 shadow-2xs">الدفع عند الاستلام (COD) 📦</span>
               </div>
+              <div className="pt-2">
+                <span className="text-[10px] text-gray-400 font-bold block mb-2">طرق الدفع المتوفرة:</span>
+                <div className="flex gap-2 grayscale opacity-70">
+                  <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                  <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                  <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1112,7 +1121,7 @@ function AppContent() {
             </Suspense>
           </div>
           <div className="text-gray-400 text-[11px]">
-            <span>تسوق سهل وسريع مع توصيل آمن لكافة مناطق المملكة والخليج ومصر</span>
+            <span>تسوق سهل وسريع مع توصيل آمن لكافة مناطق المملكة</span>
           </div>
         </div>
       </footer>
@@ -1250,96 +1259,15 @@ function AppContent() {
         onOpenFavorites={() => setTab('account')}
       />
 
-      {/* FLOATING BOTTOM SEARCH MODAL */}
-      {isBottomSearchOpen && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-[101] flex items-center justify-center p-4 transition-all" dir="rtl">
-          <div className="bg-white rounded-[2.5rem] p-6 sm:p-10 w-full max-w-lg border border-gray-200 shadow-2xl relative text-right animate-scale-up">
-            <button 
-              onClick={() => setIsBottomSearchOpen(false)}
-              className="absolute top-6 left-6 text-gray-400 hover:text-black p-2 hover:bg-neutral-100 rounded-full cursor-pointer transition-all border border-transparent"
-              aria-label="إغلاق البحث"
-            >
-              <X size={18} />
-            </button>
-            <div className="space-y-4">
-              <div className="flex items-center gap-1.5 text-black text-[10px] font-bold tracking-widest font-sans uppercase">
-                <Search size={12} />
-                <span>البحث الذكي الملكي | Sulta SEARCH ENGINE</span>
-              </div>
-              <h3 className="font-serif text-xl font-light text-gray-900">ما الذي تبحثين عنه اليوم؟</h3>
-              <p className="text-3xs sm:text-2xs text-gray-450 leading-relaxed font-sans">اكتبي ما يلهم طقوسكِ لتعثري عليه فوراً بلمح البصر في بوتيك سُلْطَة الملوكي.</p>
-              
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                setIsBottomSearchOpen(false);
-                setTab('store');
-              }} className="relative mt-2">
-                <input
-                  type="text"
-                  autoFocus
-                  placeholder="ابحثي عن كوتور، عرايس، شتوي..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearchQueryChange(e.target.value)}
-                  className="w-full bg-gray-50 rounded-full border border-gray-300 px-6 py-4 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/15 focus:border-black text-right shadow-2xs font-sans"
-                />
-                <button 
-                  type="submit"
-                  className="absolute left-3 top-2.5 bg-black hover:bg-gray-800 text-white text-3xs font-bold px-4 py-2.5 rounded-full cursor-pointer transition-all shadow-2xs font-sans"
-                >
-                  بحث
-                </button>
-              </form>
-
-              {/* Live instant suggestions for Sulta Search Engine */}
-              {searchQuery.trim().length >= 1 && (
-                <div className="mt-4 border-t border-gray-150 pt-4 space-y-3" dir="rtl">
-                  <div className="text-[10px] text-gray-400 font-bold tracking-wider uppercase font-sans flex items-center justify-between">
-                    <span>اقتراحات فورية ملكية</span>
-                    <span className="bg-gray-100 text-black px-2 py-0.5 rounded-full text-[9px] font-bold">
-                      {products.filter(p => {
-                        const q = searchQuery.toLowerCase().trim();
-                        return p.nameAr.toLowerCase().includes(q) || p.categoryAr?.toLowerCase().includes(q) || p.colors?.some(c => c.name.toLowerCase().includes(q));
-                      }).length} قطعة مطابقة
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1">
-                    {products
-                      .filter(p => {
-                        const q = searchQuery.toLowerCase().trim();
-                        return p.nameAr.toLowerCase().includes(q) || p.categoryAr?.toLowerCase().includes(q) || p.colors?.some(c => c.name.toLowerCase().includes(q));
-                      })
-                      .slice(0, 4)
-                      .map((p) => (
-                        <div
-                          key={p.id}
-                          onClick={() => {
-                            setSearchQuery(p.nameAr);
-                            setIsBottomSearchOpen(false);
-                            setTab('store');
-                          }}
-                          className="flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 cursor-pointer transition-all duration-300 group hover:border-black"
-                        >
-                          <div className="w-10 h-12 rounded-lg overflow-hidden bg-white shrink-0 border border-gray-100">
-                            <SultaImage src={p.images?.[0]} alt={p.nameAr} className="w-full h-full" imgClassName="object-cover" />
-                          </div>
-                          <div className="text-right flex-1 min-w-0">
-                            <h4 className="text-xs font-serif font-medium text-gray-900 group-hover:text-black transition-colors truncate">{p.nameAr}</h4>
-                            <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-gray-400 font-sans">
-                              <span>{p.categoryAr}</span>
-                              <span>•</span>
-                              <span className="text-gray-400 line-through text-[10px] font-mono">200 ر.س</span>
-                              <span className="text-black font-bold font-mono text-xs">{(p.salePriceSA || p.priceSA || 195)} ر.س</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <Suspense fallback={null}>
+        <SearchOverlay 
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          products={products}
+          country={country}
+          onSelectProduct={handleSelectProduct}
+        />
+      </Suspense>
 
       <WhatsAppFloat 
         number={settings?.whatsappSaudi || settings?.whatsapp || '966552823677'} 

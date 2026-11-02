@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import SultaImage from './SultaImage';
-import { Star, Heart, Calendar, Sparkles, Inbox } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { Product } from '../types';
-import { cleanImgUrl } from '../services/db';
-import { ProductPrice } from './ProductPrice';
+import ProductCard from './ProductCard';
 import SEO from './SEO';
 
 interface NewArrivalsProps {
@@ -12,6 +10,7 @@ interface NewArrivalsProps {
   favorites: string[];
   toggleFavorite: (productId: string) => void;
   onSelectProduct: (product: Product) => void;
+  onAddToCart?: (product: Product, color: any, size: string, qty: number) => void;
 }
 
 export default function NewArrivals({
@@ -19,7 +18,8 @@ export default function NewArrivals({
   country,
   favorites,
   toggleFavorite,
-  onSelectProduct
+  onSelectProduct,
+  onAddToCart
 }: NewArrivalsProps) {
   const currencyLabel = 'ر.س';
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -82,62 +82,18 @@ export default function NewArrivals({
 
       {/* Grid of New arrivals */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-          {filtered.map((prod, idx) => {
-            const priceVal = prod.priceSA;
-            const imgToUse = cleanImgUrl(prod.images[0], prod.category);
-
-            return (
-              <div
-                key={prod.id}
-                onClick={() => onSelectProduct(prod)}
-                className="group flex flex-col h-full bg-white rounded-2xl p-3 overflow-hidden border border-[#DF8A9D]/10 hover:border-[#DF8A9D]/30 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
-              >
-                {/* Brand new badge overlay */}
-                <div className="absolute top-4 left-4 z-10 flex items-center gap-1 bg-[#FAF4F5] text-[#A44C5C] text-[8px] font-sans font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border border-[#DF8A9D]/15">
-                  <Sparkles size={8} className="text-[#A44C5C]" />
-                  <span>طازج ✦ NEW</span>
-                </div>
-                
-                {/* Favorite Button */}
-                <div className="absolute top-4 right-4 z-10">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }} 
-                    className="p-1 bg-white/90 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-[#DF8A9D] border border-gray-100 cursor-pointer"
-                  >
-                    <Heart size={12} className={favorites.includes(prod.id) ? "fill-[#DF8A9D] text-[#DF8A9D]" : ""} />
-                  </button>
-                </div>
-
-                {/* Main Photo - Use taller aspect ratio for fashion */}
-                <div className="relative aspect-[3/4] overflow-hidden bg-white rounded-xl mb-3 flex items-center justify-center">
-                  <SultaImage
-                    src={imgToUse}
-                    alt={prod.nameAr}
-                    className="w-full h-full"
-                    contain={false}
-                    alignment="center"
-                    width={400}
-                    imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[800ms]"
-                    priority={idx < 4}
-                  />
-                </div>
-
-                {/* Details bottom block */}
-                <div className="space-y-1 text-center mt-auto flex flex-col items-center">
-                  <span className="text-[7.5px] uppercase tracking-widest font-sans font-bold text-gray-400 block">
-                    {prod.category === 'sleepwear' ? 'Sleepwear' : prod.category === 'loungewear' ? 'Loungewear' : 'Couture'}
-                  </span>
-                  <h3 className="text-3xs sm:text-2xs md:text-xs font-semibold text-[#0B0B0B] line-clamp-1 font-serif tracking-wide text-center">
-                    {prod.nameAr}
-                  </h3>
-                  <div className="mt-1.5 flex flex-col items-center">
-                    <ProductPrice product={prod} country={country} size="sm" showBadge={true} />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+          {filtered.map((prod, idx) => (
+            <ProductCard
+              key={prod.id}
+              product={prod}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              onSelectProduct={onSelectProduct}
+              onAddToCart={onAddToCart}
+              priority={idx < 5}
+            />
+          ))}
         </div>
 
       ) : (

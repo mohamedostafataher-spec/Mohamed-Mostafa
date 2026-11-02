@@ -1,5 +1,4 @@
-/// <reference types="vite/client" />
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole, StockMovement, CustomerAnalyticsRecord } from '../types';
 import { createClient } from '@supabase/supabase-js';
 import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 import { parseCleanArabicDescription } from '../utils/textUtils';
@@ -19,8 +18,8 @@ try {
   let vKey: string | undefined;
 
   try {
-    vUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL;
-    vKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY;
+    vUrl = (import.meta as any).env.VITE_SUPABASE_URL || (import.meta as any).env.SUPABASE_URL;
+    vKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || (import.meta as any).env.SUPABASE_ANON_KEY;
   } catch {
     // Vite object not defined or throws
   }
@@ -259,6 +258,7 @@ export function cleanImgUrl(url: any, width: number | string = 1200): string {
   const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
   if (cleanPath.includes('.')) {
     const fullSupabaseUrl = `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
+    const w = typeof width === 'number' ? width : (parseInt(String(width)) || 1200);
     return `https://wsrv.nl/?url=${encodeURIComponent(fullSupabaseUrl)}&w=${w}&output=webp&q=85&il`;
   }
 
@@ -511,7 +511,8 @@ function mapProduct(data: any): Product {
     careInstructions,
     tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
     collection: data.collection || undefined,
-    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined
+    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined,
+    createdAt: data.created_at || undefined
   };
 }
 
@@ -1526,15 +1527,51 @@ export const dbService = {
     }
 
     // 2. Persist directly to Supabase cloud:
-    // A. Insert into 'orders' table (satisfies database constraints)
+    // A. Insert into 'orders' table (satisfies database constraints and captures all fields)
     try {
       const baseRow: any = {
         id: finalId,
         total_amount: Number(order.totalPrice || 0),
-        status: safeStatus
+        total_price: Number(order.totalPrice || 0),
+        status: safeStatus,
+        customer_name: order.customerName,
+        phone: order.phone,
+        city: order.city || 'الرياض',
+        address: order.address || '',
+        notes: order.notes || null,
+        items: order.items || [],
+        currency: safeCurrency,
+        payment_method: order.paymentMethod || 'الدفع عند الاستلام',
+        tracking_number: order.trackingNumber || null,
+        tracking_url: order.trackingUrl || null,
+        created_at: order.createdAt || new Date().toISOString()
       };
       
-      const { error: oErr } = await supabase.from('orders').upsert([baseRow]);
+      let { error: oErr } = await supabase.from('orders').upsert([baseRow]);
+      
+      // Resilient fallback for columns that might be pending migration
+      let retries = 10;
+      while (oErr && oErr.message && retries > 0) {
+        const errMsg = oErr.message;
+        let colName: string | null = null;
+        const missingMatch = errMsg.match(/Could not find the '([^']+)' column/i);
+        const pgNotExistMatch = errMsg.match(/column "([^"]+)" of relation "orders" does not exist/i) || errMsg.match(/column "([^"]+)" does not exist/i);
+        if (missingMatch && missingMatch[1]) {
+          colName = missingMatch[1];
+        } else if (pgNotExistMatch && pgNotExistMatch[1]) {
+          colName = pgNotExistMatch[1];
+        }
+
+        if (colName && colName !== 'id') {
+          delete baseRow[colName];
+          const retryRes = await supabase.from('orders').upsert([baseRow]);
+          oErr = retryRes.error;
+          retries--;
+          continue;
+        }
+        break;
+      }
+
       if (oErr) {
         console.warn("[Sulta DB] orders table upsert:", oErr.message);
       } else {
@@ -1566,9 +1603,41 @@ export const dbService = {
     } catch (err: any) {
       console.warn("[Sulta DB] support_tickets exception:", err.message || err);
     }
+
+    // C. Record stock movement deduction for each ordered item
+    try {
+      if (Array.isArray(order.items)) {
+        for (const it of order.items) {
+          await dbService.recordStockMovement({
+            productId: it.productId,
+            productName: it.productName || 'قطعة سُلطة',
+            variant: `${it.color || ''} - ${it.size || ''}`.trim(),
+            changeQty: -Math.abs(Number(it.quantity || 1)),
+            movementType: 'order_deduction',
+            reason: `طلب شراء عميلة #${finalId.slice(0, 8)}`,
+            referenceOrderId: finalId,
+            adminName: 'النظام التلقائي'
+          });
+        }
+      }
+    } catch (smErr) {
+      console.warn("[Sulta DB] Non-fatal stock movement recording notice:", smErr);
+    }
+
+    // D. Log activity
+    try {
+      await dbService.logActivity(
+        'NEW_ORDER',
+        `طلب شراء جديد #${finalId.slice(0, 8)} بقيمة ${order.totalPrice} ر.س للعميلة ${order.customerName || ''}`,
+        'customer'
+      );
+    } catch {}
   },
 
-  updateProductStock: async (productId: string, _currentProduct: Product, nextStock: number): Promise<void> => {
+  updateProductStock: async (productId: string, currentProduct: Product | undefined, nextStock: number, reason: string = 'تعديل يدوي للمخزون', adminName: string = 'إدارة المتجر'): Promise<void> => {
+    const oldStock = currentProduct ? Number(currentProduct.stock) : nextStock;
+    const change = nextStock - oldStock;
+
     try {
       const payload: any = {
         stock: nextStock,
@@ -1608,6 +1677,19 @@ export const dbService = {
       
       if (error) {
         console.warn("[Sulta DB] Warning: updateProductStock did not apply on server, but continuing checkout:", error.message);
+      } else {
+        // Record stock movement
+        if (change !== 0) {
+          await dbService.recordStockMovement({
+            productId,
+            productName: currentProduct?.nameAr || 'منتج',
+            changeQty: change,
+            newStockLevel: nextStock,
+            movementType: change > 0 ? 'manual_restock' : 'inventory_audit',
+            reason,
+            adminName
+          });
+        }
       }
     } catch (e: any) {
       console.warn("[Sulta DB] Non-fatal stock update warning:", e.message || e);
@@ -2750,6 +2832,160 @@ export const dbService = {
     }
 
     return members;
+  },
+
+  // --- STOCK MOVEMENTS AUDIT LOGGING ---
+  subscribeStockMovements: (
+    onSuccess: (movements: StockMovement[]) => void,
+    _onError?: (error: any) => void
+  ): (() => void) => {
+    const fetchMovements = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('stock_movements')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(100);
+        if (!error && data && data.length > 0) {
+          onSuccess(data.map((m: any) => ({
+            id: m.id,
+            productId: m.product_id,
+            productName: m.product_name,
+            variant: m.variant || 'One Size',
+            changeQty: Number(m.change_qty || 0),
+            newStockLevel: m.new_stock_level !== undefined ? Number(m.new_stock_level) : undefined,
+            movementType: m.movement_type || 'manual_restock',
+            reason: m.reason || '',
+            referenceOrderId: m.reference_order_id,
+            adminName: m.admin_name || 'النظام التلقائي',
+            createdAt: m.created_at || new Date().toISOString()
+          })));
+        } else {
+          try {
+            const local = JSON.parse(localStorage.getItem('sulta_stock_movements') || '[]');
+            onSuccess(local);
+          } catch {
+            onSuccess([]);
+          }
+        }
+      } catch {
+        onSuccess([]);
+      }
+    };
+
+    fetchMovements();
+    const channelName = 'public:stock_movements:' + Math.random().toString(36).substring(2, 9);
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'stock_movements' }, () => {
+        fetchMovements();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  },
+
+  recordStockMovement: async (m: Partial<StockMovement>): Promise<void> => {
+    const movement: StockMovement = {
+      id: m.id || crypto.randomUUID(),
+      productId: m.productId || 'prod',
+      productName: m.productName || 'قطعة سُلطة',
+      variant: m.variant || 'One Size',
+      changeQty: Number(m.changeQty || 0),
+      newStockLevel: m.newStockLevel,
+      movementType: m.movementType || 'manual_restock',
+      reason: m.reason || 'تعديل يدوي للمخزون',
+      referenceOrderId: m.referenceOrderId,
+      adminName: m.adminName || 'إدارة المتجر',
+      createdAt: m.createdAt || new Date().toISOString()
+    };
+
+    try {
+      const local = JSON.parse(localStorage.getItem('sulta_stock_movements') || '[]');
+      local.unshift(movement);
+      localStorage.setItem('sulta_stock_movements', JSON.stringify(local.slice(0, 150)));
+    } catch {}
+
+    try {
+      const payload: any = {
+        id: movement.id,
+        product_id: movement.productId,
+        product_name: movement.productName,
+        variant: movement.variant,
+        change_qty: movement.changeQty,
+        new_stock_level: movement.newStockLevel,
+        movement_type: movement.movementType,
+        reason: movement.reason,
+        reference_order_id: movement.referenceOrderId || null,
+        admin_name: movement.adminName,
+        created_at: movement.createdAt
+      };
+      const { error } = await supabase.from('stock_movements').insert([payload]);
+      if (error) {
+        console.warn("[Sulta DB] stock_movements insert warning (table may be pending migration):", error.message);
+      }
+    } catch (e: any) {
+      console.warn("[Sulta DB] Exception recording stock movement:", e.message || e);
+    }
+  },
+
+  // --- DERIVE REAL CUSTOMER CRM INTELLIGENCE FROM GENUINE ORDERS ---
+  deriveCustomerRecords: (orders: Order[]): CustomerAnalyticsRecord[] => {
+    const map = new Map<string, {
+      phone: string;
+      name: string;
+      city: string;
+      totalOrders: number;
+      totalSpent: number;
+      lastOrderDate: string;
+      recentOrderId: string;
+    }>();
+
+    for (const order of orders) {
+      const rawPhone = (order.phone || '').trim();
+      const phone = rawPhone.replace(/[^\d+]/g, '') || `عميلة #${order.id.slice(0, 6)}`;
+      const price = Number(order.totalPrice) || 0;
+      const orderDate = order.date || (order.createdAt ? order.createdAt.split('T')[0] : '');
+
+      if (!map.has(phone)) {
+        map.set(phone, {
+          phone,
+          name: order.customerName && order.customerName !== 'عميلة سُلطة الكريمة' ? order.customerName : 'عميلة سُلطة',
+          city: order.city || 'الرياض',
+          totalOrders: 1,
+          totalSpent: price,
+          lastOrderDate: orderDate,
+          recentOrderId: order.id
+        });
+      } else {
+        const existing = map.get(phone)!;
+        existing.totalOrders += 1;
+        existing.totalSpent += price;
+        if (order.customerName && order.customerName !== 'عميلة سُلطة الكريمة') {
+          existing.name = order.customerName;
+        }
+        if (order.city) existing.city = order.city;
+        if (orderDate && orderDate > existing.lastOrderDate) {
+          existing.lastOrderDate = orderDate;
+          existing.recentOrderId = order.id;
+        }
+      }
+    }
+
+    return Array.from(map.values()).map(c => {
+      let tier: 'VIP' | 'متكررة' | 'جديدة' = 'جديدة';
+      if (c.totalSpent >= 500 || c.totalOrders >= 3) {
+        tier = 'VIP';
+      } else if (c.totalOrders > 1) {
+        tier = 'متكررة';
+      }
+      return {
+        ...c,
+        tier
+      };
+    }).sort((a, b) => b.totalSpent - a.totalSpent);
   },
 
   saveTeamMembers: async (members: TeamMember[]): Promise<void> => {

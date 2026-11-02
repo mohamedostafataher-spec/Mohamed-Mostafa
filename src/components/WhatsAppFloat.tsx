@@ -25,24 +25,24 @@ export default function WhatsAppFloat({
   };
 
   return (
-    <div className="fixed bottom-20 right-4 md:bottom-7 md:right-7 z-50 select-none font-sans" dir="rtl">
+    <div className="fixed bottom-28 right-4 md:bottom-8 md:right-8 z-50 select-none font-sans" dir="rtl">
       <a
         href={saudiUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="w-12 h-12 md:w-14 md:h-14 bg-[#A44C5C] hover:bg-[#8e3f4e] text-white rounded-full shadow-[0_6px_25px_rgba(164,76,92,0.35)] hover:shadow-[0_8px_30px_rgba(164,76,92,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
+        className="w-10 h-10 md:w-12 md:h-12 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
         aria-label="تواصل معنا عبر واتساب Sulta"
         title="تواصل مباشر عبر واتساب 0552823677"
       >
-        <MessageCircle size={24} className="text-white" />
+        <MessageCircle size={20} className="text-white" />
         
         {/* Subtle status pulse */}
-        <span className="absolute top-1 right-1 w-3 h-3 bg-[#25D366] rounded-full border-2 border-white" />
+        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
 
         {/* Hover label for desktop */}
-        <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden md:group-hover:flex items-center gap-1.5 bg-[#A44C5C] text-white text-xs px-3 py-1.5 rounded-xl shadow-xl border border-white/10 whitespace-nowrap pointer-events-none transition-all">
-          <span>محادثة واتساب سريعة</span>
+        <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden md:group-hover:flex items-center gap-1.5 bg-black/80 backdrop-blur-md text-white text-[10px] px-2.5 py-1 rounded-lg shadow-xl whitespace-nowrap pointer-events-none">
+          <span>مساعدة فورية</span>
           <span className="text-emerald-400">⚡</span>
         </div>
       </a>

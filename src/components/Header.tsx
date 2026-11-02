@@ -134,318 +134,100 @@ export default function Header({
   const activeWhatsAppDisplay = '0552823677';
 
   return (
-    <header className="sticky top-0 z-50 bg-white font-sans transition-all duration-200" dir="rtl">
-      {/* 1. Top Announcement Header Bar (Clean Salla style) */}
-      <div className="bg-[#F8F9FA] text-gray-700 text-[10px] sm:text-[11px] py-1.5 px-3 sm:px-4 border-b border-gray-200/80">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
-          
-          {/* Shipping & Luxury Hook Notification */}
-          <div className="flex items-center gap-1.5 text-gray-700 font-medium truncate">
-            <Truck size={13} className="text-black shrink-0" />
-            <span className="hidden sm:inline">
-              {country === 'SA' 
-                ? 'شحن مجاني لكافة مدن ومناطق المملكة للطلبات بقيمة 299 ر.س فأكثر 🇸🇦 | أزياء النوم والقطع الملكية الفاخرة' 
-                : 'شحن مجاني داخل مصر للطلبات بقيمة 1000 ج.م فأكثر 🇪🇬 | أزياء النوم والقطع الفاخرة'}
-            </span>
-            <span className="sm:hidden font-bold truncate text-[10px] text-gray-800">
-              {country === 'SA' ? 'شحن مجاني فوق 299 ر.س 🇸🇦' : 'شحن مجاني فوق 1000 ج.م 🇪🇬'}
-            </span>
-          </div>
-
-          {/* Luxury Boutique Hook Badge (Desktop) */}
-          <div className="hidden md:flex items-center gap-1.5 text-[10.5px] font-bold text-gray-700 shrink-0">
-            <Sparkles size={12} className="text-[#A44C5C]" />
-            <span>تغليف ملكي فاخر لجميع الطلبات ✨</span>
-          </div>
-
-          {/* Right Controls: Instagram, TikTok & Country Switcher */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Instagram Icon Link */}
-            <a
-              href="https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ=="
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition-all shadow-2xs"
-              title="تابعونا على انستغرام"
-              aria-label="سولته على انستغرام"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-              </svg>
-            </a>
-
-            {/* TikTok Icon Link */}
-            <a
-              href="https://www.tiktok.com/@sulta.brand"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition-all shadow-2xs"
-              title="تابعونا على تيك توك"
-              aria-label="سولته على تيك توك"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
-                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-              </svg>
-            </a>
-
-            {/* Country and Currency Switcher */}
-            <button 
-              type="button"
-              className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-2 py-0.5 shadow-2xs text-[9.5px] sm:text-[10px] font-bold text-gray-900 cursor-pointer hover:bg-gray-50" 
-              onClick={() => setCountry(country === 'SA' ? 'EG' : 'SA')}
-              aria-label={`تبديل الدولة (الحالية: ${country === 'SA' ? 'السعودية' : 'مصر'})`}
-            >
-              <span>{country === 'SA' ? '🇸🇦' : '🇪🇬'}</span>
-              <span>{currencyLabel}</span>
-            </button>
-          </div>
-
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 font-sans transition-all duration-200" dir="rtl">
+      {/* 1. Global Announcement / Promo Bar */}
+      <div className="bg-[#111827] text-white overflow-hidden py-1.5 border-b border-white/5">
+        <div className="flex items-center justify-center gap-6 whitespace-nowrap animate-marquee px-4">
+          <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-tight">
+            <Truck size={14} className="text-amber-400" />
+            شحن مجاني للطلبات فوق {country === 'SA' ? '299' : '1000'} {country === 'SA' ? 'ر.س' : 'ج.م'} 🚚
+          </span>
+          <span className="text-gray-600 hidden sm:inline">•</span>
+          <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-tight">
+            <Sparkles size={14} className="text-amber-400" />
+            بيجامات قطن كوريشة فاخرة بكميات محدودة ✨
+          </span>
+          <span className="text-gray-600 hidden sm:inline">•</span>
+          <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-tight">
+            <Check size={14} className="text-amber-400" />
+            استبدال سهل ومرن لضمان رضاكِ التام ✅
+          </span>
         </div>
       </div>
 
-      {/* 2. Main Navigation Bar (Clean White Salla / Nalah Layout) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3.5">
-        <div className="flex items-center justify-between gap-3 sm:gap-6 w-full">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex items-center justify-between h-14 sm:h-20 gap-4">
           
-          {/* Mobile Menu & Search Toggle Buttons */}
-          <div className="flex items-center gap-1.5 lg:hidden">
+          {/* Menu & Search Toggle (Mobile) */}
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-800 hover:text-black p-2 rounded-xl bg-gray-50 border border-gray-200 transition-colors"
-              aria-label="القائمة"
+              className="text-gray-800 p-2 rounded-xl bg-gray-50 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden"
+              aria-label={mobileMenuOpen ? "إغلاق القائمة" : "فتح القائمة الرئيسية"}
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="text-gray-800 hover:text-black p-2 rounded-xl bg-gray-50 border border-gray-200 transition-colors"
-              aria-label="البحث"
+              onClick={() => onSearch('')}
+              className="text-gray-800 p-2 rounded-xl bg-gray-50 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden"
+              aria-label="البحث عن المنتجات"
             >
               <Search size={19} />
             </button>
           </div>
 
-          {/* Sulta Brand Logo (Centered on mobile, left/right on desktop) */}
+          {/* Logo */}
           <div 
-            className="flex items-center cursor-pointer select-none" 
+            className="flex items-center cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-[#A44C5C] rounded-lg outline-hidden" 
             onClick={() => setTab('home')}
+            role="button"
+            aria-label="الذهاب للرئيسية"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && setTab('home')}
           >
             <div className="flex flex-col items-center sm:items-start group">
               <div className="flex items-center gap-1.5">
-                <span className="text-lg sm:text-2xl font-black tracking-widest text-[#111827] group-hover:text-black transition-colors font-serif uppercase">
+                <span className="text-xl sm:text-2xl font-black tracking-widest text-[#111827] font-serif uppercase">
                   {settings?.siteName || 'Sulta'}
                 </span>
-                <span className="text-black text-xs sm:text-sm">👑</span>
+                <span className="text-[#A44C5C] text-sm sm:text-base" aria-hidden="true">👑</span>
               </div>
-              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-bold text-gray-500 font-sans -mt-0.5">
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-bold text-gray-500 font-sans -mt-0.5 hidden sm:block">
                 سولته · أزياء النوم الفاخرة
               </span>
             </div>
           </div>
 
-          {/* 3. Center Wide Search Bar (Signature Salla Feature) */}
-          <div ref={searchContainerRef} className="hidden lg:flex flex-1 max-w-xl relative">
-            <form onSubmit={handleSearchSubmit} className="w-full relative">
-              <input
-                type="text"
-                placeholder="ابحثي عن بيجامات، أرواب عرايس، أطقم نوم فاخرة..."
-                value={localQuery}
-                onChange={(e) => {
-                  setLocalQuery(e.target.value);
-                  setIsSearchFocused(true);
-                }}
-                onFocus={() => setIsSearchFocused(true)}
-                className="w-full bg-[#F8F9FA] hover:bg-white focus:bg-white text-gray-900 border border-gray-250 focus:border-black rounded-full py-2.5 pr-11 pl-24 text-xs font-sans placeholder-gray-400 shadow-2xs focus:shadow-md transition-all outline-hidden text-right"
-                dir="rtl"
-              />
-              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                <Search size={18} />
-              </div>
-              <button
-                type="submit"
-                className="absolute left-1.5 top-1/2 -translate-y-1/2 bg-[#111827] hover:bg-black text-white text-[11px] font-bold px-4 py-1.5 rounded-full transition-all cursor-pointer shadow-2xs"
-                aria-label="بدء البحث"
-              >
-                بحث
-              </button>
-            </form>
-
-            {/* Instant Live Suggestions Dropdown (Salla Style) */}
-            {isSearchFocused && suggestions.length > 0 && (
-              <div className="absolute top-full mt-2 w-full bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden z-50 animate-scale-up text-right">
-                <div className="p-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between text-[11px] text-gray-500 font-bold">
-                  <span>منتجات مقترحة فورية</span>
-                  <span className="text-black font-bold">{suggestions.length} نتائج</span>
-                </div>
-                <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
-                  {suggestions.map((p) => {
-                    const priceVal = p.priceSA;
-                    return (
-                      <div
-                        key={p.id}
-                        onClick={() => {
-                          onSearch(p.nameAr);
-                          setLocalQuery(p.nameAr);
-                          setTab('store');
-                          setIsSearchFocused(false);
-                        }}
-                        className="p-3 hover:bg-[#F8F9FA] flex items-center justify-between gap-3 cursor-pointer transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-14 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200">
-                            <SultaImage 
-                              src={cleanImgUrl(p.images?.[0], p.category)} 
-                              alt={p.nameAr} 
-                              className="w-full h-full"
-                              imgClassName="object-cover"
-                            />
-                          </div>
-                          <div className="text-right">
-                            <h4 className="text-xs font-bold text-gray-900 line-clamp-1">{p.nameAr}</h4>
-                            <span className="text-[10px] text-gray-400 block mt-0.5">{p.categoryAr || p.category}</span>
-                          </div>
-                        </div>
-                        <div className="text-left shrink-0">
-                          <span className="font-bold text-xs text-[#A44C5C] font-mono" dir="ltr">
-                            {priceVal} {currencyLabel}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="p-2.5 bg-gray-50 text-center border-t border-gray-100">
-                  <button
-                    onClick={() => {
-                      onSearch(localQuery);
-                      setTab('store');
-                      setIsSearchFocused(false);
-                    }}
-                    className="text-xs font-bold text-[#A44C5C] hover:underline"
-                  >
-                    عرض كافة النتائج في المتجر ←
-                  </button>
-                </div>
-              </div>
-            )}
+          {/* Search Bar (Desktop) Trigger */}
+          <div className="hidden lg:flex flex-1 max-w-lg relative mx-8">
+            <button
+              onClick={() => onSearch('')}
+              className="w-full flex items-center gap-3 bg-[#F8F9FA] hover:bg-gray-50 text-gray-400 border border-gray-100 hover:border-gray-200 rounded-full py-2.5 px-6 text-xs transition-all cursor-text text-right focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden"
+              aria-label="البحث في المتجر"
+            >
+              <Search size={16} aria-hidden="true" />
+              <span className="font-bold">ابحثي عن بيجامتكِ المفضلة...</span>
+            </button>
           </div>
 
-          {/* Right Action Cluster: Account, Favorites, Cart */}
-          <div className="flex items-center gap-1.5 sm:gap-3 select-none shrink-0">
-            
-            {/* User Account */}
+          {/* Action Cluster */}
+          <div className="flex items-center gap-2 sm:gap-3 select-none shrink-0">
             <button
-              onClick={() => setTab('account')}
-              aria-label="حسابي والطلبات"
-              className={`hidden md:flex p-2.5 rounded-xl border transition-all items-center gap-1.5 cursor-pointer ${
-                currentTab === 'account' 
-                  ? 'bg-gray-100 border-gray-300 text-black' 
-                  : 'bg-white border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50'
-              }`}
-              title="حسابي والطلبات"
+              onClick={onOpenCart}
+              className={`flex items-center gap-2 bg-[#A44C5C] text-white px-3 sm:px-5 py-2.5 rounded-full hover:bg-[#8e3e4d] transition-all shadow-sm active:scale-95 cursor-pointer relative focus-visible:ring-2 focus-visible:ring-black outline-hidden ${isCartAnimating ? 'animate-bounce' : ''}`}
+              aria-label={`حقيبة التسوق، تحتوي على ${cartCount} قطع`}
             >
-              <User size={18} />
-              <span className="hidden xl:inline text-xs font-bold">حسابي</span>
-            </button>
-
-            {/* Wishlist Button (Desktop & Tablet) */}
-            <button
-              onClick={onOpenFavorites}
-              aria-label="المفضلة"
-              className="hidden sm:flex p-2 sm:p-2.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700 transition-all relative cursor-pointer"
-              title="المفضلة"
-            >
-              <Heart size={17} className={favorites.length > 0 ? "fill-red-500 text-red-500" : ""} />
-              {favorites.length > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full shadow-sm animate-scale-up">
-                  {favorites.length}
+              <ShoppingBag size={18} aria-hidden="true" />
+              <span className="hidden sm:inline text-xs font-bold">الحقيبة</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#111827] text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
+                  {cartCount}
                 </span>
               )}
             </button>
-
-            {/* Cart Button (Salla Style with Item Count & Live Total) */}
-            <motion.button
-              onClick={onOpenCart}
-              aria-label="سلة المشتريات"
-              animate={isCartAnimating ? { scale: [1, 1.25, 1], rotate: [0, -8, 8, 0] } : {}}
-              transition={{ duration: 0.4 }}
-              className="flex items-center gap-1.5 sm:gap-2 bg-[#111827] hover:bg-black active:scale-98 text-white px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl transition-all shadow-sm cursor-pointer group"
-              title="سلة المشتريات"
-            >
-              <div className="relative">
-                <ShoppingBag size={17} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-black text-white text-[9px] font-black w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-white">
-                    {cartCount}
-                  </span>
-                )}
-              </div>
-              <div className="hidden sm:flex flex-col text-right leading-none">
-                <span className="text-[11px] font-bold">السلة</span>
-                <span className="text-[10px] text-gray-300 font-mono mt-0.5" dir="ltr">
-                  {cartTotal > 0 ? `${cartTotal} ${currencyLabel}` : 'فارغة'}
-                </span>
-              </div>
-            </motion.button>
-
           </div>
-
         </div>
       </div>
-
-      {/* 4. Category Ribbon Navigation Bar (Salla style) */}
-      <nav className="bg-white border-y border-gray-150 overflow-x-auto scrollbar-none shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-start gap-1 py-1 text-xs whitespace-nowrap">
-          {navCategories.map((item) => {
-            const isActive = currentTab === item.id || (currentTab === '' && item.id === 'home');
-            return (
-              <button
-                key={item.id}
-                onClick={() => setTab(item.id)}
-                className={`px-3.5 py-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-[#111827] text-white shadow-2xs'
-                    : 'text-gray-700 hover:text-black hover:bg-gray-100'
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-
-      {/* Mobile Search Overlay Bar */}
-      {searchOpen && (
-        <div className="lg:hidden bg-white border-b border-gray-200 p-3 shadow-md animate-slide-down">
-          <form onSubmit={handleSearchSubmit} className="flex gap-2">
-            <input
-              type="text"
-              placeholder="ابحثي عن الموديل أو اللون أو المقاس..."
-              value={localQuery}
-              onChange={(e) => setLocalQuery(e.target.value)}
-              className="flex-1 bg-gray-50 border border-gray-250 rounded-xl px-3.5 py-2 text-xs text-right outline-hidden"
-              dir="rtl"
-              autoFocus
-            />
-            <button
-              type="submit"
-              className="bg-[#111827] text-white text-xs font-bold px-4 py-2 rounded-xl"
-            >
-              بحث
-            </button>
-            <button
-              type="button"
-              onClick={() => setSearchOpen(false)}
-              className="p-2 text-gray-500 hover:text-black"
-            >
-              <X size={18} />
-            </button>
-          </form>
-        </div>
-      )}
     </header>
   );
 }

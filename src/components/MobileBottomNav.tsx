@@ -30,14 +30,6 @@ export default function MobileBottomNav({
       badge: 0,
     },
     {
-      id: 'offers',
-      label: 'العروض',
-      icon: Tag,
-      action: () => setTab('offers'),
-      badge: 0,
-      highlight: true,
-    },
-    {
       id: 'store',
       label: 'المتجر',
       icon: ShoppingBag,
@@ -67,9 +59,9 @@ export default function MobileBottomNav({
       dir="rtl"
       aria-label="شريط التنقل السفلي"
     >
-      <div className="max-w-md mx-auto grid grid-cols-5 h-14 items-center px-1">
+      <div className="max-w-md mx-auto grid grid-cols-4 h-16 items-center px-2">
         {tabs.map((tab) => {
-          const isActive = tab.id === currentTab;
+          const isActive = tab.id === currentTab || (tab.id === 'cart' && currentTab === 'cart');
           const Icon = tab.icon;
 
           return (
@@ -78,40 +70,19 @@ export default function MobileBottomNav({
               type="button"
               onClick={tab.action}
               aria-label={tab.label}
-              className={`flex flex-col items-center justify-center h-full py-1 transition-all relative cursor-pointer active:scale-95 ${
-                isActive
-                  ? 'text-[#111827] font-bold'
-                  : 'text-gray-600 hover:text-black font-medium'
+              className={`flex flex-col items-center justify-center h-full min-h-[44px] transition-all relative cursor-pointer active:scale-95 ${
+                isActive ? 'text-[#A44C5C]' : 'text-gray-500'
               }`}
             >
-              <div className="relative">
-                <Icon 
-                  size={20} 
-                  className={
-                    isActive 
-                      ? 'stroke-[2.5] text-[#111827]' 
-                      : 'text-gray-600'
-                  } 
-                />
-                
-                {/* Active Indicator Dot */}
-                {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black" />
-                )}
-
-                {/* Badge for Favorites or Cart */}
+              <div className="relative mb-1">
+                <Icon size={22} className={isActive ? 'stroke-[2.5]' : 'stroke-[2]'} />
                 {tab.badge > 0 && (
-                  <span className="absolute -top-1.5 -left-2 bg-black text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-xs border-2 border-white">
-                    {tab.badge > 99 ? '99+' : tab.badge}
+                  <span className="absolute -top-1.5 -left-2 bg-[#111827] text-white text-[9px] font-black w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-white">
+                    {tab.badge}
                   </span>
                 )}
               </div>
-
-              <span className={`text-[10px] mt-0.5 leading-none ${
-                isActive 
-                  ? 'font-bold text-[#111827]' 
-                  : 'text-gray-600 font-medium'
-              }`}>
+              <span className={`text-[10px] font-bold ${isActive ? 'opacity-100 font-black' : 'opacity-80'}`}>
                 {tab.label}
               </span>
             </button>

@@ -46,37 +46,31 @@ img {
   color: #991B1B !important; /* Darker red for contrast */
 }
 
-/* Shift pink/burgundy/yellow accents to crisp black & white */
-.text-\[\#F4B6C2\], .text-\[\#DF8A9C\], .text-\[\#DF8A9D\], .text-\[\#A44C5C\], .text-\[\#F6E7A6\],
-.text-emerald-500, .text-emerald-600, .text-emerald-700, .text-emerald-800, .text-green-600, .text-green-700,
-.text-rose-500, .text-rose-600, .text-rose-700, .text-pink-500, .text-pink-600, .text-pink-700 {
-  color: #0B0B0B !important;
+/* Design System & Contrast Optimization (WCAG 2.2 AA) */
+:root {
+  --color-primary: #A44C5C;
+  --color-primary-hover: #8e3e4d;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #FAF9F6;
+  --color-text: #1a1a1a;
+  --color-text-muted: #4b5563;
+  --color-border: #e5e7eb;
 }
 
-.bg-\[\#F4B6C2\], .bg-\[\#DF8A9C\], .bg-\[\#DF8A9D\], .bg-\[\#A44C5C\], .bg-\[\#25D366\],
-.bg-emerald-500, .bg-emerald-600, .bg-emerald-700, .bg-emerald-800, .bg-green-600, .bg-green-700 {
-  background-color: #0B0B0B !important;
-  color: #FFFFFF !important;
+/* Reduced motion preference support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.border-\[\#F4B6C2\], .border-\[\#DF8A9C\], .border-\[\#DF8A9D\], .border-\[\#A44C5C\], .border-\[\#25D366\],
-.border-emerald-200, .border-emerald-300, .border-emerald-400, .border-green-200,
-.border-rose-200, .border-rose-300, .border-pink-200, .border-pink-300 {
-  border-color: #E5E7EB !important;
-}
-
-.bg-emerald-50, .bg-emerald-100, .bg-green-50, .bg-rose-50, .bg-rose-100, .bg-pink-50, .bg-pink-100 {
-  background-color: #F8F9FA !important;
-}
-
-.hover\:bg-\[\#F4B6C2\]:hover, .hover\:bg-\[\#DF8A9C\]:hover, .hover\:bg-\[\#A44C5C\]:hover,
-.hover\:bg-emerald-100:hover, .hover\:bg-rose-100:hover {
-  background-color: #000000 !important;
-  color: #FFFFFF !important;
-}
-.hover\:text-\[\#F4B6C2\]:hover, .hover\:text-\[\#DF8A9C\]:hover, .hover\:text-\[\#A44C5C\]:hover,
-.hover\:text-emerald-800:hover, .hover\:text-rose-700:hover {
-  color: #0B0B0B !important;
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid #A44C5C;
+  outline-offset: 2px;
 }
 
 /* Custom Scrollbars */

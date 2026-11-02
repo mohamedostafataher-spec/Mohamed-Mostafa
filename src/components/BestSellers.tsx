@@ -1,9 +1,7 @@
-import SultaImage from "./SultaImage";
 import React from 'react';
-import { Star, Heart, TrendingUp, Sparkles, Award } from 'lucide-react';
+import { Award } from 'lucide-react';
 import { Product } from '../types';
-import { cleanImgUrl } from '../services/db';
-import { ProductPrice } from './ProductPrice';
+import ProductCard from './ProductCard';
 import SEO from './SEO';
 
 interface BestSellersProps {
@@ -12,6 +10,7 @@ interface BestSellersProps {
   favorites: string[];
   toggleFavorite: (productId: string) => void;
   onSelectProduct: (product: Product) => void;
+  onAddToCart?: (product: Product, color: any, size: string, qty: number) => void;
 }
 
 export default function BestSellers({
@@ -19,7 +18,8 @@ export default function BestSellers({
   country,
   favorites,
   toggleFavorite,
-  onSelectProduct
+  onSelectProduct,
+  onAddToCart
 }: BestSellersProps) {
   const currencyLabel = country === 'EG' ? 'EGP' : 'SAR';
 
@@ -53,65 +53,25 @@ export default function BestSellers({
       </div>
 
       {/* Hero Curated Best Seller Display (Bento Grid) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {list.slice(0, 6).map((prod, index) => {
-          const priceVal = country === 'EG' ? prod.priceEG : prod.priceSA;
-          const imgToUse = cleanImgUrl(prod.images[0], prod.category);
-          
-          return (
-            <div 
-              key={prod.id} 
-              onClick={() => onSelectProduct(prod)}
-              className="group bg-white rounded-[2rem] overflow-hidden p-4 border border-[#DF8A9D]/12 hover:border-[#DF8A9D]/40 transition-all duration-500 hover:shadow-xl cursor-pointer flex flex-col justify-between relative"
-            >
-              {/* Luxury Ranking Badge */}
-              <div className="absolute top-6 right-6 z-20 flex items-center justify-center bg-[#A44C5C] text-[#F6E7A6] w-9 h-9 rounded-full font-serif font-bold text-xs ring-4 ring-[#FAF4F5] shadow-md">
-                NO.{index + 1}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        {list.slice(0, 12).map((prod, index) => (
+          <ProductCard
+            key={prod.id}
+            product={prod}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            onSelectProduct={onSelectProduct}
+            onAddToCart={(p, c, s, q) => {
+              onAddToCart(p, c, s, q);
+            }}
+            priority={index < 4}
+            renderBadge={() => (
+              <div className="bg-[#A44C5C] text-[#F6E7A6] w-7 h-7 sm:w-8 sm:h-8 rounded-full font-serif font-bold text-[10px] flex items-center justify-center shadow-md border-2 border-white">
+                #{index + 1}
               </div>
-
-              {/* Image Frame - Use taller aspect ratio for fashion */}
-              <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem] bg-white mb-4 flex items-center justify-center">
-                <SultaImage 
-                  src={imgToUse} 
-                  alt={prod.nameAr} 
-                  className="w-full h-full" 
-                  contain={false}
-                  alignment="center"
-                  width={600}
-                  imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" 
-                  priority={index < 4} 
-                />
-                
-                {/* Save to Favorites toggle */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); toggleFavorite(prod.id); }}
-                  className="absolute top-4 left-4 p-2 bg-white/95 rounded-full hover:bg-white text-gray-400 hover:text-[#A44C5C] shadow-sm transition-all z-10"
-                >
-                  <Heart size={14} className={favorites.includes(prod.id) ? "fill-[#A44C5C] text-[#A44C5C]" : ""} />
-                </button>
-              </div>
-
-              {/* Informative bottom metadata */}
-              <div className="space-y-2 text-center flex flex-col items-center">
-                <div className="flex items-center gap-1">
-                  <span className="text-[8px] tracking-widest font-semibold bg-[#A44C5C]/8 text-[#A44C5C] px-2.5 py-0.5 rounded-full uppercase">
-                    أعلى تقييم ✦ {prod.rating || '4.9'}
-                  </span>
-                </div>
-                <h3 className="font-serif text-sm font-semibold text-[#0B0B0B] group-hover:text-[#A44C5C] transition-colors leading-relaxed line-clamp-1">
-                  {prod.nameAr || prod.nameEn}
-                </h3>
-                <p className="text-[10px] text-gray-400 max-w-xs font-sans line-clamp-1">
-                  {prod.descriptionAr || 'نسيج فاخر يجمع بين دفء الأجواء وأناقة المظهر لراحة لا تضاهى'}
-                </p>
-                <div className="pt-1.5 flex flex-col items-center">
-                  <ProductPrice product={prod} country={country} size="sm" showBadge={true} />
-                  <span className="text-[9px] font-medium text-[#A44C5C] font-sans mt-2 hover:underline">تسوقي القطعة الفاخرة ←</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+            )}
+          />
+        ))}
       </div>
 
     </div>

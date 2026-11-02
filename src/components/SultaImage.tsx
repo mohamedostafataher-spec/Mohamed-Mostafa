@@ -93,10 +93,11 @@ export default function SultaImage({
   return (
     <div 
       className={`relative overflow-hidden ${contain ? 'bg-white' : 'bg-transparent'} ${className}`}
+      style={{ aspectRatio: contain ? 'auto' : '3/4' }}
     >
       {/* Lightweight Loading Skeleton - Match the aspect ratio to reduce CLS */}
       {!isLoaded && (
-        <div className="absolute inset-0 z-0 bg-neutral-100 animate-pulse flex items-center justify-center aspect-[3/4]">
+        <div className="absolute inset-0 z-0 bg-neutral-100 animate-pulse flex items-center justify-center">
           <div className="w-5 h-5 border-2 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin opacity-40" />
         </div>
       )}
@@ -106,7 +107,7 @@ export default function SultaImage({
         ref={imgRef}
         src={currentSrc}
         alt={alt || "بيجامة نسائية فاخرة من Sulta"}
-        className={`w-full block ${imgClassName || defaultImgClasses} relative z-10 transition-all duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full block ${imgClassName || (contain ? 'object-contain' : 'object-cover')} ${alignmentClass} relative z-10 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onError={handleError}
         onLoad={handleLoad}
         loading={priority ? 'eager' : (props.loading || 'lazy')}

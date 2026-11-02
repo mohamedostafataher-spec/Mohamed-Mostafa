@@ -1322,27 +1322,84 @@ export default function ProductDetailModal({
                 <div className="space-y-3">
                   <p className="leading-relaxed whitespace-pre-line text-gray-800">{product.descriptionAr}</p>
                   
-                  {/* Structured Product Specifications Card */}
-                  <div className="bg-white rounded-xl p-3 border border-gray-200/80 space-y-2 text-[10.5px]">
-                    <span className="font-bold text-gray-950 block border-b border-gray-100 pb-1">تفاصيل ومواصفات القطعة الملكية:</span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-right">
-                      <div>
-                        <span className="text-gray-400 block text-[9.5px]">تركيبة الخامة:</span>
-                        <span className="font-bold text-gray-900">{product.fabricAr || 'نسيج كوتور ملكي ناعم معالج'}</span>
+                  {/* 3-Line Core Specifications */}
+                  <div className="bg-[#FAF9F6] rounded-xl p-3.5 border border-gray-200/80 space-y-2 text-right">
+                    <span className="font-bold text-gray-950 text-xs block border-b border-gray-200 pb-1.5">مواصفات القطعة الأساسية:</span>
+                    <div className="space-y-1.5 text-xs text-gray-800">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#A44C5C]">🧵 الخامة:</span>
+                        <span>{product.fabricAr || 'قطن فاخر 100% ناعم ومسامي معالج ضد الانكماش'}</span>
                       </div>
-                      <div>
-                        <span className="text-gray-400 block text-[9.5px]">نوع القَصّة:</span>
-                        <span className="font-bold text-gray-900">انسيابية مريحة كوتور (Comfort Fit)</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#A44C5C]">📏 المقاس:</span>
+                        <span>وان سايز (One Size) قَصّة مريحة تناسب وزن 45 - 80 كجم</span>
                       </div>
-                      <div>
-                        <span className="text-gray-400 block text-[9.5px]">طريقة العناية:</span>
-                        <span className="font-bold text-gray-900">{product.washInstructionsAr || 'غسيل يدوي بماء بارد أو غسيل جاف'}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-400 block text-[9.5px]">ما يشمله الطقم:</span>
-                        <span className="font-bold text-gray-900">طقم بيجامة كامل + تغليف Sulta الملكي الفاخر</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#A44C5C]">🧺 الغسيل:</span>
+                        <span>{product.washInstructionsAr || 'غسيل لطيف بماء بارد، تجفيف طبيعي وكوي بحرارة خفيفة'}</span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Clear Size Chart Table */}
+                  <div className="bg-white rounded-xl p-3 border border-gray-200 text-right space-y-2">
+                    <span className="font-bold text-gray-950 text-xs block">جدول المقاسات الدقيق (بالسنتيمتر):</span>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-[11px] text-center border-collapse">
+                        <thead>
+                          <tr className="bg-gray-100 text-gray-700 font-bold">
+                            <th className="p-2 border border-gray-200">المقاس</th>
+                            <th className="p-2 border border-gray-200">محيط الصدر</th>
+                            <th className="p-2 border border-gray-200">طول البلوزة</th>
+                            <th className="p-2 border border-gray-200">محيط الخصر</th>
+                            <th className="p-2 border border-gray-200">طول البنطلون</th>
+                            <th className="p-2 border border-gray-200">الوزن الموصى به</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="hover:bg-gray-50 font-medium">
+                            <td className="p-2 border border-gray-200 font-bold text-[#A44C5C]">One Size (مريح)</td>
+                            <td className="p-2 border border-gray-200 font-mono">118 سم</td>
+                            <td className="p-2 border border-gray-200 font-mono">68 سم</td>
+                            <td className="p-2 border border-gray-200 font-mono">65 - 105 سم (مطاط)</td>
+                            <td className="p-2 border border-gray-200 font-mono">98 سم</td>
+                            <td className="p-2 border border-gray-200 font-bold text-gray-900">45 - 80 كجم</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Collapsible FAQ */}
+                  <div className="bg-white rounded-xl p-3 border border-gray-200 text-right space-y-2">
+                    <span className="font-bold text-gray-950 text-xs block mb-1">الأسئلة الشائعة عن هذا الموديل:</span>
+                    <details className="group border border-gray-150 rounded-lg p-2.5 cursor-pointer">
+                      <summary className="font-bold text-xs text-gray-900 flex items-center justify-between">
+                        <span>هل المقاس مناسب لوزني؟</span>
+                        <span className="transition group-open:rotate-180">▾</span>
+                      </summary>
+                      <p className="mt-2 text-[11px] text-gray-600 leading-relaxed pr-2">
+                        نعم، جميع موديلات سولته مصممة بقَصّة وان سايز انسيابية مدروسة ومزودة بخصر مطاطي عالي المرونة، لتناسب الأوزان من 45 حتى 80 كجم براحة تامة وأناقة مثالية.
+                      </p>
+                    </details>
+                    <details className="group border border-gray-150 rounded-lg p-2.5 cursor-pointer">
+                      <summary className="font-bold text-xs text-gray-900 flex items-center justify-between">
+                        <span>ما هي مدة وتكلفة الشحن؟</span>
+                        <span className="transition group-open:rotate-180">▾</span>
+                      </summary>
+                      <p className="mt-2 text-[11px] text-gray-600 leading-relaxed pr-2">
+                        التوصيل سريع لكافة مدن المملكة خلال 2 إلى 4 أيام عمل. الشحن مجاني للطلبات المؤهلة، مع تغليف فاخر هدية مجانية.
+                      </p>
+                    </details>
+                    <details className="group border border-gray-150 rounded-lg p-2.5 cursor-pointer">
+                      <summary className="font-bold text-xs text-gray-900 flex items-center justify-between">
+                        <span>كيف يمكنني الاستبدال أو الاسترجاع؟</span>
+                        <span className="transition group-open:rotate-180">▾</span>
+                      </summary>
+                      <p className="mt-2 text-[11px] text-gray-600 leading-relaxed pr-2">
+                        نوفر لكِ سياسة استبدال واسترجاع مرنة وسريعة؛ بمجرد مراسلتنا عبر الواتساب، يتولى المندوب استلام الشحنة من باب بيتكِ.
+                      </p>
+                    </details>
                   </div>
                 </div>
               )}
@@ -2134,36 +2191,29 @@ export default function ProductDetailModal({
 
         {/* Sticky Mobile Fast Checkout Bar (Visible only on mobile devices) */}
         {!isCurrentConfigOutOfStock && (
-          <div className="md:hidden sticky bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-3 flex items-center justify-between gap-3 shadow-[0_-6px_25px_rgba(0,0,0,0.12)]" dir="rtl">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-12 rounded-lg overflow-hidden border border-gray-200 shrink-0 bg-gray-50">
-                <img src={cleanImgUrl(displayImages[0] || product.images[0])} alt="" className="w-full h-full object-cover" />
-              </div>
-              <div className="text-right min-w-0">
-                <p className="text-[11px] font-bold text-gray-900 truncate">{product.nameAr}</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-xs font-black text-[#A44C5C] font-mono">{effectiveProductPrice} {country === 'EG' ? 'ج.م' : 'ر.س'}</span>
-                  <span className="text-[9.5px] text-gray-400 font-bold truncate">({selectedCol.name} - {selectedSz})</span>
+          <div className="md:hidden sticky bottom-0 inset-x-0 z-40 bg-white/98 backdrop-blur-md border-t border-gray-200 px-4 py-3 shadow-[0_-6px_25px_rgba(0,0,0,0.1)]" dir="rtl">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col text-right">
+                <span className="text-[10px] text-gray-500 font-bold">السعر النهائي:</span>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-base font-black text-[#A44C5C] font-mono">{effectiveProductPrice}</span>
+                  <span className="text-[10px] text-gray-700 font-bold">ر.س</span>
+                  {product.priceSA && product.priceSA > effectiveProductPrice && (
+                    <span className="text-[10px] text-gray-400 line-through font-mono">{product.priceSA}</span>
+                  )}
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => onAddToCart(product, selectedCol, selectedSz, quantity)}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl border border-gray-200 transition-all cursor-pointer active:scale-95"
-                title="إضافة للسلة"
-              >
-                <ShoppingBag size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={() => onBuyNow(product, selectedCol, selectedSz, quantity)}
-                className="bg-[#A44C5C] hover:bg-[#8e3f4e] text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
-              >
-                <Zap size={14} className="fill-amber-300 text-amber-300" />
-                <span>اشتري الآن ⚡</span>
-              </button>
+
+              <div className="flex items-center gap-2 flex-1 max-w-[260px]">
+                <button
+                  type="button"
+                  onClick={() => onAddToCart(product, selectedCol, selectedSz, quantity)}
+                  className="w-full h-12 bg-[#A44C5C] hover:bg-[#8e3e4d] text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
+                >
+                  <ShoppingBag size={18} />
+                  <span>أضيفي للسلة</span>
+                </button>
+              </div>
             </div>
           </div>
         )}

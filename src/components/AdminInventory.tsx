@@ -1,47 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { Package, AlertCircle, Plus, Minus, History, Search } from 'lucide-react';
+import { Package, AlertCircle, Plus, Minus, History, Search, CheckCircle2, ArrowUpDown, TrendingDown, Layers } from 'lucide-react';
 import { dbService } from '../services/db';
-import { Product, InventoryLog } from '../types';
+import { Product, StockMovement, InventoryLog } from '../types';
 
 export default function AdminInventory() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [logs, setLogs] = useState<InventoryLog[]>([]);
+  const [stockMovements, setStockMovements] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewLogs, setViewLogs] = useState<string | null>(null);
+  const [viewLogsProductId, setViewLogsProductId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [adjustingId, setAdjustingId] = useState<string | null>(null);
 
   useEffect(() => {
     let unmounted = false;
     const unsubP = dbService.subscribeProducts((data) => {
       if (!unmounted) setProducts(data);
     }, () => {});
-    const unsubL = dbService.subscribeInventoryLogs((data) => {
+
+    const unsubM = dbService.subscribeStockMovements((movements) => {
       if (!unmounted) {
-         setLogs(data);
-         setLoading(false);
+        setStockMovements(movements);
+        setLoading(false);
       }
     }, () => setLoading(false));
 
     return () => {
       unmounted = true;
       unsubP();
-      unsubL();
+      unsubM();
     };
   }, []);
 
-  const handleAdjustInventory = async (product: Product, size: string, color: string, change: number, reason: string) => {
+  const showNotice = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotice({ message, type });
+    setTimeout(() => {
+      setNotice(null);
+    }, 4000);
+  };
+
+  const handleAdjustInventory = async (
+    product: Product,
+    change: number,
+    reason: string = 'تعديل يدوي للمخزون',
+    variant: string = 'One Size'
+  ) => {
+    setAdjustingId(product.id);
     try {
-      const variant = `${size} - ${color}`;
-      await dbService.updateInventory(product.id, variant, change, reason);
+      const newStock = Math.max(0, Number(product.stock || 0) + change);
+      await dbService.updateProductStock(product.id, product, newStock, reason);
       
-      // Update overall product stock simply for representation
-      const newStock = Math.max(0, product.stock + change);
-      await dbService.updateProductStock(product.id, product, newStock);
+      // Optimistic local state update
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, stock: newStock } : p));
       
-      alert('تم تحديث المخزون بنجاح');
-    } catch (err) {
+      showNotice(`تم ${change > 0 ? 'إضافة' : 'خصم'} ${Math.abs(change)} قطع من "${product.nameAr}". المخزون الحالي: ${newStock} قطعة.`);
+    } catch (err: any) {
       console.error(err);
-      alert('فشل التحديث');
+      showNotice('حدث خطأ أثناء تعديل المخزون', 'error');
+    } finally {
+      setAdjustingId(null);
     }
   };
 
@@ -51,121 +68,288 @@ export default function AdminInventory() {
     (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const totalStockPieces = products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0);
+  const lowStockCount = products.filter(p => Number(p.stock) < 5).length;
+  const outOfStockCount = products.filter(p => Number(p.stock) === 0).length;
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 font-sans animate-fade-in">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h3 className="text-xl font-serif text-[#0B0B0B] flex items-center gap-2">
-            <Package size={24} className="text-[#A44C5C]" />
-            إدارة المخزون
-          </h3>
-          <p className="text-gray-500 text-xs mt-1">تتبع الكميات وتنبيهات النقص السريع</p>
+    <div className="space-y-6 font-sans animate-fade-in" dir="rtl">
+      {/* Header and KPI cards */}
+      <div className="bg-white rounded-3xl p-6 border border-gray-200/90 shadow-2xs space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-150">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#FCF5F6] border border-[#DF8A9D]/30 text-[#A44C5C] flex items-center justify-center shrink-0 shadow-2xs">
+              <Layers size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-gray-950 flex items-center gap-2">
+                <span>المستودع وحركات المخزون الفعلية (Inventory & Stock Audit)</span>
+                <span className="text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold px-2.5 py-0.5 rounded-full font-mono">
+                  {totalStockPieces} قطعة إجمالية
+                </span>
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                تتبع حقيقي لكل قطعة يتم إدخالها أو خصمها تلقائياً مع طلبات الشراء
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stock KPI Badges */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-4 space-y-1">
+            <span className="text-[11px] text-gray-500 font-bold block">إجمالي القطع بالمستودع</span>
+            <div className="text-xl font-black font-mono text-gray-950">
+              {totalStockPieces} <span className="text-[10px] font-sans text-gray-400">قطعة</span>
+            </div>
+          </div>
+
+          <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-4 space-y-1">
+            <span className="text-[11px] text-gray-500 font-bold block">عدد المنتجات النشطة</span>
+            <div className="text-xl font-black font-mono text-[#A44C5C]">
+              {products.length} <span className="text-[10px] font-sans text-gray-400">موديل</span>
+            </div>
+          </div>
+
+          <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-4 space-y-1">
+            <span className="text-[11px] text-amber-600 font-bold block flex items-center gap-1">
+              <AlertCircle size={13} />
+              <span>مخزون حرج (&lt;5 قطع)</span>
+            </span>
+            <div className="text-xl font-black font-mono text-amber-700">
+              {lowStockCount} <span className="text-[10px] font-sans text-gray-400">موديل يوشك على النفاد</span>
+            </div>
+          </div>
+
+          <div className="bg-[#FAF8F8] border border-gray-150 rounded-2xl p-4 space-y-1">
+            <span className="text-[11px] text-rose-600 font-bold block flex items-center gap-1">
+              <TrendingDown size={13} />
+              <span>نفدت الكمية تماماً (0)</span>
+            </span>
+            <div className="text-xl font-black font-mono text-rose-700">
+              {outOfStockCount} <span className="text-[10px] font-sans text-gray-400">غير متوفر</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <div className="w-full relative">
+      {/* Floating Notice Banner */}
+      {notice && (
+        <div className={`p-4 rounded-2xl text-xs font-bold flex items-center gap-2 animate-fade-in ${
+          notice.type === 'success' 
+            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
+            : 'bg-rose-50 text-rose-800 border border-rose-200'
+        }`}>
+          {notice.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          <span>{notice.message}</span>
+        </div>
+      )}
+
+      {/* Search Bar */}
+      <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-md">
           <input
             type="text"
-            placeholder="بحث بالاسم أو SKU..."
+            placeholder="ابحث باسم الموديل أو رمز SKU..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full md:w-1/3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:border-[#A44C5C] outline-none"
+            className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl py-2.5 pr-9 pl-4 text-xs focus:bg-white focus:outline-none focus:border-[#A44C5C] transition-all"
           />
-          <Search size={16} className="absolute left-[33%] top-3 -ml-6 text-gray-400 pointer-events-none hidden md:block" />
+          <Search size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
+        <span className="text-xs font-mono text-gray-400 self-end sm:self-auto">
+          المعروض: {filteredProducts.length} من {products.length} منتج
+        </span>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-right border-collapse">
-          <thead>
-            <tr className="border-b border-gray-100 bg-gray-50/50">
-              <th className="p-4 text-[10px] uppercase tracking-wider text-gray-500 font-bold">المنتج</th>
-              <th className="p-4 text-[10px] uppercase tracking-wider text-gray-500 font-bold">SKU</th>
-              <th className="p-4 text-[10px] uppercase tracking-wider text-gray-500 font-bold">المخزون الكلي</th>
-              <th className="p-4 text-[10px] uppercase tracking-wider text-gray-500 font-bold">الحالة</th>
-              <th className="p-4 text-[10px] uppercase tracking-wider text-gray-500 font-bold">إجراءات</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading ? (
-              <tr><td colSpan={5} className="text-center p-8 text-gray-400">جاري التحميل...</td></tr>
-            ) : filteredProducts.map(p => (
-              <React.Fragment key={p.id}>
-                <tr className="hover:bg-gray-50/50">
-                  <td className="p-4 font-semibold text-sm text-[#0B0B0B]">{p.nameAr} / {p.nameEn}</td>
-                  <td className="p-4 text-xs font-mono text-gray-500">{p.sku || '-'}</td>
-                  <td className="p-4 text-sm font-bold">{p.stock}</td>
-                  <td className="p-4">
-                    {p.stock === 0 ? (
-                      <span className="text-red-500 flex items-center gap-1 text-[10px] font-bold"><AlertCircle size={14}/> نفدت الكمية</span>
-                    ) : p.stock < 10 ? (
-                      <span className="text-amber-500 flex items-center gap-1 text-[10px] font-bold"><AlertCircle size={14}/> مخزون منخفض</span>
-                    ) : (
-                      <span className="text-emerald-500 text-[10px] font-bold">متوفر</span>
-                    )}
-                  </td>
-                  <td className="p-4 flex gap-2">
-                    <button 
-                      onClick={() => setViewLogs(viewLogs === p.id ? null : p.id)}
-                      className="px-3 py-1.5 text-xs bg-gray-100 rounded-lg hover:bg-gray-200 flex items-center gap-1 font-semibold"
-                    >
-                      <History size={14} /> التفاصيل
-                    </button>
-                  </td>
-                </tr>
-                {viewLogs === p.id && (
-                  <tr className="bg-gray-50">
-                    <td colSpan={5} className="p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                          <h4 className="text-sm font-bold mb-4 border-b pb-2">تعديل سريع</h4>
-                          <div className="space-y-4">
-                            {p.sizes.map(size => (
-                              p.colors.map(color => (
-                                <div key={`${size}-${color.name}`} className="flex items-center justify-between text-xs p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                                  <div className="flex items-center gap-2">
-                                    <span className="w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color.hex }}></span>
-                                    <span>{size} - {color.name}</span>
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <button onClick={() => handleAdjustInventory(p, size, color.name, -1, 'مبيعات خارجية')} className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"><Minus size={14}/></button>
-                                    <button onClick={() => handleAdjustInventory(p, size, color.name, 1, 'إضافة مخزون')} className="p-1 bg-emerald-50 text-emerald-600 rounded hover:bg-emerald-100"><Plus size={14}/></button>
-                                  </div>
-                                </div>
-                              ))
-                            ))}
+      {/* Products Stock Inventory Table */}
+      <div className="bg-white rounded-3xl border border-gray-200/90 shadow-2xs overflow-hidden">
+        <div className="p-5 border-b border-gray-150 flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-sm text-gray-950">كتالوج قطع الكوتور ومخزونها بالمستودع</h4>
+            <p className="text-xs text-gray-400 mt-0.5">إمكانية التزويد السريع بـ +10 أو +25 قطعة أو تعديل دقيق</p>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-right text-xs">
+            <thead className="bg-gray-100/50 text-gray-500 border-b border-gray-200 font-bold text-[11px]">
+              <tr>
+                <th className="py-4 px-5">المنتج</th>
+                <th className="py-4 px-5">القسم</th>
+                <th className="py-4 px-5">رمز SKU</th>
+                <th className="py-4 px-5 text-center">المخزون الحالي</th>
+                <th className="py-4 px-5">حالة التوفر</th>
+                <th className="py-4 px-5 text-center">تزويد سريع (+قطع)</th>
+                <th className="py-4 px-5 text-center">سجل الحركات</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 font-sans">
+              {loading ? (
+                <tr><td colSpan={7} className="text-center p-12 text-gray-400">جاري تحميل بيانات المستودع...</td></tr>
+              ) : filteredProducts.map(p => {
+                const stock = Number(p.stock) || 0;
+                const isExpanded = viewLogsProductId === p.id;
+                const productMovements = stockMovements.filter(m => m.productId === p.id);
+
+                return (
+                  <React.Fragment key={p.id}>
+                    <tr className="hover:bg-gray-50/70 transition-colors">
+                      <td className="py-3.5 px-5">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={p.images?.[0] || '/img/sulta_product_1.png'}
+                            alt={p.nameAr}
+                            className="w-10 h-10 object-cover rounded-xl border border-gray-200 shrink-0"
+                          />
+                          <div>
+                            <span className="font-bold text-gray-900 block">{p.nameAr}</span>
+                            <span className="text-[10px] text-gray-400 font-sans">{p.nameEn}</span>
                           </div>
                         </div>
-                        <div>
-                           <h4 className="text-sm font-bold mb-4 border-b pb-2">سجل الحركات الأخير</h4>
-                           <div className="space-y-2 max-h-48 overflow-y-auto">
-                              {logs.filter(l => l.productId === p.id).length === 0 ? (
-                                <p className="text-xs text-gray-400 italic">لا يوجد حركات مسجلة</p>
-                              ) : logs.filter(l => l.productId === p.id).slice(0, 10).map((log, i) => (
-                                <div key={i} className="flex justify-between items-center text-[10px] bg-white p-2 border border-gray-100 rounded-lg">
-                                  <div>
-                                    <p className="font-bold">{log.variant}</p>
-                                    <p className="text-gray-500 line-clamp-1">{log.reason}</p>
-                                  </div>
-                                  <div className="text-left font-mono">
-                                    <span className={log.change > 0 ? 'text-emerald-500' : 'text-red-500'}>
-                                      {log.change > 0 ? '+' : ''}{log.change}
-                                    </span>
-                                    <p className="text-gray-400 mt-0.5">{new Date(log.date).toLocaleDateString()}</p>
-                                  </div>
-                                </div>
-                              ))}
-                           </div>
+                      </td>
+
+                      <td className="py-3.5 px-5 text-gray-600 font-medium">
+                        {p.categoryAr || 'كوتور'}
+                      </td>
+
+                      <td className="py-3.5 px-5 font-mono text-gray-500 text-[11px]">
+                        {p.sku || `#${p.id.slice(0, 8)}`}
+                      </td>
+
+                      <td className="py-3.5 px-5 text-center">
+                        <span className={`font-mono font-black text-sm px-2.5 py-1 rounded-full ${
+                          stock === 0 
+                            ? 'bg-rose-100 text-rose-800' 
+                            : stock < 5 
+                            ? 'bg-amber-100 text-amber-800' 
+                            : 'bg-emerald-100 text-emerald-800'
+                        }`}>
+                          {stock} قطعة
+                        </span>
+                      </td>
+
+                      <td className="py-3.5 px-5">
+                        {stock === 0 ? (
+                          <span className="text-rose-600 flex items-center gap-1 text-[11px] font-bold">
+                            <AlertCircle size={13} /> نفدت الكمية
+                          </span>
+                        ) : stock < 5 ? (
+                          <span className="text-amber-600 flex items-center gap-1 text-[11px] font-bold">
+                            <AlertCircle size={13} /> مخزون حرج (&lt;5)
+                          </span>
+                        ) : (
+                          <span className="text-emerald-700 text-[11px] font-bold flex items-center gap-1">
+                            <CheckCircle2 size={13} /> متوفر وجاهز
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="py-3.5 px-5 text-center">
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleAdjustInventory(p, 10, 'تزويد دفعي سريع بالمستودع (+10)')}
+                            disabled={adjustingId === p.id}
+                            className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                            title="إضافة 10 قطع فوراً"
+                          >
+                            +10
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAdjustInventory(p, 25, 'تزويد دفعة تصنيع جديدة (+25)')}
+                            disabled={adjustingId === p.id}
+                            className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                            title="إضافة 25 قطعة فوراً"
+                          >
+                            +25
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAdjustInventory(p, -1, 'تسوية يدوية عاجلة (-1)')}
+                            disabled={adjustingId === p.id || stock === 0}
+                            className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-200 transition-colors cursor-pointer disabled:opacity-30"
+                            title="خصم قطعة واحدة"
+                          >
+                            <Minus size={13} />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+                      </td>
+
+                      <td className="py-3.5 px-5 text-center">
+                        <button
+                          type="button"
+                          onClick={() => setViewLogsProductId(isExpanded ? null : p.id)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                            isExpanded 
+                              ? 'bg-[#A44C5C] text-white border-[#A44C5C]' 
+                              : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200'
+                          }`}
+                        >
+                          <History size={13} />
+                          <span>{isExpanded ? 'إخفاء' : 'الحركات'}</span>
+                          {productMovements.length > 0 && (
+                            <span className="bg-white/30 text-current px-1.5 py-0.2 rounded-full text-[10px] font-mono">
+                              {productMovements.length}
+                            </span>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+
+                    {/* Movement Audit Log Drawer */}
+                    {isExpanded && (
+                      <tr className="bg-gray-50/90 border-b border-gray-200">
+                        <td colSpan={7} className="p-5">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+                              <h5 className="font-bold text-xs text-gray-900 flex items-center gap-2">
+                                <History size={14} className="text-[#A44C5C]" />
+                                <span>سجل الحركات التفصيلي للمنتج: {p.nameAr}</span>
+                              </h5>
+                              <span className="text-[11px] text-gray-500 font-mono">
+                                إجمالي السجلات: {productMovements.length}
+                              </span>
+                            </div>
+
+                            {productMovements.length === 0 ? (
+                              <div className="py-4 text-center text-xs text-gray-400">
+                                لا توجد حركات مخزون مسجلة لهذه القطعة بعد.
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-56 overflow-y-auto pr-1">
+                                {productMovements.slice(0, 15).map(m => (
+                                  <div key={m.id} className="bg-white p-3 rounded-xl border border-gray-200 space-y-1 text-xs shadow-2xs">
+                                    <div className="flex items-center justify-between">
+                                      <span className={`font-mono font-black text-xs px-2 py-0.5 rounded-md ${
+                                        m.changeQty > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                                      }`}>
+                                        {m.changeQty > 0 ? `+${m.changeQty}` : m.changeQty} قطعة
+                                      </span>
+                                      <span className="text-[10px] text-gray-400 font-mono">
+                                        {new Date(m.createdAt).toLocaleDateString('ar-SA')}
+                                      </span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-700 font-medium">{m.reason || 'تعديل مخزون'}</p>
+                                    <div className="text-[10px] text-gray-400 flex items-center justify-between pt-1 border-t border-gray-100">
+                                      <span>المسؤول: {m.adminName || 'النظام'}</span>
+                                      {m.variant && <span>({m.variant})</span>}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

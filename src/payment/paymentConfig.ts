@@ -26,22 +26,22 @@ import { PaymobPublicConfig } from './types';
 
 // Safe placeholders for public Paymob keys (overridable via Vite env)
 export const PAYMOB_PUBLIC_KEY = 
-  import.meta.env.VITE_PAYMOB_PUBLIC_KEY || 'PAYMOB_PUBLIC_KEY';
+  (import.meta as any).env.VITE_PAYMOB_PUBLIC_KEY || 'PAYMOB_PUBLIC_KEY';
 
 export const PAYMOB_PAYMENT_ENDPOINT = 
-  import.meta.env.VITE_PAYMOB_PAYMENT_ENDPOINT || '/api/payment/paymob/intention';
+  (import.meta as any).env.VITE_PAYMOB_PAYMENT_ENDPOINT || '/api/payment/paymob/intention';
 
 export const PAYMOB_VERIFY_ENDPOINT = 
-  import.meta.env.VITE_PAYMOB_VERIFY_ENDPOINT || '/api/payment/paymob/verify';
+  (import.meta as any).env.VITE_PAYMOB_VERIFY_ENDPOINT || '/api/payment/paymob/verify';
 
 export const PAYMOB_CLIENT_ENDPOINT = 
-  import.meta.env.VITE_PAYMOB_CLIENT_ENDPOINT || 'PAYMOB_CLIENT_ENDPOINT';
+  (import.meta as any).env.VITE_PAYMOB_CLIENT_ENDPOINT || 'PAYMOB_CLIENT_ENDPOINT';
 
 export const PAYMOB_CARD_INTEGRATION_ID = 
-  import.meta.env.VITE_PAYMOB_CARD_INTEGRATION_ID || '';
+  (import.meta as any).env.VITE_PAYMOB_CARD_INTEGRATION_ID || '';
 
 export const PAYMOB_IFRAME_ID = 
-  import.meta.env.VITE_PAYMOB_IFRAME_ID || '';
+  (import.meta as any).env.VITE_PAYMOB_IFRAME_ID || '';
 
 export const paymentConfig: PaymobPublicConfig = {
   publicKey: PAYMOB_PUBLIC_KEY,

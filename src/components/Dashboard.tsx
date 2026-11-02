@@ -47,7 +47,10 @@ import {
   Globe,
   PackageCheck,
   Zap,
-  WifiOff
+  WifiOff,
+  Printer,
+  Download,
+  History
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -70,6 +73,9 @@ import PixelDiagnosticsView from './PixelDiagnosticsView';
 import PixelHealthIndicator from './PixelHealthIndicator';
 import TrafficHeatmap from './TrafficHeatmap';
 import SmartOrderStatusManager from './SmartOrderStatusManager';
+import AdminInventory from './AdminInventory';
+import AdminCustomers from './AdminCustomers';
+import AdminActivityLogs from './AdminActivityLogs';
 
 interface DashboardProps {
   products: Product[];
@@ -108,17 +114,20 @@ export default function Dashboard({
   onBackToStore,
   onSignOut
 }: DashboardProps) {
-  // Navigation tabs: human-focused on essentials
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'coupons' | 'team' | 'settings' | 'pixel-diagnostics'>(() => {
+  // Navigation tabs: comprehensive real-time e-commerce operations
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'inventory' | 'customers' | 'coupons' | 'team' | 'settings' | 'audit-logs' | 'pixel-diagnostics'>(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search);
       const sub = p.get('subtab') || p.get('tab') || p.get('page') || p.get('section');
-      if (sub === 'pixel' || sub === 'pixel-diagnostics' || sub === 'diagnostics') {
-        return 'pixel-diagnostics';
-      }
-      if (sub === 'team' || sub === 'members') {
-        return 'team';
-      }
+      if (sub === 'pixel' || sub === 'pixel-diagnostics' || sub === 'diagnostics') return 'pixel-diagnostics';
+      if (sub === 'team' || sub === 'members') return 'team';
+      if (sub === 'inventory' || sub === 'stock') return 'inventory';
+      if (sub === 'customers' || sub === 'crm') return 'customers';
+      if (sub === 'audit' || sub === 'logs' || sub === 'activity') return 'audit-logs';
+      if (sub === 'coupons') return 'coupons';
+      if (sub === 'orders') return 'orders';
+      if (sub === 'products') return 'products';
+      if (sub === 'analytics') return 'analytics';
     }
     return 'overview';
   });
@@ -704,6 +713,187 @@ export default function Dashboard({
     }
   };
 
+  // --- PRINT SIMPLIFIED TAX INVOICE (ZATCA COMPLIANT FOR SAUDI MARKET) ---
+  const handlePrintInvoice = (order: Order) => {
+    const printWindow = window.open('', '_blank', 'width=800,height=900');
+    if (!printWindow) {
+      toast?.('يرجى السماح بالنوافذ المنبثقة لطباعة الفاتورة', 'error');
+      return;
+    }
+
+    const itemsHtml = (order.items || []).map(item => `
+      <tr style="border-bottom: 1px solid #f1f1f1;">
+        <td style="padding: 10px 12px; text-align: right; font-weight: bold;">
+          ${item.productName || 'قطعة كوتور'}
+          <div style="font-size: 11px; color: #78716c; font-weight: normal; margin-top: 2px;">
+            اللون: ${item.color || '-'} | المقاس: ${item.size || '-'}
+          </div>
+        </td>
+        <td style="padding: 10px 12px; text-align: center; font-family: monospace; font-weight: bold;">${item.quantity || 1}</td>
+        <td style="padding: 10px 12px; text-align: center; font-family: monospace;">${Number(item.price || 0).toLocaleString()} ر.س</td>
+        <td style="padding: 10px 12px; text-align: left; font-family: monospace; font-weight: 900; color: #1c1917;">${((item.price || 0) * (item.quantity || 1)).toLocaleString()} ر.س</td>
+      </tr>
+    `).join('');
+
+    const invoiceHtml = `
+      <!DOCTYPE html>
+      <html dir="rtl" lang="ar">
+      <head>
+        <meta charset="utf-8">
+        <title>فاتورة ضريبية مبسطة #${order.id.slice(0, 8).toUpperCase()} - SULTA Atelier</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', sans-serif; margin: 0; padding: 30px; color: #1c1917; background: #fff; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #A44C5C; padding-bottom: 16px; margin-bottom: 24px; }
+          .brand { font-size: 26px; font-weight: 900; color: #A44C5C; letter-spacing: 0.5px; }
+          .sub { font-size: 11.5px; color: #78716c; margin-top: 3px; }
+          .badge { background: #FCF5F6; color: #A44C5C; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; border: 1px solid #DF8A9D; display: inline-block; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; font-size: 12px; }
+          .box { background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 16px; padding: 14px; }
+          .box h4 { margin: 0 0 10px 0; font-size: 12.5px; color: #44403c; border-bottom: 1px dashed #d6d3d1; padding-bottom: 6px; font-weight: 800; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12px; }
+          th { background: #f5f5f4; color: #44403c; padding: 10px 12px; font-weight: 800; }
+          .summary { margin-right: auto; width: 300px; font-size: 12.5px; }
+          .summary-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f5f5f4; }
+          .total { font-size: 16px; font-weight: 900; color: #A44C5C; border-top: 2px solid #A44C5C; padding-top: 10px; margin-top: 4px; }
+          .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #a8a29e; border-top: 1px solid #e7e5e4; padding-top: 20px; line-height: 1.6; }
+          @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="no-print" style="margin-bottom: 20px; text-align: left;">
+          <button onclick="window.print()" style="background: #A44C5C; color: white; border: none; padding: 10px 22px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 13px;">طباعة الفاتورة الآن 🖨️</button>
+        </div>
+        <div class="header">
+          <div>
+            <div class="brand">SULTA Atelier · سُلطة</div>
+            <div class="sub">متجر ملابس وأزياء نوم نسائية فاخرة · المملكة العربية السعودية</div>
+          </div>
+          <div style="text-align: left;">
+            <span class="badge">فاتورة ضريبية مبسطة</span>
+            <div style="font-family: monospace; font-size: 13px; margin-top: 8px; font-weight: 900;">#${order.id.slice(0, 8).toUpperCase()}</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="box">
+            <h4>بيانات العميلة وموقع التوصيل</h4>
+            <div><strong>الاسم:</strong> ${order.customerName || 'عميلة سُلطة الكريمة'}</div>
+            <div style="margin-top: 4px;"><strong>الجوال:</strong> <span dir="ltr" style="font-family: monospace;">${order.phone || '-'}</span></div>
+            <div style="margin-top: 4px;"><strong>المدينة:</strong> ${order.city || 'الرياض'}</div>
+            <div style="margin-top: 4px;"><strong>العنوان:</strong> ${order.address || 'حسب اتفاق التوصيل'}</div>
+          </div>
+          <div class="box">
+            <h4>بيانات الطلب والسداد</h4>
+            <div><strong>تاريخ الطلب:</strong> ${order.date || new Date().toISOString().split('T')[0]}</div>
+            <div style="margin-top: 4px;"><strong>طريقة الدفع:</strong> ${order.paymentMethod || 'الدفع عند الاستلام'}</div>
+            <div style="margin-top: 4px;"><strong>حالة الطلب:</strong> ${getStatusLabel(order.status)}</div>
+            <div style="margin-top: 4px;"><strong>رقم التتبع:</strong> <span style="font-family: monospace; font-weight: bold;">${order.trackingNumber || 'قيد الإصدار'}</span></div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align: right;">القطعة / المواصفات</th>
+              <th style="text-align: center;">الكمية</th>
+              <th style="text-align: center;">سعر الوحدة</th>
+              <th style="text-align: left;">المجموع</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <div class="summary">
+          <div class="summary-row">
+            <span>مجموع المنتجات:</span>
+            <span style="font-family: monospace; font-weight: bold;">${Number(order.totalPrice || 0).toLocaleString()} ر.س</span>
+          </div>
+          <div class="summary-row">
+            <span>رسوم الشحن والتوصيل:</span>
+            <span style="font-family: monospace; color: #16a34a; font-weight: bold;">شحن مجاني 🚚</span>
+          </div>
+          <div class="summary-row total">
+            <span>المجموع الكلي:</span>
+            <span style="font-family: monospace;">${Number(order.totalPrice || 0).toLocaleString()} ر.س</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>شكرًا لتسوقكِ من SULTA Atelier · خيوط من الفخامة والدلال تليق بوقاركِ 👑</p>
+          <p>لأي استفسار بخصوص طلبيتكِ يرجى التواصل عبر الواتساب: 966552823677+ أو البريد: concierge@sulta.sa</p>
+        </div>
+        <script>window.onload = function() { setTimeout(function() { window.print(); }, 400); };</script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(invoiceHtml);
+    printWindow.document.close();
+  };
+
+  // --- EXPORT ORDERS TO CSV (EXCEL FRIENDLY WITH ARABIC UTF-8 BOM) ---
+  const handleExportOrdersCsv = () => {
+    if (orders.length === 0) {
+      toast?.('لا توجد طلبات لتصديرها حالياً', 'info');
+      return;
+    }
+
+    const headers = [
+      'رقم الطلب',
+      'التاريخ',
+      'اسم العميلة',
+      'رقم الجوال',
+      'المدينة',
+      'العنوان',
+      'طريقة الدفع',
+      'الحالة',
+      'إجمالي المبلغ (ر.س)',
+      'عدد القطع',
+      'تفاصيل القطع',
+      'رقم التتبع',
+      'ملاحظات'
+    ];
+
+    const rows = orders.map(o => {
+      const itemsSummary = (o.items || [])
+        .map(i => `${i.productName || 'منتج'} (${i.color || ''} ${i.size || ''} x${i.quantity || 1})`)
+        .join(' + ');
+
+      return [
+        o.id,
+        o.date || (o.createdAt ? o.createdAt.split('T')[0] : ''),
+        `"${(o.customerName || '').replace(/"/g, '""')}"`,
+        `"${(o.phone || '').replace(/"/g, '""')}"`,
+        `"${(o.city || 'الرياض').replace(/"/g, '""')}"`,
+        `"${(o.address || '').replace(/"/g, '""')}"`,
+        `"${(o.paymentMethod || '').replace(/"/g, '""')}"`,
+        `"${getStatusLabel(o.status)}"`,
+        o.totalPrice,
+        (o.items || []).reduce((acc, it) => acc + (it.quantity || 1), 0),
+        `"${itemsSummary.replace(/"/g, '""')}"`,
+        `"${(o.trackingNumber || '').replace(/"/g, '""')}"`,
+        `"${(o.notes || '').replace(/"/g, '""')}"`
+      ];
+    });
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Sulta_Orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast?.('تم تصدير ملف الطلبات (CSV) بنجاح 📊', 'success');
+  };
+
   // Status Badge Helper
   const getStatusBadge = (status: Order['status']) => {
     switch (status) {
@@ -1286,7 +1476,7 @@ export default function Dashboard({
             </div>
           </div>
 
-          {/* 2. Simplified Primary Navigation Tabs (Human Nature & Clean) */}
+          {/* 2. Primary Navigation Tabs (Comprehensive & Structured) */}
           <nav className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pt-3 mt-2 border-t border-gray-100 text-xs">
             <button
               onClick={() => setActiveTab('overview')}
@@ -1298,18 +1488,6 @@ export default function Dashboard({
             >
               <LayoutDashboard size={15} />
               <span>نظرة عامة</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
-                activeTab === 'analytics'
-                  ? 'bg-[#A44C5C] text-white shadow-xs'
-                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
-              }`}
-            >
-              <TrendingUp size={15} />
-              <span>إحصائيات المبيعات 📊</span>
             </button>
 
             <button
@@ -1338,8 +1516,32 @@ export default function Dashboard({
               }`}
             >
               <ShoppingBag size={15} />
-              <span>المنتجات والمخزون</span>
+              <span>المنتجات والكتالوج</span>
               <span className="text-[10px] text-gray-400 font-mono">({products.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('inventory')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'inventory'
+                  ? 'bg-[#A44C5C] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <Layers size={15} />
+              <span>المستودع والمخزون 📦</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('customers')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'customers'
+                  ? 'bg-[#A44C5C] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <Users size={15} />
+              <span>سجل العميلات وCRM 👥</span>
             </button>
 
             <button
@@ -1356,6 +1558,30 @@ export default function Dashboard({
             </button>
 
             <button
+              onClick={() => setActiveTab('analytics')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'analytics'
+                  ? 'bg-[#A44C5C] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <TrendingUp size={15} />
+              <span>تقارير المبيعات 📊</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('audit-logs')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'audit-logs'
+                  ? 'bg-[#A44C5C] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <History size={15} />
+              <span>سجل النشاط 🛡️</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('team')}
               className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
                 activeTab === 'team'
@@ -1363,7 +1589,7 @@ export default function Dashboard({
                   : 'text-gray-600 hover:text-black hover:bg-gray-100'
               }`}
             >
-              <Users size={15} />
+              <ShieldCheck size={15} />
               <span>فريق العمل وGmail</span>
               <span className="bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full">
                 {teamMembers.length}
@@ -1391,7 +1617,7 @@ export default function Dashboard({
               }`}
             >
               <Activity size={15} className={activeTab === 'pixel-diagnostics' ? 'animate-pulse' : 'text-[#A44C5C]'} />
-              <span>فاحص البيكسل والربط ⚡</span>
+              <span>فاحص البيكسل ⚡</span>
             </button>
           </nav>
         </div>
@@ -2082,16 +2308,27 @@ export default function Dashboard({
           <div className="space-y-4 animate-fade-in-rapid">
             {/* Filter Bar */}
             <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <input
-                  type="text"
-                  placeholder="ابحث برقم الطلب، اسم العميلة، أو رقم الجوال..."
-                  value={orderSearch}
-                  onChange={(e) => setOrderSearch(e.target.value)}
-                  className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl py-2 pr-9 pl-4 text-xs focus:bg-white focus:outline-none focus:border-black transition-all"
-                />
-                <Search size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              {/* Search & CSV Export */}
+              <div className="flex items-center gap-2 flex-1 max-w-lg">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="ابحث برقم الطلب، اسم العميلة، أو رقم الجوال..."
+                    value={orderSearch}
+                    onChange={(e) => setOrderSearch(e.target.value)}
+                    className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl py-2 pr-9 pl-4 text-xs focus:bg-white focus:outline-none focus:border-black transition-all"
+                  />
+                  <Search size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleExportOrdersCsv}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs shrink-0"
+                  title="تصدير كافة الطلبات إلى ملف Excel / CSV"
+                >
+                  <Download size={14} />
+                  <span>تصدير CSV</span>
+                </button>
               </div>
 
               {/* Status Filter */}
@@ -2385,8 +2622,19 @@ export default function Dashboard({
                                 title="اتصال هاتفي مباشر"
                               >
                                 <Phone size={13} />
-                                <span>اتصال مباشر 📞</span>
+                                <span>اتصال</span>
                               </a>
+
+                              {/* 4. Print Tax Invoice Button */}
+                              <button
+                                type="button"
+                                onClick={() => handlePrintInvoice(order)}
+                                className="bg-gray-900 hover:bg-black text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95"
+                                title="طباعة فاتورة ضريبية مبسطة للعميلة"
+                              >
+                                <Printer size={13} />
+                                <span>طباعة الفاتورة 🧾</span>
+                              </button>
                             </>
                           )}
                         </div>
@@ -3698,11 +3946,119 @@ export default function Dashboard({
         )}
 
         {/* ======================================================== */}
-        {/* TAB 7: REAL-TIME PIXEL DIAGNOSTICS & CONFLICT DETECTION */}
+        {/* TAB 8: INVENTORY & STOCK MOVEMENTS AUDIT */}
         {/* ======================================================== */}
-        {activeTab === 'pixel-diagnostics' && (
+        {activeTab === 'inventory' && (
           <div className="animate-fade-in-rapid">
-            <PixelDiagnosticsView settings={settings} toast={toast} />
+            <AdminInventory />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB 9: CUSTOMER INTELLIGENCE & CRM */}
+        {/* ======================================================== */}
+        {activeTab === 'customers' && (
+          <div className="animate-fade-in-rapid">
+            <AdminCustomers orders={orders} toast={toast} />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB 10: ADMINISTRATIVE ACTIVITY & AUDIT LOGS */}
+        {/* ======================================================== */}
+        {activeTab === 'audit-logs' && (
+          <div className="animate-fade-in-rapid">
+            <AdminActivityLogs />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB 11: SALES ANALYTICS & REPORTS */}
+        {/* ======================================================== */}
+        {activeTab === 'analytics' && (
+          <div className="space-y-6 animate-fade-in-rapid">
+            {/* Sales Analytics Overview Card */}
+            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-2xs space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-gray-150">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-[#FCF5F6] border border-[#DF8A9D]/30 text-[#A44C5C] flex items-center justify-center shadow-2xs">
+                    <TrendingUp size={22} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-gray-950 flex items-center gap-2">
+                      <span>تقارير المبيعات وتحليلات الأداء المالي</span>
+                      <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold px-2.5 py-0.5 rounded-full">
+                        بيانات حقيقية 100% 📊
+                      </span>
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      تتبع الإيرادات، متوسط السلة، وأعلى الأيام مبيعاً من واقع الطلبات الفعلية
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center bg-[#F8F9FA] p-1 rounded-xl border border-gray-200 text-xs font-bold">
+                  <button
+                    onClick={() => setSalesChartPeriod('both')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${salesChartPeriod === 'both' ? 'bg-white text-gray-950 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+                  >عرض شامل</button>
+                  <button
+                    onClick={() => setSalesChartPeriod('daily')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${salesChartPeriod === 'daily' ? 'bg-black text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+                  >يومي</button>
+                  <button
+                    onClick={() => setSalesChartPeriod('monthly')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${salesChartPeriod === 'monthly' ? 'bg-black text-white shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
+                  >شهري</button>
+                </div>
+              </div>
+
+              {/* Chart */}
+              <div className="h-80 w-full pt-2">
+                {orders.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-400 space-y-2">
+                    <BarChart3 size={40} className="opacity-20" />
+                    <p className="text-xs font-bold">بانتظار تسجيل أول عملية شراء حقيقية لرسم المنحنيات البيانية</p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={(salesChartPeriod === 'monthly' ? monthlySalesData : dailySalesData) as any[]}>
+                      <defs>
+                        <linearGradient id="colorAnalytics" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#A44C5C" stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor="#A44C5C" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F1F1" />
+                      <XAxis dataKey={salesChartPeriod === 'monthly' ? 'monthName' : 'displayDate'} axisLine={false} tickLine={false} fontSize={11} stroke="#9CA3AF" />
+                      <YAxis axisLine={false} tickLine={false} fontSize={11} stroke="#9CA3AF" />
+                      <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                      <Area type="monotone" dataKey="revenue" name="الإيرادات (ر.س)" stroke="#A44C5C" strokeWidth={3} fillOpacity={1} fill="url(#colorAnalytics)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+
+              {/* Financial Summary */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-gray-150">
+                <div className="bg-[#FAF8F8] p-4 rounded-2xl border border-gray-150 space-y-1">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase">إجمالي الإيرادات</span>
+                  <div className="text-xl font-black text-gray-950 font-mono">{metrics.totalRevenue.toLocaleString()} ر.س</div>
+                </div>
+                <div className="bg-[#FAF8F8] p-4 rounded-2xl border border-gray-150 space-y-1">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase">متوسط السلة (AOV)</span>
+                  <div className="text-xl font-black text-gray-900 font-mono">{salesSummary.avgOrderValue.toLocaleString()} ر.س</div>
+                </div>
+                <div className="bg-[#FAF8F8] p-4 rounded-2xl border border-gray-150 space-y-1">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase">مبيعات اليوم</span>
+                  <div className="text-xl font-black text-emerald-600 font-mono">{salesSummary.todayRevenue.toLocaleString()} ر.س</div>
+                </div>
+                <div className="bg-[#FAF8F8] p-4 rounded-2xl border border-gray-150 space-y-1">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase">أعلى مبيعات يومية</span>
+                  <div className="text-xl font-black text-[#A44C5C] font-mono">{salesSummary.peakRevenue.toLocaleString()} ر.س</div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -3923,8 +4279,8 @@ export default function Dashboard({
                 <input
                   type="text"
                   placeholder="وردي ملكي"
-                  value={productForm.colorName || 'وردي ملكي'}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, colorName: e.target.value }))}
+                  value={(productForm as any).colorName || 'وردي ملكي'}
+                  onChange={(e) => setProductForm(prev => ({ ...prev, colorName: e.target.value } as any))}
                   className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs focus:bg-white focus:outline-none focus:border-black"
                 />
               </div>
@@ -3934,15 +4290,15 @@ export default function Dashboard({
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
-                    value={productForm.colorHex || '#DF8A9D'}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, colorHex: e.target.value }))}
+                    value={(productForm as any).colorHex || '#DF8A9D'}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, colorHex: e.target.value } as any))}
                     className="w-12 h-10 rounded-xl border border-gray-200 cursor-pointer bg-white p-1"
                   />
                   <input
                     type="text"
                     placeholder="#DF8A9D"
-                    value={productForm.colorHex || '#DF8A9D'}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, colorHex: e.target.value }))}
+                    value={(productForm as any).colorHex || '#DF8A9D'}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, colorHex: e.target.value } as any))}
                     className="flex-1 bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
                   />
                 </div>

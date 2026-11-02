@@ -167,6 +167,7 @@ export interface Product {
     lastGenerated?: string;
   };
   faqs?: { q: string; a: string }[];
+  createdAt?: string;
 }
 
 export interface Review {
@@ -389,4 +390,30 @@ export interface TicketMessage {
   content: string;
   createdAt: string;
 }
+
+export interface StockMovement {
+  id: string;
+  productId: string;
+  productName: string;
+  variant?: string;
+  changeQty: number;
+  newStockLevel?: number;
+  movementType: 'order_deduction' | 'order_cancellation_restock' | 'manual_restock' | 'inventory_audit' | 'damage_adjustment';
+  reason?: string;
+  referenceOrderId?: string;
+  adminName?: string;
+  createdAt: string;
+}
+
+export interface CustomerAnalyticsRecord {
+  phone: string;
+  name: string;
+  city: string;
+  totalOrders: number;
+  totalSpent: number;
+  lastOrderDate: string;
+  tier: 'VIP' | 'متكررة' | 'جديدة';
+  recentOrderId: string;
+}
+
 

@@ -1,0 +1,260 @@
+import React, { useState, useRef } from 'react';
+import { ShoppingBag, Heart, Check } from 'lucide-react';
+import { Product } from '../types';
+import SultaImage from './SultaImage';
+import { ProductPrice } from './ProductPrice';
+import { cleanImgUrl } from '../services/db';
+import { getProductSlug } from '../utils/slugify';
+import { calculateEffectiveDiscount, formatStockBadge } from '../utils/discountUtils';
+
+interface ProductCardProps {
+  product: Product;
+  favorites?: string[];
+  isFavorite?: boolean;
+  toggleFavorite?: (id: string) => void;
+  onToggleFavorite?: () => void;
+  onAddToCart?: ((product: Product, color: any, size: string, qty: number) => void) | (() => void);
+  onSelectProduct?: (product: Product) => void;
+  onSelect?: (product: Product) => void;
+  priority?: boolean;
+  renderBadge?: () => React.ReactNode;
+}
+
+export default function ProductCard({
+  product,
+  favorites = [],
+  isFavorite,
+  toggleFavorite,
+  onToggleFavorite,
+  onAddToCart,
+  onSelectProduct,
+  onSelect,
+  priority = false,
+  renderBadge
+}: ProductCardProps) {
+  const [activeImgIdx, setActiveImgIdx] = useState(0);
+  const [isAdded, setIsAdded] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  
+  const isFav = isFavorite !== undefined
+    ? Boolean(isFavorite)
+    : (Array.isArray(favorites) ? favorites.includes(product.id) : false);
+
+  const prodSlug = getProductSlug(product);
+  const stockBadge = formatStockBadge(product.stock);
+  const effDiscount = calculateEffectiveDiscount(product, null, 'SA');
+
+  // "New" badge logic: Created in last 30 days or marked as featured
+  const isNew = (() => {
+    if (product.featured) return true;
+    if (product.createdAt) {
+      const created = new Date(product.createdAt);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return created > thirtyDaysAgo;
+    }
+    return false;
+  })();
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX;
+
+    if (Math.abs(diff) > 50) {
+      const imagesCount = product.images?.length || 1;
+      if (imagesCount > 1) {
+        if (diff > 0) {
+          // Swipe left -> next image
+          setActiveImgIdx(prev => (prev + 1) % imagesCount);
+        } else {
+          // Swipe right -> prev image
+          setActiveImgIdx(prev => (prev - 1 + imagesCount) % imagesCount);
+        }
+      }
+    }
+    touchStartX.current = null;
+  };
+
+  const handleCardClick = () => {
+    if (onSelectProduct) {
+      onSelectProduct(product);
+    } else if (onSelect) {
+      onSelect(product);
+    }
+  };
+
+  const handleFavClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onToggleFavorite) {
+      onToggleFavorite();
+    } else if (toggleFavorite) {
+      toggleFavorite(product.id);
+    }
+  };
+
+  const handleAddToCartClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (product.stock === 0) return;
+    
+    if (onAddToCart) {
+      const chosenCol = product.colors?.[0] || { name: 'الافتراضي', hex: '#000000' };
+      const chosenSz = product.sizes?.[0] || 'One Size';
+      (onAddToCart as any)(product, chosenCol, chosenSz, 1);
+    }
+    
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  return (
+    <div
+      className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
+      onClick={handleCardClick}
+      dir="rtl"
+    >
+      <a href={`/product/${prodSlug}/`} className="sr-only">
+        تصفح تفاصيل منتج {product.nameAr}
+      </a>
+
+      {/* Image Container 3:4 */}
+      <div 
+        className="relative aspect-[3/4] w-full overflow-hidden bg-gray-50 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        role="img"
+        aria-label={`صورة منتج ${product.nameAr}`}
+      >
+        {/* Badges */}
+        <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-start" aria-hidden="true">
+          {isNew && (
+            <span className="bg-[#111827] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs">
+              جديد
+            </span>
+          )}
+          {effDiscount.hasActiveDiscount && (
+            <span className="bg-[#E11D48] text-white text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
+              خصم {effDiscount.discountPercent}%
+            </span>
+          )}
+          {product.isBestSeller && (
+            <span className="bg-[#F59E0B] text-black text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
+              الأكثر طلباً 👑
+            </span>
+          )}
+          {renderBadge && renderBadge()}
+        </div>
+
+        {/* Stock Alert */}
+        {product.stock > 0 && product.stock <= 10 && (
+          <div className="absolute bottom-2 right-2 z-10 bg-red-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs shadow-xs" role="status">
+            متبقي {product.stock} قطع
+          </div>
+        )}
+        {product.stock === 0 && (
+          <div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-[1px] flex items-center justify-center" role="status">
+            <span className="bg-gray-900 text-white text-[10px] font-bold px-3 py-1 rounded-full">نفدت الكمية</span>
+          </div>
+        )}
+
+        {/* Wishlist Button */}
+        <button 
+          type="button"
+          onClick={handleFavClick} 
+          className="absolute top-2 left-2 z-10 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-xs text-gray-400 hover:text-red-500 transition-all active:scale-90 focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden"
+          aria-label={isFav ? "إزالة من المفضلة" : "إضافة للمفضلة"}
+        >
+          <Heart size={14} className={isFav ? "fill-red-500 text-red-500" : ""} aria-hidden="true" />
+        </button>
+
+        <SultaImage
+          src={cleanImgUrl(product.images?.[activeImgIdx] || '', product.category)}
+          alt=""
+          className="w-full h-full"
+          contain={false}
+          width={600}
+          imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          priority={priority}
+        />
+        
+        {/* Swipe Indicators */}
+        {product.images.length > 1 && (
+          <div className="absolute bottom-2 inset-x-0 flex justify-center gap-1" aria-hidden="true">
+            {product.images.map((_, idx) => (
+              <div 
+                key={idx} 
+                className={`h-0.5 w-3 rounded-full transition-all ${idx === activeImgIdx ? 'bg-[#A44C5C] w-5' : 'bg-gray-300'}`} 
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-3 flex flex-col flex-1 text-right">
+        <span className="text-[10px] text-gray-500 font-bold mb-0.5" aria-hidden="true">
+          {product.categoryAr || 'بيجامات نسائية'}
+        </span>
+        <h2 className="text-xs font-bold text-gray-900 line-clamp-2 leading-snug mb-2 flex-1">
+          {product.nameAr}
+        </h2>
+
+        <div className="mt-auto space-y-3">
+          <div className="flex items-baseline justify-between" aria-label={`السعر: ${product.salePriceSA || product.priceSA} ريال سعودي`}>
+            <ProductPrice product={product} country="SA" size="sm" showBadge={false} />
+            <span className="text-[9px] text-gray-400 font-bold" aria-hidden="true">ر.س</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleAddToCartClick}
+            disabled={product.stock === 0}
+            className={`w-full h-12 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-2xs focus-visible:ring-2 focus-visible:ring-black outline-hidden ${
+              product.stock === 0
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : isAdded
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-[#A44C5C] text-white hover:bg-[#8e3e4d]'
+            }`}
+            aria-label={isAdded ? "تمت الإضافة للسلة" : `إضافة منتج ${product.nameAr} للسلة`}
+          >
+            {isAdded ? (
+              <>
+                <Check size={16} aria-hidden="true" />
+                <span>تمت الإضافة</span>
+              </>
+            ) : (
+              <>
+                <ShoppingBag size={15} aria-hidden="true" />
+                <span>أضيفي للسلة</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 animate-pulse">
+      <div className="aspect-[3/4] w-full bg-gray-100" />
+      <div className="p-3 space-y-3">
+        <div className="h-2 w-16 bg-gray-100 rounded" />
+        <div className="space-y-1">
+          <div className="h-3 w-full bg-gray-100 rounded" />
+          <div className="h-3 w-2/3 bg-gray-100 rounded" />
+        </div>
+        <div className="mt-auto pt-2 flex justify-between">
+          <div className="h-4 w-20 bg-gray-100 rounded" />
+        </div>
+        <div className="h-10 w-full bg-gray-100 rounded-xl" />
+      </div>
+    </div>
+  );
+}
