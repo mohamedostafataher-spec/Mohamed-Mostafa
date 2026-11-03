@@ -28,7 +28,7 @@ img {
 }
 
 /* Global override to shift muddy beige to clean, pure white Salla style */
-.bg-\[\#FAFAF7\], .bg-\[\#FAFAF8\], .bg-\[\#FAF5F0\], .bg-\[\#FAF4F5\], .bg-amber-50, .bg-pink-50, .bg-rose-50 {
+.bg-amber-50, .bg-pink-50, .bg-rose-50 {
   background-color: #FFFFFF !important;
 }
 
@@ -48,8 +48,10 @@ img {
 
 /* Design System & Contrast Optimization (WCAG 2.2 AA) */
 :root {
-  --color-primary: #A44C5C;
-  --color-primary-hover: #8e3e4d;
+  --brand: #A44C5C;
+  --brand-hover: #8F3F4E;
+  --color-primary: var(--brand);
+  --color-primary-hover: var(--brand-hover);
   --color-surface: #FFFFFF;
   --color-surface-soft: #FAF9F6;
   --color-text: #1a1a1a;
@@ -97,7 +99,6 @@ img {
 }
 
 .midnight-velvet-active .text-gray-900,
-.midnight-velvet-active .text-[#0B0B0B],
 .midnight-velvet-active .text-gray-800,
 .midnight-velvet-active .text-gray-700 {
   color: #FAFAF7 !important;
@@ -114,8 +115,7 @@ img {
   border-color: #1f1f1f !important;
 }
 
-.midnight-velvet-active .bg-[#FAFAF7],
-.midnight-velvet-active .bg-[#FAFAF8] {
+.midnight-velvet-active .bg-white {
   background-color: #161616 !important;
 }
 

@@ -32,9 +32,7 @@ export default function ProductCard({
   priority = false,
   renderBadge
 }: ProductCardProps) {
-  const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
-  const touchStartX = useRef<number | null>(null);
   
   const isFav = isFavorite !== undefined
     ? Boolean(isFavorite)
@@ -55,30 +53,6 @@ export default function ProductCard({
     }
     return false;
   })();
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX.current - touchEndX;
-
-    if (Math.abs(diff) > 50) {
-      const imagesCount = product.images?.length || 1;
-      if (imagesCount > 1) {
-        if (diff > 0) {
-          // Swipe left -> next image
-          setActiveImgIdx(prev => (prev + 1) % imagesCount);
-        } else {
-          // Swipe right -> prev image
-          setActiveImgIdx(prev => (prev - 1 + imagesCount) % imagesCount);
-        }
-      }
-    }
-    touchStartX.current = null;
-  };
 
   const handleCardClick = () => {
     if (onSelectProduct) {
@@ -111,6 +85,16 @@ export default function ProductCard({
     setTimeout(() => setIsAdded(false), 2000);
   };
 
+  const primaryImg = product.images?.[0] || '';
+  const colorDesc = product.colors?.[0]?.name ? ` - ${product.colors[0].name}` : '';
+  const fabricDesc = product.material || product.fabricAr ? ` - ${product.material || product.fabricAr}` : '';
+  const imageAlt = `${product.nameAr}${colorDesc}${fabricDesc}`;
+
+  // Console warning for products without images
+  if (!primaryImg && typeof window !== 'undefined') {
+    console.warn(`[Sulta Store] تنبيه: المنتج "${product.nameAr}" (ID: ${product.id}) بدون صورة مخزنة في Supabase.`);
+  }
+
   return (
     <div
       className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md relative select-none cursor-pointer"
@@ -124,15 +108,13 @@ export default function ProductCard({
       {/* Image Container 3:4 */}
       <div 
         className="relative aspect-[3/4] w-full overflow-hidden bg-gray-50 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
         role="img"
         aria-label={`صورة منتج ${product.nameAr}`}
       >
         {/* Badges */}
         <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-start" aria-hidden="true">
           {isNew && (
-            <span className="bg-[#111827] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs">
+            <span className="bg-[#A44C5C] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs">
               جديد
             </span>
           )}
@@ -171,25 +153,21 @@ export default function ProductCard({
           <Heart size={14} className={isFav ? "fill-red-500 text-red-500" : ""} aria-hidden="true" />
         </button>
 
-        <SultaImage
-          src={cleanImgUrl(product.images?.[activeImgIdx] || '', product.category)}
-          alt=""
-          className="w-full h-full"
-          contain={false}
-          width={600}
-          imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          priority={priority}
-        />
-        
-        {/* Swipe Indicators */}
-        {product.images.length > 1 && (
-          <div className="absolute bottom-2 inset-x-0 flex justify-center gap-1" aria-hidden="true">
-            {product.images.map((_, idx) => (
-              <div 
-                key={idx} 
-                className={`h-0.5 w-3 rounded-full transition-all ${idx === activeImgIdx ? 'bg-[#A44C5C] w-5' : 'bg-gray-300'}`} 
-              />
-            ))}
+        {primaryImg ? (
+          <SultaImage
+            src={cleanImgUrl(primaryImg, product.category)}
+            alt={imageAlt}
+            productName={product.nameAr}
+            className="w-full h-full"
+            contain={false}
+            width={600}
+            imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            priority={priority}
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center p-4 text-center select-none">
+            <span className="text-xs font-bold text-gray-700 line-clamp-2">{product.nameAr}</span>
+            <span className="text-[10px] text-gray-500 mt-1 font-medium">لا توجد صورة متوفرة</span>
           </div>
         )}
       </div>
@@ -213,12 +191,12 @@ export default function ProductCard({
             type="button"
             onClick={handleAddToCartClick}
             disabled={product.stock === 0}
-            className={`w-full h-12 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-2xs focus-visible:ring-2 focus-visible:ring-black outline-hidden ${
+            className={`w-full h-12 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-2xs focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden ${
               product.stock === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : isAdded
                   ? 'bg-emerald-600 text-white'
-                  : 'bg-[#A44C5C] text-white hover:bg-[#8e3e4d]'
+                  : 'bg-[#A44C5C] text-white hover:bg-[#8F3F4E]'
             }`}
             aria-label={isAdded ? "تمت الإضافة للسلة" : `إضافة منتج ${product.nameAr} للسلة`}
           >

@@ -45,8 +45,8 @@ function buildPageHtml(
   
   const pageTitle = meta.title || 'بيجامات نسائية قطن ووان سايز | سولتة';
   const pageDesc = truncateWordBoundary(meta.description || 'متجر سولتة لأزياء النوم والبيجامات النسائية القطنية المريحة بمقاس وان سايز يناسب من 45 إلى 80 كيلو.');
-  const rawImage = meta.image || '/img/tulip-crinkle-cotton-pajama.webp';
-  const absImage = rawImage.startsWith('http') ? rawImage : `${BASE_URL}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`;
+  const rawImage = meta.image || '';
+  const absImage = rawImage ? (rawImage.startsWith('http') ? rawImage : `${BASE_URL}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`) : '';
 
   let html = template;
 
@@ -60,13 +60,13 @@ function buildPageHtml(
     `<meta property="og:title" content="${pageTitle}" />`,
     `<meta property="og:description" content="${pageDesc}" />`,
     `<meta property="og:url" content="${fullUrl}" />`,
-    `<meta property="og:image" content="${absImage}" />`,
+    ...(absImage ? [`<meta property="og:image" content="${absImage}" />`] : []),
     `<meta property="og:site_name" content="سولتة | SULTA" />`,
     `<meta property="og:locale" content="ar_SA" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${pageTitle}" />`,
     `<meta name="twitter:description" content="${pageDesc}" />`,
-    `<meta name="twitter:image" content="${absImage}" />`
+    ...(absImage ? [`<meta name="twitter:image" content="${absImage}" />`] : [])
   ];
 
   if (meta.noindex) {

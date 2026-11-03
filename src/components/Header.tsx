@@ -214,13 +214,13 @@ export default function Header({
           <div className="flex items-center gap-2 sm:gap-3 select-none shrink-0">
             <button
               onClick={onOpenCart}
-              className={`flex items-center gap-2 bg-[#A44C5C] text-white px-3 sm:px-5 py-2.5 rounded-full hover:bg-[#8e3e4d] transition-all shadow-sm active:scale-95 cursor-pointer relative focus-visible:ring-2 focus-visible:ring-black outline-hidden ${isCartAnimating ? 'animate-bounce' : ''}`}
+              className={`flex items-center gap-2 bg-[#A44C5C] text-white px-3 sm:px-5 py-2.5 rounded-full hover:bg-[#8F3F4E] transition-all shadow-sm active:scale-95 cursor-pointer relative focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden ${isCartAnimating ? 'animate-bounce' : ''}`}
               aria-label={`حقيبة التسوق، تحتوي على ${cartCount} قطع`}
             >
               <ShoppingBag size={18} aria-hidden="true" />
               <span className="hidden sm:inline text-xs font-bold">الحقيبة</span>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#111827] text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
+                <span className="absolute -top-1 -right-1 bg-[#8F3F4E] text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
                   {cartCount}
                 </span>
               )}

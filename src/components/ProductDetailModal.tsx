@@ -62,9 +62,8 @@ export default function ProductDetailModal({
     }
     
     const priceCurrency = country === 'EG' ? 'EGP' : 'SAR';
-    const price = effectiveProductPrice || 195;
-    const imageUrl = product.images?.[0] ? cleanImgUrl(product.images[0]) : 'https://sulta.vercel.app/img/sulta_product_1.webp';
-    const absImageUrl = imageUrl.startsWith('http') ? imageUrl : `https://sulta.vercel.app${imageUrl}`;
+    const imageUrl = product.images?.[0] ? cleanImgUrl(product.images[0]) : '';
+    const absImageUrl = imageUrl ? (imageUrl.startsWith('http') ? imageUrl : `https://sulta.vercel.app${imageUrl}`) : '';
 
     const schemaData = {
       "@context": "https://schema.org/",
@@ -105,8 +104,8 @@ export default function ProductDetailModal({
 
   const [bundleItems, setBundleItems] = useState([
     { id: 'b1', name: product.nameAr, price: effectiveProductPrice, image: product.images?.[0] || '', checked: true },
-    { id: 'b2', name: 'شمعة Sulta العطرية الملكية للتوليفة الفاخرة', price: country === 'EG' ? 120 : 65, image: '/img/sulta_default_1_1781140865386.png', checked: true },
-    { id: 'b3', name: 'علبة هدايا كوتور الفخمة مع الختم الشمعي', price: country === 'EG' ? 150 : 80, image: '/img/sulta_collections_1_1781140831329.png', checked: false }
+    { id: 'b2', name: 'شمعة Sulta العطرية الملكية للتوليفة الفاخرة', price: country === 'EG' ? 120 : 65, image: '', checked: true },
+    { id: 'b3', name: 'علبة هدايا كوتور الفخمة مع الختم الشمعي', price: country === 'EG' ? 150 : 80, image: '', checked: false }
   ]);
 
   const toggleBundleItem = (idx: number) => {

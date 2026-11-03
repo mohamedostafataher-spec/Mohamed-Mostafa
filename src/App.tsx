@@ -8,14 +8,16 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-
 import Header from './components/Header';
 import RedirectHandler from './components/RedirectHandler';
 import SEO from './components/SEO';
-import HomeView from './components/HomeView';
-import ProductPage from './components/ProductPage';
-import StoreView from './components/StoreView';
+// Core views lazy loaded for maximum performance
+const HomeView = React.lazy(() => import('./components/HomeView'));
+const ProductPage = React.lazy(() => import('./components/ProductPage'));
+const StoreView = React.lazy(() => import('./components/StoreView'));
 import WhatsAppFloat from './components/WhatsAppFloat';
 import MobileBottomNav from './components/MobileBottomNav';
 import RibbonBowDivider from './components/RibbonBowDivider';
 import { ProductPrice } from './components/ProductPrice';
 import Features from './components/Features';
+import PaymentMethodsDisplay from './components/PaymentMethodsDisplay';
 // Lazy load non-critical components to reduce initial bundle size and improve performance
 const ProductDetailModal = React.lazy(() => import('./components/ProductDetailModal'));
 const CartDrawer = React.lazy(() => import('./components/CartDrawer'));
@@ -50,7 +52,6 @@ const SultaConcierge = React.lazy(() => import('./components/SultaConcierge'));
 const RoyalSensesSalon = React.lazy(() => import('./components/RoyalSensesSalon'));
 const LiveTrafficMonitor = React.lazy(() => import('./components/LiveTrafficMonitor'));
 // LivePurchaseToasts removed to ensure 100% genuine data only
-const ReelsShowcase = React.lazy(() => import('./components/ReelsShowcase'));
 const SearchOverlay = React.lazy(() => import('./components/SearchOverlay'));
 
 import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
@@ -139,6 +140,54 @@ function AppContent() {
 
     // Track page view
     supabase.from('page_views').insert([{ page_path: window.location.pathname }]).then();
+
+    // 🌐 GLOBAL SEO SCHEMA (Organization & WebSite)
+    const scriptId = 'sulta-global-schema';
+    let script = document.getElementById(scriptId) as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+
+    const organizationSchema = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Sulta Atelier | سولته",
+      "url": "https://sulta.vercel.app",
+      "logo": "https://sulta.vercel.app/img/sulta_hero_banner_real.webp",
+      "sameAs": [
+        "https://instagram.com/sultabrand",
+        "https://tiktok.com/@sulta.brand"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+966552823677",
+        "contactType": "customer service",
+        "areaServed": "SA",
+        "availableLanguage": ["Arabic", "English"]
+      }
+    };
+
+    const websiteSchema = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Sulta Atelier",
+      "url": "https://sulta.vercel.app",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://sulta.vercel.app/store?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    };
+
+    script.textContent = JSON.stringify([organizationSchema, websiteSchema]);
+
+    return () => {
+      const el = document.getElementById(scriptId);
+      if (el) el.remove();
+    };
   }, [country]);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -1102,11 +1151,7 @@ function AppContent() {
               </div>
               <div className="pt-2">
                 <span className="text-[10px] text-gray-400 font-bold block mb-2">طرق الدفع المتوفرة:</span>
-                <div className="flex gap-2 grayscale opacity-70">
-                  <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                  <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                  <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                </div>
+                <PaymentMethodsDisplay variant="footer" />
               </div>
             </div>
           </div>

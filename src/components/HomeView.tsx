@@ -4,11 +4,9 @@ import SultaImage from "./SultaImage";
 import { cleanImgUrl } from '../services/db';
 import { Product, Collection } from '../types';
 import { ProductPrice } from './ProductPrice';
-import ReelsShowcase from './ReelsShowcase';
-import Features from './Features';
-import SEO from './SEO';
-import { getProductSlug } from '../utils/slugify';
 import ProductCard from './ProductCard';
+import SEO from './SEO';
+import Features from './Features';
 
 interface HomeViewProps {
   products: Product[];
@@ -63,13 +61,6 @@ const HomeView: React.FC<HomeViewProps> = ({
         { title: 'وصل حديثاً من تشكيلة البيجامات القطنية ✨', label: 'أحدث تصاميم أزياء النوم والقطع المريحة', data: newArrivals },
       ].map((section, sectionIdx) => (
         <React.Fragment key={section.title}>
-          {sectionIdx === 1 && (
-            <ReelsShowcase 
-              products={products} 
-              onSelectProduct={handleSelectProduct} 
-              onAddToCart={handleAddToCart}
-            />
-          )}
           <section className={`${sectionIdx === 0 ? 'pt-3 sm:pt-5 pb-8 sm:pb-12' : 'py-8 sm:py-12'} ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               

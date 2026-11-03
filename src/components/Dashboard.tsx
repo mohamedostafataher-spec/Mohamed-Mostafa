@@ -50,7 +50,12 @@ import {
   WifiOff,
   Printer,
   Download,
-  History
+  History,
+  ArrowUp,
+  ArrowDown,
+  Upload,
+  Star,
+  Image as ImageIcon
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -188,8 +193,10 @@ export default function Dashboard({
     category: 'new',
     categoryAr: 'المجموعة الجديدة',
     descriptionAr: '',
-    images: ['/img/sulta_product_1.png']
+    images: []
   });
+  const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
+  const [newImageUrlInput, setNewImageUrlInput] = useState('');
 
   // Quick inline price editing states
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
@@ -1000,7 +1007,7 @@ export default function Dashboard({
         fabricAr: productForm.fabricAr || editingProduct?.fabricAr || 'قطن ناعم ومريح',
         fabricEn: productForm.fabricEn || editingProduct?.fabricEn || 'Soft Cotton',
         washInstructionsAr: productForm.washInstructionsAr || editingProduct?.washInstructionsAr || 'بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
-        images: productForm.images && productForm.images.length > 0 ? productForm.images : (editingProduct?.images || ['/img/tulip-crinkle-cotton-pajama.webp']),
+        images: Array.isArray(productForm.images) ? productForm.images.filter(img => typeof img === 'string' && img.trim() !== '') : (editingProduct?.images || []),
         video: productForm.video?.trim() || editingProduct?.video || undefined,
         colors: productForm.colors && productForm.colors.length > 0 ? productForm.colors : (editingProduct?.colors || [{ name: 'وردي', hex: '#E8A5B8' }]),
         sizes: productForm.sizes && productForm.sizes.length > 0 ? productForm.sizes : (editingProduct?.sizes || ['One Size']),
@@ -1013,7 +1020,7 @@ export default function Dashboard({
       // 1. Immediately update products state for all storefront components
       if (isEditing) {
         setProducts(prev => prev.map(p => p.id === targetId ? newProd : p));
-        toast?.(`تم تعديل سعر وتفاصيل "${newProd.nameAr}" بنجاح وستظهر للجميع ✨`, 'success');
+        toast?.(`تم حفظ تعديلات "${newProd.nameAr}" بنجاح ✨ تذكّر: أعد نشر الموقع لتحديث صور الفهرسة بمحركات البحث وجوجل.`, 'success');
       } else {
         setProducts(prev => [newProd, ...prev]);
         toast?.(`تمت إضافة القطعة "${newProd.nameAr}" بنجاح للمتجر بالسعر المحدد`, 'success');
@@ -1033,7 +1040,7 @@ export default function Dashboard({
         category: 'new',
         categoryAr: 'المجموعة الجديدة',
         descriptionAr: '',
-        images: ['/img/sulta_product_1.png']
+        images: []
       });
     } catch (err: any) {
       console.warn("[Dashboard] Product save notice:", err);
@@ -1041,6 +1048,76 @@ export default function Dashboard({
       setEditingProduct(null);
       setIsAddProductOpen(false);
     }
+  };
+
+  // Image Manager Operations for Product Form
+  const handleUploadProductImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast?.('يرجى اختيار ملف صورة صالح', 'error');
+      return;
+    }
+
+    try {
+      setIsUploadingProductImage(true);
+      const publicUrl = await dbService.uploadImage(file);
+      if (publicUrl) {
+        setProductForm(prev => {
+          const current = Array.isArray(prev.images) ? prev.images : [];
+          return { ...prev, images: [...current, publicUrl] };
+        });
+        toast?.('تم رفع الصورة بنجاح إلى Supabase (products) 📸', 'success');
+      } else {
+        toast?.('تعذر رفع الصورة، يرجى التحقق من الاتصال', 'error');
+      }
+    } catch (err: any) {
+      console.error('Error uploading product image:', err);
+      toast?.('حدث خطأ أثناء رفع الصورة: ' + (err?.message || ''), 'error');
+    } finally {
+      setIsUploadingProductImage(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleMoveImage = (fromIdx: number, toIdx: number) => {
+    setProductForm(prev => {
+      const arr = Array.isArray(prev.images) ? [...prev.images] : [];
+      if (toIdx < 0 || toIdx >= arr.length) return prev;
+      const [item] = arr.splice(fromIdx, 1);
+      arr.splice(toIdx, 0, item);
+      return { ...prev, images: arr };
+    });
+  };
+
+  const handleMakeCover = (idx: number) => {
+    if (idx === 0) return;
+    setProductForm(prev => {
+      const arr = Array.isArray(prev.images) ? [...prev.images] : [];
+      const [item] = arr.splice(idx, 1);
+      arr.unshift(item);
+      return { ...prev, images: arr };
+    });
+    toast?.('تم تعيين هذه الصورة كصورة الغلاف الرئيسية 👑', 'success');
+  };
+
+  const handleRemoveImage = (idx: number) => {
+    setProductForm(prev => {
+      const arr = Array.isArray(prev.images) ? [...prev.images] : [];
+      arr.splice(idx, 1);
+      return { ...prev, images: arr };
+    });
+  };
+
+  const handleAddDirectImageUrl = () => {
+    if (!newImageUrlInput.trim()) return;
+    setProductForm(prev => {
+      const current = Array.isArray(prev.images) ? prev.images : [];
+      return { ...prev, images: [...current, newImageUrlInput.trim()] };
+    });
+    setNewImageUrlInput('');
+    toast?.('تمت إضافة رابط الصورة بنجاح ✨', 'success');
   };
 
   // Handle Delete Product (Opens Confirmation Modal)
@@ -1428,7 +1505,7 @@ export default function Dashboard({
                     category: 'new',
                     categoryAr: 'المجموعة الجديدة',
                     descriptionAr: 'طقم بيجامة نوم ملكية فاخرة بتصميم أنيق.',
-                    images: ['/img/sulta_product_1.png']
+                    images: []
                   });
                   setIsAddProductOpen(true);
                 }}
@@ -2686,7 +2763,7 @@ export default function Dashboard({
                       category: 'new',
                       categoryAr: 'المجموعة الجديدة',
                       descriptionAr: '',
-                      images: ['/img/sulta_product_1.png']
+                      images: []
                     });
                     setIsAddProductOpen(true);
                   }}
@@ -2717,16 +2794,28 @@ export default function Dashboard({
                     {filteredProducts.map((p) => (
                       <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                         <td className="py-2.5 px-4">
-                          <div className="w-11 h-14 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
-                            <img
-                              src={cleanImgUrl(p.images?.[0] || '', p.category)}
-                              alt={p.nameAr}
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="w-11 h-14 rounded-lg bg-gray-100 overflow-hidden border border-gray-200 flex items-center justify-center">
+                            {p.images && p.images.length > 0 && p.images[0] ? (
+                              <img
+                                src={cleanImgUrl(p.images[0], p.category)}
+                                alt={p.nameAr}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-[9px] text-gray-400 font-bold text-center px-1">بدون صورة</span>
+                            )}
                           </div>
                         </td>
                         <td className="py-2.5 px-4 font-bold text-gray-950">
-                          {p.nameAr}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span>{p.nameAr}</span>
+                            {(!p.images || p.images.length === 0 || !p.images.some(img => img && typeof img === 'string' && img.trim() !== '')) && (
+                              <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-md" title="هذا المنتج لا يحتوي على أي صورة غلاف">
+                                <AlertTriangle size={11} className="text-amber-600" />
+                                <span>بدون صور</span>
+                              </span>
+                            )}
+                          </div>
                           {p.sku && <span className="block text-[10px] text-gray-400 font-mono mt-0.5">{p.sku}</span>}
                         </td>
                         <td className="py-2.5 px-4 text-gray-600">
@@ -2809,7 +2898,7 @@ export default function Dashboard({
                                         category: p.category || 'new',
                                         categoryAr: p.categoryAr || 'المجموعة الجديدة',
                                         descriptionAr: p.descriptionAr || '',
-                                        images: p.images || ['/img/tulip-crinkle-cotton-pajama.webp']
+                                        images: p.images || []
                                       });
                                     }}
                                     className="p-1 text-gray-400 hover:text-[#A44C5C] hover:bg-pink-50 rounded transition-all cursor-pointer"
@@ -4304,15 +4393,225 @@ export default function Dashboard({
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">رابط الصورة (URL أو مسار)</label>
-                <input
-                  type="text"
-                  placeholder="/img/sulta_product_1.png"
-                  value={productForm.images?.[0] || ''}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, images: [e.target.value] }))}
-                  className="w-full bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-black"
-                />
+              {/* Image Manager & Cover Control */}
+              <div className="bg-white border-2 border-gray-200/90 rounded-2xl p-4 space-y-4 shadow-2xs">
+                <div className="flex items-start justify-between gap-2 border-b border-gray-100 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="p-1.5 rounded-lg bg-pink-50 text-[#A44C5C]">
+                        <ImageIcon size={18} />
+                      </span>
+                      <h4 className="text-sm font-black text-gray-900">مدير صور وغلاف القطعة</h4>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      الصور تُحفظ مباشرة في Supabase Bucket (products). <strong className="text-gray-800">الصورة الأولى (#1) هي دائماً صورة الغلاف الرئيسية</strong> المعروضة بالمتجر.
+                    </p>
+                  </div>
+                  <span className="bg-[#FAF4F5] text-[#A44C5C] text-xs font-bold px-2.5 py-1 rounded-full border border-[#A44C5C]/20 shrink-0">
+                    {productForm.images?.length || 0} صور
+                  </span>
+                </div>
+
+                {/* SEO Republish Alert Reminder */}
+                <div className="bg-amber-50/80 border border-amber-200 text-amber-900 rounded-xl p-3 text-xs flex items-start gap-2.5">
+                  <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block">تذكير لمحركات البحث وGoogle Merchant:</span>
+                    <span>عند تغيير صور أو غلاف المنتج، تذكّر إعادة نشر الموقع (Deploy / Re-publish) لتحديث صور صفحات الفهرسة ومحركات البحث وجوجل ميرتشانت فوراً.</span>
+                  </div>
+                </div>
+
+                {/* Live Product Card Preview */}
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                  <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">
+                    معاينة حية لكارت المنتج في المتجر (Live Card Preview):
+                  </span>
+                  <div className="max-w-[220px] mx-auto bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+                    <div className="relative aspect-[3/4] bg-neutral-900">
+                      {productForm.images && productForm.images.length > 0 && productForm.images[0] ? (
+                        <img 
+                          src={cleanImgUrl(productForm.images[0], productForm.category)} 
+                          alt="معاينة الغلاف" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 text-gray-400 p-4 text-center">
+                          <Package size={32} className="text-gray-300 mb-2" />
+                          <span className="text-xs font-bold text-gray-600">{productForm.nameAr || 'اسم القطعة'}</span>
+                          <span className="text-[10px] text-gray-400 mt-0.5">لا توجد صورة غلاف</span>
+                        </div>
+                      )}
+                      <span className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md flex items-center gap-1">
+                        <Star size={10} className="fill-current" />
+                        <span>الغلاف</span>
+                      </span>
+                    </div>
+                    <div className="p-3 space-y-1.5 text-center">
+                      <span className="text-[10px] text-gray-500 block">{productForm.categoryAr || 'المجموعة الجديدة'}</span>
+                      <h5 className="font-black text-xs text-gray-900 line-clamp-1">{productForm.nameAr || 'بيجامة جديدة'}</h5>
+                      <div className="text-xs font-black text-[#A44C5C] font-mono">
+                        {Number(productForm.priceSA) || 69} ر.س
+                      </div>
+                      <div className="w-full bg-[#A44C5C] text-white py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs">
+                        <ShoppingBag size={12} />
+                        <span>أضيفي للسلة</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ordered Images List */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-gray-800">
+                    ترتيب صور المنتج (اسحبي أو استخدمي الأسهم لتغيير الترتيب):
+                  </label>
+
+                  {(!productForm.images || productForm.images.length === 0) ? (
+                    <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-6 text-center text-xs text-gray-500">
+                      <ImageIcon size={28} className="mx-auto text-gray-300 mb-2" />
+                      <p className="font-bold text-gray-700">لا توجد صور مضافة لهذه القطعة بعد</p>
+                      <p className="text-[11px] text-gray-400 mt-1">استخدمي الزر أدناه لرفع صور من جهازك مباشرة إلى Supabase أو أضيفي روابط الصور.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {productForm.images.map((imgUrl, idx) => {
+                        const isPrimary = idx === 0;
+                        return (
+                          <div 
+                            key={idx}
+                            className={`flex items-center gap-3 p-2.5 rounded-xl border transition-all ${
+                              isPrimary 
+                                ? 'bg-amber-50/60 border-amber-300 ring-1 ring-amber-300/50' 
+                                : 'bg-gray-50/80 border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            {/* Thumbnail */}
+                            <div className="w-14 h-16 rounded-lg bg-gray-200 overflow-hidden shrink-0 border border-black/10 relative">
+                              <img 
+                                src={cleanImgUrl(imgUrl, productForm.category)} 
+                                alt={`صورة ${idx + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <span className="absolute bottom-0 right-0 left-0 bg-black/60 text-white text-[9px] text-center font-mono py-0.5">
+                                #{idx + 1}
+                              </span>
+                            </div>
+
+                            {/* Details */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {isPrimary ? (
+                                  <span className="inline-flex items-center gap-1 bg-amber-200 text-amber-900 text-[10px] font-black px-2 py-0.5 rounded-md">
+                                    <Star size={11} className="fill-current text-amber-700" />
+                                    <span>صورة الغلاف الرئيسية (تظهر أولاً)</span>
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] font-bold text-gray-600 bg-white border border-gray-200 px-2 py-0.5 rounded-md">
+                                    صورة معرض إضافية #{idx + 1}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[10px] text-gray-500 font-mono truncate mt-1 dir-ltr text-left" title={imgUrl}>
+                                {imgUrl}
+                              </p>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-1 shrink-0">
+                              {!isPrimary && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleMakeCover(idx)}
+                                  className="px-2 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 text-[10px] font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                                  title="تعيين كصورة الغلاف الرئيسية"
+                                >
+                                  <Star size={12} className="text-amber-700" />
+                                  <span className="hidden sm:inline">اجعلها الغلاف</span>
+                                </button>
+                              )}
+                              
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveImage(idx, idx - 1)}
+                                className="p-1.5 bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-lg transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="تحريك لأعلى (للأمام)"
+                              >
+                                <ArrowUp size={13} />
+                              </button>
+
+                              <button
+                                type="button"
+                                disabled={idx === (productForm.images?.length || 0) - 1}
+                                onClick={() => handleMoveImage(idx, idx + 1)}
+                                className="p-1.5 bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-lg transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="تحريك لأسفل (للخلف)"
+                              >
+                                <ArrowDown size={13} />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(idx)}
+                                className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-lg transition-colors cursor-pointer"
+                                title="حذف الصورة من القطعة"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Upload & Add Controls */}
+                <div className="space-y-3 pt-3 border-t border-gray-100">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    {/* File Upload to Supabase */}
+                    <label className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-[#A44C5C]/40 bg-[#FAF4F5] hover:bg-[#F3E7EA] text-[#A44C5C] text-xs font-bold cursor-pointer transition-all shadow-2xs ${
+                      isUploadingProductImage ? 'opacity-60 pointer-events-none' : ''
+                    }`}>
+                      <Upload size={15} />
+                      <span>{isUploadingProductImage ? 'جاري الرفع إلى Supabase products...' : 'رفع صورة من الجهاز إلى Supabase'}</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        disabled={isUploadingProductImage}
+                        onChange={handleUploadProductImage} 
+                        className="hidden" 
+                      />
+                    </label>
+                  </div>
+
+                  {/* Add by URL */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-600 mb-1">أو أضيفي رابط صورة مباشر (URL):</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="https://... رابط صورة خارجي أو من Supabase"
+                        value={newImageUrlInput}
+                        onChange={(e) => setNewImageUrlInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddDirectImageUrl();
+                          }
+                        }}
+                        className="flex-1 bg-[#F8F9FA] border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:bg-white focus:outline-none focus:border-[#A44C5C]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddDirectImageUrl}
+                        className="px-4 py-2 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all cursor-pointer shrink-0"
+                      >
+                        إضافة
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div>

@@ -36,13 +36,13 @@ export default function LuxuryGifts({
       title: 'صندوق Sulta الكلاسيكي المطفي الأسود',
       desc: 'صندوق كرتوني سميك فاخر باللون الأسود الملكي، مبطّن بورق مناديل وردي ناعم ومحكم بشريط ملوكي ذهبي عريض.',
       fee: country === 'EG' ? 100 : 15,
-      img: '/img/sulta_product_2.png'
+      img: '/img/sulta_hero_banner_real.webp'
     },
     royal: {
       title: 'صندوق العرائس الملكي الفخم للزفاف',
       desc: 'صندوق جلدي أسود كبير مزخرف بحروف ذهبية بارزة مع طبقة واقية وحقيبة تسوق فخمة وبطاقة شكر مخملية.',
       fee: country === 'EG' ? 250 : 40,
-      img: '/img/sulta_product_1.png'
+      img: '/img/sulta_hero_banner_real.webp'
     },
     pouch: {
       title: 'حقيبة كوتور الملوكية الفاخرة للرحلات',

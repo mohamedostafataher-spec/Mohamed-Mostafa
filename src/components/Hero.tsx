@@ -20,21 +20,21 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
 
   const fallbackBanners = [
     {
-      mediaUrl: '/img/sulta_couture_luxury_banner.webp',
+      mediaUrl: '/img/sulta_hero_banner_real.webp',
       title: 'أزياء النوم الفاخرة',
       subtitle: 'بيجامات وأرواب الكوتور الفاخر المبرد',
       ctaText: 'تسوقي التشكيلة الآن',
       mediaType: 'image'
     },
     {
-      mediaUrl: '/img/sulta_collections_1_1781140831329.webp',
+      mediaUrl: '/img/sulta_hero_banner_real.webp',
       title: 'تشكيلة Sulta الملكية',
       subtitle: 'نعومة فائقة وأناقة منسوجة بعناية',
       ctaText: 'اكتشفي الموديلات',
       mediaType: 'image'
     },
     {
-      mediaUrl: '/img/sulta_loungewear_1_1781140813379.webp',
+      mediaUrl: '/img/sulta_hero_banner_real.webp',
       title: 'أطقم بيجامات كوتور',
       subtitle: 'تصاميم راقية لأمسيات مفعمة بالراحة والهدوء',
       ctaText: 'تصفحي التشكيلة',

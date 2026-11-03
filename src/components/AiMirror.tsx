@@ -352,7 +352,7 @@ export default function AiMirror({
   };
 
   // Render static demo model image if none uploaded, to give beautiful preview instantly
-  const demoModelUrl = "/img/sulta_collections_1_1781140831329.png";
+  const demoModelUrl = "/img/sulta_hero_banner_real.webp";
 
   // Phase 7: Export mockup to user machine using HTML5 Canvas Compositing
   const handleSaveMockup = () => {
@@ -691,9 +691,9 @@ export default function AiMirror({
                         <p className="text-[10px] text-gray-400 mb-2">أو اختاري موديل جسم تجريبي جاهز:</p>
                         <div className="flex justify-center gap-1.5 flex-wrap">
                           {[
-                            { name: 'جسم دقيق (Petite)', url: '/img/sulta_collections_1_1781140831329.png' },
-                            { name: 'جسم طويل (Tall)', url: '/img/sulta_loungewear_1_1781140813379.png' },
-                            { name: 'جسم كلاسيكي (Hourglass)', url: '/img/sulta_homewear_1_1781140849645.png' }
+                            { name: 'جسم دقيق (Petite)', url: '/img/sulta_hero_banner_real.webp' },
+                            { name: 'جسم طويل (Tall)', url: '/img/sulta_hero_banner_real.webp' },
+                            { name: 'جسم كلاسيكي (Hourglass)', url: '/img/sulta_hero_banner_real.webp' }
                           ].map((model, i) => (
                             <button
                               key={i}

@@ -77,8 +77,12 @@ async function generateGoogleMerchantFeed() {
     const link = `${BASE_URL}/product/${slug}/`;
     
     const imgs: string[] = Array.isArray(p.images) ? p.images : (p.image_url ? [p.image_url] : []);
-    const cleanImgs = imgs.map((img: string) => img.startsWith('http') ? img : `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`);
-    const primaryImg = cleanImgs[0] || `${BASE_URL}/img/tulip-crinkle-cotton-pajama.webp`;
+    const cleanImgs = imgs.map((img: string) => img.startsWith('http') ? img : `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`).filter(Boolean);
+    if (!cleanImgs[0]) {
+      console.warn(`[Google Merchant WARNING] Product ID ${p.id} ("${title}") excluded from feed: missing authentic image.`);
+      continue;
+    }
+    const primaryImg = cleanImgs[0];
     const additionalImgs = cleanImgs.slice(1);
 
     // Regular base price

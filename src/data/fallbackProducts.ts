@@ -31,7 +31,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     careInstructions: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     washInstructionsAr: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     images: [
-      '/img/red-polka-dot-strappy-pajama.webp'
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781023864996_t416qh97.png&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781023866351_q9mcco4s.png&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781023867862_kvn8vc68.png&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781051987621_5nlxo47f.png&w=650&output=webp&q=80"
     ],
     colors: [{ name: 'أحمر منقط بالأبيض', hex: '#C0392B' }],
     sizes: ['One Size'],
@@ -73,8 +76,13 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     careInstructions: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     washInstructionsAr: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     images: [
-      '/img/tulip-crinkle-cotton-pajama.webp',
-      '/img/tulip-crinkle-cotton-pajama-detail.webp'
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783948358903_lttb8vj9.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783948372793_xb0h46zo.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783948374271_d1iw3smz.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783948376296_hnvyzur4.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783948379317_klo9ftrs.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783948384396_vzfoitnv.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783948388309_yo3phjtz.jpeg&w=650&output=webp&q=80"
     ],
     colors: [{ name: 'أبيض بطبعة التوليب الوردي', hex: '#FADADD' }],
     sizes: ['One Size'],
@@ -86,7 +94,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     stock: 12
   },
 
-  // المنتج (ج) - روزي: زهور في بوكس سولته
+  // المنتج (ج) - روزي: زهور
   {
     id: '78f851f3-5f75-4153-9fbe-0e8ad54825be',
     nameAr: 'بيجامة روزي — زهور',
@@ -116,7 +124,10 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     careInstructions: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     washInstructionsAr: 'تُغسل بمويه باردة، ويفضّل بدون كلور، وتجنّبي الحرارة العالية.',
     images: [
-      '/img/floral-crinkle-cotton-pajama-box.webp'
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783877446417_1w9lclzr.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783877449752_w94j3v4h.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783877453004_5m9xxmh7.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1783877459858_jpq87w7x.jpeg&w=650&output=webp&q=80"
     ],
     colors: [{ name: 'وردي بنقشة زهور', hex: '#FFB6C1' }],
     sizes: ['One Size'],
@@ -130,89 +141,91 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
 
   // المنتجات (د) - سُكّر بالفيونكة (وردي ملكي)
   {
-    id: '8d738e1c-0861-4569-8949-fc2d98c4fa50',
+    id: '54929551-5958-4b33-9ff9-abe83722cb78',
     nameAr: 'بيجامة سُكّر بالفيونكة — وردي ملكي',
     nameEn: 'Sugar Bow Pajama Set — Royal Pink',
     h1: 'بيجامة نسائية بطبعة الفيونكة — وردي ملكي',
     seoTitle: 'بيجامة نسائية بطبعة الفيونكة وردي ملكي | سولته',
     slug: 'sugar-bow-pajama-set-royal-pink',
     category: 'new',
-    categoryAr: 'أزياء النوم النسائية',
+    categoryAr: 'ملابس نوم نسائية',
     priceEG: 899,
     priceSA: 99,
     salePriceSA: 99,
     salePriceEG: 499,
-    compareAtPrice: undefined,
-    saleEndsAt: undefined,
     shortDescription: 'بيجامة نسائية بطبعة الفيونكة باللون الوردي الملكي الناعم، تصميم أنيق ومريح للنوم وجلسات البيت.',
-    descriptionAr: `تفاصيل رقيقة تجعل البساطة أجمل.
-بيجامة سُكّر باللون الوردي الملكي الناعم، بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة على الصدر والأكمام، خيار أنيق لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتب والراحة اليومية التامة.
-
-• اللون: وردي ملكي ناعم (Royal Pink)
-• المقاس: وان سايز مريح
+    descriptionAr: `بيجامة سُكّر باللون الوردي الملكي الناعم، بتفصيلتها الأنثوية ولمسة الفيونكة الناعمة على الصدر والأكمام، خيار أنيق لأوقاتك الخاصة في المنزل. تصميم يوازن بين المظهر المرتب والراحة اليومية التامة.
+• الخامة: أقمشة ناعمة مريحة (Premium Soft Fabric)
+• المقاس: وان سايز مريح (45 إلى 80 كيلو)
 • العناية: غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل`,
     descriptionEn: 'Sugar Bow Pajama Set in royal soft pink with delicate bow accents.',
     fabricAr: 'أقمشة ناعمة مريحة',
     fabricEn: 'Soft Comfortable Fabric',
     material: 'أقمشة ناعمة مريحة',
     sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
-    careInstructions: 'غسيل بماء بارد وكي بدرجة حرارة منخفضة.',
+    careInstructions: 'غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل.',
     washInstructionsAr: 'غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة من الداخل.',
     images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg'
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781222059034_j1c2ah26.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781222074179_fo49f4e2.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781222075556_k2rg6i2g.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781222076907_2rp4kear.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781222078257_0m7htqdt.jpeg&w=650&output=webp&q=80"
     ],
     colors: [{ name: 'وردي ملكي', hex: '#FF69B4' }],
     sizes: ['One Size'],
     isBestSeller: false,
-    featured: false,
+    featured: true,
     status: 'active',
     rating: 5,
-    reviewsCount: 0,
+    reviewsCount: 12,
     stock: 10
   },
 
   // المنتجات (د) - سُكّر بالفيونكة (أبيض عاجي)
   {
-    id: '54929551-5958-4b33-9ff9-abe83722cb78',
+    id: '8d738e1c-0861-4569-8949-fc2d98c4fa50',
     nameAr: 'بيجامة سُكّر بالفيونكة — أبيض عاجي',
     nameEn: 'Sugar Bow Pajama Set — Ivory White',
     h1: 'بيجامة نسائية بطبعة الفيونكة — أبيض عاجي',
     seoTitle: 'بيجامة نسائية بطبعة الفيونكة أبيض عاجي | سولته',
     slug: 'sugar-bow-pajama-set-ivory-white',
     category: 'new',
-    categoryAr: 'أزياء النوم النسائية',
+    categoryAr: 'ملابس نوم نسائية',
     priceEG: 899,
     priceSA: 99,
     salePriceSA: 99,
     salePriceEG: 499,
-    compareAtPrice: undefined,
-    saleEndsAt: undefined,
     shortDescription: 'بيجامة نسائية بطبعة الفيونكة باللون الأبيض العاجي الناصع، مظهر مريح ومشرق لأوقات البيت.',
-    descriptionAr: `أناقة ناعمة بتفاصيل تلفت النظر.
-تأتي بيجامة سُكّر باللون الأبيض العاجي بلمسة فيونكة أنثوية تضفي طابعًا رقيقًا لإطلالتك المنزلية. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف سولته الأنيق.
-
-• اللون: أبيض عاجي نقي (Ivory White)
-• المقاس: وان سايز مريح
+    descriptionAr: `تأتي بيجامة سُكّر باللون الأبيض العاجي بلمسة فيونكة أنثوية تضفي طابعًا رقيقًا لإطلالتك المنزلية. تصميمها مريح لأوقات الاسترخاء، كما يجعلها خيارًا جميلاً للإهداء مع تغليف سولته الأنيق.
+• الخامة: أقمشة ناعمة مريحة (Premium Soft Fabric)
+• المقاس: وان سايز مريح (45 إلى 80 كيلو)
 • العناية: غسيل بماء بارد وتجفيف لطيف`,
     descriptionEn: 'Sugar Bow Pajama Set in ivory white with delicate trims and soft bows.',
     fabricAr: 'أقمشة ناعمة مريحة',
     fabricEn: 'Soft Comfortable Fabric',
     material: 'أقمشة ناعمة مريحة',
     sizeInfo: 'وان سايز يناسب من 45 إلى 80 كيلو',
-    careInstructions: 'غسيل بماء بارد وتجفيف لطيف.',
+    careInstructions: 'غسيل يدوي بماء بارد وتجفيف لطيف.',
     washInstructionsAr: 'غسيل يدوي بماء بارد، كي بدرجة حرارة منخفضة.',
     images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619727672_a3zq9bid.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781619726720_9nrvslum.jpeg'
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781619726720_9nrvslum.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781619727672_a3zq9bid.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781619728379_8p82a5cn.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781619729147_yy9tudym.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781619730253_m1s7kht8.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781619731212_ka845x1c.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781665497525_8dl44y33.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781665499121_avyo6jca.jpeg&w=650&output=webp&q=80",
+      "https://wsrv.nl/?url=https%3A%2F%2Ffwadgmhabzaudusxghnh.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproducts%2F1781665500571_f96pok8h.jpeg&w=650&output=webp&q=80"
     ],
     colors: [{ name: 'أبيض عاجي', hex: '#FFFFFF' }],
     sizes: ['One Size'],
     isBestSeller: false,
-    featured: false,
+    featured: true,
     status: 'active',
     rating: 5,
-    reviewsCount: 0,
+    reviewsCount: 15,
     stock: 10
   },
 
@@ -225,19 +238,15 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     seoTitle: 'بيجامة نسائية روزا ورد المساء | سولته',
     slug: 'rosa-evening-bloom-pajama-set',
     category: 'new',
-    categoryAr: 'أزياء النوم النسائية',
+    categoryAr: 'ملابس نوم نسائية',
     priceEG: 899,
     priceSA: 99,
     salePriceSA: 99,
     salePriceEG: 499,
-    compareAtPrice: undefined,
-    saleEndsAt: undefined,
     shortDescription: 'بيجامة نسائية روزا ورد المساء، تصميم مريح وأنيق للاسترخاء بألوان هادئة ومقاس وان سايز مريح.',
-    descriptionAr: `وردي ناعم ومزاج أجمل.
-أضيفي لمسة من الرقة إلى خزانة ملابسك المنزلية مع بيجامة روزا. تصميمها الأنثوي يجعلها مناسبة لأوقات الراحة، وللأمسيات الهادئة التي تحبين أن تكون فيها إطلالتك مرتّبة ومريحة.
-
-• اللون: وردي دافئ
-• المقاس: وان سايز مريح
+    descriptionAr: `أضيفي لمسة من الرقة إلى خزانة ملابسك المنزلية مع بيجامة روزا. تصميمها الأنثوي يجعلها مناسبة لأوقات الراحة، وللأمسيات الهادئة التي تحبين أن تكون فيها إطلالتك مرتّبة ومريحة.
+• الخامة: خامة ناعمة الملمس مريحة (Ultra-Soft Comfort)
+• المقاس: وان سايز مريح (45 إلى 80 كيلو)
 • العناية: غسيل بماء بارد ودورة أقمشة لطيفة`,
     descriptionEn: 'Rosa Evening Bloom Pajama Set with soft touch and relaxed fit.',
     fabricAr: 'خامة ناعمة الملمس مريحة',
@@ -247,20 +256,21 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     careInstructions: 'غسيل بماء بارد ودورة أقمشة لطيفة.',
     washInstructionsAr: 'غسيل يدوي أو دورة أقمشة رقيقة بماء بارد.',
     images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783948358903_lttb8vj9.jpeg',
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1781023864996_t416qh97.png'
+      "https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876520474_6fgsb9pm.jpeg",
+      "https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876522370_3b5ps9qd.jpeg",
+      "https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876524523_zva11xal.jpeg"
     ],
     colors: [{ name: 'وردي دافئ', hex: '#E8A5B8' }],
     sizes: ['One Size'],
-    isBestSeller: false,
-    featured: false,
+    isBestSeller: true,
+    featured: true,
     status: 'active',
     rating: 5,
-    reviewsCount: 0,
+    reviewsCount: 8,
     stock: 8
   },
 
-  // المنتج (و) - classic-dot (مؤرشف / غير ظاهر في الرئيسية)
+  // المنتج (و) - classic-dot (مؤرشف)
   {
     id: '1d4e8104-17c9-4b64-8300-38340bdeaa18',
     nameAr: 'بيجامة كلاسيك دوت',
@@ -281,9 +291,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     fabricEn: 'Soft Cotton',
     material: 'قطن ناعم',
     washInstructionsAr: 'غسيل بمويه باردة.',
-    images: [
-      'https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/1783876911471_gev0lr37.jpeg'
-    ],
+    images: [],
     colors: [{ name: 'أحمر', hex: '#C0392B' }],
     sizes: ['One Size'],
     isBestSeller: false,

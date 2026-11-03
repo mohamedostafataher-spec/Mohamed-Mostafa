@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Truck, ArrowRight, ChevronRight, ChevronLeft, Sparkles, Minus, Plus, 
-  ShoppingBag, Heart, MessageCircle, ShieldCheck, RefreshCw, HelpCircle 
+  ShoppingBag, Heart, MessageCircle, ShieldCheck, RefreshCw, HelpCircle, Package 
 } from 'lucide-react';
 import { Product } from '../types';
 import { getIdFromSlug, getProductSlug } from '../utils/slugify';
@@ -132,13 +132,21 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
   const isFav = favorites.includes(product.id);
 
-  // Build clean images array
-  const rawList = Array.isArray(product.images) && product.images.length > 0 
-    ? product.images 
-    : [cleanImgUrl('', product.category)];
-  const displayImages = rawList.map(img => cleanImgUrl(img, product.category));
+  // Build clean images array strictly from real product images
+  const validRawImages = Array.isArray(product.images) 
+    ? product.images.filter(img => img && typeof img === 'string' && img.trim() !== '')
+    : [];
+  
+  const displayImages = validRawImages.map(img => cleanImgUrl(img, product.category)).filter(Boolean);
 
-  const currentMainImage = displayImages[activeImageIdx] || displayImages[0];
+  if (displayImages.length === 0) {
+    console.warn(`[Sulta Images] No images found for product: ${product.nameAr} (${product.id})`);
+  }
+
+  const currentMainImage = displayImages[activeImageIdx] || displayImages[0] || '';
+  const colorName = selectedColor?.name || product.colors?.[0]?.name || 'لون كلاسيكي';
+  const fabricName = product.fabricAr || product.material || 'قطن فاخر';
+  const descriptiveAlt = `${product.nameAr || 'منتج سولته'} - ${colorName} - ${fabricName}`;
 
   const handleNextImage = () => {
     setActiveImageIdx(prev => (prev + 1) % displayImages.length);
@@ -332,15 +340,23 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <SultaImage 
-              src={currentMainImage} 
-              alt={product.h1 || `${product.nameAr} من سولته`} 
-              className="w-full h-full"
-              contain={false}
-              width={1000}
-              imgClassName="w-full h-full object-cover object-center"
-              priority={true}
-            />
+            {currentMainImage ? (
+              <SultaImage 
+                src={currentMainImage} 
+                alt={descriptiveAlt} 
+                className="w-full h-full"
+                contain={false}
+                width={1000}
+                imgClassName="w-full h-full object-cover object-center"
+                priority={true}
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 text-gray-500 p-6 text-center">
+                <Package size={48} className="text-gray-300 mb-3" />
+                <span className="font-bold text-gray-800 text-lg">{product.nameAr}</span>
+                <span className="text-xs text-gray-400 mt-1">لا توجد صور متوفرة حالياً</span>
+              </div>
+            )}
 
             {displayImages.length > 1 && (
               <>
@@ -530,7 +546,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                 type="button"
                 disabled={isOutOfStock}
                 onClick={() => onAddToCart(product, selectedColor, 'One Size', quantity)}
-                className="flex-1 bg-[#111827] hover:bg-black text-white py-4 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all active:scale-98 shadow-md cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="flex-1 bg-[#A44C5C] hover:bg-[#8e3e4d] text-white py-4 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all active:scale-98 shadow-md cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 <ShoppingBag size={20} />
                 <span>{isOutOfStock ? 'نفدت الكمية' : `إضافة إلى الحقيبة (${quantity})`}</span>

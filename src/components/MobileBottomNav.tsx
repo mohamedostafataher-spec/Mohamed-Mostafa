@@ -77,7 +77,7 @@ export default function MobileBottomNav({
               <div className="relative mb-1">
                 <Icon size={22} className={isActive ? 'stroke-[2.5]' : 'stroke-[2]'} />
                 {tab.badge > 0 && (
-                  <span className="absolute -top-1.5 -left-2 bg-[#111827] text-white text-[9px] font-black w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-white">
+                  <span className="absolute -top-1.5 -left-2 bg-[#A44C5C] text-white text-[9px] font-black w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-white">
                     {tab.badge}
                   </span>
                 )}

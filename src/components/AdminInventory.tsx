@@ -198,9 +198,9 @@ export default function AdminInventory() {
                       <td className="py-3.5 px-5">
                         <div className="flex items-center gap-3">
                           <img
-                            src={p.images?.[0] || '/img/sulta_product_1.png'}
+                            src={p.images?.[0] || ''}
                             alt={p.nameAr}
-                            className="w-10 h-10 object-cover rounded-xl border border-gray-200 shrink-0"
+                            className="w-10 h-10 object-cover rounded-xl border border-gray-200 shrink-0 bg-gray-100"
                           />
                           <div>
                             <span className="font-bold text-gray-900 block">{p.nameAr}</span>

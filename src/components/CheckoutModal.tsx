@@ -18,7 +18,8 @@ import {
   Globe,
   PackageSearch,
   Upload,
-  Image as ImageIcon
+  Image as ImageIcon,
+  CreditCard
 } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { calculateEffectiveDiscount } from '../utils/discountUtils';
@@ -39,6 +40,7 @@ import {
   PaymentGatewayStatus,
   isPaymobConfigured
 } from '../payment';
+import PaymentMethodsDisplay from './PaymentMethodsDisplay';
 
 interface CheckoutModalProps {
   country: Country;
@@ -293,6 +295,27 @@ export default function CheckoutModal({
     };
 
     try {
+      // CARD / MADA / APPLE PAY
+      if (selectedPayment === 'card') {
+        const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
+          orderParams,
+          'card'
+        );
+        setActiveOrder(order);
+
+        if (paymentIntent.success && paymentIntent.iframeUrl) {
+          setIframePaymentUrl(paymentIntent.iframeUrl);
+          return;
+        } else if (paymentIntent.success && paymentIntent.redirectionUrl) {
+          window.location.href = paymentIntent.redirectionUrl;
+          return;
+        } else {
+          setPaymentStatus('failed');
+          setErrorMsg(paymentIntent.errorMessage || 'تعذر بدء عملية الدفع الإلكتروني. يرجى المحاولة لاحقاً.');
+          return;
+        }
+      }
+
       // DIRECT BANK TRANSFER (AL RAJHI BANK)
       if (selectedPayment === 'bank_transfer') {
         const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
@@ -618,6 +641,31 @@ export default function CheckoutModal({
     );
   }
 
+  // Gateway Iframe Overlay
+  if (iframePaymentUrl) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-3 sm:p-4" dir="rtl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" onClick={() => setIframePaymentUrl(null)} />
+        <div className="relative bg-white w-full max-w-2xl h-[90vh] rounded-3xl overflow-hidden shadow-2xl z-30 border border-gray-200 flex flex-col animate-scale-up">
+          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Lock size={14} className="text-emerald-600" />
+              <h3 className="text-sm font-bold text-gray-900">إتمام الدفع الآمن 🔒</h3>
+            </div>
+            <button onClick={() => setIframePaymentUrl(null)} className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full transition-colors cursor-pointer">
+              <X size={18} />
+            </button>
+          </div>
+          <iframe 
+            src={iframePaymentUrl} 
+            className="flex-1 w-full border-none"
+            title="Sulta Payment Gateway"
+          />
+        </div>
+      </div>
+    );
+  }
+
   // MAIN CHECKOUT MODAL
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4" dir="rtl">
@@ -797,16 +845,16 @@ export default function CheckoutModal({
                 </div>
 
                 {/* visible Payment Methods in Step 1 to eliminate uncertainty */}
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-right space-y-1.5">
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-right space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-gray-900 flex items-center gap-1.5">
                       <Lock size={13} className="text-emerald-600" />
-                      <span>وسائل الدفع المتاحة في الخطوة التالية:</span>
+                      <span>وسائل الدفع المتاحة:</span>
                     </span>
-                    <span className="text-[10px] text-gray-400">خيارات مرنة ومباشرة</span>
+                    <PaymentMethodsDisplay variant="checkout" />
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-0.5 rounded text-[10px] font-bold">تحويل بنكي مباشر (مصرف الراجحي عبر IBAN ورقم الحساب) 🇸🇦</span>
+                    <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-0.5 rounded text-[10px] font-bold">تحويل بنكي مباشر (الراجحي / العربي) 🇸🇦</span>
                     <span className="bg-emerald-50 text-emerald-850 border border-emerald-200 px-2.5 py-0.5 rounded text-[10px] font-bold text-emerald-700">الدفع عند الاستلام (COD) 📦</span>
                   </div>
                 </div>
@@ -877,6 +925,43 @@ export default function CheckoutModal({
                       </span>
                     </div>
                   </div>
+
+                  {/* OPTION 3: ONLINE CARD PAYMENT (Mada / Visa / Mastercard / Apple Pay) */}
+                  {isPaymobConfigured() && (
+                    <div
+                      onClick={() => setSelectedPayment('card')}
+                      className={`w-full text-right p-4 rounded-2xl transition-all border cursor-pointer ${
+                        selectedPayment === 'card'
+                          ? 'border-[#A44C5C] bg-[#FCF5F6] shadow-xs ring-1 ring-[#A44C5C]'
+                          : 'border-gray-200 bg-white hover:bg-gray-50/60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="w-10 h-10 rounded-xl bg-[#FCF5F6] text-[#A44C5C] flex items-center justify-center shrink-0">
+                            <CreditCard size={18} />
+                          </span>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-xs text-gray-950">
+                                بطاقة مدى أو ائتمانية / Apple Pay
+                              </span>
+                              <PaymentMethodsDisplay variant="checkout" />
+                            </div>
+                            <p className="text-[10px] text-gray-500 mt-0.5">
+                              دفع إلكتروني آمن وسريع عبر تشفير 3D Secure
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          selectedPayment === 'card' ? 'border-[#A44C5C]' : 'border-gray-300'
+                        }`}>
+                          {selectedPayment === 'card' && <span className="w-2 h-2 bg-[#A44C5C] rounded-full" />}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* OPTION 2: BANK TRANSFER / MADA */}
                   <div

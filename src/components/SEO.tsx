@@ -14,7 +14,7 @@ const SEO: React.FC<SEOProps> = ({
   title, 
   description, 
   path = '/', 
-  image = '/img/tulip-crinkle-cotton-pajama.webp', 
+  image = '/img/sulta_hero_banner_real.webp', 
   type = 'website',
   noindex = false
 }) => {

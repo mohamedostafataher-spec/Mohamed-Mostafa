@@ -407,9 +407,9 @@ export default function AdminMarketingCenter() {
           setFeedPosts(JSON.parse(localFeed));
         } else {
           const defaults: SocialFeedPost[] = [
-            { id: 'feed-1', platform: 'instagram', mediaUrl: '/img/sulta_product_1.png', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سولته', likes: 1420, comments: 65, order: 1 },
-            { id: 'feed-2', platform: 'instagram', mediaUrl: '/img/sulta_loungewear.png', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة ملوكية ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
-            { id: 'feed-3', platform: 'instagram', mediaUrl: '/img/sulta_product_2.png', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
+            { id: 'feed-1', platform: 'instagram', mediaUrl: '/img/sulta_hero_banner_real.webp', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سولته', likes: 1420, comments: 65, order: 1 },
+            { id: 'feed-2', platform: 'instagram', mediaUrl: '/img/sulta_hero_banner_real.webp', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة ملوكية ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
+            { id: 'feed-3', platform: 'instagram', mediaUrl: '/img/sulta_hero_banner_real.webp', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
           ];
           setFeedPosts(defaults);
           localStorage.setItem('sulta_marketing_feeds', JSON.stringify(defaults));

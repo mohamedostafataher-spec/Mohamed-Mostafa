@@ -130,7 +130,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     slug: "bride-pajama-secrets",
     content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولته المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولته بالبدء بقطع الأنسجة الملكية المفتوحة، وتطويقها بالدانتيل الراقي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
     excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
-    imageUrl: "/img/sulta_default_1_1781140865386.png",
+    imageUrl: "/img/sulta_hero_banner_real.webp",
     author: "Sulta Atelier",
     category: "Couture",
     tags: ["Bridal", "Luxury", "Styling"],
@@ -218,7 +218,7 @@ export function cleanText(text: any): any {
 
 export function cleanImgUrl(url: any, width: number | string = 1200): string {
   if (!url || typeof url !== 'string' || url.trim() === '' || url.trim() === 'null' || url.trim() === 'undefined') {
-    return '/img/sulta_default_1_1781140865386.webp';
+    return '';
   }
 
   const cleaned = url.trim();
@@ -262,7 +262,7 @@ export function cleanImgUrl(url: any, width: number | string = 1200): string {
     return `https://wsrv.nl/?url=${encodeURIComponent(fullSupabaseUrl)}&w=${w}&output=webp&q=85&il`;
   }
 
-  return '/img/sulta_default_1_1781140865386.webp';
+  return '';
 }
 
 
@@ -291,9 +291,7 @@ function mapCollection(data: any): Collection {
 function mapSettings(data: any): Settings {
   const rawHero = Array.isArray(data.hero_images) ? data.hero_images : (data.hero_images ? JSON.parse(data.hero_images) : []);
   const checkedHero = (rawHero && rawHero.length > 0) ? rawHero : [
-    '/img/sulta_luxury_banner.jpg',
-    '/img/sulta_collections_1_1781140831329.png',
-    '/img/sulta_loungewear_1_1781140813379.png'
+    '/img/sulta_hero_banner_real.webp'
   ];
 
   let mappedSiteName = cleanText(data.site_name || 'Sulta');
@@ -318,7 +316,7 @@ function mapSettings(data: any): Settings {
 
   return {
     siteName: mappedSiteName,
-    logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_couture_luxury_banner.jpg',
+    logo: cleanImgUrl(data.logo, 'sleepwear') || '/img/sulta_hero_banner_real.webp',
     promoBannerAr: cleanText(data.promo_banner_ar),
     promoEndTime: data.promo_end_time,
     heroMiniAlertAr: cleanText(data.hero_mini_alert_ar),
@@ -372,6 +370,19 @@ function mapSettings(data: any): Settings {
 }
 
 function mapProduct(data: any): Product {
+  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id || (data.id && p.id.startsWith(data.id.slice(0, 8)))) || SEED_FALLBACK_PRODUCTS.find(p => {
+    const n = data.name_ar || data.name || '';
+    if (!n) return false;
+    if (n.includes('عاجي') || n.includes('أوف وايت') || n.includes('Ivory')) return p.id.startsWith('54929551');
+    if (n.includes('فيونكة') || n.includes('سُكّر') || n.includes('Sugar')) return p.id.startsWith('8d738e1c');
+    if (n.includes('فلورا') || n.includes('Flora') || n.includes('توليب')) return p.id.startsWith('614f6daa');
+    if (n.includes('روج') || n.includes('حمالات') || n.includes('ليلك') || n.includes('Polka')) return p.id.startsWith('51005136');
+    if (n.includes('روزي') || n.includes('مخمل') || n.includes('Velvet')) return p.id.startsWith('78f851f3');
+    if (n.includes('روزا') || n.includes('Rosa')) return p.id.startsWith('bf2ba4f4');
+    if (n.includes('نُقط') || n.includes('Dot') || n.includes('كلاسيك')) return p.id.startsWith('1d4e8104');
+    return false;
+  });
+
   const catKey = data.category || 'sleepwear';
   let rawImages: any[] = [];
   if (Array.isArray(data.images)) {
@@ -387,24 +398,19 @@ function mapProduct(data: any): Product {
   if ((!rawImages || rawImages.length === 0) && data.image_url) {
     rawImages = [data.image_url];
   }
+
+  // Strictly from Supabase data.image_url and data.images
+  const designatedCover = data.image_url || '';
+  if (designatedCover && !rawImages.includes(designatedCover)) {
+    rawImages = [designatedCover, ...rawImages];
+  } else if (designatedCover && rawImages.indexOf(designatedCover) > 0) {
+    rawImages = [designatedCover, ...rawImages.filter(img => img !== designatedCover)];
+  }
+
   const validImages = (rawImages || []).filter((img: any) => img && typeof img === 'string' && img.trim() !== '');
   const cleanedImages = validImages.length > 0
-    ? validImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey))
-    : [cleanImgUrl('', catKey)];
-
-  // Match fallback product first
-  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id || (data.id && p.id.startsWith(data.id.slice(0, 8)))) || SEED_FALLBACK_PRODUCTS.find(p => {
-    const n = data.name_ar || data.name || '';
-    if (!n) return false;
-    if (n.includes('عاجي') || n.includes('أوف وايت') || n.includes('Ivory')) return p.id.startsWith('54929551');
-    if (n.includes('فيونكة') || n.includes('سُكّر') || n.includes('Sugar')) return p.id.startsWith('8d738e1c');
-    if (n.includes('فلورا') || n.includes('Flora') || n.includes('توليب')) return p.id.startsWith('614f6daa');
-    if (n.includes('روج') || n.includes('حمالات') || n.includes('ليلك') || n.includes('Polka')) return p.id.startsWith('51005136');
-    if (n.includes('روزي') || n.includes('مخمل') || n.includes('Velvet')) return p.id.startsWith('78f851f3');
-    if (n.includes('روزا') || n.includes('Rosa')) return p.id.startsWith('bf2ba4f4');
-    if (n.includes('نُقط') || n.includes('Dot') || n.includes('كلاسيك')) return p.id.startsWith('1d4e8104');
-    return false;
-  });
+    ? validImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey)).filter(Boolean)
+    : (fallbackProduct?.images ? fallbackProduct.images.map(img => cleanImgUrl(img, catKey)).filter(Boolean) : []);
 
   // Name resolution: DB physical columns FIRST
   let nameAr = data.name_ar || (fallbackProduct ? fallbackProduct.nameAr : '') || (data.name ? data.name.split(' | ')[0] : '') || 'منتج سولته';
@@ -1007,7 +1013,7 @@ export const dbService = {
     onSuccess: (categories: Category[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('categories').select('*').then(({ data, error }) => {
+    supabase.from('categories').select('id, name, name_ar, name_en, slug, image_url').then(({ data, error }) => {
       if (error) {
         onSuccess([]);
       } else if (data) {
@@ -1020,7 +1026,7 @@ export const dbService = {
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, async () => {
         try {
-          const { data, error } = await supabase.from('categories').select('*');
+          const { data, error } = await supabase.from('categories').select('id, name, name_ar, name_en, slug, image_url');
           if (error) {
             onSuccess([]);
           } else if (data) {
@@ -1093,13 +1099,13 @@ export const dbService = {
     onSuccess: (collections: Collection[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('collections').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapCollection)); }).catch((err) => { console.warn('Supabase fetch failed for collections', err); /* fallback provided by state default */ });
+    supabase.from('collections').select('id, name_ar, name_en, description_ar, description_en, image_url').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapCollection)); }).catch((err) => { console.warn('Supabase fetch failed for collections', err); /* fallback provided by state default */ });
 
     const channelName = 'public:collections:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'collections' }, async () => {
-        const { data } = await supabase.from('collections').select('*');
+        const { data } = await supabase.from('collections').select('id, name_ar, name_en, description_ar, description_en, image_url');
         if (data) onSuccess(data.map(mapCollection));
       })
       .subscribe();
@@ -1164,7 +1170,7 @@ export const dbService = {
     // Immediate optimistic delivery of fallback + any local edits so page loads instantly with correct prices
     deliverProducts(SEED_FALLBACK_PRODUCTS);
 
-    supabase.from('products').select('*').then(({ data, error }) => {
+    supabase.from('products').select('id, name_ar, name_en, name, category, category_ar, price_sa, price_eg, price, sale_price_sa, sale_price_eg, sale_price, stock, regular_price, regular_price_since, discount_percent, discount_starts_at, discount_ends_at, discount_status, is_discount_active, images, image_url, video, colors, sizes, is_best_seller, rating, reviews_count, sku, compare_at_price, sale_ends_at, featured, status, h1, seo_title, short_description, slug, material, size_info, care_instructions, tags, collection, seo, created_at').then(({ data, error }) => {
       if (error || !data || data.length === 0) {
         console.warn('[Sulta DB] Supabase products empty or error, using fallback products with active images:', error);
         deliverProducts(SEED_FALLBACK_PRODUCTS);
@@ -1184,7 +1190,7 @@ export const dbService = {
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         try {
-          const { data, error } = await supabase.from('products').select('*');
+          const { data, error } = await supabase.from('products').select('id, name_ar, name_en, name, category, category_ar, price_sa, price_eg, price, sale_price_sa, sale_price_eg, sale_price, stock, regular_price, regular_price_since, discount_percent, discount_starts_at, discount_ends_at, discount_status, is_discount_active, images, image_url, video, colors, sizes, is_best_seller, rating, reviews_count, sku, compare_at_price, sale_ends_at, featured, status, h1, seo_title, short_description, slug, material, size_info, care_instructions, tags, collection, seo, created_at');
           if (error) {
             console.error('[Sulta DB] Realtime error on products update:', error);
           } else if (data) {
@@ -1257,13 +1263,13 @@ export const dbService = {
     onSuccess: (reviews: Review[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('reviews').select('*').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapReview)); }).catch((err) => { console.warn('Supabase fetch failed for reviews', err); /* fallback provided by state default */ });
+    supabase.from('reviews').select('id, product_id, user_id, username, avatar, rating, comment, country, product_name, is_verified_purchase, status, images, created_at').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapReview)); }).catch((err) => { console.warn('Supabase fetch failed for reviews', err); /* fallback provided by state default */ });
 
     const channelName = 'public:reviews:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, async () => {
-        const { data } = await supabase.from('reviews').select('*');
+        const { data } = await supabase.from('reviews').select('id, product_id, user_id, username, avatar, rating, comment, country, product_name, is_verified_purchase, status, images, created_at');
         if (data) onSuccess(data.map(mapReview));
       })
       .subscribe();
@@ -1341,7 +1347,7 @@ export const dbService = {
     const fetchAll = async () => {
       try {
         const [ordersRes, ticketsRes] = await Promise.all([
-          supabase.from('orders').select('*').order('created_at', { ascending: false }),
+          supabase.from('orders').select('id, customer_name, phone, country, city, address, notes, gift_message, gift_card_theme, items, total_price, currency, payment_method, status, receipt_image_url, tracking_number, tracking_url, created_at').order('created_at', { ascending: false }),
           // Fetch both ORDER: and ORDER- for historical compatibility
           supabase.from('support_tickets').select('*').or('subject.like.ORDER:%,subject.like.ORDER-%').order('created_at', { ascending: false })
         ]);
@@ -1604,10 +1610,11 @@ export const dbService = {
       console.warn("[Sulta DB] support_tickets exception:", err.message || err);
     }
 
-    // C. Record stock movement deduction for each ordered item
+    // C. Record stock movement deduction and UPDATE physical stock for each ordered item
     try {
       if (Array.isArray(order.items)) {
         for (const it of order.items) {
+          // 1. Log movement
           await dbService.recordStockMovement({
             productId: it.productId,
             productName: it.productName || 'قطعة سُلطة',
@@ -1618,6 +1625,24 @@ export const dbService = {
             referenceOrderId: finalId,
             adminName: 'النظام التلقائي'
           });
+
+          // 2. Physical update to products table to keep "In Stock / Out of Stock" labels accurate
+          try {
+            const { data: pData } = await supabase.from('products').select('stock').eq('id', it.productId).single();
+            if (pData) {
+              const currentStock = Number(pData.stock || 0);
+              const nextStock = Math.max(0, currentStock - Number(it.quantity || 1));
+              await dbService.updateProductStock(
+                it.productId,
+                { id: it.productId, stock: currentStock } as any,
+                nextStock,
+                `خصم آلي لطلب #${finalId.slice(0, 8)}`,
+                'نظام سُلطة'
+              );
+            }
+          } catch (pErr) {
+            console.warn(`[Sulta DB] Failed to update physical stock for ${it.productId}:`, pErr);
+          }
         }
       }
     } catch (smErr) {
@@ -1914,7 +1939,7 @@ export const dbService = {
             try {
               payload.images = JSON.parse(payload.images);
             } catch {
-              payload.images = [payload.images || '/img/sulta_product_1.png'];
+              payload.images = payload.images ? [payload.images] : [];
             }
           }
           if (!Array.isArray(payload.images)) {
@@ -1982,7 +2007,7 @@ export const dbService = {
         fabricAr: 'كوتور ناعم',
         fabricEn: 'Soft Couture',
         washInstructionsAr: 'غسيل لطيف',
-        images: ['/img/sulta_product_1.png'],
+        images: [],
         colors: [{ name: 'وردي كوتور', hex: '#E8A5B8' }],
         sizes: ['S', 'M', 'L', 'XL'],
         stock: 10,
