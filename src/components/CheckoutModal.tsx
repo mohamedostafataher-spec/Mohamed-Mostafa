@@ -25,7 +25,7 @@ import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
 import { calculateEffectiveDiscount } from '../utils/discountUtils';
 import { WhatsAppService } from '../services/whatsappService';
 import { agentSystem } from '../services/agentSystem';
-import { supabase } from '../services/db';
+import { dbService, supabase } from '../services/db';
 import { trackInitiateCheckout, trackPurchase, trackAddPaymentInfo } from '../utils/analytics';
 import { 
   ttqIdentify, 
@@ -87,7 +87,7 @@ export default function CheckoutModal({
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
 
-  const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReceiptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
@@ -95,16 +95,18 @@ export default function CheckoutModal({
       return;
     }
     setIsUploadingReceipt(true);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setReceiptImage(event.target?.result as string);
+    try {
+      const path = await dbService.uploadReceipt(file);
+      if (path) {
+        setReceiptImage(path);
+      } else {
+        setErrorMsg('فشل رفع الإيصال، يرجى المحاولة مجدداً.');
+      }
+    } catch (err) {
+      setErrorMsg('حدث خطأ أثناء رفع الإيصال.');
+    } finally {
       setIsUploadingReceipt(false);
-    };
-    reader.onerror = () => {
-      setErrorMsg('تعذر قراءة ملف الصورة، يرجى المحاولة مجدداً.');
-      setIsUploadingReceipt(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleCopyIban = (ibanText: string) => {
@@ -420,7 +422,7 @@ export default function CheckoutModal({
           </div>
 
           <span className="text-[11px] font-bold text-[#A44C5C] tracking-widest uppercase block mb-1">
-            Sulta ATELIER 🇸🇦 المملكة العربية السعودية
+            Sulta 🇸🇦 المملكة العربية السعودية
           </span>
           
           <h3 className="text-xl sm:text-2xl font-black text-gray-950 mb-2">

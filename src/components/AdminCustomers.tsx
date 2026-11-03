@@ -71,7 +71,7 @@ export default function AdminCustomers({ orders, toast }: AdminCustomersProps) {
     }
 
     const greeting = encodeURIComponent(
-      `أهلاً بكِ عزيزتنا ${customer.name} من SULTA Atelier 👑\nسعداء جدًا بتسوقكِ معنا، ويسرنا تواصل كونسيرج سُلطة معكِ للتأكد من رضاكِ التام عن طلبيتك وتقديم كل الدعم لكِ ✨`
+      `أهلاً بكِ عزيزتنا ${customer.name} من Sulta 👑\nسعداء جدًا بتسوقكِ معنا، ويسرنا تواصل كونسيرج سُلطة معكِ للتأكد من رضاكِ التام عن طلبيتك وتقديم كل الدعم لكِ ✨`
     );
 
     window.open(`https://wa.me/${targetPhone}?text=${greeting}`, '_blank');

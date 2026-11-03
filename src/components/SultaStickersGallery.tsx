@@ -23,7 +23,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
       id: 'sulta-m1',
       title: 'سلطانة في السرير، ملكة في الكهف 👑',
       description: 'للسلطانات اللواتي يعشقن النوم العميق ببيجامات الكوتور المطرزة يدوياً.',
-      imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
+      imageUrl: '',
       category: 'meme',
       sharesCount: 142
     },
@@ -31,7 +31,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
       id: 'sulta-s1',
       title: 'ريلاكس يا عمري.. صولا تعتني بكِ 🌸',
       description: 'شعار العناية الخاص بالملصقات الرسمية المرفقة بعلب المنتجات الفاخرة.',
-      imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop',
+      imageUrl: '',
       category: 'sticker',
       sharesCount: 389
     },
@@ -39,7 +39,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
       id: 'sulta-m2',
       title: 'عندما تكون بيجامتكِ أغلى من مستقبلي 💅',
       description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الفاخر صالون صولا.',
-      imageUrl: 'https://images.unsplash.com/photo-1549046486-3a62df998e36?q=80&w=600&auto=format&fit=crop',
+      imageUrl: '',
       category: 'meme',
       sharesCount: 228
     },
@@ -47,7 +47,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
       id: 'sulta-s2',
       title: 'سحر الملمس الملوكي الفاتن ✨',
       description: 'تحذير ملكي: القطعة ناعمة جداً لدرجة تخدر الحواس فور ملامستها للبشرة.',
-      imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600&auto=format&fit=crop',
+      imageUrl: '',
       category: 'sticker',
       sharesCount: 512
     }

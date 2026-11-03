@@ -154,7 +154,7 @@ function AppContent() {
     const organizationSchema = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Sulta Atelier | سولته",
+      "name": "Sulta | سولته",
       "url": "https://sulta.vercel.app",
       "logo": "https://sulta.vercel.app/img/sulta_hero_banner_real.webp",
       "sameAs": [
@@ -173,7 +173,7 @@ function AppContent() {
     const websiteSchema = {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "Sulta Atelier",
+      "name": "Sulta",
       "url": "https://sulta.vercel.app",
       "potentialAction": {
         "@type": "SearchAction",
@@ -1185,7 +1185,7 @@ function AppContent() {
             <div>
               {/* Drawer Top logo bar */}
               <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-                <span className="font-serif text-2xl tracking-widest text-[#0B0B0B] font-light">Sulta ATELIER</span>
+                <span className="font-serif text-2xl tracking-widest text-[#0B0B0B] font-light">Sulta</span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-gray-500 hover:text-red-500 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"

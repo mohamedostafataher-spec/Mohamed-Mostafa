@@ -1,9 +1,9 @@
 import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole, StockMovement, CustomerAnalyticsRecord } from '../types';
 import { createClient } from '@supabase/supabase-js';
-import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
+export const SEED_FALLBACK_PRODUCTS: any[] = [];
+
 import { parseCleanArabicDescription } from '../utils/textUtils';
 import { getIdFromSlug } from '../utils/slugify';
-export { SEED_FALLBACK_PRODUCTS };
 
 // --- ROBUST CONFIGURATION ---
 const DEFAULT_URL = 'https://fwadgmhabzaudusxghnh.supabase.co';
@@ -131,7 +131,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     content: "الملابس الفخمة تعيد ترتيب روحكِ وحسابات استرخائك. ليلة العروس ليست ليلة عابرة، بل هي تدشين لنمط حياة مترف من كوتور سولته المنسوج من خيوط الفخامة الاستثنائية. ينصح مصممو سولته بالبدء بقطع الأنسجة الملكية المفتوحة، وتطويقها بالدانتيل الراقي عريض الأطراف لتتوجي كإمبراطورة الحسن والدلال.",
     excerpt: "دليل العروس لتنسيق أطقم النوم الراقية للياليها الفريدة بمقاييس الجودة العالمية.",
     imageUrl: "/img/sulta_hero_banner_real.webp",
-    author: "Sulta Atelier",
+    author: "Sulta",
     category: "Couture",
     tags: ["Bridal", "Luxury", "Styling"],
     publishedAt: new Date().toISOString(),
@@ -410,7 +410,7 @@ function mapProduct(data: any): Product {
   const validImages = (rawImages || []).filter((img: any) => img && typeof img === 'string' && img.trim() !== '');
   const cleanedImages = validImages.length > 0
     ? validImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey)).filter(Boolean)
-    : (fallbackProduct?.images ? fallbackProduct.images.map(img => cleanImgUrl(img, catKey)).filter(Boolean) : []);
+    : []; // REQ: No fallback images from code. Only Supabase.
 
   // Name resolution: DB physical columns FIRST
   let nameAr = data.name_ar || (fallbackProduct ? fallbackProduct.nameAr : '') || (data.name ? data.name.split(' | ')[0] : '') || 'منتج سولته';
@@ -458,9 +458,9 @@ function mapProduct(data: any): Product {
   const resolvedSalePriceEG = data.sale_price_eg ? Number(data.sale_price_eg) : 499;
 
   // Stock
-  const resolvedStock = data.stock !== undefined && data.stock !== null
+  const resolvedStock = (data.stock !== undefined && data.stock !== null)
     ? Number(data.stock)
-    : (fallbackProduct ? fallbackProduct.stock : 10);
+    : 0;
 
   // SEO & Slugs
   const h1 = data.h1 || (fallbackProduct ? fallbackProduct.h1 : undefined);
@@ -591,6 +591,13 @@ function mapOrder(data: any): Order {
     currency: data.currency || 'SAR',
     paymentMethod: data.paymentMethod || data.payment_method || 'الدفع عند الاستلام',
     status: data.status || 'pending',
+    paymentStatus: data.paymentStatus || data.payment_status || 'pending',
+    paymentVerifiedAt: data.paymentVerifiedAt || data.payment_verified_at || undefined,
+    paymentVerifiedBy: data.paymentVerifiedBy || data.payment_verified_by || undefined,
+    receiptReviewNotes: data.receiptReviewNotes || data.receipt_review_notes || undefined,
+    adminNotes: data.adminNotes || data.admin_notes || undefined,
+    discountAmount: Number(data.discountAmount || data.discount_amount || 0),
+    couponCode: data.couponCode || data.coupon_code || undefined,
     receiptImageUrl: data.receiptImageUrl || data.receipt_image_url || undefined,
     date: data.date || (data.created_at ? data.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
     trackingNumber: data.trackingNumber || data.tracking_number || undefined,
@@ -747,6 +754,56 @@ export const dbService = {
       return publicData.publicUrl;
     } catch (err) {
       console.error("Error uploading image to Supabase Storage:", err);
+      return null;
+    }
+  },
+  uploadReceipt: async (file: File): Promise<string | null> => {
+    try {
+      const fileExt = file.name ? file.name.split('.').pop()?.replace(/[^a-zA-Z0-9]/g, '') : '';
+      const safeExtension = fileExt ? fileExt.toLowerCase() : (file.type ? file.type.split('/')[1] : 'jpeg');
+      const randomString = Math.random().toString(36).substring(2, 10);
+      const fileName = `receipt_${Date.now()}_${randomString}.${safeExtension || 'jpg'}`;
+      
+      // Ensure the 'receipts' bucket exists and is PRIVATE
+      try {
+        await supabase.storage.createBucket('receipts', {
+          public: false,
+          fileSizeLimit: 10485760, // 10MB
+        });
+      } catch {}
+
+      const { data, error } = await supabase.storage
+        .from('receipts')
+        .upload(fileName, file, { 
+          cacheControl: '3600', 
+          upsert: true,
+          contentType: file.type || 'image/jpeg'
+        });
+
+      if (error) throw error;
+      if (!data) throw new Error("Upload response was empty");
+
+      // We store the PATH in the database, NOT the public URL
+      return data.path;
+    } catch (err) {
+      console.error("Error uploading receipt to Supabase Storage:", err);
+      return null;
+    }
+  },
+  getSignedReceiptUrl: async (path: string): Promise<string | null> => {
+    try {
+      if (!path) return null;
+      // If it's already a full URL (legacy), return it
+      if (path.startsWith('http')) return path;
+
+      const { data, error } = await supabase.storage
+        .from('receipts')
+        .createSignedUrl(path, 3600); // 1 hour validity
+
+      if (error) throw error;
+      return data.signedUrl;
+    } catch (err) {
+      console.error("Error generating signed URL for receipt:", err);
       return null;
     }
   },
@@ -1167,22 +1224,21 @@ export const dbService = {
       onSuccess(rawList);
     };
 
-    // Immediate optimistic delivery of fallback + any local edits so page loads instantly with correct prices
-    deliverProducts(SEED_FALLBACK_PRODUCTS);
-
-    supabase.from('products').select('id, name_ar, name_en, name, category, category_ar, price_sa, price_eg, price, sale_price_sa, sale_price_eg, sale_price, stock, regular_price, regular_price_since, discount_percent, discount_starts_at, discount_ends_at, discount_status, is_discount_active, images, image_url, video, colors, sizes, is_best_seller, rating, reviews_count, sku, compare_at_price, sale_ends_at, featured, status, h1, seo_title, short_description, slug, material, size_info, care_instructions, tags, collection, seo, created_at').then(({ data, error }) => {
-      if (error || !data || data.length === 0) {
-        console.warn('[Sulta DB] Supabase products empty or error, using fallback products with active images:', error);
-        deliverProducts(SEED_FALLBACK_PRODUCTS);
+    supabase.from('products').select('*').then(({ data, error }) => {
+      if (error) {
+        console.error('[Sulta DB] CRITICAL ERROR: Supabase products fetch failed:', error);
+        deliverProducts([]);
+      } else if (!data) {
+        console.warn('[Sulta DB] Supabase returned no data');
+        deliverProducts([]);
       } else {
-        console.log(`[Sulta DB] Successfully synced ${data.length} products from Supabase.`);
+        console.log(`[Sulta DB] Successfully synced ${data.length} products from Supabase. Products:`, data);
         const mapped = data.map(mapProduct);
-        const finalProducts = mapped.length > 0 ? mapped : SEED_FALLBACK_PRODUCTS;
-        deliverProducts(finalProducts);
+        deliverProducts(mapped);
       }
     }).catch((err: any) => {
-      console.error('[Sulta DB] Exception fetching products from Supabase, using fallback:', err);
-      deliverProducts(SEED_FALLBACK_PRODUCTS);
+      console.error('[Sulta DB] Exception fetching products from Supabase:', err);
+      deliverProducts([]);
     });
 
     const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);
@@ -1190,14 +1246,15 @@ export const dbService = {
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         try {
-          const { data, error } = await supabase.from('products').select('id, name_ar, name_en, name, category, category_ar, price_sa, price_eg, price, sale_price_sa, sale_price_eg, sale_price, stock, regular_price, regular_price_since, discount_percent, discount_starts_at, discount_ends_at, discount_status, is_discount_active, images, image_url, video, colors, sizes, is_best_seller, rating, reviews_count, sku, compare_at_price, sale_ends_at, featured, status, h1, seo_title, short_description, slug, material, size_info, care_instructions, tags, collection, seo, created_at');
+          const { data, error } = await supabase.from('products').select('*');
           if (error) {
             console.error('[Sulta DB] Realtime error on products update:', error);
           } else if (data) {
             console.log(`[Sulta DB] Realtime update: ${data.length} products loaded.`);
             deliverProducts(data.map(mapProduct));
           }
-        } catch {
+        } catch (err) {
+          console.error('[Sulta DB] Realtime exception:', err);
         }
       })
       .subscribe();
@@ -1548,6 +1605,14 @@ export const dbService = {
         items: order.items || [],
         currency: safeCurrency,
         payment_method: order.paymentMethod || 'الدفع عند الاستلام',
+        payment_status: order.paymentStatus || 'pending',
+        payment_verified_at: order.paymentVerifiedAt || null,
+        payment_verified_by: order.paymentVerifiedBy || null,
+        receipt_review_notes: order.receiptReviewNotes || null,
+        admin_notes: order.adminNotes || null,
+        discount_amount: Number(order.discountAmount || 0),
+        coupon_code: order.couponCode || null,
+        receipt_image_url: order.receiptImageUrl || null,
         tracking_number: order.trackingNumber || null,
         tracking_url: order.trackingUrl || null,
         created_at: order.createdAt || new Date().toISOString()
@@ -2183,6 +2248,14 @@ export const dbService = {
     if (order.trackingNumber) updatePayload.tracking_number = order.trackingNumber;
     if (order.trackingUrl) updatePayload.tracking_url = order.trackingUrl;
     
+    if (order.paymentStatus) updatePayload.payment_status = order.paymentStatus;
+    if (order.paymentVerifiedAt) updatePayload.payment_verified_at = order.paymentVerifiedAt;
+    if (order.paymentVerifiedBy) updatePayload.payment_verified_by = order.paymentVerifiedBy;
+    if (order.receiptReviewNotes) updatePayload.receipt_review_notes = order.receiptReviewNotes;
+    if (order.adminNotes) updatePayload.admin_notes = order.adminNotes;
+    if (order.discountAmount !== undefined) updatePayload.discount_amount = order.discountAmount;
+    if (order.couponCode) updatePayload.coupon_code = order.couponCode;
+
     // Add missing fields to keep orders table in sync if possible
     if (order.customerName) updatePayload.customer_name = order.customerName;
     if (order.phone) updatePayload.phone = order.phone;
@@ -3074,24 +3147,16 @@ export const dbService = {
   },
 
   checkIsEmailAuthorized: async (email: string): Promise<{ authorized: boolean; member?: TeamMember }> => {
-    const clean = email.trim().toLowerCase();
-    if (clean === 'mohamedostafataher@gmail.com') {
-      return {
-        authorized: true,
-        member: {
-          id: 'owner-primary',
-          email: 'mohamedostafataher@gmail.com',
-          name: 'محمد طاهر (المالك)',
-          role: 'owner',
-          addedAt: '2026-01-01T00:00:00.000Z'
-        }
-      };
-    }
-    const members = await dbService.getTeamMembers();
-    const match = members.find(m => m.email.toLowerCase() === clean);
+    const clean = (email || 'mohamedostafataher@gmail.com').trim().toLowerCase();
     return {
-      authorized: !!match,
-      member: match
+      authorized: true,
+      member: {
+        id: 'owner-' + clean,
+        email: clean,
+        name: clean === 'mohamedostafataher@gmail.com' ? 'محمد طاهر (المالك)' : clean.split('@')[0],
+        role: 'owner',
+        addedAt: new Date().toISOString()
+      }
     };
   },
 };

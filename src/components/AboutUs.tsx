@@ -183,7 +183,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
         <div className="mt-20 border-t border-[#DF8A9D]/20 pt-16">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
             <span className="text-[10px] text-[#A44C5C] tracking-[0.3em] font-bold uppercase block">
-              Sulta ATELIER BRAND GUIDELINES
+              Sulta BRAND GUIDELINES
             </span>
             <h3 className="font-serif text-3xl md:text-4xl text-[#0B0B0B] font-light">
               نظام الهوية البصرية والاستراتيجية الموحدة لعلامة Sulta 👑
@@ -341,7 +341,7 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
                         <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
                           <span className="font-serif text-5xl uppercase tracking-[0.2em] font-bold text-white">Sulta</span>
                         </div>
-                        <span className="text-[10px] text-[#DBC082] tracking-widest font-mono uppercase block z-1">Sulta ATELIER STANDARD</span>
+                        <span className="text-[10px] text-[#DBC082] tracking-widest font-mono uppercase block z-1">Sulta STANDARD</span>
                         <h5 className="font-serif text-base font-light z-1" style={{ color: currentFab.fontColor }}>
                           نعومةٌ تليقُ بِمَلِكَة
                         </h5>

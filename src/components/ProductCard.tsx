@@ -195,8 +195,8 @@ export default function ProductCard({
               product.stock === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : isAdded
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-[#A44C5C] text-white hover:bg-[#8F3F4E]'
+                  ? 'bg-emerald-600 text-white shadow-emerald-100/50'
+                  : 'bg-[#A44C5C] text-white hover:bg-[#A44C5C]/90 shadow-[#A44C5C]/20'
             }`}
             aria-label={isAdded ? "تمت الإضافة للسلة" : `إضافة منتج ${product.nameAr} للسلة`}
           >

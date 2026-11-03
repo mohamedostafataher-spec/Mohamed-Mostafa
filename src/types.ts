@@ -277,6 +277,13 @@ export interface Order {
   whatsappOptIn?: boolean;
   whatsappOptInDate?: string;
   receiptImageUrl?: string;
+  paymentStatus?: 'pending' | 'paid' | 'rejected' | 'refunded';
+  paymentVerifiedAt?: string;
+  paymentVerifiedBy?: string;
+  receiptReviewNotes?: string;
+  adminNotes?: string;
+  discountAmount?: number;
+  couponCode?: string;
   date: string;
   createdAt?: string;
 }

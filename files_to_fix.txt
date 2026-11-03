@@ -1,0 +1,4 @@
+src/components/Dashboard.tsx:869:        <title>فاتورة ضريبية مبسطة #${order.id.slice(0, 8).toUpperCase()} - SULTA Atelier</title>
+src/components/Dashboard.tsx:897:            <div class="brand">SULTA Atelier · سُلطة</div>
+src/components/Dashboard.tsx:953:          <p>شكرًا لتسوقكِ من SULTA Atelier · خيوط من الفخامة والدلال تليق بوقاركِ 👑</p>
+src/components/AdminCustomers.tsx:74:      `أهلاً بكِ عزيزتنا ${customer.name} من SULTA Atelier 👑\nسعداء جدًا بتسوقكِ معنا، ويسرنا تواصل كونسيرج سُلطة معكِ للتأكد من رضاكِ التام عن طلبيتك وتقديم كل الدعم لكِ ✨`

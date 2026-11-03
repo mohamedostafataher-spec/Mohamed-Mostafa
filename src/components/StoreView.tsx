@@ -175,6 +175,11 @@ export default function StoreView({
       });
     }
 
+    // Safeguard: if result is empty due to filters, fallback to all products so store is never empty
+    if (result.length === 0 && !searchQuery) {
+      result = products.filter(p => p.status !== 'archived');
+    }
+
     // Sorting
     return [...result].sort((a, b) => {
       if (sortBy === 'newest') {

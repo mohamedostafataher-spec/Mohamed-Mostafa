@@ -128,7 +128,7 @@ export default function AdminMarketingCenter() {
           id: 'sulta-m1',
           title: 'سلطانة في السرير، ملكة في الحياة 👑',
           description: 'للسلطانات اللواتي يعشقن النوم العميق ببيجامات الكوتور المطرزة يدوياً.',
-          imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
+          imageUrl: '',
           category: 'meme',
           sharesCount: 142
         },
@@ -136,7 +136,7 @@ export default function AdminMarketingCenter() {
           id: 'sulta-s1',
           title: 'ريلاكس يا عمري.. صولا تعتني بكِ 🌸',
           description: 'شعار العناية الخاص بالملصقات الرسمية المرفقة بعلب المنتجات الفاخرة.',
-          imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop',
+          imageUrl: '',
           category: 'sticker',
           sharesCount: 389
         },
@@ -144,7 +144,7 @@ export default function AdminMarketingCenter() {
           id: 'sulta-m2',
           title: 'عندما تكون بيجامتكِ أغلى من مستقبلي 💅',
           description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الفاخر صالون صولا.',
-          imageUrl: 'https://images.unsplash.com/photo-1549046486-3a62df998e36?q=80&w=600&auto=format&fit=crop',
+          imageUrl: '',
           category: 'meme',
           sharesCount: 228
         },
@@ -152,7 +152,7 @@ export default function AdminMarketingCenter() {
           id: 'sulta-s2',
           title: 'سحر الملمس الفاخر الفاتن ✨',
           description: 'تحذير ملكي: القطعة ناعمة جداً لدرجة تخدر الحواس فور ملامستها للبشرة.',
-          imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600&auto=format&fit=crop',
+          imageUrl: '',
           category: 'sticker',
           sharesCount: 512
         }
@@ -407,9 +407,9 @@ export default function AdminMarketingCenter() {
           setFeedPosts(JSON.parse(localFeed));
         } else {
           const defaults: SocialFeedPost[] = [
-            { id: 'feed-1', platform: 'instagram', mediaUrl: '/img/sulta_hero_banner_real.webp', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سولته', likes: 1420, comments: 65, order: 1 },
-            { id: 'feed-2', platform: 'instagram', mediaUrl: '/img/sulta_hero_banner_real.webp', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة ملوكية ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
-            { id: 'feed-3', platform: 'instagram', mediaUrl: '/img/sulta_hero_banner_real.webp', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
+            { id: 'feed-1', platform: 'instagram', mediaUrl: '', redirectUrl: '/store', caption: 'سحر الراحة والتفاصيل التي تروي قصتكِ اليومية ✨ #سولته', likes: 1420, comments: 65, order: 1 },
+            { id: 'feed-2', platform: 'instagram', mediaUrl: '', redirectUrl: '/store', caption: 'فيونكات الأنوثة، نعومة ملوكية ولمسة تليق بكل ملكة. متوفرة الآن.', likes: 980, comments: 42, order: 2 },
+            { id: 'feed-3', platform: 'instagram', mediaUrl: '', redirectUrl: '/store', caption: 'دلال لا تضاهيه إلا جودة صناعتنا. احصلي على الدفء والأناقة 🎀', likes: 2310, comments: 104, order: 3 }
           ];
           setFeedPosts(defaults);
           localStorage.setItem('sulta_marketing_feeds', JSON.stringify(defaults));

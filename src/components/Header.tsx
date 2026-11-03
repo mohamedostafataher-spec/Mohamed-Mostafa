@@ -122,6 +122,30 @@ export default function Header({
     }
   };
 
+  const [promoIndex, setPromoIndex] = useState(0);
+
+  useEffect(() => {
+    const promoTimer = setInterval(() => {
+      setPromoIndex((prev) => (prev + 1) % 3);
+    }, 3800);
+    return () => clearInterval(promoTimer);
+  }, []);
+
+  const promoItems = [
+    {
+      icon: <Truck size={13} className="text-amber-400 shrink-0" />,
+      text: `شحن مجاني للطلبات فوق ${country === 'SA' ? '299' : '1000'} ${country === 'SA' ? 'ر.س' : 'ج.م'} 🇸🇦`
+    },
+    {
+      icon: <Sparkles size={13} className="text-amber-400 shrink-0" />,
+      text: 'بيجامات قطن كوريشة فاخرة بكميات محدودة ✨'
+    },
+    {
+      icon: <Check size={13} className="text-amber-400 shrink-0" />,
+      text: 'استبدال سهل ومرن لضمان رضاكِ التام ✅'
+    }
+  ];
+
   const navCategories = [
     { id: 'home', label: 'الرئيسية 🏠' },
     { id: 'store', label: 'المتجر 🛍️' },
@@ -135,23 +159,32 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 font-sans transition-all duration-200" dir="rtl">
-      {/* 1. Global Announcement / Promo Bar */}
-      <div className="bg-[#111827] text-white overflow-hidden py-1.5 border-b border-white/5">
-        <div className="flex items-center justify-center gap-6 whitespace-nowrap animate-marquee px-4">
-          <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-tight">
-            <Truck size={14} className="text-amber-400" />
-            شحن مجاني للطلبات فوق {country === 'SA' ? '299' : '1000'} {country === 'SA' ? 'ر.س' : 'ج.م'} 🚚
-          </span>
-          <span className="text-gray-600 hidden sm:inline">•</span>
-          <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-tight">
-            <Sparkles size={14} className="text-amber-400" />
-            بيجامات قطن كوريشة فاخرة بكميات محدودة ✨
-          </span>
-          <span className="text-gray-600 hidden sm:inline">•</span>
-          <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-tight">
-            <Check size={14} className="text-amber-400" />
-            استبدال سهل ومرن لضمان رضاكِ التام ✅
-          </span>
+      {/* 1. Global Announcement / Promo Bar (100% Responsive, Zero Clipping on Mobile) */}
+      <div className="bg-[#111827] text-white py-2 px-3 border-b border-white/5 select-none" dir="rtl">
+        <div className="max-w-[1440px] mx-auto">
+          {/* Mobile View: Single rotating announcement (320px-430px optimized) */}
+          <div className="flex sm:hidden items-center justify-center min-h-[20px] overflow-hidden">
+            <div 
+              key={promoIndex}
+              className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-center animate-fade-in px-1"
+            >
+              {promoItems[promoIndex].icon}
+              <span className="tracking-tight">{promoItems[promoIndex].text}</span>
+            </div>
+          </div>
+
+          {/* Desktop View: Full 3-message banner */}
+          <div className="hidden sm:flex items-center justify-center gap-6 text-xs font-bold tracking-tight">
+            {promoItems.map((item, idx) => (
+              <React.Fragment key={idx}>
+                {idx > 0 && <span className="text-gray-600">•</span>}
+                <span className="flex items-center gap-1.5 hover:text-amber-300 transition-colors">
+                  {item.icon}
+                  <span>{item.text}</span>
+                </span>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -401,7 +401,7 @@ export default function SultaAutomationStudio({
   const [qrSocial, setQrSocial] = useState<string>('');
 
   // Girlhood Luxury Sticker Sheet State (Custom Requested Collection of 15 Stickers)
-  const [girlhoodSheetTitle, setGirlhoodSheetTitle] = useState<string>('Sulta ATELIER');
+  const [girlhoodSheetTitle, setGirlhoodSheetTitle] = useState<string>('Sulta');
   const [girlhoodSheetSubtitle, setGirlhoodSheetSubtitle] = useState<string>('GIRLHOOD LUXURY STICKERS');
   const [girlhoodSheetBottomText, setGirlhoodSheetBottomText] = useState<string>('Filipenses 4:13');
   const [girlhoodSheetInstagram, setGirlhoodSheetInstagram] = useState<string>('@sulta.sleepwear');
@@ -429,7 +429,7 @@ export default function SultaAutomationStudio({
   // Packaging Box Design Studio State Variables
   const [boxModelType, setBoxModelType] = useState<'pizza_box' | 'drawer_box' | 'rigid_shirt' | 'shopping_bag'>('pizza_box');
   const [boxColorTheme, setBoxColorTheme] = useState<'pink' | 'kraft' | 'midnight' | 'mint' | 'white'>('pink');
-  const [boxBrandTitle, setBoxBrandTitle] = useState<string>('Sulta ATELIER');
+  const [boxBrandTitle, setBoxBrandTitle] = useState<string>('Sulta');
   const [boxTagline, setBoxTagline] = useState<string>('Zero Calories Sleepwear Studio 🎀');
   const [boxSideStamp, setBoxSideStamp] = useState<string>('جماليات دافئة تليق بنوم الأميرات 👑');
   const [boxPatternTheme, setBoxPatternTheme] = useState<'stars' | 'bows' | 'minimal'>('bows');
@@ -452,7 +452,7 @@ export default function SultaAutomationStudio({
   useEffect(() => {
     const activeProduct = products.find(p => p.id === selectedProductId) || products[0];
     if (activeProduct) {
-      setBoxBrandTitle(`Sulta ATELIER`);
+      setBoxBrandTitle(`Sulta`);
       setBoxTagline(`Zero Calories [${activeProduct.nameAr || 'Sleepwear'}] 🎀`);
       setBoxSideStamp(`علامة سعودية ملكية تليق بأميرتنا ⚜️`);
 
@@ -1966,7 +1966,7 @@ export default function SultaAutomationStudio({
 
                     {/* Capturable bottom watermark */}
                     <div className="border-t border-stone-150 pt-3 mt-2 flex justify-between items-center text-[8px] text-stone-400 font-serif">
-                      <span>Designed & Engineered on Sulta Atelier v3.0</span>
+                      <span>Designed & Engineered on Sulta v3.0</span>
                       <span>طُبع خصيصاً لأميرات سولا ★ مصر</span>
                     </div>
 
@@ -1983,7 +1983,7 @@ export default function SultaAutomationStudio({
                   <div className="flex justify-between items-center border-b border-stone-150 pb-2.5">
                     <div className="flex items-center gap-1">
                       <span className="text-lg">👑</span>
-                      <span className="text-[10px] uppercase font-serif tracking-widest text-[#A44C5C] font-black">Sulta Atelier Private Card</span>
+                      <span className="text-[10px] uppercase font-serif tracking-widest text-[#A44C5C] font-black">Sulta Private Card</span>
                     </div>
                     <span className="text-[8px] text-stone-400 font-mono font-bold">A6 Cardstock Spec</span>
                   </div>

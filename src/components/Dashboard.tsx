@@ -16,6 +16,7 @@ import {
   Filter, 
   Edit2, 
   X, 
+  XCircle,
   DollarSign, 
   Check, 
   AlertCircle,
@@ -104,6 +105,58 @@ interface DashboardProps {
   onSignOut?: () => void;
 }
 
+/**
+ * Secure component to render private receipt images using signed URLs
+ */
+function ReceiptImage({ path }: { path: string }) {
+  const [url, setUrl] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let unmounted = false;
+    if (!path) return;
+    
+    // If it's already a full URL (legacy fallback), use it directly
+    if (path.startsWith('http')) {
+      setUrl(path);
+      setLoading(false);
+      return;
+    }
+
+    dbService.getSignedReceiptUrl(path).then(signedUrl => {
+      if (!unmounted) {
+        setUrl(signedUrl);
+        setLoading(false);
+      }
+    }).catch(() => {
+      if (!unmounted) setLoading(false);
+    });
+
+    return () => { unmounted = true; };
+  }, [path]);
+
+  if (loading) {
+    return <div className="h-16 w-[130px] bg-gray-100 animate-pulse rounded-xl border border-gray-200" />;
+  }
+
+  if (!url) {
+    return (
+      <div className="h-16 w-[130px] bg-rose-50 border border-rose-100 rounded-xl flex items-center justify-center text-[9px] text-rose-600 text-center px-2 font-bold">
+        خطأ في تحميل الإيصال ⚠️
+      </div>
+    );
+  }
+
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className="block relative group overflow-hidden rounded-xl border border-blue-200 max-w-[130px] shadow-2xs">
+      <img src={url} alt="إشعار التحويل" className="h-16 w-full object-cover group-hover:scale-105 transition-transform" />
+      <span className="absolute inset-0 bg-black/40 text-white text-[9.5px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        عرض بالحجم الكامل 🔍
+      </span>
+    </a>
+  );
+}
+
 export default function Dashboard({
   products,
   setProducts,
@@ -172,6 +225,7 @@ export default function Dashboard({
   // Search & Filter States
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>('current');
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>('all');
   const [productSearch, setProductSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
@@ -482,31 +536,44 @@ export default function Dashboard({
       if (orderStatusFilter === 'current') {
         return order.status === 'pending' || order.status === 'new' || order.status === 'processing' || order.status === 'shipped';
       }
-      if (orderStatusFilter === 'pending') {
-        return order.status === 'pending' || order.status === 'new';
+      // 3. Payment filter
+      if (paymentStatusFilter !== 'all' && order.paymentStatus !== paymentStatusFilter) {
+        return false;
       }
+
       return order.status === orderStatusFilter;
     });
-  }, [orders, orderSearch, orderStatusFilter, delayedOrders]);
+  }, [orders, orderSearch, orderStatusFilter, paymentStatusFilter, delayedOrders]);
 
   // Real Metric Calculations directly from actual data
   const metrics = useMemo(() => {
+    const nonCancelledOrders = orders.filter(o => o.status !== 'cancelled');
     const totalOrders = orders.length;
-    const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
+    
+    // Revenue logic: only count non-cancelled
+    const grossRevenue = nonCancelledOrders.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
+    const paidRevenue = orders.filter(o => o.paymentStatus === 'paid').reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
+    const pendingRevenue = orders.filter(o => o.paymentStatus === 'pending').reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
+
     const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'new').length;
     const processingOrders = orders.filter(o => o.status === 'processing').length;
     const shippedOrders = orders.filter(o => o.status === 'shipped').length;
     const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
+    const cancelledOrdersCount = orders.filter(o => o.status === 'cancelled').length;
+    
     const totalProducts = products.length;
     const lowStockProducts = criticalStockProducts.length;
 
     return {
       totalOrders,
-      totalRevenue,
+      grossRevenue,
+      paidRevenue,
+      pendingRevenue,
       pendingOrders,
       processingOrders,
       shippedOrders,
       deliveredOrders,
+      cancelledOrdersCount,
       totalProducts,
       lowStockProducts
     };
@@ -545,7 +612,7 @@ export default function Dashboard({
       });
     }
 
-    let totalRevenueCalculated = 0;
+    let grossRevenueCalculated = 0;
     let todayRevenue = 0;
     let thisMonthRevenue = 0;
     const todayStr = now.toISOString().split('T')[0];
@@ -553,7 +620,9 @@ export default function Dashboard({
 
     for (const order of orders) {
       const price = Number(order.totalPrice) || 0;
-      totalRevenueCalculated += price;
+      if (order.status !== 'cancelled') {
+        grossRevenueCalculated += price;
+      }
 
       let orderDate: Date | null = null;
       if (order.createdAt) orderDate = new Date(order.createdAt);
@@ -604,7 +673,10 @@ export default function Dashboard({
     const finalMonthly = monthlyArr;
 
     const peakDay = finalDaily.reduce((max, curr) => curr.revenue > max.revenue ? curr : max, finalDaily[0] || { displayDate: '-', revenue: 0 });
-    const avgOrderValue = orders.length > 0 ? Math.round(totalRevenueCalculated / orders.length) : 0;
+    
+    // Only use non-cancelled orders for AOV
+    const nonCancelledOrders = orders.filter(o => o.status !== 'cancelled');
+    const avgOrderValue = nonCancelledOrders.length > 0 ? Math.round(grossRevenueCalculated / nonCancelledOrders.length) : 0;
 
     return {
       dailySalesData: finalDaily,
@@ -649,6 +721,53 @@ export default function Dashboard({
       toast?.(`تم تحديث حالة الطلب #${order.id.slice(0, 8)} إلى: ${getStatusLabel(newStatus)}`, 'success');
     } catch (err: any) {
       toast?.(`حدث خطأ أثناء تحديث حالة الطلب: ${err?.message || ''}`, 'error');
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  // Handle Update Payment Status (Verified Admin Action)
+  const handleUpdatePaymentStatus = async (order: Order, newPaymentStatus: Order['paymentStatus'], notes?: string) => {
+    setUpdatingOrderId(order.id);
+    const now = new Date().toISOString();
+    const updated: Order = { 
+      ...order, 
+      paymentStatus: newPaymentStatus,
+      paymentVerifiedAt: newPaymentStatus === 'paid' ? now : order.paymentVerifiedAt,
+      paymentVerifiedBy: newPaymentStatus === 'paid' ? (activeAdminUser?.name || activeAdminUser?.email) : order.paymentVerifiedBy,
+      receiptReviewNotes: notes || order.receiptReviewNotes
+    };
+
+    // Instruction requirement: Only verified payment evidence and authorized admin action confirm manual bank transfer
+    // If setting to 'paid', we might want to also auto-advance order status to 'processing' or 'confirmed'
+    if (newPaymentStatus === 'paid' && (order.status === 'pending' || order.status === 'new')) {
+      updated.status = 'processing';
+    }
+
+    try {
+      await dbService.updateOrder(updated);
+      setOrders(prev => prev.map(o => o.id === order.id ? updated : o));
+      if (selectedOrder && selectedOrder.id === order.id) {
+        setSelectedOrder(updated);
+      }
+      toast?.(`تم تحديث حالة الدفع للطلب #${order.id.slice(0, 8)} بنجاح ✅`, 'success');
+    } catch (err: any) {
+      toast?.(`فشل تحديث حالة الدفع: ${err?.message || ''}`, 'error');
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  // Handle Save Internal Admin Notes
+  const handleUpdateAdminNotes = async (order: Order, notes: string) => {
+    setUpdatingOrderId(order.id);
+    const updated: Order = { ...order, adminNotes: notes };
+    try {
+      await dbService.updateOrder(updated);
+      setOrders(prev => prev.map(o => o.id === order.id ? updated : o));
+      toast?.('تم حفظ الملاحظات الداخلية بنجاح 📝', 'success');
+    } catch (err: any) {
+      toast?.('فشل حفظ الملاحظات', 'error');
     } finally {
       setUpdatingOrderId(null);
     }
@@ -747,7 +866,7 @@ export default function Dashboard({
       <html dir="rtl" lang="ar">
       <head>
         <meta charset="utf-8">
-        <title>فاتورة ضريبية مبسطة #${order.id.slice(0, 8).toUpperCase()} - SULTA Atelier</title>
+        <title>فاتورة ضريبية مبسطة #${order.id.slice(0, 8).toUpperCase()} - Sulta</title>
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', sans-serif; margin: 0; padding: 30px; color: #1c1917; background: #fff; }
           .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #A44C5C; padding-bottom: 16px; margin-bottom: 24px; }
@@ -775,7 +894,7 @@ export default function Dashboard({
         </div>
         <div class="header">
           <div>
-            <div class="brand">SULTA Atelier · سُلطة</div>
+            <div class="brand">Sulta · سُلطة</div>
             <div class="sub">متجر ملابس وأزياء نوم نسائية فاخرة · المملكة العربية السعودية</div>
           </div>
           <div style="text-align: left;">
@@ -831,7 +950,7 @@ export default function Dashboard({
         </div>
 
         <div class="footer">
-          <p>شكرًا لتسوقكِ من SULTA Atelier · خيوط من الفخامة والدلال تليق بوقاركِ 👑</p>
+          <p>شكرًا لتسوقكِ من Sulta · خيوط من الفخامة والدلال تليق بوقاركِ 👑</p>
           <p>لأي استفسار بخصوص طلبيتكِ يرجى التواصل عبر الواتساب: 966552823677+ أو البريد: concierge@sulta.sa</p>
         </div>
         <script>window.onload = function() { setTimeout(function() { window.print(); }, 400); };</script>
@@ -1866,10 +1985,15 @@ export default function Dashboard({
             {/* Shopify-Style Metric Cards Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'إجمالي المبيعات (ر.س)', val: metrics.totalRevenue, sub: 'منذ الافتتاح', icon: <DollarSign size={20} />, color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
-                { label: 'طلبات مكتملة', val: metrics.deliveredOrders, sub: 'تم شحنها بنجاح', icon: <PackageCheck size={20} />, color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-                { label: 'طلبات قيد الانتظار', val: metrics.pendingOrders, sub: 'بانتظار التجهيز', icon: <Clock size={20} />, color: 'bg-amber-50 text-amber-600 border-amber-100' },
+                { label: 'إيرادات مؤكدة (ر.س)', val: metrics.paidRevenue, sub: 'مدفوعات مستلمة ✅', icon: <CheckCircle2 size={20} />, color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+                { label: 'إجمالي المبيعات (ر.س)', val: metrics.grossRevenue, sub: 'كافة الطلبات (عدا الملغى)', icon: <DollarSign size={20} />, color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
+                { label: 'مبالغ بانتظار التحويل', val: metrics.pendingRevenue, sub: 'بانتظار تأكيد الإيصال ⏳', icon: <Clock size={20} />, color: 'bg-amber-50 text-amber-600 border-amber-100' },
                 { label: 'إجمالي المنتجات', val: metrics.totalProducts, sub: 'في الكتالوج الملكي', icon: <ShoppingBag size={20} />, color: 'bg-purple-50 text-purple-600 border-purple-100' },
+                
+                { label: 'طلبات مكتملة', val: metrics.deliveredOrders, sub: 'تم تسليمها للعميلة', icon: <PackageCheck size={20} />, color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+                { label: 'قيد التجهيز/الشحن', val: metrics.processingOrders + metrics.shippedOrders, sub: 'جاري المعالجة', icon: <Truck size={20} />, color: 'bg-blue-50 text-blue-600 border-blue-100' },
+                { label: 'طلبات ملغاة', val: metrics.cancelledOrdersCount, sub: 'عمليات لم تكتمل', icon: <XCircle size={20} />, color: 'bg-rose-50 text-rose-600 border-rose-100' },
+                { label: 'منتجات منخفضة المخزون', val: metrics.lowStockProducts, sub: 'تتطلب إعادة تعبئة ⚠️', icon: <AlertTriangle size={20} />, color: 'bg-amber-50 text-amber-700 border-amber-200' },
               ].map((m, i) => (
                 <div key={i} className="bg-white rounded-3xl p-5 border border-gray-200 shadow-2xs hover:shadow-md transition-shadow space-y-3 relative overflow-hidden">
                   <div className="flex items-center justify-between">
@@ -2409,31 +2533,56 @@ export default function Dashboard({
               </div>
 
               {/* Status Filter */}
-              <div className="flex items-center gap-1 overflow-x-auto scrollbar-none text-xs">
-                {[
-                  { id: 'current', label: 'الطلبات الحالية 📦' },
-                  { id: 'all', label: 'الكل' },
-                  { id: 'delayed', label: `متأخرة (>48س) ⚠️ (${delayedOrders.length})` },
-                  { id: 'pending', label: 'جديد ⏳' },
-                  { id: 'processing', label: 'تجهيز 📦' },
-                  { id: 'shipped', label: 'شحن 🚚' },
-                  { id: 'delivered', label: 'مكتمل ✨' },
-                  { id: 'cancelled', label: 'ملغي ❌' },
-                ].map((st) => (
-                  <button
-                    key={st.id}
-                    onClick={() => setOrderStatusFilter(st.id)}
-                    className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer shrink-0 ${
-                      orderStatusFilter === st.id
-                        ? 'bg-[#A44C5C] text-white'
-                        : st.id === 'delayed' && delayedOrders.length > 0
-                        ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {st.label}
-                  </button>
-                ))}
+              <div className="flex flex-col gap-2 overflow-x-auto scrollbar-none">
+                <div className="flex items-center gap-1 text-xs">
+                  {[
+                    { id: 'current', label: 'الطلبات الحالية 📦' },
+                    { id: 'all', label: 'الكل' },
+                    { id: 'delayed', label: `متأخرة (>48س) ⚠️ (${delayedOrders.length})` },
+                    { id: 'pending', label: 'جديد ⏳' },
+                    { id: 'processing', label: 'تجهيز 📦' },
+                    { id: 'shipped', label: 'شحن 🚚' },
+                    { id: 'delivered', label: 'مكتمل ✨' },
+                    { id: 'cancelled', label: 'ملغي ❌' },
+                  ].map((st) => (
+                    <button
+                      key={st.id}
+                      onClick={() => setOrderStatusFilter(st.id)}
+                      className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer shrink-0 ${
+                        orderStatusFilter === st.id
+                          ? 'bg-[#A44C5C] text-white'
+                          : st.id === 'delayed' && delayedOrders.length > 0
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-1 text-[10px]">
+                  <span className="text-gray-400 font-bold ml-2">حالة الدفع:</span>
+                  {[
+                    { id: 'all', label: 'كافة المدفوعات' },
+                    { id: 'paid', label: 'مدفوع ✅' },
+                    { id: 'pending', label: 'قيد المراجعة ⏳' },
+                    { id: 'rejected', label: 'مرفوض ❌' },
+                    { id: 'refunded', label: 'مسترجع 🔄' },
+                  ].map((ps) => (
+                    <button
+                      key={ps.id}
+                      onClick={() => setPaymentStatusFilter(ps.id)}
+                      className={`px-2 py-1 rounded-lg font-bold transition-all cursor-pointer shrink-0 border ${
+                        paymentStatusFilter === ps.id
+                          ? 'bg-gray-900 text-white border-gray-900 shadow-xs'
+                          : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      {ps.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -2486,7 +2635,7 @@ export default function Dashboard({
                     type="button"
                     onClick={handleCreateTestOrder}
                     disabled={isCreatingTestOrder}
-                    className="bg-gray-950 hover:bg-black active:scale-95 text-white px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
+                    className="bg-burgundy hover:bg-burgundy/90 active:scale-95 text-white px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
                   >
                     <Sparkles size={14} className="text-amber-400" />
                     <span>{isCreatingTestOrder ? 'جاري إنشاء الطلب التجريبي...' : '🧪 تجربة إنشاء طلب تجريبي للاطمئنان'}</span>
@@ -2597,12 +2746,7 @@ export default function Dashboard({
                           {order.receiptImageUrl && (
                             <div className="mt-2 pt-2 border-t border-gray-200">
                               <span className="font-bold text-gray-800 text-[11px] block mb-1">📸 إشعار التحويل البنكي المرفق:</span>
-                              <a href={order.receiptImageUrl} target="_blank" rel="noopener noreferrer" className="block relative group overflow-hidden rounded-xl border border-blue-200 max-w-[130px] shadow-2xs">
-                                <img src={order.receiptImageUrl} alt="إشعار التحويل" className="h-16 w-full object-cover group-hover:scale-105 transition-transform" />
-                                <span className="absolute inset-0 bg-black/40 text-white text-[9.5px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  عرض بالحجم الكامل 🔍
-                                </span>
-                              </a>
+                              <ReceiptImage path={order.receiptImageUrl} />
                             </div>
                           )}
                           {order.notes && (
@@ -2613,27 +2757,97 @@ export default function Dashboard({
                         </div>
 
                         {/* Items ordered */}
-                        <div className="space-y-1.5 p-3 rounded-xl bg-gray-50 border border-gray-100 md:col-span-2">
+                        <div className="space-y-1.5 p-3 rounded-xl bg-gray-50 border border-gray-100">
                           <h4 className="font-bold text-gray-900 flex items-center justify-between">
                             <span>القطع المطلوبة ({order.items.length})</span>
-                            <span className="font-mono text-sm font-black text-black">
-                              الإجمالي: {Number(order.totalPrice).toLocaleString()} {order.currency || 'ر.س'}
-                            </span>
                           </h4>
                           <div className="divide-y divide-gray-200 max-h-40 overflow-y-auto pr-1">
                             {order.items.map((item, idx) => (
-                              <div key={idx} className="py-1.5 flex items-center justify-between text-xs">
-                                <div>
-                                  <span className="font-bold text-gray-900">• {item.productName}</span>
-                                  <span className="text-gray-500 text-[11px] mr-1.5">
-                                    ({item.color} - مقاس {item.size})
+                              <div key={idx} className="py-1.5 flex items-center justify-between text-[11px]">
+                                <div className="min-w-0 flex-1">
+                                  <span className="font-bold text-gray-900 truncate block">• {item.productName}</span>
+                                  <span className="text-gray-500 text-[10px]">
+                                    ({item.color} - {item.size})
                                   </span>
                                 </div>
-                                <div className="font-mono font-bold text-gray-800">
-                                  x{item.quantity} ({((item.price || 0) * item.quantity).toLocaleString()} ر.س)
+                                <div className="font-mono font-bold text-gray-800 shrink-0 ml-2">
+                                  x{item.quantity}
                                 </div>
                               </div>
                             ))}
+                          </div>
+                          <div className="pt-2 border-t border-gray-200 flex justify-between items-center">
+                            <span className="text-[10px] text-gray-500 font-bold uppercase">الإجمالي:</span>
+                            <span className="font-mono text-sm font-black text-black">
+                              {Number(order.totalPrice).toLocaleString()} {order.currency || 'ر.س'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Admin & Payment Workspace */}
+                        <div className="space-y-3 p-3 rounded-xl bg-[#FAF8F8] border border-[#DF8A9D]/10">
+                          <h4 className="font-bold text-gray-900 flex items-center gap-1.5">
+                            <ShieldCheck size={14} className="text-[#A44C5C]" />
+                            <span>مساحة الإدارة والدفع</span>
+                          </h4>
+
+                          {/* Payment Status Label & Actions */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-gray-100 shadow-3xs">
+                              <span className="text-[10px] text-gray-500 font-bold">حالة الدفع:</span>
+                              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                                order.paymentStatus === 'paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                order.paymentStatus === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                'bg-amber-50 text-amber-700 border-amber-200'
+                              }`}>
+                                {order.paymentStatus === 'paid' ? 'تم استلام المبلغ ✅' : 
+                                 order.paymentStatus === 'rejected' ? 'مرفوض ❌' : 
+                                 'بانتظار التأكيد ⏳'}
+                              </span>
+                            </div>
+
+                            {order.paymentStatus !== 'paid' && (
+                              <div className="flex gap-1.5">
+                                <button
+                                  onClick={() => handleUpdatePaymentStatus(order, 'paid')}
+                                  disabled={updatingOrderId === order.id}
+                                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-1.5 rounded-lg text-[10px] font-bold transition-all shadow-3xs active:scale-95 disabled:opacity-50"
+                                >
+                                  تأكيد الدفع ✅
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    const reason = prompt('سبب الرفض (اختياري):');
+                                    handleUpdatePaymentStatus(order, 'rejected', reason || undefined);
+                                  }}
+                                  disabled={updatingOrderId === order.id}
+                                  className="bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all shadow-3xs active:scale-95 disabled:opacity-50"
+                                >
+                                  رفض ❌
+                                </button>
+                              </div>
+                            )}
+
+                            {order.paymentVerifiedAt && (
+                              <div className="text-[9px] text-gray-400 font-medium">
+                                تم التحقق بواسطة: {order.paymentVerifiedBy || 'النظام'} في {new Date(order.paymentVerifiedAt).toLocaleString('ar-SA')}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Internal Admin Notes */}
+                          <div className="space-y-1.5 pt-1 border-t border-gray-150">
+                            <label className="text-[10px] text-gray-500 font-bold block">ملاحظات داخلية (سرية):</label>
+                            <textarea
+                              className="w-full bg-white border border-gray-200 rounded-lg p-2 text-[11px] focus:outline-none focus:border-[#A44C5C] min-h-[50px] resize-none"
+                              placeholder="أضيفي ملاحظاتكِ هنا..."
+                              defaultValue={order.adminNotes}
+                              onBlur={(e) => {
+                                if (e.target.value !== order.adminNotes) {
+                                  handleUpdateAdminNotes(order, e.target.value);
+                                }
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
@@ -4132,7 +4346,7 @@ export default function Dashboard({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-gray-150">
                 <div className="bg-[#FAF8F8] p-4 rounded-2xl border border-gray-150 space-y-1">
                   <span className="text-[10px] text-gray-400 font-bold uppercase">إجمالي الإيرادات</span>
-                  <div className="text-xl font-black text-gray-950 font-mono">{metrics.totalRevenue.toLocaleString()} ر.س</div>
+                  <div className="text-xl font-black text-gray-950 font-mono">{metrics.grossRevenue.toLocaleString()} ر.س</div>
                 </div>
                 <div className="bg-[#FAF8F8] p-4 rounded-2xl border border-gray-150 space-y-1">
                   <span className="text-[10px] text-gray-400 font-bold uppercase">متوسط السلة (AOV)</span>

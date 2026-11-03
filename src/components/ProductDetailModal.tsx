@@ -74,7 +74,7 @@ export default function ProductDetailModal({
       "sku": product.id,
       "brand": {
         "@type": "Brand",
-        "name": "Sulta Atelier"
+        "name": "Sulta"
       },
       "offers": {
         "@type": "Offer",

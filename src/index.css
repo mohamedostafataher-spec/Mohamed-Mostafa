@@ -5,11 +5,11 @@
   --font-serif: "Playfair Display", "Cairo", serif;
   
   --color-luxury-black: #0B0B0B;
-  --color-burgundy: #0B0B0B;
-  --color-soft-pink: #111827;
-  --color-light-pink: #F3F4F6;
-  --color-champagne-gold: #FFFFFF;
-  --color-off-white: #FFFFFF;
+  --color-burgundy: #A44C5C;
+  --color-soft-pink: #DF8A9D;
+  --color-light-pink: #FAF4F5;
+  --color-champagne-gold: #D4AF37;
+  --color-off-white: #FAF9F6;
 }
 
 body {
@@ -27,23 +27,23 @@ img {
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
-/* Global override to shift muddy beige to clean, pure white Salla style */
+/* Global styles to ensure clean, pure white Salla style */
 .bg-amber-50, .bg-pink-50, .bg-rose-50 {
-  background-color: #FFFFFF !important;
+  background-color: #FFFFFF;
 }
 
 /* Improve text contrast for accessibility (WCAG AA compliance) */
 .text-gray-300, .text-gray-400, .text-gray-450 {
-  color: #374151 !important; /* Dark gray for high contrast on white */
+  color: #374151; /* Dark gray for high contrast on white */
 }
 .text-gray-500 {
-  color: #1F2937 !important;
+  color: #1F2937;
 }
 .text-gray-600, .text-gray-700 {
-  color: #0B0B0B !important;
+  color: #111827;
 }
 .text-red-500, .text-red-600, .text-rose-600, .text-rose-700 {
-  color: #991B1B !important; /* Darker red for contrast */
+  color: #991B1B; /* Darker red for contrast */
 }
 
 /* Design System & Contrast Optimization (WCAG 2.2 AA) */

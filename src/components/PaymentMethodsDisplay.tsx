@@ -1,5 +1,5 @@
 /**
- * PaymentMethodsDisplay - Sulta Atelier Official Payment Methods Banner
+ * PaymentMethodsDisplay - Sulta Official Payment Methods Banner
  * Displays genuine payment method badges (Bank Transfer, Apple Pay, Visa, Mastercard, Mada, Cash on Delivery)
  */
 
@@ -17,7 +17,7 @@ export default function PaymentMethodsDisplay({ variant = 'footer' }: PaymentMet
         <img 
           src="/assets/aistudio/YHdjS5O14jZZWQXsG7gybkOtD7CRXcklAxkIe83q_9b507384.jpeg" 
           alt="طرق الدفع المعتمدة: تحويل بنكي، ابل باي، فيزا، ماستركارد، مدى، والدفع عند الاستلام" 
-          className="h-8 sm:h-9 w-auto object-contain max-w-full rounded-md"
+          className="h-12 sm:h-14 w-auto object-contain max-w-full rounded-md"
         />
       </div>
     </div>

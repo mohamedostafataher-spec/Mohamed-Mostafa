@@ -1262,7 +1262,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   stickerShape === 'transparent' ? 'bg-[#FCFAF2]/30 border-dashed border-[#E5C470]' : 'bg-[#FCFAF2]'
                 } ${activeTab === 'stickers_qr' ? 'block' : 'hidden'}`}
               >
-                <div className="text-xs text-stone-500 font-serif">👑 Sulta ATELIER</div>
+                <div className="text-xs text-stone-500 font-serif">👑 Sulta</div>
                 
                 {stickerIcon === 'crown' && <span className="text-3xl my-2 text-[#A44C5C] select-none animate-bounce">👑</span>}
                 {stickerIcon === 'bow' && <span className="text-3xl my-2 text-[#A44C5C] select-none">🎀</span>}
@@ -1357,7 +1357,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-stone-300 border border-stone-100 select-none" />
 
                 <div className="mt-4 font-serif text-[11px] font-black tracking-widest text-[#A44C5C]">
-                  Sulta ATELIER
+                  Sulta
                 </div>
 
                 <div className="my-auto space-y-2 border-y border-stone-200 py-4 text-right">
@@ -1553,7 +1553,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   {boxPreset === 'drawer_box' && (
                     <div className="w-48 h-24 bg-stone-900 border-2 border-zinc-700 text-[#F6E7A6] rounded-xl flex items-center justify-between p-4 relative shadow-lg transform -skew-x-2">
                       <div className="space-y-1 text-right">
-                        <span className="text-[10px] font-black font-serif tracking-widest">Sulta ATELIER</span>
+                        <span className="text-[10px] font-black font-serif tracking-widest">Sulta</span>
                         <div className="text-[7.5px] text-zinc-400">منزلق الحظ الدافئ</div>
                       </div>
                       <div className="w-12 h-16 bg-white rounded border border-stone-300 shadow-sm" /> {/* drawer pull out */}

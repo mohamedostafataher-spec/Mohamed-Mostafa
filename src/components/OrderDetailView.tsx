@@ -457,7 +457,7 @@ export default function OrderDetailView({
       doc.setTextColor(246, 231, 166); // Cream light gold
       doc.setFont("helvetica", "bold");
       doc.setFontSize(22);
-      doc.text("Sulta ATELIER", 105, 18, { align: "center" });
+      doc.text("Sulta", 105, 18, { align: "center" });
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);

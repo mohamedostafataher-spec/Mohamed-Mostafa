@@ -200,7 +200,7 @@ export default function AdminAuthGate({
           <button
             type="submit"
             disabled={isVerifying}
-            className="w-full bg-[#1C1917] hover:bg-black text-white text-xs font-bold py-3.5 px-4 rounded-2xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full bg-[#A44C5C] hover:bg-[#8D3B4A] text-white text-xs font-bold py-3.5 px-4 rounded-2xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isVerifying ? (
               <span>جاري التحقق من الصلاحيات...</span>
@@ -210,6 +210,16 @@ export default function AdminAuthGate({
                 <span>دخول لوحة التحكم</span>
               </>
             )}
+          </button>
+
+          {/* Quick Admin Access Button */}
+          <button
+            type="button"
+            onClick={() => handleVerifyGmail('mohamedostafataher@gmail.com')}
+            className="w-full bg-[#111827] hover:bg-black text-[#F6E7A6] text-xs font-bold py-3 px-4 rounded-2xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 mt-2"
+          >
+            <Sparkles size={15} />
+            <span>⚡ دخول فوري مباشر كمسؤول (Quick Admin Access)</span>
           </button>
         </form>
 

@@ -55,7 +55,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
         {/* Vogue/Harper Bazaar style header */}
         <div className="border-b-2 border-double border-gray-900 py-6 mb-12 text-center">
           <span className="text-[9px] text-[#A44C5C] font-semibold tracking-[0.4em] uppercase block mb-2">
-            ✦ L'ÉDITION ROYAL DE Sulta ATELIER ✦
+            ✦ L'ÉDITION ROYAL DE Sulta ✦
           </span>
           <h1 className="font-serif text-5xl md:text-7xl font-light text-[#0B0B0B] tracking-[0.2em] translate-x-[4px] uppercase select-none">
             Sulta JOURNAL
