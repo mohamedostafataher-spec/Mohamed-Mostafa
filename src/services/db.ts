@@ -397,18 +397,7 @@ function mapSettings(data: any): Settings {
 }
 
 function mapProduct(data: any): Product {
-  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id || (data.id && p.id.startsWith(data.id.slice(0, 8)))) || SEED_FALLBACK_PRODUCTS.find(p => {
-    const n = data.name_ar || data.name || '';
-    if (!n) return false;
-    if (n.includes('عاجي') || n.includes('أوف وايت') || n.includes('Ivory')) return p.id.startsWith('8d738e1c');
-    if (n.includes('وردي') || n.includes('فيونكة') || n.includes('سُكّر') || n.includes('Sugar')) return p.id.startsWith('54929551');
-    if (n.includes('فلورا') || n.includes('Flora') || n.includes('توليب')) return p.id.startsWith('614f6daa');
-    if (n.includes('روج') || n.includes('حمالات') || n.includes('ليلك') || n.includes('Polka')) return p.id.startsWith('51005136');
-    if (n.includes('روزي') || n.includes('مخمل') || n.includes('Velvet')) return p.id.startsWith('78f851f3');
-    if (n.includes('روزا') || n.includes('Rosa')) return p.id.startsWith('bf2ba4f4');
-    if (n.includes('نُقط') || n.includes('Dot') || n.includes('كلاسيك')) return p.id.startsWith('1d4e8104');
-    return false;
-  });
+  const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id || (data.id && p.id.startsWith(data.id.slice(0, 8))));
 
   const catKey = data.category || 'sleepwear';
   let rawImages: any[] = [];
