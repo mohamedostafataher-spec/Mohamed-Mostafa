@@ -807,9 +807,19 @@ export const dbService = {
       const resolvedId = getIdFromSlug(id) || id;
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(resolvedId);
       if (isUuid) {
-        const { data, error } = await supabase.from('products').select('*').eq('id', resolvedId).single();
+        const { data, error } = await supabase.from('products').select('*').eq('id', resolvedId).maybeSingle();
         if (!error && data) {
           return mapProduct(data);
+        }
+      } else {
+        // Try querying by slug directly
+        const { data, error } = await supabase.from('products').select('*').eq('slug', id).maybeSingle();
+        if (!error && data) {
+          return mapProduct(data);
+        }
+        const { data: data2, error: err2 } = await supabase.from('products').select('*').eq('slug', resolvedId).maybeSingle();
+        if (!err2 && data2) {
+          return mapProduct(data2);
         }
       }
     } catch (err) {
