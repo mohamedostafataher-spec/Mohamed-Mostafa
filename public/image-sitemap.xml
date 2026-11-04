@@ -1,4 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-
+  <url>
+    <loc>https://sulta.vercel.app/product/sugar-bow-pajama-set-ivory-white</loc>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/ivory_bow_pajama.jpg</image:loc>
+      <image:title>بيجامة سُكر بالفيونكة - أبيض عاجي</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/sugar-bow-pajama-set-royal-pink</loc>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/pink_bow_pajama.jpg</image:loc>
+      <image:title>بيجامة سُكر بالفيونكة - وردي ملكي</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/red-polka-dot-strappy-cotton-pajama</loc>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/sulta_hero_banner_real.webp</image:loc>
+      <image:title>بيجامة قطن مطبوعة بحمالات - روج</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/tulip-crinkle-cotton-womens-pajama</loc>
+    <image:image>
+      <image:loc>https://sulta.vercel.app/img/sulta_hero_banner_real.webp</image:loc>
+      <image:title>بيجامة فلورا قطن كوريشة - روز</image:title>
+    </image:image>
+  </url>
 </urlset>
