@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Search, Heart, ShoppingBag, User, Menu, X, Sparkles, Truck, Phone, ChevronDown, Check } from 'lucide-react';
 import { Country, CartItem, Product, Settings } from '../types';
-import { cleanImgUrl } from '../services/db';
+import { cleanImgUrl, dbService } from '../services/db';
 import SultaImage from './SultaImage';
 
 interface HeaderProps {
@@ -105,9 +105,7 @@ export default function Header({
     prevCartCountRef.current = cartCount;
   }, [cartCount]);
   const cartTotal = cart.reduce((sum, item) => {
-    const itemPrice = country === 'EG' 
-      ? (item.product?.salePriceEG || item.product?.priceEG || 0) 
-      : (item.product?.salePriceSA || item.product?.priceSA || 0);
+    const itemPrice = dbService.getProductActualPrice(item.product, country, settings).unitPrice;
     return sum + (itemPrice * item.quantity);
   }, 0);
   const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
@@ -221,7 +219,7 @@ export default function Header({
             <div className="flex flex-col items-center sm:items-start group">
               <div className="flex items-center gap-1.5">
                 <span className="text-xl sm:text-2xl font-black tracking-widest text-[#111827] font-serif uppercase">
-                  {settings?.siteName || 'Sulta'}
+                  {(settings?.siteName ? settings.siteName.replace(/atelier/ig, '').trim() : '') || 'Sulta'}
                 </span>
                 <span className="text-[#A44C5C] text-sm sm:text-base" aria-hidden="true">👑</span>
               </div>

@@ -9,7 +9,7 @@ import { Product, Country, Category } from '../types';
 import StyleAssistant from './StyleAssistant';
 import { ProductPrice } from './ProductPrice';
 import SultaImage from './SultaImage';
-import { cleanImgUrl } from '../services/db';
+import { cleanImgUrl, dbService } from '../services/db';
 import { getProductSlug } from '../utils/slugify';
 import ProductCard from './ProductCard';
 import SEO from './SEO';
@@ -191,8 +191,8 @@ export default function StoreView({
         return (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0);
       }
       
-      const priceA = country === 'EG' ? (a.salePriceEG || a.priceEG || 0) : (a.salePriceSA || a.priceSA || 0);
-      const priceB = country === 'EG' ? (b.salePriceEG || b.priceEG || 0) : (b.salePriceSA || b.priceSA || 0);
+      const priceA = dbService.getProductActualPrice(a, country).unitPrice;
+      const priceB = dbService.getProductActualPrice(b, country).unitPrice;
       
       if (sortBy === 'price-low') return priceA - priceB;
       if (sortBy === 'price-high') return priceB - priceA;
@@ -251,7 +251,7 @@ export default function StoreView({
     <div className="bg-white min-h-screen text-[#111827] font-sans antialiased text-xs md:text-sm select-none" dir="rtl">
       <SEO 
         title={selectedCategory === 'offers' ? 'العروض والتخفيضات | سولته' : 'بيجامات نسائية قطن — تسوقي الآن | سولته'} 
-        description="تصفحي كامل تشكيلة البيجامات النسائية من سولته، خامات قطنية مريحة بمقاس وان سايز 45-80 كجم وتوصيل لكافة مدن المملكة."
+        description="تصفحي كامل تشكيلة البيجامات النسائية من سولته، خامات قطنية مريحة بمقاس واحد 45-80 كجم وتوصيل لكافة مدن المملكة."
         path={selectedCategory === 'offers' ? '/offers/' : '/store/'} 
       />
       
@@ -277,7 +277,7 @@ export default function StoreView({
                 تشكيلة بيجامات نسائية من سولته
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                استكشفي متجر سولته واختاري بيجامتكِ المفضلة من تشكيلة البيجامات النسائية القطنية المصممة لتناسب مختلف الأوقات المنزلية. تشمل التشكيلة بيجامات قطن كوريشة بطبعات زهرية وبيجامات قطن بحمالات ربط وموديلات ناعمة بمقاس وان سايز مريح يناسب من 45 إلى 80 كيلو.
+                استكشفي متجر سولته واختاري بيجامتكِ المفضلة من تشكيلة البيجامات النسائية القطنية المصممة لتناسب مختلف الأوقات المنزلية. تشمل التشكيلة بيجامات قطن كوريشة بطبعات زهرية وبيجامات قطن بحمالات ربط وموديلات ناعمة بمقاس واحد مريح يناسب من 45 إلى 80 كجم.
               </p>
 
               {/* Mobile Hook Badge */}
@@ -313,7 +313,7 @@ export default function StoreView({
                 بيجامات قطن كوريشة وقطن ناعم مريح
               </h2>
               <p className="text-[9.5px] text-gray-400 leading-normal">
-                مقاس وان سايز مريح يناسب من 45 إلى 80 كيلو، مع بوكس سولته الأنيق.
+                مقاس واحد مريح يناسب من 45 إلى 80 كجم، مع بوكس سولته الأنيق.
               </p>
             </div>
           </div>

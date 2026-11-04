@@ -604,10 +604,8 @@ function AppContent() {
     // TikTok Pixel InitiateCheckout event
     try {
       const cartTotal = cart.reduce((sum, item) => {
-        const itemPrice = country === 'EG' 
-          ? (item.product.salePriceEG || item.product.priceEG || 0) 
-          : (item.product.salePriceSA || item.product.priceSA || 0);
-        return sum + itemPrice * item.quantity;
+        const itemPrice = dbService.getProductActualPrice(item.product, country, settings).unitPrice;
+        return sum + (itemPrice * item.quantity);
       }, 0);
       trackTikTokInitiateCheckout(cart, cartTotal, 'SAR');
     } catch (err) {
@@ -1081,7 +1079,7 @@ function AppContent() {
           <div className="space-y-4">
             <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => setTab('home')}>
               <span className="font-serif text-2xl font-black tracking-widest text-[#111827] uppercase">
-                {settings?.siteName || 'Sulta'}
+                {(settings?.siteName ? settings.siteName.replace(/atelier/ig, '').trim() : '') || 'Sulta'}
               </span>
               <span className="text-[#A44C5C] text-sm">👑</span>
             </div>

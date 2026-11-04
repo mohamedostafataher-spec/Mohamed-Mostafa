@@ -44,8 +44,8 @@ const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="space-y-0">
       <SEO 
-        title="بيجامات نسائية قطن ووان سايز | سولته"
-        description="تسوقي بيجامات نسائية من قطن ناعم ومريح بمقاس وان سايز يناسب من 45 إلى 80 كيلو. تصاميم أنثوية بكميات محدودة من سولته."
+        title="بيجامات نسائية قطن فاخرة ومريحة | سولته"
+        description="تسوقي بيجامات نسائية من قطن ناعم ومريح بمقاس واحد يناسب من 45 إلى 80 كجم. تصاميم أنثوية بكميات محدودة من سولته."
         path="/"
       />
 
@@ -101,9 +101,16 @@ const HomeView: React.FC<HomeViewProps> = ({
                     }}
                   />
                 )) : (
-                  <div className="col-span-full text-center text-gray-400 py-6 text-xs">
-                    جاري تحديث تشكيلة القطع الحالية.
-                  </div>
+                  [1, 2, 3, 4].map((n) => (
+                    <div key={n} className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
+                      <div className="aspect-[3/4] bg-gray-100 w-full" />
+                      <div className="p-3 space-y-2 text-right">
+                        <div className="h-3 bg-gray-100 rounded-md w-3/4" />
+                        <div className="h-2 bg-gray-100 rounded-md w-1/2" />
+                        <div className="h-4 bg-rose-50 rounded-md w-1/3 mt-2" />
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
             </div>
@@ -116,7 +123,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                 <div className="text-right space-y-1.5 max-w-xl">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-black font-bold text-[11px]">
                     <Sparkles size={11} />
-                    <span>تغليف ملكي وتوصيل فوري لجميع مدن المملكة 🇸🇦</span>
+                    <span>تغليف ملكي وتوصيل سريع لجميع مدن المملكة 🇸🇦</span>
                   </div>
                   <h2 className="text-base sm:text-xl font-black tracking-tight text-white font-serif">
                     تشكيلة السلطانة الحصرية — أناقة تليق بكِ

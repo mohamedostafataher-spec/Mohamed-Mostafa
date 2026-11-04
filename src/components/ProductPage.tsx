@@ -265,7 +265,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
         "name": "ما المقاس؟",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "وان سايز يناسب من 45 إلى 80 كيلو."
+          "text": "مقاس واحد (45-80 كجم) مريح وانسيابي."
         }
       },
       {
@@ -281,7 +281,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
         "name": "كيف أغسلها؟",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "بمويه باردة، ويفضّل بدون كلور، مع تجنّب الحرارة العالية."
+          "text": "يُغسل بماء بارد، ويفضّل بدون كلور، مع تجنّب الحرارة العالية."
         }
       },
       {
@@ -442,6 +442,18 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               <ProductPrice product={product} country="SA" settings={settings} size="lg" showBadge={true} />
             </div>
 
+            {/* Clear Shipping & VAT Details Badge Bar */}
+            <div className="bg-amber-50/70 border border-amber-200/90 rounded-2xl p-3 my-2 space-y-1.5 text-xs" dir="rtl">
+              <div className="flex items-center gap-2 text-amber-950 font-bold">
+                <Truck size={16} className="text-amber-700 shrink-0" />
+                <span>الشحن: <strong>40 ر.س</strong> لكافة مدن المملكة (شحن مجاني للطلبات فوق <strong>299 ر.س</strong> 🇸🇦)</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-900 font-bold text-[11px] pt-1 border-t border-amber-200/50">
+                <ShieldCheck size={15} className="text-emerald-700 shrink-0" />
+                <span>السعر شامل ضريبة القيمة المضافة 15% بالكامل • لا رسوم خفية عند الاستلام</span>
+              </div>
+            </div>
+
             {/* Countdown timer banner if active discount has endsAt */}
             {countdownText && (
               <div className="bg-gradient-to-r from-rose-50 to-amber-50 border border-rose-200 text-rose-900 text-xs font-bold px-4 py-2.5 rounded-2xl flex items-center justify-between shadow-2xs my-2">
@@ -508,10 +520,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           {/* Size Info */}
           <div className="space-y-2 pt-2 border-t border-gray-100">
             <label className="text-xs sm:text-sm font-bold text-gray-900 block">
-              المقاس: <span className="text-[#A44C5C] font-black">One Size (وان سايز)</span>
+              المقاس: <span className="text-[#A44C5C] font-black">One Size (مقاس واحد)</span>
             </label>
             <div className="inline-block bg-gray-50 border-2 border-gray-300 text-gray-900 px-4 py-2 rounded-xl font-bold text-sm">
-              وان سايز مريح (يناسب 45 إلى 80 كيلو)
+              مقاس واحد مريح (يناسب 45 إلى 80 كجم)
             </div>
           </div>
 
@@ -611,7 +623,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50" open>
                 <summary className="font-bold cursor-pointer text-gray-900 text-sm">س: ما المقاس؟</summary>
                 <p className="mt-2 text-sm text-gray-700 leading-relaxed">
-                  ج: وان سايز يناسب من 45 إلى 80 كيلو.
+                  ج: مقاس واحد (45-80 كجم) مريح وانسيابي.
                 </p>
               </details>
               <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50">
@@ -623,7 +635,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50">
                 <summary className="font-bold cursor-pointer text-gray-900 text-sm">س: كيف أغسلها؟</summary>
                 <p className="mt-2 text-sm text-gray-700 leading-relaxed">
-                  ج: بمويه باردة، ويفضّل بدون كلور، مع تجنّب الحرارة العالية.
+                  ج: يُغسل بماء بارد، ويفضّل بدون كلور، مع تجنّب الحرارة العالية.
                 </p>
               </details>
               <details className="bg-white border border-gray-200 rounded-xl p-3.5 transition-all open:bg-gray-50/50">
@@ -665,7 +677,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                       </div>
                       <div className="p-2.5 text-right">
                         <span className="text-xs font-bold text-gray-900 line-clamp-1 group-hover:text-[#A44C5C]">{sim.nameAr}</span>
-                        <span className="text-xs font-black text-[#A44C5C] mt-1 block">{sim.salePriceSA || sim.priceSA} ر.س</span>
+                        <span className="text-xs font-black text-[#A44C5C] mt-1 block">
+                          {dbService.getProductActualPrice(sim, 'SA', settings).unitPrice} ر.س
+                        </span>
                       </div>
                     </a>
                   );

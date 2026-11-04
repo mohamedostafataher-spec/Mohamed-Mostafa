@@ -41,9 +41,7 @@ export default function ProductDetailModal({
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [direction, setDirection] = useState(0); // 1 for right, -1 for left
 
-  const effectiveProductPrice = country === 'EG'
-    ? (product.salePriceEG || product.priceEG || 0)
-    : (product.salePriceSA || product.priceSA || 0);
+  const effectiveProductPrice = dbService.getProductActualPrice(product, country, settings).unitPrice;
 
   const [selectedCol, setSelectedCol] = useState(product.colors[0] || { name: 'Default', hex: '#000000', images: [] });
   const [selectedScent, setSelectedScent] = useState<string>('none');
@@ -380,17 +378,13 @@ export default function ProductDetailModal({
   };
 
   const isFav = favorites.includes(product.id);
-  const price = country === 'EG' 
-    ? (product.salePriceEG || product.priceEG || 0) 
-    : (product.salePriceSA || product.priceSA || 0);
+  const price = dbService.getProductActualPrice(product, country, settings).unitPrice;
   const currencyLabel = 'SAR';
 
   // Dynamic outfit pairing matcher
   const matchedPairProduct = products.find(p => p.id !== product.id) || products[0];
   const matchedPrice = matchedPairProduct 
-    ? (country === 'EG' 
-        ? (matchedPairProduct.salePriceEG || matchedPairProduct.priceEG || 0) 
-        : (matchedPairProduct.salePriceSA || matchedPairProduct.priceSA || 0))
+    ? dbService.getProductActualPrice(matchedPairProduct, country, settings).unitPrice
     : 0;
 
   // Incrementor/Decrementor

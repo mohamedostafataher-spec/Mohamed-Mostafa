@@ -128,10 +128,10 @@ export default function CheckoutModal({
     // Check if device supports specific features if needed
   }, []);
 
-  // Subtotal and Calculations using forward discount formula
+  // Subtotal and Calculations using centralized authoritative SKU price formula
   const subtotal = cart.reduce((sum, item) => {
-    const effectiveInfo = calculateEffectiveDiscount(item.product, settings, country);
-    return sum + effectiveInfo.effectivePrice * item.quantity;
+    const actual = dbService.getProductActualPrice(item.product, country, settings);
+    return sum + (actual.unitPrice * item.quantity);
   }, 0);
 
   // Unified Dynamic Shipping calculation:
@@ -246,9 +246,7 @@ export default function CheckoutModal({
           color: i.selectedColor.name,
           size: i.selectedSize,
           quantity: i.quantity,
-          price: country === 'EG' 
-            ? (i.product.salePriceEG || i.product.priceEG || 0) 
-            : (i.product.salePriceSA || i.product.priceSA || 0)
+          price: dbService.getProductActualPrice(i.product, country, settings).unitPrice
         })),
         converted: false
       };
@@ -1149,9 +1147,7 @@ export default function CheckoutModal({
             {/* Cart products list */}
             <div className="space-y-2.5 mb-5 max-h-48 overflow-y-auto text-xs text-right pr-1">
               {cart.map((item, idx) => {
-                const itemPrice = country === 'EG' 
-                  ? (item.product.salePriceEG || item.product.priceEG) 
-                  : (item.product.salePriceSA || (item.product.priceSA <= 120 ? item.product.priceSA : 99));
+                const itemPrice = dbService.getProductActualPrice(item.product, country, settings).unitPrice;
                 return (
                   <div key={idx} className="flex gap-2.5 items-center justify-between bg-white p-2.5 rounded-xl border border-gray-200">
                     <div className="w-9 h-11 bg-gray-100 rounded-lg overflow-hidden shrink-0">
@@ -1203,8 +1199,11 @@ export default function CheckoutModal({
               </div>
 
               <div className="flex justify-between items-center text-gray-950 text-sm font-black pt-2 border-t border-gray-200">
-                <span>الإجمالي النهائي:</span>
-                <span className="font-mono text-base">{totalAmount.toLocaleString()} {currencyLabel}</span>
+                <div className="flex flex-col text-right">
+                  <span>الإجمالي النهائي المستحق:</span>
+                  <span className="text-[10px] text-emerald-700 font-bold">شامل ضريبة القيمة المضافة 15%</span>
+                </div>
+                <span className="font-mono text-base font-black text-[#A44C5C]">{totalAmount.toLocaleString()} {currencyLabel}</span>
               </div>
             </div>
           </div>

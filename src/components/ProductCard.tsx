@@ -182,9 +182,8 @@ export default function ProductCard({
         </h2>
 
         <div className="mt-auto space-y-3">
-          <div className="flex items-baseline justify-between" aria-label={`السعر: ${product.salePriceSA || product.priceSA} ريال سعودي`}>
-            <ProductPrice product={product} country="SA" size="sm" showBadge={false} />
-            <span className="text-[9px] text-gray-400 font-bold" aria-hidden="true">ر.س</span>
+          <div className="flex items-baseline justify-between">
+            <ProductPrice product={product} country="SA" size="sm" showBadge={true} />
           </div>
 
           <button

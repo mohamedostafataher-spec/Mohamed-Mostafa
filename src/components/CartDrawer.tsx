@@ -4,6 +4,7 @@ import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check, Truck, Pl
 import { motion, AnimatePresence } from 'motion/react';
 import { CartItem, Country, Product, DiscountCoupon } from '../types';
 import { calculateEffectiveDiscount } from '../utils/discountUtils';
+import { dbService } from '../services/db';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -41,10 +42,10 @@ export default function CartDrawer({
 
   const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
-  // Total pricing logic
+  // Total pricing logic - centralized authoritative SKU price calculation
   const subtotal = cart.reduce((sum, item) => {
-    const effectiveInfo = calculateEffectiveDiscount(item.product, settings, country);
-    return sum + effectiveInfo.effectivePrice * item.quantity;
+    const actual = dbService.getProductActualPrice(item.product, country, settings);
+    return sum + (actual.unitPrice * item.quantity);
   }, 0);
 
   // Discount calculation
@@ -174,8 +175,7 @@ export default function CartDrawer({
             ) : (
               <div className="space-y-2 divide-y divide-gray-50">
                 {cart.map((item, idx) => {
-                  const effectiveInfo = calculateEffectiveDiscount(item.product, settings, country);
-                  const itemPrice = effectiveInfo.effectivePrice;
+                  const itemPrice = dbService.getProductActualPrice(item.product, country, settings).unitPrice;
                   
                   return (
                     <div key={idx} className="flex gap-4 py-5 first:pt-2 group relative" role="listitem">
@@ -322,7 +322,7 @@ export default function CartDrawer({
                 </div>
                 <div className="flex gap-4 overflow-x-auto scrollbar-none -mx-1 px-1 pb-2">
                   {suggestions.map((p) => {
-                    const recPrice = country === 'EG' ? (p.salePriceEG || p.priceEG) : (p.salePriceSA || p.priceSA);
+                    const recPrice = dbService.getProductActualPrice(p, country, settings).unitPrice;
                     return (
                       <div
                         key={p.id}

@@ -14,8 +14,8 @@ export const PRODUCT_SLUGS: Record<string, string> = {
   '51005136-8066-4844-8efe-718cd7644e6b': 'red-polka-dot-strappy-cotton-pajama',
   '614f6daa-d291-410b-a450-be23de75f868': 'tulip-crinkle-cotton-womens-pajama',
   '78f851f3-5f75-4153-9fbe-0e8ad54825be': 'pink-floral-crinkle-cotton-womens-pajama',
-  '8d738e1c-0861-4569-8949-fc2d98c4fa50': 'sugar-bow-pajama-set-royal-pink',
-  '54929551-5958-4b33-9ff9-abe83722cb78': 'sugar-bow-pajama-set-ivory-white',
+  '54929551-5958-4b33-9ff9-abe83722cb78': 'sugar-bow-pajama-set-royal-pink',
+  '8d738e1c-0861-4569-8949-fc2d98c4fa50': 'sugar-bow-pajama-set-ivory-white',
   'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc': 'rosa-evening-bloom-pajama-set',
   '1d4e8104-17c9-4b64-8300-38340bdeaa18': 'classic-dot-pajama-set'
 };
@@ -25,8 +25,8 @@ export const SLUG_TO_ID_MAP: Record<string, string> = {
   'red-polka-dot-strappy-cotton-pajama': '51005136-8066-4844-8efe-718cd7644e6b',
   'tulip-crinkle-cotton-womens-pajama': '614f6daa-d291-410b-a450-be23de75f868',
   'pink-floral-crinkle-cotton-womens-pajama': '78f851f3-5f75-4153-9fbe-0e8ad54825be',
-  'sugar-bow-pajama-set-royal-pink': '8d738e1c-0861-4569-8949-fc2d98c4fa50',
-  'sugar-bow-pajama-set-ivory-white': '54929551-5958-4b33-9ff9-abe83722cb78',
+  'sugar-bow-pajama-set-royal-pink': '54929551-5958-4b33-9ff9-abe83722cb78',
+  'sugar-bow-pajama-set-ivory-white': '8d738e1c-0861-4569-8949-fc2d98c4fa50',
   'rosa-evening-bloom-pajama-set': 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc',
   'classic-dot-pajama-set': '1d4e8104-17c9-4b64-8300-38340bdeaa18',
 

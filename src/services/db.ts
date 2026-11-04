@@ -189,6 +189,9 @@ export const SEED_INVENTORY_LOGS: any[] = [
 export function cleanText(text: any): any {
   if (typeof text !== 'string') return text;
   let cleaned = text
+    .replace(/sulta\s+atelier/ig, 'Sulta')
+    .replace(/سولته\s+أتيليه|سولته\s+اتيليه/g, 'سولته')
+    .replace(/أتيليه\s+سولته|اتيليه\s+سولته/g, 'سولته')
     .replace(/zoria/ig, 'Sulta')
     .replace(/زوريا/g, 'سولته')
     .replace(/كوتور ساتان/g, 'كوتور ناعم')
@@ -202,7 +205,11 @@ export function cleanText(text: any): any {
     .replace(/إيطالية|ايطالية/g, 'ملكية')
     .replace(/satin/ig, 'couture')
     .replace(/silk/ig, 'couture')
-    .replace(/italian/ig, 'luxury');
+    .replace(/italian/ig, 'luxury')
+    .replace(/توصيل فوري/g, 'توصيل سريع')
+    .replace(/مويه باردة/g, 'يُغسل بماء بارد')
+    .replace(/بمويه باردة/g, 'يُغسل بماء بارد')
+    .replace(/وان سايز/g, 'مقاس واحد (45-80 كجم)');
 
   // Clean up duplicate words and typos caused by string replacements
   cleaned = cleaned
@@ -295,6 +302,9 @@ function mapSettings(data: any): Settings {
   ];
 
   let mappedSiteName = cleanText(data.site_name || 'Sulta');
+  if (!mappedSiteName || /atelier/i.test(mappedSiteName)) {
+    mappedSiteName = 'Sulta';
+  }
 
   let mappedWhatsapp = data.whatsapp;
   if (!mappedWhatsapp || mappedWhatsapp === '966500000000' || mappedWhatsapp.includes('966530454045') || mappedWhatsapp === '201110095403' || mappedWhatsapp.includes('20111') || mappedWhatsapp.includes('596894393')) {
@@ -443,19 +453,27 @@ function mapProduct(data: any): Product {
       ? Number(data.price) 
       : (fallbackProduct ? fallbackProduct.priceSA : 69));
 
-  let resolvedSalePriceSA = data.sale_price_sa !== null && data.sale_price_sa !== undefined 
+  // Strict sale price validation: must be strictly greater than 0, strictly less than regular price, and <= 200 SAR
+  let resolvedSalePriceSA: number | undefined = undefined;
+  const rawSaleSA = data.sale_price_sa !== null && data.sale_price_sa !== undefined 
     ? Number(data.sale_price_sa) 
     : (data.sale_price !== null && data.sale_price !== undefined ? Number(data.sale_price) : undefined);
 
-  if (resolvedSalePriceSA === resolvedPriceSA) {
-    resolvedSalePriceSA = undefined;
+  if (rawSaleSA && rawSaleSA > 0 && rawSaleSA < resolvedPriceSA && rawSaleSA <= 200) {
+    resolvedSalePriceSA = rawSaleSA;
   }
 
   const resolvedPriceEG = Number(data.price_eg) > 0 
     ? Number(data.price_eg) 
     : (fallbackProduct ? fallbackProduct.priceEG : 899);
 
-  const resolvedSalePriceEG = data.sale_price_eg ? Number(data.sale_price_eg) : 499;
+  let resolvedSalePriceEG: number | undefined = undefined;
+  if (data.sale_price_eg !== null && data.sale_price_eg !== undefined) {
+    const rawSaleEG = Number(data.sale_price_eg);
+    if (rawSaleEG > 0 && rawSaleEG < resolvedPriceEG) {
+      resolvedSalePriceEG = rawSaleEG;
+    }
+  }
 
   // Stock
   const resolvedStock = (data.stock !== undefined && data.stock !== null)
@@ -470,8 +488,8 @@ function mapProduct(data: any): Product {
   const compareAtPrice = data.compare_at_price ? Number(data.compare_at_price) : undefined;
   const saleEndsAt = data.sale_ends_at || undefined;
   const material = data.material || fabricAr;
-  const sizeInfo = data.size_info || (fallbackProduct ? fallbackProduct.sizeInfo : 'وان سايز يناسب من 45 إلى 80 كيلو');
-  const careInstructions = data.care_instructions || washInstructionsAr;
+  const sizeInfo = cleanText(data.size_info || (fallbackProduct ? fallbackProduct.sizeInfo : 'مقاس واحد (45-80 كجم)'));
+  const careInstructions = cleanText(data.care_instructions || washInstructionsAr);
 
   return {
     id: data.id,
@@ -660,8 +678,110 @@ function mapTicket(data: any): SupportTicket {
   };
 }
 
+export interface ActualProductPrice {
+  unitPrice: number;
+  originalPrice: number;
+  hasDiscount: boolean;
+  discountPercent: number;
+  currency: 'SAR' | 'EGP';
+  currencySymbol: 'ر.س' | 'ج.م';
+}
+
+/**
+ * Centralized, authoritative price calculation function.
+ * Resolves the true selling SKU unit price and original price for any product
+ * according to current market/country (SA / EG) and active store settings.
+ */
+export function getProductActualPrice(
+  product: Product | undefined | null,
+  country: Country = 'SA',
+  settings?: Settings | null
+): ActualProductPrice {
+  const isEG = country === 'EG';
+  const currency: 'SAR' | 'EGP' = isEG ? 'EGP' : 'SAR';
+  const currencySymbol: 'ر.س' | 'ج.م' = isEG ? 'ج.م' : 'ر.س';
+
+  if (!product) {
+    return {
+      unitPrice: 0,
+      originalPrice: 0,
+      hasDiscount: false,
+      discountPercent: 0,
+      currency,
+      currencySymbol
+    };
+  }
+
+  // 1. Regular base price strictly from SKU record
+  const regularPrice = isEG
+    ? (Number(product.priceEG) > 0 ? Number(product.priceEG) : 899)
+    : (Number(product.priceSA) > 0 ? Number(product.priceSA) : 69);
+
+  // 2. Strict sale price resolution (must be strictly lower than regular price)
+  let salePrice: number | undefined = undefined;
+  if (isEG) {
+    if (product.salePriceEG !== undefined && product.salePriceEG !== null) {
+      const sp = Number(product.salePriceEG);
+      if (sp > 0 && sp < regularPrice) {
+        salePrice = sp;
+      }
+    }
+  } else {
+    if (product.salePriceSA !== undefined && product.salePriceSA !== null) {
+      const sp = Number(product.salePriceSA);
+      if (sp > 0 && sp < regularPrice && sp <= 200) {
+        salePrice = sp;
+      }
+    }
+  }
+
+  // 3. Product-specific discount percentage if configured and active
+  const now = Date.now();
+  if (!salePrice && product.discountPercent && product.discountPercent > 0 && product.discountPercent <= 90) {
+    const isInactive = product.discountStatus === 'inactive' || product.isDiscountActive === false;
+    if (!isInactive) {
+      const startOk = !product.discountStartsAt || new Date(product.discountStartsAt).getTime() <= now;
+      const endOk = !product.discountEndsAt || new Date(product.discountEndsAt).getTime() >= now;
+      if (startOk && endOk) {
+        const discounted = Math.round(regularPrice * (1 - product.discountPercent / 100));
+        if (discounted > 0 && discounted < regularPrice) {
+          salePrice = discounted;
+        }
+      }
+    }
+  }
+
+  // 4. Store-wide discount if active
+  if (!salePrice && settings?.storeDiscountPercent && settings.storeDiscountPercent > 0 && settings.storeDiscountPercent <= 90) {
+    const startOk = !settings.storeDiscountStartsAt || new Date(settings.storeDiscountStartsAt).getTime() <= now;
+    const endOk = !settings.storeDiscountEndsAt || new Date(settings.storeDiscountEndsAt).getTime() >= now;
+    if (startOk && endOk) {
+      const discounted = Math.round(regularPrice * (1 - settings.storeDiscountPercent / 100));
+      if (discounted > 0 && discounted < regularPrice) {
+        salePrice = discounted;
+      }
+    }
+  }
+
+  const unitPrice = salePrice !== undefined ? salePrice : regularPrice;
+  const hasDiscount = salePrice !== undefined && salePrice < regularPrice;
+  const discountPercent = hasDiscount 
+    ? Math.round(((regularPrice - salePrice!) / regularPrice) * 100) 
+    : 0;
+
+  return {
+    unitPrice,
+    originalPrice: regularPrice,
+    hasDiscount,
+    discountPercent,
+    currency,
+    currencySymbol
+  };
+}
+
 export const dbService = {
   supabase,
+  getProductActualPrice,
   
   getProductById: async (id: string): Promise<Product | null> => {
     try {
@@ -1341,6 +1461,7 @@ export const dbService = {
     _onError: (error: any) => void
   ): (() => void) => {
     const loadAndMerge = (dbOrders: any[], ticketOrders: any[]) => {
+      console.log(`[Sulta DB] Loading orders - DB: ${dbOrders?.length || 0}, Tickets: ${ticketOrders?.length || 0}`);
       let localOrders: any[] = [];
       let deletedOrderIds: string[] = [];
       try {
@@ -1364,7 +1485,9 @@ export const dbService = {
               const mapped = mapOrder(raw);
               ordersMap.set(mapped.id, mapped);
             }
-          } catch {}
+          } catch (e) {
+            console.warn(`[Sulta DB] Failed to parse order from ticket ${t.id}:`, e);
+          }
         }
       }
 
@@ -1398,6 +1521,7 @@ export const dbService = {
         return db - da;
       });
 
+      console.log(`[Sulta DB] Orders merged successfully: ${merged.length} orders total.`);
       onSuccess(merged);
     };
 
