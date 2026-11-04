@@ -147,7 +147,7 @@ ${additionalImgs.map(img => `      <g:additional_image_link>${img}</g:additional
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
-    <title>متجر سولتة | SULTA Atelier</title>
+    <title>متجر سولتة | Sulta</title>
     <link>${BASE_URL}</link>
     <description>تغذية منتجات متجر سولتة لملابس النوم والبيجامات النسائية القطنية</description>
 ${validItems.join('\n')}

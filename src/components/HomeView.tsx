@@ -12,6 +12,8 @@ interface HomeViewProps {
   products: Product[];
   bestSellers: Product[];
   newArrivals: Product[];
+  offers: Product[];
+  isLoading: boolean;
   favorites: string[];
   toggleFavorite: (id: string) => void;
   handleSelectProduct: (product: Product) => void;
@@ -29,6 +31,8 @@ const HomeView: React.FC<HomeViewProps> = ({
   products,
   bestSellers,
   newArrivals,
+  offers,
+  isLoading,
   favorites,
   toggleFavorite,
   handleSelectProduct,
@@ -58,7 +62,8 @@ const HomeView: React.FC<HomeViewProps> = ({
       {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}
       {[
         { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
-        { title: 'وصل حديثاً من تشكيلة البيجامات القطنية ✨', label: 'أحدث تصاميم أزياء النوم والقطع المريحة', data: newArrivals },
+        { title: 'وصل حديثاً ✨', label: 'أحدث تصاميم أزياء النوم والقطع المريحة', data: newArrivals },
+        { title: 'عروض وتخفيضات حصرية 🏷️', label: 'فرصتكِ للتسوق بأفضل الأسعار', data: offers }
       ].map((section, sectionIdx) => (
         <React.Fragment key={section.title}>
           <section className={`${sectionIdx === 0 ? 'pt-3 sm:pt-5 pb-8 sm:pb-12' : 'py-8 sm:py-12'} ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-[#F8F9FA]'}`} dir="rtl">
@@ -100,7 +105,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                       handleAddToCart(prod, chosenCol, chosenSz, q || 1);
                     }}
                   />
-                )) : (
+                )) : isLoading ? (
                   [1, 2, 3, 4].map((n) => (
                     <div key={n} className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
                       <div className="aspect-[3/4] bg-gray-100 w-full" />
@@ -111,6 +116,10 @@ const HomeView: React.FC<HomeViewProps> = ({
                       </div>
                     </div>
                   ))
+                ) : (
+                  <div className="col-span-full text-center text-gray-400 py-12 text-xs font-bold bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+                    جاري تحديث تشكيلة القطع الحالية... ترقبينا قريباً ✨
+                  </div>
                 )}
               </div>
             </div>

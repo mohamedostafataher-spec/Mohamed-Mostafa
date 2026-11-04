@@ -13,7 +13,6 @@ import { cleanImgUrl, dbService } from '../services/db';
 import { getProductSlug } from '../utils/slugify';
 import ProductCard from './ProductCard';
 import SEO from './SEO';
-import { calculateEffectiveDiscount } from '../utils/discountUtils';
 
 interface StoreViewProps {
   products: Product[];
@@ -136,7 +135,7 @@ export default function StoreView({
     
     // Category filter
     if (selectedCategory === 'offers') {
-      result = result.filter(p => calculateEffectiveDiscount(p, null, country).hasActiveDiscount);
+      result = result.filter(p => dbService.getProductActualPrice(p, country, null).hasDiscount);
     } else if (selectedCategory === 'new') {
       result = result.filter(p => p.featured || p.status === 'active');
     } else if (selectedCategory === 'bestseller') {

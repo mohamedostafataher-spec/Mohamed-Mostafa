@@ -147,7 +147,7 @@ export const getSiteMapTree = (
       },
       {
         nameAr: '✍️ منشورات مدونة المنسوجات والأقمشة',
-        nameEn: 'Couture & Atelier Blogs',
+        nameEn: 'Couture & Sulta Blogs',
         type: 'group',
         children: blogPosts.map(post => ({
           nameAr: post.title,
@@ -242,7 +242,7 @@ export const downloadLuxuryCertificatePDF = (
   doc.setFont('Times', 'italic');
   doc.setFontSize(10);
   doc.setTextColor(164, 76, 92);
-  doc.text('HAUTE COUTURE & LUXURY ATELIER', 105, 42, { align: 'center' });
+  doc.text('HAUTE COUTURE & LUXURY Sulta', 105, 42, { align: 'center' });
 
   // Divider line
   doc.setDrawColor(246, 231, 166);

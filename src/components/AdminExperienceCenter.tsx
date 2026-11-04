@@ -840,7 +840,7 @@ export default function AdminExperienceCenter({
                   <div className="bg-white border rounded-xl p-3 max-h-24 overflow-y-auto font-mono text-[10px] text-gray-500 space-y-1.5 leading-relaxed">
                     <div>[SYS] DB CONNECTION VERIFIED - SSL OK</div>
                     <div>[API] LOADED {products.length} PRODUCTS FROM SUPABASE DATABASE</div>
-                    <div>[INFRA] ATELIER STREAM SYSTEM MOUNTED - COUTURE STABLE</div>
+                    <div>[INFRA] Sulta STREAM SYSTEM MOUNTED - COUTURE STABLE</div>
                     {inventoryLogs.slice(0, 2).map((log, i) => (
                       <div key={i}>[INV] ADJUST {log.productId}: {log.change} ({log.reason})</div>
                     ))}

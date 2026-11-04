@@ -371,7 +371,7 @@ export default function PremiumLuxuryExperience({
     { name: 'الوشاح الفضي (Silver Member)', pointsNeeded: 0, perk: 'خصم 5% تراكمي', color: 'text-slate-400 border-slate-200 bg-slate-50' },
     { name: 'الوشاح الذهبي (Gold VIP)', pointsNeeded: 300, perk: 'خصم 10% مجاني + توصيل مجاني سريع', color: 'text-amber-650 border-amber-250 bg-amber-50' },
     { name: 'التاقة البلاتينية (Platinum Royalty)', pointsNeeded: 700, perk: 'خصم 15% + علبة تغليف معطرة مع كل منتج مجاناً', color: 'text-purple-600 border-purple-200 bg-purple-50' },
-    { name: 'مملكة الألماس (Diamond Atelier)', pointsNeeded: 1200, perk: 'خصم 20% + هدايا عينية دورية ووصول قبل النشر بأسبوعين', color: 'text-[#DF8A9C] border-pink-200 bg-pink-50' }
+    { name: 'مملكة الألماس (Diamond Sulta)', pointsNeeded: 1200, perk: 'خصم 20% + هدايا عينية دورية ووصول قبل النشر بأسبوعين', color: 'text-[#DF8A9C] border-pink-200 bg-pink-50' }
   ];
 
   const getMyLoyaltyLevel = () => {
@@ -721,7 +721,7 @@ export default function PremiumLuxuryExperience({
                 {/* Bundle Box Preview and Summary */}
                 <div className="bg-[#FAFBF9] border border-gray-150 p-6 rounded-3xl space-y-6">
                   <div className="text-center pb-4 border-b border-gray-100">
-                    <span className="text-yellow-600 text-[10px] font-mono tracking-widest font-bold">ATELIER UNBOXING PREVIEW</span>
+                    <span className="text-yellow-600 text-[10px] font-mono tracking-widest font-bold">Sulta UNBOXING PREVIEW</span>
                     <h4 className="font-serif text-lg text-gray-900 mt-1">تجهيز صندوق الهدايا</h4>
                   </div>
 
@@ -1058,7 +1058,7 @@ export default function PremiumLuxuryExperience({
               <div>
                 <h3 className="font-serif text-xl text-gray-900 flex items-center gap-2">
                   <Compass className="text-[#c5a059]" />
-                  أتيليه لوك بوك سولته الملكي (Seasonal Lookbook Atelier)
+                  أتيليه لوك بوك سولته الملكي (Seasonal Lookbook Sulta)
                 </h3>
                 <p className="text-gray-400 text-xs mt-1">تصفحي جلسات تصوير الأزياء وصور الكوتور الملكية بمواقع ساحرة بالشرق الأوسط مع تفاعل ومؤشرات تسوق لكل وسم بالصورة.</p>
               </div>
@@ -1171,7 +1171,7 @@ export default function PremiumLuxuryExperience({
                       {/* Shopping Info Floating */}
                       <div className="flex-1 flex flex-col justify-between py-2">
                         <div>
-                          <span className="text-[10px] text-pink-400 block tracking-widest font-mono font-bold uppercase">✦ VIDEO COMMERCE LIVE ATELIER</span>
+                          <span className="text-[10px] text-pink-400 block tracking-widest font-mono font-bold uppercase">✦ VIDEO COMMERCE LIVE Sulta</span>
                           <h4 className="font-serif font-light text-sm mt-1 text-yellow-100">{v.title}</h4>
                           <span className="text-[9px] text-slate-400 mt-2 block">المنتج الظاهر في المقطع:</span>
                           <span className="text-xs font-bold text-slate-200 block mt-0.5">{pr?.nameAr}</span>
@@ -1309,7 +1309,7 @@ export default function PremiumLuxuryExperience({
                   
                   <div className="flex justify-between items-start">
                     <div>
-                      <span className="text-[9px] text-pink-400 font-mono tracking-widest block uppercase font-bold">✦ Sulta GOLD WALLET ATELIER</span>
+                      <span className="text-[9px] text-pink-400 font-mono tracking-widest block uppercase font-bold">✦ Sulta GOLD WALLET Sulta</span>
                       <h4 className="font-serif text-lg text-yellow-100 mt-1">كارت العضوية والوشاح الفخم</h4>
                     </div>
                     <span className="bg-[#DF8A9C] text-white text-[9px] py-1 px-2.5 rounded-full uppercase font-bold tracking-widest font-mono">

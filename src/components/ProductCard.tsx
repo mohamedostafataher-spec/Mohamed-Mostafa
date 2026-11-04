@@ -3,9 +3,9 @@ import { ShoppingBag, Heart, Check } from 'lucide-react';
 import { Product } from '../types';
 import SultaImage from './SultaImage';
 import { ProductPrice } from './ProductPrice';
-import { cleanImgUrl } from '../services/db';
+import { dbService, cleanImgUrl } from '../services/db';
 import { getProductSlug } from '../utils/slugify';
-import { calculateEffectiveDiscount, formatStockBadge } from '../utils/discountUtils';
+import { formatStockBadge } from '../utils/discountUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -40,7 +40,7 @@ export default function ProductCard({
 
   const prodSlug = getProductSlug(product);
   const stockBadge = formatStockBadge(product.stock);
-  const effDiscount = calculateEffectiveDiscount(product, null, 'SA');
+  const effDiscount = dbService.getProductActualPrice(product, 'SA', null);
 
   // "New" badge logic: Created in last 30 days or marked as featured
   const isNew = (() => {
@@ -118,7 +118,7 @@ export default function ProductCard({
               جديد
             </span>
           )}
-          {effDiscount.hasActiveDiscount && (
+          {effDiscount.hasDiscount && (
             <span className="bg-[#E11D48] text-white text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
               خصم {effDiscount.discountPercent}%
             </span>

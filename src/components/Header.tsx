@@ -219,7 +219,7 @@ export default function Header({
             <div className="flex flex-col items-center sm:items-start group">
               <div className="flex items-center gap-1.5">
                 <span className="text-xl sm:text-2xl font-black tracking-widest text-[#111827] font-serif uppercase">
-                  {(settings?.siteName ? settings.siteName.replace(/atelier/ig, '').trim() : '') || 'Sulta'}
+                  Sulta
                 </span>
                 <span className="text-[#A44C5C] text-sm sm:text-base" aria-hidden="true">👑</span>
               </div>

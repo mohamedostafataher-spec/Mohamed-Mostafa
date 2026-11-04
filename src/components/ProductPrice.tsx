@@ -1,6 +1,6 @@
 import React from 'react';
 import { Product, Country, Settings } from '../types';
-import { calculateEffectiveDiscount } from '../utils/discountUtils';
+import { dbService } from '../services/db';
 
 interface ProductPriceProps {
   product: Product;
@@ -18,7 +18,7 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
   showBadge = true 
 }) => {
   const currencySymbolAr = country === 'EG' ? 'ج.م' : 'ر.س';
-  const discountInfo = calculateEffectiveDiscount(product, settings, country);
+  const priceInfo = dbService.getProductActualPrice(product, country, settings);
 
   // Adaptive font scaling
   const fontAfter = size === 'sm' 
@@ -41,22 +41,22 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
       <div className="flex items-baseline gap-1.5 flex-wrap">
         {/* Effective Calculated Current Selling Price */}
         <span className={`${fontAfter} text-[#A44C5C] font-sans tracking-tight`}>
-          {discountInfo.effectivePrice.toLocaleString()} <span className="text-[10px] font-normal leading-none">{currencySymbolAr}</span>
+          {(priceInfo.unitPrice ?? 0).toLocaleString()} <span className="text-[10px] font-normal leading-none">{currencySymbolAr}</span>
         </span>
         
         {/* Regular Base Price (Strikethrough ONLY when active discount exists) */}
-        {discountInfo.hasActiveDiscount && (
+        {priceInfo.hasDiscount && (
           <span className={`${fontBefore} text-gray-400 font-sans line-through decoration-gray-400 font-normal`}>
-            {discountInfo.regularPrice.toLocaleString()} {currencySymbolAr}
+            {(priceInfo.originalPrice ?? 0).toLocaleString()} {currencySymbolAr}
           </span>
         )}
       </div>
 
       {/* Discount Percentage Badge (ONLY when active discount exists) */}
-      {showBadge && discountInfo.hasActiveDiscount && (
+      {showBadge && priceInfo.hasDiscount && (
         <div className="flex items-center gap-1 mt-0.5">
           <span className={`inline-flex items-center font-sans font-bold bg-rose-50 text-rose-700 border border-rose-200/80 rounded-md ${badgePadding}`}>
-            خصم {discountInfo.discountPercent}%
+            خصم {priceInfo.discountPercent}%
           </span>
         </div>
       )}

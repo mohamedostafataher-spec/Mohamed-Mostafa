@@ -173,7 +173,7 @@ export default function RealPackagingPreview() {
                 >
                   <div className="relative w-40 h-52 mx-auto bg-[#FBFBFA] rounded-2xl shadow-xl border border-amber-900/10 p-5 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
-                      <span className="text-[8px] text-stone-400 font-mono tracking-wide">CONFIDENTIAL ATELIER</span>
+                      <span className="text-[8px] text-stone-400 font-mono tracking-wide">CONFIDENTIAL Sulta</span>
                       <span className="text-stone-500 text-xs">✉️</span>
                     </div>
                     

@@ -28,7 +28,7 @@ export default function SultaConcierge({
       {/* Header card description */}
       <div className="text-center space-y-3 max-w-3xl mx-auto">
         <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-serif font-black tracking-widest uppercase">
-          Sulta DIGITAL ATELIER • صالون الاستشارات الملكية
+          Sulta DIGITAL Sulta • صالون الاستشارات الملكية
         </span>
         <h1 className="font-serif text-3xl md:text-5xl font-light text-gray-950 tracking-tight leading-relaxed">
           مستشارتِك الشخصية كوتور

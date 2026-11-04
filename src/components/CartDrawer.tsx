@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check, Truck, Plus, RefreshCw, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CartItem, Country, Product, DiscountCoupon } from '../types';
-import { calculateEffectiveDiscount } from '../utils/discountUtils';
 import { dbService } from '../services/db';
 
 interface CartDrawerProps {
@@ -50,11 +49,14 @@ export default function CartDrawer({
 
   // Discount calculation
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
 
-  const freeShippingThreshold = Number(settings?.freeShippingThresholdSA || settings?.free_shipping_threshold || (country === 'SA' ? 299 : 1000));
-  const standardShippingFee = Number(settings?.shippingCostSA || settings?.shipping_fee || (country === 'SA' ? 40 : 75));
-  const shippingFee = subtotal >= freeShippingThreshold ? 0 : standardShippingFee;
-  const totalAmount = subtotal - discountAmount + shippingFee;
+  // Authoritative centralized shipping logic
+  const shippingFee = dbService.calculateShippingFee(discountedSubtotal, country);
+  const totalAmount = discountedSubtotal + shippingFee;
+
+  // Thresholds for UI progress bars
+  const freeShippingThreshold = country === 'SA' ? 299 : 1000;
 
   // Coupon handle
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -118,7 +120,7 @@ export default function CartDrawer({
           {/* Salla Free Shipping Progress Bar - Premium Interactive Version */}
           {cart.length > 0 && (
             <div className="bg-white border-b border-gray-100 px-6 py-4" role="status" aria-live="polite">
-              {subtotal >= freeShippingThreshold ? (
+              {discountedSubtotal > freeShippingThreshold ? (
                 <div className="flex flex-col items-center gap-2 text-center">
                   <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-1">
                     <Truck size={24} className="text-emerald-600 animate-bounce" aria-hidden="true" />
@@ -132,21 +134,21 @@ export default function CartDrawer({
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs font-bold text-gray-900">
                     <span className="flex items-center gap-1.5">
-                      متبقي لكِ <strong className="text-[#A44C5C] font-mono text-sm">{(freeShippingThreshold - subtotal).toLocaleString()} {currencyLabel}</strong> للشحن المجاني
+                      متبقي لكِ <strong className="text-[#A44C5C] font-mono text-sm">{(freeShippingThreshold - discountedSubtotal).toLocaleString()} {currencyLabel}</strong> للشحن المجاني
                     </span>
                     <Truck size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                   </div>
                   <div className="relative w-full bg-gray-100 rounded-full h-2.5 overflow-hidden" aria-hidden="true">
                     <motion.div 
                       initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(100, (subtotal / freeShippingThreshold) * 100)}%` }}
+                      animate={{ width: `${Math.min(100, (discountedSubtotal / freeShippingThreshold) * 100)}%` }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
                       className="bg-[#A44C5C] h-full rounded-full relative"
                     >
                       <div className="absolute top-0 right-0 bottom-0 w-8 bg-white/20 skew-x-[-20deg] animate-pulse" />
                     </motion.div>
                   </div>
-                  <p className="text-[10px] text-gray-400 text-center font-bold">تسوقي بقيمة {freeShippingThreshold} {currencyLabel} واحصلي على توصيل مجاني لباب البيت</p>
+                  <p className="text-[10px] text-gray-400 text-center font-bold">تسوقي بأكثر من {freeShippingThreshold} {currencyLabel} واحصلي على توصيل مجاني لباب البيت</p>
                 </div>
               )}
             </div>

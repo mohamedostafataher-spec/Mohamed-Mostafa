@@ -1422,7 +1422,7 @@ export default function SultaAutomationStudio({
               </span>
             </div>
 
-            {/* Premium Atelier Scale Control Panel */}
+            {/* Premium Sulta Scale Control Panel */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-[#FFF0F2] rounded-xl border border-[#A44C5C]/20 text-[11px] w-full">
               <span className="font-bold text-[#A44C5C] flex items-center gap-1">
                 <span>🔍 مقياس المعاينة النشط:</span>
@@ -1772,7 +1772,7 @@ export default function SultaAutomationStudio({
 
                                 <div className="relative z-10 flex justify-between items-center text-[7px] opacity-60">
                                   <span>SLIDING SLEEVE</span>
-                                  <span>ATELIER RIGID</span>
+                                  <span>Sulta RIGID</span>
                                 </div>
 
                                 <div className="relative z-10 text-center space-y-0.5 my-auto">
@@ -1813,7 +1813,7 @@ export default function SultaAutomationStudio({
 
                               <div className="relative z-10 flex justify-between items-center text-[7.5px] opacity-70">
                                 <span>CLASSIC FLAT BOX</span>
-                                <span>MSR ATELIER</span>
+                                <span>MSR Sulta</span>
                               </div>
 
                               <div className="relative z-10 text-center space-y-1.5 my-auto">
@@ -2045,7 +2045,7 @@ export default function SultaAutomationStudio({
                   
                   <div className="mt-4 text-center">
                     <span className="text-[8.5px] font-bold text-stone-400 font-serif tracking-widest uppercase block">Sulta COUTURE</span>
-                    <h4 className="text-xs font-serif font-black tracking-widest text-[#A44C5C] leading-none mt-0.5">ATELIER</h4>
+                    <h4 className="text-xs font-serif font-black tracking-widest text-[#A44C5C] leading-none mt-0.5">Sulta</h4>
                   </div>
 
                   <div className="my-auto space-y-2.5 border-y border-stone-150 py-3.5">

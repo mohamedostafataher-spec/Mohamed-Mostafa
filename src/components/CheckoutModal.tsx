@@ -22,7 +22,6 @@ import {
   CreditCard
 } from 'lucide-react';
 import { CartItem, Country, DiscountCoupon, Order, Settings } from '../types';
-import { calculateEffectiveDiscount } from '../utils/discountUtils';
 import { WhatsAppService } from '../services/whatsappService';
 import { agentSystem } from '../services/agentSystem';
 import { dbService, supabase } from '../services/db';
@@ -134,33 +133,12 @@ export default function CheckoutModal({
     return sum + (actual.unitPrice * item.quantity);
   }, 0);
 
-  // Unified Dynamic Shipping calculation:
-  // Reachable threshold coordinated with Boutique marketing (299 SAR / 1000 EGP)
-  const getDynamicShippingCost = () => {
-    const freeThreshold = country === 'SA' ? 299 : 1000;
-    const standardFee = country === 'SA' ? 40 : 75;
-
-    if (subtotal >= freeThreshold) return 0;
-
-    if (settings && settings.shippingRates && settings.shippingRates.length > 0) {
-      const userCity = city.trim().toLowerCase();
-      if (userCity) {
-        const match = settings.shippingRates.find(rate => {
-          const ar = rate.regionAr.toLowerCase();
-          const en = rate.regionEn.toLowerCase();
-          return userCity.includes(ar) || ar.includes(userCity) ||
-                 userCity.includes(en) || en.includes(userCity);
-        });
-        if (match) return match.fee;
-      }
-    }
-    
-    return standardFee;
-  };
-
-  const shippingCost = getDynamicShippingCost();
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
-  const totalAmount = Math.max(0, subtotal - discountAmount + shippingCost);
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+
+  // Unified Dynamic Shipping calculation from central service
+  const shippingCost = dbService.calculateShippingFee(discountedSubtotal, country);
+  const totalAmount = discountedSubtotal + shippingCost;
 
   // Convert Eastern Arabic-Indic numerals (٠-٩) to Western standard (0-9)
   const normalizeDigits = (str: string): string => {
@@ -903,17 +881,17 @@ export default function CheckoutModal({
                         <span className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
                           <Truck size={18} />
                         </span>
-                        <div>
+                                            <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-black text-xs text-gray-950">
+                            <span className="font-black text-sm text-gray-950">
                               الدفع عند الاستلام (Cash On Delivery)
                             </span>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
                               متاح حالياً ✅
                             </span>
                           </div>
-                          <p className="text-[10px] text-gray-500 mt-0.5">
-                            ادفعي نقداً أو عبر مدى (Mada) عند وصول المندوب لباب منزلك
+                          <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                            ادفعي نقداً أو عبر بطاقة مدى (Mada) عند وصول المندوب لباب منزلكِ مباشرة.
                           </p>
                         </div>
                       </div>
@@ -938,19 +916,21 @@ export default function CheckoutModal({
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className="w-10 h-10 rounded-xl bg-[#FCF5F6] text-[#A44C5C] flex items-center justify-center shrink-0">
-                            <CreditCard size={18} />
+                        <span className="w-12 h-12 rounded-2xl bg-[#FCF5F6] text-[#A44C5C] flex items-center justify-center shrink-0 border border-[#DF8A9D]/20 shadow-2xs">
+                            <CreditCard size={24} strokeWidth={2.5} />
                           </span>
-                          <div>
+                          <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-black text-xs text-gray-950">
+                              <span className="font-black text-sm text-gray-950">
                                 بطاقة مدى أو ائتمانية / Apple Pay
                               </span>
-                              <PaymentMethodsDisplay variant="checkout" />
                             </div>
-                            <p className="text-[10px] text-gray-500 mt-0.5">
-                              دفع إلكتروني آمن وسريع عبر تشفير 3D Secure
+                            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                              دفع إلكتروني آمن وسريع عبر تشفير 3D Secure (يدعم مدى، فيزا، ماستركارد).
                             </p>
+                            <div className="mt-2 scale-90 origin-right">
+                               <PaymentMethodsDisplay variant="checkout" />
+                            </div>
                           </div>
                         </div>
 
@@ -974,21 +954,21 @@ export default function CheckoutModal({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
-                          <Globe size={18} />
+                        <span className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0 border border-blue-200 shadow-2xs">
+                          <Globe size={24} strokeWidth={2.5} />
                         </span>
-                        <div>
+                        <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-black text-xs text-gray-950">
+                            <span className="font-black text-sm text-gray-950">
                               تحويل بنكي مباشر / مدى (Direct Mada Transfer)
                             </span>
                             <div className="flex gap-1">
-                               <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-blue-600 text-white">MADA</span>
-                               <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-emerald-600 text-white">مدى</span>
+                               <span className="text-[9px] font-black px-2 py-0.5 rounded bg-blue-600 text-white shadow-2xs">MADA</span>
+                               <span className="text-[9px] font-black px-2 py-0.5 rounded bg-emerald-600 text-white shadow-2xs">مدى</span>
                             </div>
                           </div>
-                          <p className="text-[10px] text-gray-500 mt-0.5">
-                            تحويل فوري لأحد حسابات المتجر (الراجحي أو العربي) وتأكيد الشحن فوراً
+                          <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                            تحويل فوري لأحد حسابات المتجر الرسمية (الراجحي أو العربي) وتأكيد الشحن فوراً.
                           </p>
                         </div>
                       </div>

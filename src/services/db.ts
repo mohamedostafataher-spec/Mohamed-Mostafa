@@ -1,6 +1,6 @@
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole, StockMovement, CustomerAnalyticsRecord } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole, StockMovement, CustomerAnalyticsRecord, ActualProductPrice } from '../types';
 import { createClient } from '@supabase/supabase-js';
-export const SEED_FALLBACK_PRODUCTS: any[] = [];
+import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 import { parseCleanArabicDescription } from '../utils/textUtils';
 import { getIdFromSlug } from '../utils/slugify';
@@ -146,7 +146,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     content: "إن لمس أقمشة Sulta هو بمثابة التمشي فوق الرمل البكر الدافئ. نستخدم في القطع الخيوط الناعمة الطبيعية المعالجة بوزن ثقيل وتصميم مبرد ليتنفس جسدكِ بحرية تامة ويعزز هرمونات الاسترخاء. وتجنبي القطع البترولية التي تشتت ذرات الهواء وتضغط على مسامات البشرة الحساسة.",
     excerpt: "تعلمي كيف تفرقين بين التفاصيل الراقية والأقمشة المقلدة لترتدي دوماً ما يليق بوقارك.",
     imageUrl: "/img/pink_bow_pajama_1780730148591.png",
-    author: "Atelier Sulta",
+    author: "Sulta",
     category: "Fabric",
     tags: ["Tissue Soft", "Authenticity", "Couture"],
     publishedAt: new Date().toISOString(),
@@ -158,7 +158,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
 
 export const SEED_FAQ: FaqItem[] = [
   { id: "faq-1", question: "كيف أقوم بتنظيف قطع الأنسجة الطبيعية من سولته؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
-  { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Atelier Sulta علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
+  { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Sulta علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
 ];
 
 export const SEED_ADVANCED_COUPONS: any[] = [
@@ -189,7 +189,7 @@ export const SEED_INVENTORY_LOGS: any[] = [
 export function cleanText(text: any): any {
   if (typeof text !== 'string') return text;
   let cleaned = text
-    .replace(/sulta\s+atelier/ig, 'Sulta')
+    .replace(/sulta\s+Sulta/ig, 'Sulta')
     .replace(/سولته\s+أتيليه|سولته\s+اتيليه/g, 'سولته')
     .replace(/أتيليه\s+سولته|اتيليه\s+سولته/g, 'سولته')
     .replace(/zoria/ig, 'Sulta')
@@ -207,12 +207,13 @@ export function cleanText(text: any): any {
     .replace(/silk/ig, 'couture')
     .replace(/italian/ig, 'luxury')
     .replace(/توصيل فوري/g, 'توصيل سريع')
-    .replace(/مويه باردة/g, 'يُغسل بماء بارد')
-    .replace(/بمويه باردة/g, 'يُغسل بماء بارد')
+    .replace(/بمويه باردة/g, 'بماء بارد')
+    .replace(/مويه باردة/g, 'ماء بارد')
     .replace(/وان سايز/g, 'مقاس واحد (45-80 كجم)');
 
   // Clean up duplicate words and typos caused by string replacements
   cleaned = cleaned
+    .replace(/(تُغسل\s+)+يُغسل/g, 'تُغسل')
     .replace(/(فاخر\s+)+فاخر/g, 'فاخر')
     .replace(/(فاخرة\s+)+فاخرة/g, 'فاخرة')
     .replace(/(ملكي\s+)+ملكي/g, 'ملكي')
@@ -221,6 +222,22 @@ export function cleanText(text: any): any {
     .replace(/سولته/g, 'سولته');
 
   return cleaned.trim();
+}
+
+/**
+ * Authoritative, centralized shipping fee calculation.
+ * Rule: 40 SAR for subtotal <= 299 SAR. Free (> 299 SAR) for SA.
+ * For EG: 75 EGP for subtotal <= 1000 EGP. Free (> 1000 EGP).
+ */
+export function calculateShippingFee(discountedSubtotal: number, country: Country = 'SA'): number {
+  if (country === 'SA') {
+    // Policy: Strictly more than 299 for free shipping.
+    return discountedSubtotal > 299 ? 0 : 40;
+  }
+  if (country === 'EG') {
+    return discountedSubtotal > 1000 ? 0 : 75;
+  }
+  return 0;
 }
 
 export function cleanImgUrl(url: any, width: number | string = 1200): string {
@@ -302,7 +319,7 @@ function mapSettings(data: any): Settings {
   ];
 
   let mappedSiteName = cleanText(data.site_name || 'Sulta');
-  if (!mappedSiteName || /atelier/i.test(mappedSiteName)) {
+  if (!mappedSiteName || /Sulta/i.test(mappedSiteName)) {
     mappedSiteName = 'Sulta';
   }
 
@@ -383,8 +400,8 @@ function mapProduct(data: any): Product {
   const fallbackProduct = SEED_FALLBACK_PRODUCTS.find(p => p.id === data.id || (data.id && p.id.startsWith(data.id.slice(0, 8)))) || SEED_FALLBACK_PRODUCTS.find(p => {
     const n = data.name_ar || data.name || '';
     if (!n) return false;
-    if (n.includes('عاجي') || n.includes('أوف وايت') || n.includes('Ivory')) return p.id.startsWith('54929551');
-    if (n.includes('فيونكة') || n.includes('سُكّر') || n.includes('Sugar')) return p.id.startsWith('8d738e1c');
+    if (n.includes('عاجي') || n.includes('أوف وايت') || n.includes('Ivory')) return p.id.startsWith('8d738e1c');
+    if (n.includes('وردي') || n.includes('فيونكة') || n.includes('سُكّر') || n.includes('Sugar')) return p.id.startsWith('54929551');
     if (n.includes('فلورا') || n.includes('Flora') || n.includes('توليب')) return p.id.startsWith('614f6daa');
     if (n.includes('روج') || n.includes('حمالات') || n.includes('ليلك') || n.includes('Polka')) return p.id.startsWith('51005136');
     if (n.includes('روزي') || n.includes('مخمل') || n.includes('Velvet')) return p.id.startsWith('78f851f3');
@@ -606,6 +623,7 @@ function mapOrder(data: any): Order {
     giftCardTheme: data.giftCardTheme || data.gift_card_theme || undefined,
     items: parsedItems,
     totalPrice: parsedPrice,
+    shippingFee: Number(data.shippingFee ?? data.shipping_fee ?? 0),
     currency: data.currency || 'SAR',
     paymentMethod: data.paymentMethod || data.payment_method || 'الدفع عند الاستلام',
     status: data.status || 'pending',
@@ -678,15 +696,6 @@ function mapTicket(data: any): SupportTicket {
   };
 }
 
-export interface ActualProductPrice {
-  unitPrice: number;
-  originalPrice: number;
-  hasDiscount: boolean;
-  discountPercent: number;
-  currency: 'SAR' | 'EGP';
-  currencySymbol: 'ر.س' | 'ج.م';
-}
-
 /**
  * Centralized, authoritative price calculation function.
  * Resolves the true selling SKU unit price and original price for any product
@@ -708,80 +717,89 @@ export function getProductActualPrice(
       hasDiscount: false,
       discountPercent: 0,
       currency,
-      currencySymbol
+      currencySymbol,
+      isStoreWide: false
     };
   }
 
-  // 1. Regular base price strictly from SKU record
-  const regularPrice = isEG
-    ? (Number(product.priceEG) > 0 ? Number(product.priceEG) : 899)
-    : (Number(product.priceSA) > 0 ? Number(product.priceSA) : 69);
+  // 1. Determine AUTHORITATIVE base original price from record
+  const recordPrice = isEG ? Number(product.priceEG) : Number(product.priceSA);
+  const baseOriginalPrice = Math.max(
+    Number(product.regularPrice || 0),
+    recordPrice > 0 ? recordPrice : 0,
+    isEG ? Number(product.salePriceEG || 0) : Number(product.salePriceSA || 0)
+  ) || (isEG ? 899 : 69);
 
-  // 2. Strict sale price resolution (must be strictly lower than regular price)
-  let salePrice: number | undefined = undefined;
+  // 2. Resolve current unit price (selling price)
+  let unitPrice = recordPrice > 0 ? recordPrice : baseOriginalPrice;
+
+  // 3. Check for further explicit sale prices (salePriceSA/EG columns)
   if (isEG) {
-    if (product.salePriceEG !== undefined && product.salePriceEG !== null) {
-      const sp = Number(product.salePriceEG);
-      if (sp > 0 && sp < regularPrice) {
-        salePrice = sp;
-      }
+    if (product.salePriceEG && product.salePriceEG > 0 && product.salePriceEG < unitPrice) {
+      unitPrice = product.salePriceEG;
     }
   } else {
-    if (product.salePriceSA !== undefined && product.salePriceSA !== null) {
-      const sp = Number(product.salePriceSA);
-      if (sp > 0 && sp < regularPrice && sp <= 200) {
-        salePrice = sp;
-      }
+    if (product.salePriceSA && product.salePriceSA > 0 && product.salePriceSA < unitPrice) {
+      unitPrice = product.salePriceSA;
     }
   }
 
-  // 3. Product-specific discount percentage if configured and active
+  // 4. Check for percentage discounts IF unitPrice is still the base (to avoid double discounting)
   const now = Date.now();
-  if (!salePrice && product.discountPercent && product.discountPercent > 0 && product.discountPercent <= 90) {
-    const isInactive = product.discountStatus === 'inactive' || product.isDiscountActive === false;
-    if (!isInactive) {
-      const startOk = !product.discountStartsAt || new Date(product.discountStartsAt).getTime() <= now;
-      const endOk = !product.discountEndsAt || new Date(product.discountEndsAt).getTime() >= now;
-      if (startOk && endOk) {
-        const discounted = Math.round(regularPrice * (1 - product.discountPercent / 100));
-        if (discounted > 0 && discounted < regularPrice) {
-          salePrice = discounted;
+  let startsAt: string | undefined;
+  let endsAt: string | undefined;
+  let isStoreWide = false;
+
+  if (unitPrice === baseOriginalPrice) {
+    // Check product-specific percent
+    if (product.discountPercent && product.discountPercent > 0 && product.discountPercent <= 90) {
+      const isInactive = product.discountStatus === 'inactive' || product.isDiscountActive === false;
+      if (!isInactive) {
+        const startOk = !product.discountStartsAt || new Date(product.discountStartsAt).getTime() <= now;
+        const endOk = !product.discountEndsAt || new Date(product.discountEndsAt).getTime() >= now;
+        if (startOk && endOk) {
+          unitPrice = Math.round(baseOriginalPrice * (1 - product.discountPercent / 100));
+          startsAt = product.discountStartsAt;
+          endsAt = product.discountEndsAt;
         }
       }
     }
-  }
-
-  // 4. Store-wide discount if active
-  if (!salePrice && settings?.storeDiscountPercent && settings.storeDiscountPercent > 0 && settings.storeDiscountPercent <= 90) {
-    const startOk = !settings.storeDiscountStartsAt || new Date(settings.storeDiscountStartsAt).getTime() <= now;
-    const endOk = !settings.storeDiscountEndsAt || new Date(settings.storeDiscountEndsAt).getTime() >= now;
-    if (startOk && endOk) {
-      const discounted = Math.round(regularPrice * (1 - settings.storeDiscountPercent / 100));
-      if (discounted > 0 && discounted < regularPrice) {
-        salePrice = discounted;
+    
+    // Check store-wide percent if still no discount applied
+    if (unitPrice === baseOriginalPrice && settings?.storeDiscountPercent && settings.storeDiscountPercent > 0) {
+      const startOk = !settings.storeDiscountStartsAt || new Date(settings.storeDiscountStartsAt).getTime() <= now;
+      const endOk = !settings.storeDiscountEndsAt || new Date(settings.storeDiscountEndsAt).getTime() >= now;
+      if (startOk && endOk) {
+        unitPrice = Math.round(baseOriginalPrice * (1 - settings.storeDiscountPercent / 100));
+        startsAt = settings.storeDiscountStartsAt;
+        endsAt = settings.storeDiscountEndsAt;
+        isStoreWide = true;
       }
     }
   }
 
-  const unitPrice = salePrice !== undefined ? salePrice : regularPrice;
-  const hasDiscount = salePrice !== undefined && salePrice < regularPrice;
+  const hasDiscount = unitPrice < baseOriginalPrice;
   const discountPercent = hasDiscount 
-    ? Math.round(((regularPrice - salePrice!) / regularPrice) * 100) 
+    ? Math.round(((baseOriginalPrice - unitPrice) / baseOriginalPrice) * 100) 
     : 0;
 
   return {
     unitPrice,
-    originalPrice: regularPrice,
+    originalPrice: baseOriginalPrice,
     hasDiscount,
     discountPercent,
     currency,
-    currencySymbol
+    currencySymbol,
+    startsAt,
+    endsAt,
+    isStoreWide
   };
 }
 
 export const dbService = {
   supabase,
   getProductActualPrice,
+  calculateShippingFee,
   
   getProductById: async (id: string): Promise<Product | null> => {
     try {
@@ -1726,6 +1744,7 @@ export const dbService = {
         city: order.city || 'الرياض',
         address: order.address || '',
         notes: order.notes || null,
+        shipping_fee: Number(order.shippingFee || 0),
         items: order.items || [],
         currency: safeCurrency,
         payment_method: order.paymentMethod || 'الدفع عند الاستلام',

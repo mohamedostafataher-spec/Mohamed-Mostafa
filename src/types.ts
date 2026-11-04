@@ -423,4 +423,14 @@ export interface CustomerAnalyticsRecord {
   recentOrderId: string;
 }
 
-
+export interface ActualProductPrice {
+  unitPrice: number;
+  originalPrice: number;
+  hasDiscount: boolean;
+  discountPercent: number;
+  currency: 'SAR' | 'EGP';
+  currencySymbol: 'ر.س' | 'ج.م';
+  startsAt?: string;
+  endsAt?: string;
+  isStoreWide: boolean;
+}

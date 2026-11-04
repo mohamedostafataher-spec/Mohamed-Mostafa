@@ -515,7 +515,7 @@ export default function AccountView({
 
   const activeUser = session?.user || localCustomer || {
     displayName: "عميلة Sulta الكريمة",
-    email: "client@sulta.atelier",
+    email: "client@sulta.Sulta",
     phone: "+966 55 282 3677"
   };
 

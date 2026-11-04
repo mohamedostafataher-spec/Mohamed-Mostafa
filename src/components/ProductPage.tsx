@@ -12,7 +12,7 @@ import { trackTikTokViewContent } from '../utils/tiktokPixel';
 import SEO from './SEO';
 import { ProductPrice } from './ProductPrice';
 import SultaImage from './SultaImage';
-import { calculateEffectiveDiscount, formatStockBadge } from '../utils/discountUtils';
+import { formatStockBadge } from '../utils/discountUtils';
 
 interface ProductPageProps {
   onAddToCart: (product: Product, color: any, size: string, qty: number) => void;
@@ -88,8 +88,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   // Countdown timer effect
   useEffect(() => {
     if (!product) return;
-    const discountInfo = calculateEffectiveDiscount(product, settings, 'SA');
-    if (!discountInfo.hasActiveDiscount || !discountInfo.endsAt) {
+    const discountInfo = dbService.getProductActualPrice(product, 'SA', settings);
+    if (!discountInfo.hasDiscount || !discountInfo.endsAt) {
       setCountdownText('');
       return;
     }
@@ -187,12 +187,12 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const canonicalUrl = `https://sulta.vercel.app/product/${productSlug}/`;
 
   // Effective discount info
-  const discountInfo = calculateEffectiveDiscount(product, settings, 'SA');
+  const discountInfo = dbService.getProductActualPrice(product, 'SA', settings);
   const stockBadgeInfo = formatStockBadge(product.stock);
   const isOutOfStock = product.stock === 0;
 
   // WhatsApp inquiry link
-  const whatsappText = encodeURIComponent(`مرحباً سولته، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالسعر الحالي: ${discountInfo.effectivePrice} ر.س\nالرابط: ${canonicalUrl}`);
+  const whatsappText = encodeURIComponent(`مرحباً سولته، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالسعر الحالي: ${discountInfo.unitPrice} ر.س\nالرابط: ${canonicalUrl}`);
   const whatsappUrl = `https://wa.me/966552823677?text=${whatsappText}`;
 
   // JSON-LD for Product (STRICT: NO reviews, NO aggregateRating)
@@ -217,13 +217,13 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
       "@type": "Offer",
       "url": canonicalUrl,
       "priceCurrency": "SAR",
-      "price": discountInfo.effectivePrice,
+      "price": discountInfo.unitPrice,
       "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       "itemCondition": "https://schema.org/NewCondition"
     }
   };
 
-  if (discountInfo.hasActiveDiscount && discountInfo.endsAt) {
+  if (discountInfo.hasDiscount && discountInfo.endsAt) {
     jsonLd.offers.priceValidUntil = discountInfo.endsAt;
   }
 
@@ -446,11 +446,11 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             <div className="bg-amber-50/70 border border-amber-200/90 rounded-2xl p-3 my-2 space-y-1.5 text-xs" dir="rtl">
               <div className="flex items-center gap-2 text-amber-950 font-bold">
                 <Truck size={16} className="text-amber-700 shrink-0" />
-                <span>الشحن: <strong>40 ر.س</strong> لكافة مدن المملكة (شحن مجاني للطلبات فوق <strong>299 ر.س</strong> 🇸🇦)</span>
+                <span>الشحن: <strong>40 ر.س</strong> (شحن مجاني للطلبات بأكثر من <strong>299 ر.س</strong> 🇸🇦)</span>
               </div>
               <div className="flex items-center gap-2 text-emerald-900 font-bold text-[11px] pt-1 border-t border-amber-200/50">
                 <ShieldCheck size={15} className="text-emerald-700 shrink-0" />
-                <span>السعر شامل ضريبة القيمة المضافة 15% بالكامل • لا رسوم خفية عند الاستلام</span>
+                <span>السعر شامل ضريبة القيمة المضافة 15% بالكامل • لا توجد رسوم إضافية</span>
               </div>
             </div>
 

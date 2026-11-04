@@ -68,14 +68,14 @@ export const orderService = {
       notes: params.notes,
       shippingFee: params.shippingFee,
       items: params.cart.map(item => {
-        const itemPrice = params.country === 'EG' ? item.product.priceEG : item.product.priceSA;
+        const actualPrice = dbService.getProductActualPrice(item.product, params.country).unitPrice;
         return {
           productId: item.product.id,
           productName: item.product.nameAr,
           color: item.selectedColor?.name || 'افتراضي',
           size: item.selectedSize,
           quantity: item.quantity,
-          price: itemPrice
+          price: actualPrice
         };
       }),
       totalPrice: params.totalPrice,

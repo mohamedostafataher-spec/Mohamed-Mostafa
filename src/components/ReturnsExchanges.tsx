@@ -248,20 +248,27 @@ export default function ReturnsExchanges() {
             <div className="w-12 h-12 bg-[#FAF5F0] rounded-xl flex items-center justify-center shadow-xs">
                <Truck size={24} className="text-[#A44C5C]" />
             </div>
-            <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">الشحن والتوصيل 🚚</h2>
+            <h2 className="font-serif text-2xl font-bold text-[#0B0B0B]">سياسة الشحن والتوصيل 🚚</h2>
           </div>
+          <p className="text-gray-600 mb-6 text-base leading-relaxed">
+            نحن فخورون بخدمة عميلاتنا في كافة مناطق ومدن المملكة العربية السعودية:
+          </p>
           <ul className="space-y-4">
             <li className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
               <div className="w-2 h-2 rounded-full bg-[#A44C5C] shrink-0" />
-              <p className="text-gray-800 font-medium text-base">يتم الشحن لجميع المناطق المتاحة.</p>
+              <p className="text-gray-800 font-bold text-sm sm:text-base">رسوم الشحن: <span className="text-[#A44C5C]">40 ر.س</span> للطلبات التي تبلغ قيمتها 299 ر.س أو أقل.</p>
+            </li>
+            <li className="flex gap-4 items-center bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+              <div className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+              <p className="text-emerald-900 font-bold text-sm sm:text-base">الشحن مجاني: للطلبات التي تزيد قيمتها عن <span className="underline decoration-emerald-300">299 ر.س</span>.</p>
             </li>
             <li className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
               <div className="w-2 h-2 rounded-full bg-[#A44C5C] shrink-0" />
-              <p className="text-gray-800 font-medium text-base">تختلف مدة التوصيل حسب المدينة وشركة الشحن.</p>
+              <p className="text-gray-800 font-medium text-sm sm:text-base">يتم احتساب قيمة الطلب بعد تطبيق الخصومات (إن وجدت) وقبل إضافة رسوم الشحن.</p>
             </li>
             <li className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
               <div className="w-2 h-2 rounded-full bg-[#A44C5C] shrink-0" />
-              <p className="text-gray-800 font-medium text-base">يمكن متابعة حالة الطلب من صفحة تتبع الطلب.</p>
+              <p className="text-gray-800 font-medium text-sm sm:text-base">يمكن متابعة حالة الطلب وتتبع الشحنة مباشرة عبر حسابكِ أو صفحة تتبع الطلب.</p>
             </li>
           </ul>
         </section>

@@ -97,7 +97,7 @@ export default function LuxuryGifts({
 
           {/* Golden Letter Card preview */}
           <div className="bg-[#FAF5F0] border-2 border-dashed border-[#A44C5C]/20 p-6 rounded-2xl relative">
-            <div className="absolute top-3 left-3 text-2xs text-[#A44C5C]/40 font-serif italic">Atelier Sulta Card</div>
+            <div className="absolute top-3 left-3 text-2xs text-[#A44C5C]/40 font-serif italic">Sulta Card</div>
             <h5 className="font-serif text-xs text-[#A44C5C] font-semibold mb-3">بطاقة التهنئة بالخط العربي الفاخر:</h5>
             <div className="bg-white p-4 rounded-xl text-center min-h-[90px] flex items-center justify-center border border-[#DF8A9D]/10">
               {cardMessage ? (

@@ -26,7 +26,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Product } from '../types';
 
-interface AtelierAudioAtmosphereProps {
+interface SultaAudioAtmosphereProps {
   products?: Product[];
   collections?: any[];
   coupons?: any[];
@@ -64,7 +64,7 @@ const LUXURY_TIPS = [
   }
 ];
 
-export default function AtelierAudioAtmosphere({
+export default function SultaAudioAtmosphere({
   products = [],
   collections = [],
   coupons = [],
@@ -73,7 +73,7 @@ export default function AtelierAudioAtmosphere({
   onSelectProduct,
   onAddToCart,
   session
-}: AtelierAudioAtmosphereProps) {
+}: SultaAudioAtmosphereProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [activeTab, setActiveTab] = useState<'welcome' | 'spotlight' | 'actions'>('welcome');
@@ -751,7 +751,7 @@ export default function AtelierAudioAtmosphere({
         ) : (
           /* FLOATING BUTTON (HIDDEN ON MOBILE TO PREVENT CLUTTER & SCREEN OVERLAP) */
           <motion.button
-            layoutId="atelier-radio-btn"
+            layoutId="Sulta-radio-btn"
             onClick={() => setIsOpen(true)}
             className="hidden md:flex items-center gap-2 bg-[#DF8A9D] text-white hover:bg-[#A44C5C] px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-white/20 ring-4 ring-neutral-500/10"
             title="افتح مرشد Sulta الملكي الفاخر 👑"

@@ -74,7 +74,6 @@ import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMem
 import { dbService, cleanImgUrl, supabase } from '../services/db';
 import { WhatsAppService } from '../services/whatsappService';
 import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats, getProductAnalytics, ProductMetric } from '../utils/analytics';
-import { calculateEffectiveDiscount } from '../utils/discountUtils';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
 import PixelHealthIndicator from './PixelHealthIndicator';
 import TrafficHeatmap from './TrafficHeatmap';
@@ -3070,11 +3069,11 @@ export default function Dashboard({
                               </button>
                             </div>
                           ) : (() => {
-                            const eff = calculateEffectiveDiscount(p, settings, 'SA');
+                            const eff = dbService.getProductActualPrice(p, 'SA', settings);
                             const regDate = p.regularPriceSince ? new Date(p.regularPriceSince) : new Date();
                             const daysDiff = Math.floor((new Date().getTime() - regDate.getTime()) / (1000 * 60 * 60 * 24));
                             const minDays = settings?.minReferenceDays || 14;
-                            const showWarning = eff.hasActiveDiscount && daysDiff < minDays;
+                            const showWarning = eff.hasDiscount && daysDiff < minDays;
 
                             return (
                               <div className="flex flex-col items-start gap-1" dir="rtl">
@@ -3083,15 +3082,15 @@ export default function Dashboard({
                                     className="font-black text-xs sm:text-sm text-[#A44C5C] font-mono cursor-pointer"
                                     onClick={() => {
                                       setEditingPriceId(p.id);
-                                      setInlinePriceVal(String(eff.effectivePrice));
+                                      setInlinePriceVal(String(eff.unitPrice));
                                     }}
                                     title="اضغطي للتعديل السريع"
                                   >
-                                    {eff.effectivePrice} ر.س
+                                    {eff.unitPrice} ر.س
                                   </span>
-                                  {eff.hasActiveDiscount && (
+                                  {eff.hasDiscount && (
                                     <span className="text-[10px] sm:text-[11px] text-gray-400 font-mono line-through">
-                                      {eff.regularPrice} ر.س
+                                      {eff.originalPrice} ر.س
                                     </span>
                                   )}
                                   <button
@@ -3122,7 +3121,7 @@ export default function Dashboard({
                                   </button>
                                 </div>
                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                  {eff.hasActiveDiscount ? (
+                                  {eff.hasDiscount ? (
                                     <span className="px-1.5 py-0.5 text-[9px] font-bold bg-[#FFF0F2] text-[#A44C5C] border border-[#A44C5C]/20 rounded-md">
                                       خصم {eff.discountPercent}٪ {eff.isStoreWide ? '(شامل)' : ''}
                                     </span>

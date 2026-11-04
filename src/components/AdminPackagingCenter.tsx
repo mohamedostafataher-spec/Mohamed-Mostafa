@@ -1003,7 +1003,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                       { id: 'drawer_box', name: '📦 علبة السحاب المنزلق (Drawer Slide)', desc: 'قالب كرتون متداخل يعطي برستيج فوري عند سحبه.' },
                       { id: 'pizza_box', name: '🍕 علبة البيتزا المسطحة العصرية (Tulia Box)', desc: 'ستايل الفتيات اللطيف في بنترست من الكرتون المقوى البسيط.' },
                       { id: 'magnetic_clasp', name: '💎 البوكس المغناطيسي الـصّلب (Luxury Rigid Mag)', desc: 'أعلى معايير التغليف بالشرق الأوسط مع قفل مغناطيسي خفي.' },
-                      { id: 'shopping_bag', name: '🛍️ حقيبة الهدايا الملوكية (Atelier Shopping Bag)', desc: 'شنطة من الكرافت العاجي مع فيونكة ملوكية عريضة ومذهلة.' }
+                      { id: 'shopping_bag', name: '🛍️ حقيبة الهدايا الملوكية (Sulta Shopping Bag)', desc: 'شنطة من الكرافت العاجي مع فيونكة ملوكية عريضة ومذهلة.' }
                     ].map((box) => (
                       <button
                         key={box.id}
@@ -1203,7 +1203,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               <span className="text-[9.5px] font-mono text-[#A44C5C] font-bold">CMYK OFFSET OK</span>
             </div>
 
-            {/* Premium Atelier Scale Control Panel */}
+            {/* Premium Sulta Scale Control Panel */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-[#FFF0F2] rounded-xl border border-[#A44C5C]/20 text-[11px] w-full">
               <span className="font-bold text-[#A44C5C] flex items-center gap-1">
                 <span>🔍 مقياس المعاينة النشط:</span>
@@ -1342,7 +1342,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </div>
 
                 <div className="text-center text-[8.5px] text-stone-400 border-t border-stone-150 pt-2">
-                  Atelier Sulta Wear Instructions & Care © 2026
+                  Sulta Wear Instructions & Care © 2026
                 </div>
               </div>
 
@@ -1519,7 +1519,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </div>
 
                 <span className="text-[8px] text-zinc-400 text-center block font-sans">
-                  Scan QR code for direct VIP Atelier Concierge
+                  Scan QR code for direct VIP Sulta Concierge
                 </span>
               </div>
 
@@ -1596,7 +1596,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
               >
                 <div className="text-center text-[10px] font-black">Sulta PREMIUM GIFT BAG</div>
                 <div className="border-t border-b-2 border-stone-300 py-4 my-auto text-center font-serif text-lg text-[#A44C5C]">
-                  Sulta COUTURE ATELIER
+                  Sulta COUTURE Sulta
                 </div>
                 <div className="text-[8px] text-stone-400 text-center">Premium Kraft with Cotton Ribbons Specs</div>
               </div>

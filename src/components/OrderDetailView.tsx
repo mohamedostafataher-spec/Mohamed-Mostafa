@@ -517,7 +517,7 @@ export default function OrderDetailView({
         const matchedP = productsMap[item.productId];
         const rawLabel = matchedP?.nameEn || item.productName || "Sulta Elegant Piece";
         // Clean Arabic/Unicode to keep PDF output clean & standard
-        const cleanLabel = rawLabel.replace(/[^\x00-\x7F]/g, "").trim() || "Luxury Couture Atelier PJ";
+        const cleanLabel = rawLabel.replace(/[^\x00-\x7F]/g, "").trim() || "Luxury Couture Sulta PJ";
 
         doc.text(
           `${cleanLabel} (${item.color} - ${item.size})`,

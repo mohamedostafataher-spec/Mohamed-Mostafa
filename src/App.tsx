@@ -54,7 +54,8 @@ const LiveTrafficMonitor = React.lazy(() => import('./components/LiveTrafficMoni
 // LivePurchaseToasts removed to ensure 100% genuine data only
 const SearchOverlay = React.lazy(() => import('./components/SearchOverlay'));
 
-import { dbService, supabase, cleanImgUrl, SEED_FALLBACK_PRODUCTS } from './services/db';
+import { dbService, supabase, cleanImgUrl } from './services/db';
+import { SEED_FALLBACK_PRODUCTS } from './data/fallbackProducts';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
 import { getProductSlug } from './utils/slugify';
 import {
@@ -220,6 +221,7 @@ function AppContent() {
   });
 
   const [products, setProducts] = useState<Product[]>(SEED_FALLBACK_PRODUCTS);
+  const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(true);
   const [coupons, setCoupons] = useState<DiscountCoupon[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -296,15 +298,18 @@ function AppContent() {
         // Fetch settings - ensure this doesn't block the splash
         dbService.getSettings().then(setSettings).catch(err => console.error("Settings error:", err));
         
-        // 1. Live Sync Products
         unsubProducts = dbService.subscribeProducts(
           (list) => {
             setProducts(list);
+            setIsLoadingProducts(false);
             if (list.length > 0) {
               console.log("[Sulta DEBUG] First 3 product images:", list.slice(0, 3).map(p => p.images?.[0]));
             }
           },
-          (error) => console.error("Products error:", error)
+          (error) => {
+            console.error("Products error:", error);
+            setIsLoadingProducts(false);
+          }
         );
 
         // 2. Live Sync Coupons
@@ -792,6 +797,7 @@ function AppContent() {
   const featuredProducts = catalogPool.slice(0, 6);
   const trendingProducts = catalogPool.slice(0, 6);
   const seasonalCollections = catalogPool.slice(0, 6);
+  const offers = catalogPool.filter(p => p.isDiscountActive && (p.salePriceSA || p.discountPercent > 0));
 
   return (
       <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
@@ -843,6 +849,8 @@ function AppContent() {
                 products={products}
                 bestSellers={bestSellers}
                 newArrivals={newArrivals}
+                offers={offers}
+                isLoading={isLoadingProducts}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
                 handleSelectProduct={handleSelectProduct}
@@ -1079,7 +1087,7 @@ function AppContent() {
           <div className="space-y-4">
             <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => setTab('home')}>
               <span className="font-serif text-2xl font-black tracking-widest text-[#111827] uppercase">
-                {(settings?.siteName ? settings.siteName.replace(/atelier/ig, '').trim() : '') || 'Sulta'}
+                Sulta
               </span>
               <span className="text-[#A44C5C] text-sm">👑</span>
             </div>
