@@ -1994,8 +1994,12 @@ export const dbService = {
     const encodedName = (product.nameAr || '') + ' | ' + (product.nameEn || '');
     const encodedDescription = (product.descriptionAr || '') + ' | ' + (product.descriptionEn || '') + ' | [METADATA_Sulta_V2]:' + JSON.stringify(metadata);
 
+    const productId = (product.id && typeof product.id === 'string' && product.id.trim() !== '') 
+      ? product.id 
+      : 'prod_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+
     const payload: any = {
-      id: product.id,
+      id: productId,
       name_ar: product.nameAr,
       name_en: product.nameEn,
       category: safeCategory,
