@@ -388,8 +388,8 @@ export default function AdminMarketingCenter() {
           setSocialAccounts(JSON.parse(localSoc));
         } else {
           const defaults: SocialAccount[] = [
-            { id: 'sa1', platform: 'instagram', username: 'sultabrand', url: 'https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==', followers: 142000, engagementRate: 6.2, clicks: 4500, sales: 840, status: 'active' },
-            { id: 'sa2', platform: 'tiktok', username: 'sulta_sleepwear', url: 'https://tiktok.com/@sulta_sleepwear', followers: 89000, engagementRate: 9.4, clicks: 8200, sales: 1120, status: 'active' },
+            { id: 'sa1', platform: 'instagram', username: 'sulta.sa', url: 'https://www.instagram.com/sulta.sa', followers: 142000, engagementRate: 6.2, clicks: 4500, sales: 840, status: 'active' },
+            { id: 'sa2', platform: 'tiktok', username: 'sulta.sa', url: 'https://tiktok.com/@sulta.sa', followers: 89000, engagementRate: 9.4, clicks: 8200, sales: 1120, status: 'active' },
             { id: 'sa3', platform: 'facebook', username: 'sulta.Sulta', url: 'https://facebook.com/sulta.Sulta', followers: 45000, engagementRate: 2.8, clicks: 1200, sales: 210, status: 'active' }
           ];
           setSocialAccounts(defaults);

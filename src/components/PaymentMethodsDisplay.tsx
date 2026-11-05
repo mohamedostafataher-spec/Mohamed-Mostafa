@@ -1,5 +1,6 @@
 import React from 'react';
 import { CreditCard, Banknote, Building2, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { isPaymobConfigured } from '../payment';
 
 /**
  * PaymentMethodsDisplay - Sulta Official Prominent Payment Methods Display
@@ -7,7 +8,7 @@ import { CreditCard, Banknote, Building2, ShieldCheck, CheckCircle2 } from 'luci
  * 1. الدفع عند الاستلام (Cash on Delivery)
  * 2. تحويل حساب بنكي (Bank Transfer - Al Rajhi & SNB)
  * 3. مدى (mada)
- * 4. Apple Pay & Cards (Visa / Mastercard)
+ * 4. Apple Pay & Cards (Visa / Mastercard) - Only if configured
  */
 
 interface PaymentMethodsDisplayProps {
@@ -16,11 +17,12 @@ interface PaymentMethodsDisplayProps {
 
 export default function PaymentMethodsDisplay({ variant = 'footer' }: PaymentMethodsDisplayProps) {
   const isFooter = variant === 'footer';
+  const hasElectronicPayment = isPaymobConfigured();
 
   return (
     <div className={`space-y-3 w-full ${variant === 'checkout' ? 'my-3' : ''}`} dir="rtl">
       {/* 1. Large Highlight Badges for Cash on Delivery, Bank Transfer, and Mada */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <div className={`grid grid-cols-1 ${hasElectronicPayment ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-2`}>
         {/* الدفع عند الاستلام */}
         <div className="flex items-center gap-3 bg-emerald-50/90 border-2 border-emerald-200 rounded-2xl px-4 py-3 shadow-sm hover:border-emerald-400 transition-all group">
           <div className="w-14 h-14 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform">
@@ -43,16 +45,18 @@ export default function PaymentMethodsDisplay({ variant = 'footer' }: PaymentMet
           </div>
         </div>
 
-        {/* مدى */}
-        <div className="flex items-center gap-3 bg-amber-50/90 border-2 border-amber-200 rounded-2xl px-4 py-3 shadow-sm hover:border-amber-400 transition-all group">
-          <div className="w-14 h-14 rounded-xl bg-[#007A3D] text-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform font-black text-lg tracking-tighter">
-            mada
+        {/* مدى - Only show if electronic payment is configured */}
+        {hasElectronicPayment && (
+          <div className="flex items-center gap-3 bg-amber-50/90 border-2 border-amber-200 rounded-2xl px-4 py-3 shadow-sm hover:border-amber-400 transition-all group">
+            <div className="w-14 h-14 rounded-xl bg-[#007A3D] text-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform font-black text-lg tracking-tighter">
+              mada
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-base font-black text-amber-950 leading-tight">بطاقة مدى (mada)</span>
+              <span className="text-xs text-amber-800 font-bold">دفع فوري آمن ببطاقتكِ البنكية</span>
+            </div>
           </div>
-          <div className="flex flex-col text-right">
-            <span className="text-base font-black text-amber-950 leading-tight">بطاقة مدى (mada)</span>
-            <span className="text-xs text-amber-800 font-bold">دفع فوري آمن ببطاقتكِ البنكية</span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* 2. Official Visual Payment Partner Badge (Enlarged and Crisp) */}
@@ -68,7 +72,9 @@ export default function PaymentMethodsDisplay({ variant = 'footer' }: PaymentMet
         <div className="flex items-center justify-center bg-gray-50/50 p-2 rounded-2xl border border-gray-100">
           <img 
             src="/assets/aistudio/YHdjS5O14jZZWQXsG7gybkOtD7CRXcklAxkIe83q_9b507384.jpeg" 
-            alt="طرق الدفع المعتمدة: مدى، تحويل بنكي، الدفع عند الاستلام، ابل باي، فيزا وماستركارد" 
+            alt={hasElectronicPayment 
+              ? "طرق الدفع المعتمدة: مدى، تحويل بنكي، الدفع عند الاستلام، ابل باي، فيزا وماستركارد" 
+              : "طرق الدفع المعتمدة: مدى، تحويل بنكي، الدفع عند الاستلام"} 
             className="h-12 sm:h-14 w-auto object-contain max-w-full rounded-lg"
           />
         </div>

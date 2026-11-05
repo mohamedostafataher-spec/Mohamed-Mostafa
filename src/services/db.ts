@@ -219,7 +219,7 @@ export function cleanText(text: any): any {
     .replace(/(ملكي\s+)+ملكي/g, 'ملكي')
     .replace(/(ملكية\s+)+ملكية/g, 'ملكية')
     .replace(/فاخرةي/g, 'فاخرة')
-    .replace(/سولته/g, 'سولته');
+    .replace(/سولتة/g, 'سولته');
 
   return cleaned.trim();
 }
@@ -998,9 +998,9 @@ export const dbService = {
           { regionAr: 'توصيل فاخر بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 40 }
         ],
         defaultShippingFee: 40,
-        instagram: 'https://www.instagram.com/sultabrand',
+        instagram: 'https://www.instagram.com/sulta.sa',
         facebook: '',
-        tiktok: 'https://www.tiktok.com/@sulta.brand',
+        tiktok: 'https://www.tiktok.com/@sulta.sa',
         tiktokPixelId: 'DBESRBJC77U4J2JQDUB0'
       };
     }

@@ -216,7 +216,6 @@ export default function Header({
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && setTab('home')}
           >
-            <div className="flex flex-col items-center sm:items-start group">
               <div className="flex items-center gap-1.5">
                 <span className="text-xl sm:text-2xl font-black tracking-widest text-[#111827] font-serif uppercase">
                   Sulta
@@ -227,7 +226,6 @@ export default function Header({
                 سولته · أزياء النوم الفاخرة
               </span>
             </div>
-          </div>
 
           {/* Search Bar (Desktop) Trigger */}
           <div className="hidden lg:flex flex-1 max-w-lg relative mx-8">

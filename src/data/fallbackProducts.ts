@@ -29,7 +29,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     stock: 40,
     status: 'active',
     h1: 'بيجامة نسائية بطبعة الفيونكة — وردي ملكي',
-    seoTitle: 'بيجامة نسائية بطبعة الفيونكة وردي ملكي | سولتة',
+    seoTitle: 'بيجامة نسائية بطبعة الفيونكة وردي ملكي | سولته',
     shortDescription: 'بيجامة نسائية بطبعة الفيونكة باللون الوردي الملكي الناعم، تصميم أنيق ومريح للنوم وجلسات البيت.'
   },
   {
@@ -60,7 +60,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     stock: 20,
     status: 'active',
     h1: 'بيجامة نسائية بطبعة الفيونكة — أبيض عاجي',
-    seoTitle: 'بيجامة نسائية بطبعة الفيونكة أبيض عاجي | سولتة',
+    seoTitle: 'بيجامة نسائية بطبعة الفيونكة أبيض عاجي | سولته',
     shortDescription: 'بيجامة نسائية بطبعة الفيونكة باللون الأبيض العاجي الناصع، مظهر مريح ومشرق لأوقات البيت.'
   },
   {
@@ -72,7 +72,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     priceEG: 899,
     priceSA: 99,
     regularPrice: 99,
-    descriptionAr: 'بيجامة روزي بنقشة الزهور الناعمة من سولتة، مصممة للمرأة التي تبحث عن الفخامة والراحة في ملابس النوم.',
+    descriptionAr: 'بيجامة روزي بنقشة الزهور الناعمة من سولته، مصممة للمرأة التي تبحث عن الفخامة والراحة في ملابس النوم.',
     descriptionEn: 'Rosy floral crinkle cotton pajama set for ultimate comfort and elegance.',
     fabricAr: 'قطن كوريشة ناعم',
     fabricEn: 'Soft Crinkle Cotton',
@@ -88,8 +88,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     reviewsCount: 19,
     stock: 15,
     status: 'active',
-    h1: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة — في بوكس سولتة',
-    seoTitle: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة | سولتة',
+    h1: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة — في بوكس سولته',
+    seoTitle: 'بيجامة نسائية وردية بنقشة زهور قطن كوريشة | سولته',
     shortDescription: 'بيجامة نسائية وردية بنقشة زهور أنثوية ناعمة من قطن كوريشة مريح.'
   },
   {
@@ -101,7 +101,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     priceEG: 347,
     priceSA: 75,
     regularPrice: 150,
-    descriptionAr: 'بيجامة نسائية حمراء منقّطة بحمالات من سولتة، بلون أحمر جريء ونقط بيضاء ناعمة، مصنوعة من قطن ناعم ومريح على البشرة.',
+    descriptionAr: 'بيجامة نسائية حمراء منقّطة بحمالات من سولته، بلون أحمر جريء ونقط بيضاء ناعمة، مصنوعة من قطن ناعم ومريح على البشرة.',
     descriptionEn: 'Red polka dot strappy cotton pajama set for relaxed home sessions.',
     fabricAr: 'قطن ناعم ومريح',
     fabricEn: 'Soft Cotton',
@@ -118,7 +118,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     stock: 6,
     status: 'active',
     h1: 'بيجامة نسائية حمراء منقّطة بحمالات — قطن وان سايز',
-    seoTitle: 'بيجامة نسائية حمراء منقّطة بحمالات قطن | سولتة',
+    seoTitle: 'بيجامة نسائية حمراء منقّطة بحمالات قطن | سولته',
     shortDescription: 'بيجامة نسائية حمراء منقّطة بحمالات تربط على الكتف مع قصة أنثوية مريحة.'
   },
   {
@@ -130,7 +130,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     priceEG: 840,
     priceSA: 69,
     regularPrice: 137,
-    descriptionAr: 'بيجامة نسائية قطن كوريشة بطبعة التوليب الوردي من سولتة، على قماش ناعم ومريح بقصّة قميص بأكمام قصيرة وحواف وردية تضيف لمسة أنثوية هادئة.',
+    descriptionAr: 'بيجامة نسائية قطن كوريشة بطبعة التوليب الوردي من سولته، على قماش ناعم ومريح بقصّة قميص بأكمام قصيرة وحواف وردية تضيف لمسة أنثوية هادئة.',
     descriptionEn: 'Flora tulip crinkle cotton pajama set with elegant pink trims.',
     fabricAr: 'قطن كوريشة ناعم ومريح',
     fabricEn: 'Soft & Comfortable Crinkle Cotton',
@@ -147,7 +147,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     stock: 12,
     status: 'active',
     h1: 'بيجامة نسائية قطن كوريشة بطبعة التوليب — وان سايز',
-    seoTitle: 'بيجامة نسائية قطن كوريشة بطبعة التوليب | سولتة',
+    seoTitle: 'بيجامة نسائية قطن كوريشة بطبعة التوليب | سولته',
     shortDescription: 'بيجامة نسائية من قطن كوريشة ناعم بطبعة التوليب الوردي وحواف وردية. وان سايز من 45 إلى 80 كيلو.'
   },
   {
@@ -159,7 +159,7 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     priceEG: 750,
     priceSA: 99,
     regularPrice: 99,
-    descriptionAr: 'بيجامة روزا ورد المساء الفاخرة من سولتة، تجمع بين الراحة الاستثنائية والجاذبية الهادئة لإطلالة منزلية مميزة.',
+    descriptionAr: 'بيجامة روزا ورد المساء الفاخرة من سولته، تجمع بين الراحة الاستثنائية والجاذبية الهادئة لإطلالة منزلية مميزة.',
     descriptionEn: 'Rosa evening bloom luxury pajama set for comfortable elegance.',
     fabricAr: 'قطن ناعم ومريح',
     fabricEn: 'Soft Premium Cotton',
@@ -175,8 +175,8 @@ export const SEED_FALLBACK_PRODUCTS: Product[] = [
     reviewsCount: 16,
     stock: 19,
     status: 'active',
-    h1: 'بيجامة نسائية روزا ورد المساء — سولتة',
-    seoTitle: 'بيجامة نسائية روزا ورد المساء | سولتة',
+    h1: 'بيجامة نسائية روزا ورد المساء — سولته',
+    seoTitle: 'بيجامة نسائية روزا ورد المساء | سولته',
     shortDescription: 'بيجامة نسائية روزا ورد المساء لإشراقة الأمسيات والراحة التامة.'
   }
 ];

@@ -155,12 +155,12 @@ function AppContent() {
     const organizationSchema = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Sulta | سولته",
+      "name": "سولته | Sulta",
       "url": "https://sulta.vercel.app",
       "logo": "https://sulta.vercel.app/img/sulta_hero_banner_real.webp",
       "sameAs": [
-        "https://instagram.com/sultabrand",
-        "https://tiktok.com/@sulta.brand"
+        "https://instagram.com/sulta.sa",
+        "https://tiktok.com/@sulta.sa"
       ],
       "contactPoint": {
         "@type": "ContactPoint",
@@ -1110,7 +1110,7 @@ function AppContent() {
               </a>
               <a href="https://tiktok.com/@sulta.sa" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#A44C5C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A44C5C] rounded-md p-1" aria-label="سولته على تيك توك">
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.03 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.98-.23-2.81.36-.54.38-.89.98-1.03 1.63-.12.53-.08 1.1.1 1.6.43 1.2 1.88 1.91 3.1 1.53.84-.26 1.5-.97 1.74-1.8.13-.41.13-.85.13-1.28.02-4.14.01-8.28.02-12.43z" />
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.03 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.98-.23-2.81.36-.54.38-.98-1.03 1.63-.12.53-.08 1.1.1 1.6.43 1.2 1.88 1.91 3.1 1.53.84-.26 1.5-.97 1.74-1.8.13-.41.13-.85.13-1.28.02-4.14.01-8.28.02-12.43z" />
                 </svg>
               </a>
             </div>

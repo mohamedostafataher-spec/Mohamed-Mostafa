@@ -58,6 +58,9 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:description" content={fullDescription} />
       <meta property="og:url" content={url} />
       <meta property="og:image" content={absoluteImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:type" content={absoluteImage.endsWith('.webp') ? 'image/webp' : 'image/jpeg'} />
       <meta property="og:site_name" content="سولته | Sulta" />
       <meta property="og:locale" content="ar_SA" />
 

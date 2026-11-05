@@ -43,8 +43,8 @@ function buildPageHtml(
   const cleanRoutePath = routePath.split('?')[0].replace(/\/+$/, '') + '/';
   const fullUrl = `${BASE_URL}${cleanRoutePath}`;
   
-  const pageTitle = meta.title || 'بيجامات نسائية قطن ووان سايز | سولتة';
-  const pageDesc = truncateWordBoundary(meta.description || 'متجر سولتة لأزياء النوم والبيجامات النسائية القطنية المريحة بمقاس وان سايز يناسب من 45 إلى 80 كيلو.');
+  const pageTitle = meta.title || 'بيجامات نسائية قطن ووان سايز | سولته';
+  const pageDesc = truncateWordBoundary(meta.description || 'متجر سولته لأزياء النوم والبيجامات النسائية القطنية المريحة بمقاس وان سايز يناسب من 45 إلى 80 كيلو.');
   const rawImage = meta.image || '';
   const absImage = rawImage ? (rawImage.startsWith('http') ? rawImage : `${BASE_URL}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`) : '';
 
@@ -60,8 +60,13 @@ function buildPageHtml(
     `<meta property="og:title" content="${pageTitle}" />`,
     `<meta property="og:description" content="${pageDesc}" />`,
     `<meta property="og:url" content="${fullUrl}" />`,
-    ...(absImage ? [`<meta property="og:image" content="${absImage}" />`] : []),
-    `<meta property="og:site_name" content="سولتة | SULTA" />`,
+    ...(absImage ? [
+      `<meta property="og:image" content="${absImage}" />`,
+      `<meta property="og:image:width" content="1200" />`,
+      `<meta property="og:image:height" content="630" />`,
+      `<meta property="og:image:type" content="${absImage.endsWith('.webp') ? 'image/webp' : 'image/jpeg'}" />`
+    ] : []),
+    `<meta property="og:site_name" content="سولته | SULTA" />`,
     `<meta property="og:locale" content="ar_SA" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${pageTitle}" />`,
@@ -128,13 +133,14 @@ async function runPrerender() {
   const staticRoutes = [
     {
       path: '/',
-      title: 'بيجامات نسائية قطن ووان سايز | سولتة',
+      title: 'بيجامات نسائية قطن ووان سايز | سولته',
       description: truncateWordBoundary('تسوقي بيجامات نسائية مريحة من قطن كوريشة ناعم وقطن مريح بمقاس وان سايز يناسب 45 إلى 80 كيلو. تصاميم أنثوية مريحة وكميات محدودة مع توصيل سريع لجميع مدن المملكة.'),
+      image: '/img/sulta_hero_banner_real.webp',
       bodyHtml: `<main dir="rtl" class="max-w-7xl mx-auto px-4 py-8">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-center my-6 text-gray-900">بيجامات نسائية قطن ناعمة — سولتة</h1>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center my-6 text-gray-900">بيجامات نسائية قطن ناعمة — سولته</h1>
         <div class="text-center text-gray-600 max-w-3xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
           <p>
-            مرحباً بكِ في سولتة، حيث نقدم لكِ تشكيلة بيجامات نسائية صُممت خصيصاً لتمنحكِ الراحة والهدوء في أوقات استرخائكِ اليومية بالمنزل. نعتمد في قطعنا على خامات القطن الناعم المريح والقطن الكوريشة عالي التهوية بقصّات أنثوية لطيفة تناسب ذوقكِ الرفيع. تتوفر تشكيلتنا بمقاس وان سايز مرن يناسب الأوزان من 45 إلى 80 كيلو لتضمني راحة تامة طوال اليوم، مع عناية بالتفاصيل وتوصيل موثوق لكافة مناطق المملكة.
+            مرحباً بكِ في سولته، حيث نقدم لكِ تشكيلة بيجامات نسائية صُممت خصيصاً لتمنحكِ الراحة والهدوء في أوقات استرخائكِ اليومية بالمنزل. نعتمد في قطعنا على خامات القطن الناعم المريح والقطن الكوريشة عالي التهوية بقصّات أنثوية لطيفة تناسب ذوقكِ الرفيع. تتوفر تشكيلتنا بمقاس وان سايز مرن يناسب الأوزان من 45 إلى 80 كيلو لتضمني راحة تامة طوال اليوم، مع عناية بالتفاصيل وتوصيل موثوق لكافة مناطق المملكة.
           </p>
         </div>
         <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -162,10 +168,10 @@ async function runPrerender() {
     },
     {
       path: '/store/',
-      title: 'بيجامات نسائية قطن — تسوقي الآن | سولتة',
-      description: truncateWordBoundary('تصفحي كامل تشكيلة البيجامات النسائية من سولتة، خامات قطنية مريحة بمقاس وان سايز 45-80 كجم وتوصيل لكافة مدن المملكة.'),
+      title: 'بيجامات نسائية قطن — تسوقي الآن | سولته',
+      description: truncateWordBoundary('تصفحي كامل تشكيلة البيجامات النسائية من سولته، خامات قطنية مريحة بمقاس وان سايز 45-80 كجم وتوصيل لكافة مدن المملكة.'),
       bodyHtml: `<main dir="rtl" class="max-w-7xl mx-auto px-4 py-8">
-        <h1 class="text-3xl font-extrabold my-6 text-gray-900">تشكيلة بيجامات نسائية من سولتة</h1>
+        <h1 class="text-3xl font-extrabold my-6 text-gray-900">تشكيلة بيجامات نسائية من سولته</h1>
         <div class="text-gray-600 max-w-3xl mb-8 text-sm sm:text-base leading-relaxed">
           <p>
             استكشفي متجر سولتة واختاري بيجامتكِ المفضلة من تشكيلة البيجامات النسائية القطنية المصممة لتناسب مختلف الأوقات المنزلية. تشمل التشكيلة بيجامات قطن كوريشة بطبعات زهرية وبيجامات قطن بحمالات ربط وموديلات ناعمة. جميع القطع بمقاس وان سايز مريح يناسب من 45 إلى 80 كيلو، مع توضيح كامل لتعليمات الغسيل بالماء البارد للمحافظة على جودة النسيج وتوفير خدمة شحن سريعة لكل مدن المملكة.
@@ -196,7 +202,7 @@ async function runPrerender() {
     },
     {
       path: '/new-arrivals/',
-      title: 'أحدث بيجامات نسائية وصل حديثًا | سولتة',
+      title: 'أحدث بيجامات نسائية وصل حديثًا | سولته',
       description: truncateWordBoundary('اكتشفي أحدث تصاميم ملابس النوم والبيجامات النسائية القطنية التي وصلت حديثاً إلى متجر سولتة.'),
       bodyHtml: `<main dir="rtl" class="max-w-7xl mx-auto px-4 py-8">
         <h1 class="text-3xl font-extrabold my-6 text-gray-900">أحدث البيجامات النسائية من سولتة</h1>
@@ -205,13 +211,13 @@ async function runPrerender() {
         </p>
       </main>`
     },
-    { path: '/best-sellers/', title: 'الأكثر طلباً | سولتة', description: truncateWordBoundary('أكثر موديلات البيجامات النسائية طلباً في متجر سولتة.'), bodyHtml: '' },
-    { path: '/offers/', title: 'العروض | سولتة', description: truncateWordBoundary('عروض وأسعار بيجامات سولتة القطنية.'), bodyHtml: '' },
-    { path: '/about/', title: 'عن سولتة | سولتة', description: truncateWordBoundary('تعرفي على متجر سولتة المتخصص في أزياء النوم والبيجامات النسائية القطنية المريحة.'), bodyHtml: '' },
-    { path: '/contact/', title: 'تواصل معنا | سولتة', description: truncateWordBoundary('تواصل مع خدمة عملاء متجر سولتة عبر واتساب.'), bodyHtml: '' },
-    { path: '/faq/', title: 'الأسئلة الشائعة | سولتة', description: truncateWordBoundary('دليل الأسئلة الشائعة حول مقاسات البيجامات وخامات القطن وطريقة الغسيل في متجر سولتة.'), bodyHtml: '' },
-    { path: '/returns/', title: 'سياسة الاستبدال | سولتة', description: truncateWordBoundary('تعرفي على شروط وسياسة الاستبدال والاسترجاع في متجر سولتة.'), bodyHtml: '' },
-    { path: '/track-order/', title: 'تتبع الطلب | سولتة', description: truncateWordBoundary('تتبعي حالة طلبك وشحنتك في سولتة.'), noindex: true, bodyHtml: '' }
+    { path: '/best-sellers/', title: 'الأكثر طلباً | سولته', description: truncateWordBoundary('أكثر موديلات البيجامات النسائية طلباً في متجر سولتة.'), bodyHtml: '' },
+    { path: '/offers/', title: 'العروض | سولته', description: truncateWordBoundary('عروض أسعار بيجامات سولته القطنية.'), bodyHtml: '' },
+    { path: '/about/', title: 'عن سولته | سولته', description: truncateWordBoundary('تعرفي على متجر سولته المتخصص في أزياء النوم والبيجامات النسائية القطنية المريحة.'), bodyHtml: '' },
+    { path: '/contact/', title: 'تواصل معنا | سولته', description: truncateWordBoundary('تواصل مع خدمة عملاء متجر سولته عبر واتساب.'), bodyHtml: '' },
+    { path: '/faq/', title: 'الأسئلة الشائعة | سولته', description: truncateWordBoundary('دليل الأسئلة الشائعة حول مقاسات البيجامات وخامات القطن وطريقة الغسيل في متجر سولته.'), bodyHtml: '' },
+    { path: '/returns/', title: 'سياسة الاستبدال | سولته', description: truncateWordBoundary('تعرفي على شروط وسياسة الاستبدال والاسترجاع في متجر سولته.'), bodyHtml: '' },
+    { path: '/track-order/', title: 'تتبع الطلب | سولته', description: truncateWordBoundary('تتبعي حالة طلبك وشحنتك في سولته.'), noindex: true, bodyHtml: '' }
   ];
 
   for (const page of staticRoutes) {
@@ -258,7 +264,7 @@ async function runPrerender() {
         "sku": p.sku || p.id,
         "brand": {
           "@type": "Brand",
-          "name": "سولتة"
+          "name": "سولته"
         },
         "material": material,
         "color": (p.id === '54929551-5958-4b33-9ff9-abe83722cb78' ? 'وردي ملكي' : (p.id === '8d738e1c-0861-4569-8949-fc2d98c4fa50' ? 'أبيض عاجي' : (nameAr.includes('وردي') ? 'وردي' : (nameAr.includes('حمراء') ? 'أحمر' : 'متعدد')))),
@@ -347,14 +353,14 @@ async function runPrerender() {
         ]
       };
 
-      const whatsappText = encodeURIComponent(`مرحباً سولتة، أود الاستفسار والطلب لمنتج: ${nameAr}\nالرابط: ${fullProductUrl}`);
+      const whatsappText = encodeURIComponent(`مرحباً سولته، أود الاستفسار والطلب لمنتج: ${nameAr}\nالرابط: ${fullProductUrl}`);
       const whatsappUrl = `https://wa.me/966552823677?text=${whatsappText}`;
 
       // Free shipping bar above 299 SAR
       const bodyHtml = `<main dir="rtl" class="max-w-6xl mx-auto px-4 py-8">
         <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl flex items-center justify-between">
           <span>شحن مجاني لكافة مدن المملكة للطلبات فوق 299 ر.س 🇸🇦</span>
-          <span class="text-emerald-600 text-xs">سولتة SULTA</span>
+          <span class="text-emerald-600 text-xs">سولته SULTA</span>
         </div>
 
         <nav class="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">

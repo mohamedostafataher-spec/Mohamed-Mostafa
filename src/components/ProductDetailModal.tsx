@@ -2148,7 +2148,7 @@ export default function ProductDetailModal({
 
                     <button
                       type="button"
-                      onClick={() => window.open('https://www.instagram.com/sultabrand?stkn=MXZ5cjFhYW44cGI1aQ==', '_blank')}
+                      onClick={() => window.open('https://www.instagram.com/sulta.sa', '_blank')}
                       className="bg-gradient-to-tr from-[#f9ce71] via-[#ee2a7b] to-[#6228d7] text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition-all cursor-pointer hover:opacity-90 flex items-center gap-1"
                     >
                       <span>افتتح تطبيق Instagram ↗</span>
