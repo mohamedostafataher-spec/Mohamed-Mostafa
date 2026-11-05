@@ -2176,7 +2176,8 @@ export const dbService = {
 
     console.log("[Sulta DB] Save finished. Payload columns remaining:", Object.keys(payload), "Error:", error ? error.message : "Success 🎉");
     if (error) {
-      console.warn("[Sulta DB] Supabase upsert returned error, but product is preserved in localStorage:", error.message || error);
+      console.error("[Sulta DB] Supabase upsert failed:", error.message || error);
+      throw new Error(error.message || 'فشل الحفظ في قاعدة بيانات Supabase');
     }
   },
 

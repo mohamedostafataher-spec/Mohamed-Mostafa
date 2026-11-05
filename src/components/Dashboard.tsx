@@ -1190,10 +1190,8 @@ export default function Dashboard({
         images: []
       });
     } catch (err: any) {
-      console.warn("[Dashboard] Product save notice:", err);
-      toast?.(`تم حفظ وتحديث المنتج في المتجر بنجاح ✨`, 'success');
-      setEditingProduct(null);
-      setIsAddProductOpen(false);
+      console.error("[Dashboard] Product save critical error:", err);
+      toast?.(`فشل حفظ المنتج في قاعدة البيانات: ${err?.message || 'خطأ غير معروف'}`, 'error');
     }
   };
 
