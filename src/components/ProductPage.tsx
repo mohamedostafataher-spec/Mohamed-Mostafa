@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Truck, ArrowRight, ChevronRight, ChevronLeft, Sparkles, Minus, Plus, 
-  ShoppingBag, Heart, MessageCircle, ShieldCheck, RefreshCw, HelpCircle, Package 
+  ShoppingBag, Heart, MessageCircle, ShieldCheck, RefreshCw, HelpCircle, Package,
+  Share2, Check
 } from 'lucide-react';
 import { Product } from '../types';
 import { getIdFromSlug, getProductSlug } from '../utils/slugify';
@@ -36,6 +37,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
   // Countdown timer state
   const [countdownText, setCountdownText] = useState<string>('');
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   // Touch Swipe Handling for Mobile
   const touchStartX = useRef<number | null>(null);
@@ -208,6 +210,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
       "name": "سولته"
     },
     "material": product.material || product.fabricAr,
+    "color": colorName,
     "audience": {
       "@type": "PeopleAudience",
       "suggestedGender": "female"
@@ -351,10 +354,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                 priority={true}
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 text-gray-500 p-6 text-center">
+              <div className="w-full h-full flex flex-col items-center justify-center bg-[#FAF5F0]/60 text-gray-500 p-6 text-center select-none aspect-[3/4] border border-[#A44C5C]/10 rounded-3xl">
                 <Package size={48} className="text-gray-300 mb-3" />
                 <span className="font-bold text-gray-800 text-lg">{product.nameAr}</span>
-                <span className="text-xs text-gray-400 mt-1">لا توجد صور متوفرة حالياً</span>
+                <span className="text-xs text-gray-500 mt-1 font-medium">الصورة غير متوفرة</span>
               </div>
             )}
 
@@ -579,16 +582,42 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               </button>
             </div>
 
-            {/* Direct WhatsApp Ordering */}
-            <a 
-              href={whatsappUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold py-3.5 px-6 rounded-2xl transition-colors shadow-sm text-center text-sm sm:text-base cursor-pointer"
-            >
-              <MessageCircle size={20} />
-              <span>طلب مباشر واستفسار عبر واتساب</span>
-            </a>
+            {/* Direct WhatsApp Ordering & Copy Link */}
+            <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
+              <a 
+                href={whatsappUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold py-3.5 px-4 rounded-2xl transition-colors shadow-sm text-center text-sm sm:text-base cursor-pointer"
+              >
+                <MessageCircle size={19} />
+                <span>طلب مباشر واستفسار عبر واتساب</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    const cleanUrl = `${window.location.origin}/product/${productSlug}`;
+                    if (navigator.clipboard) {
+                      navigator.clipboard.writeText(cleanUrl).then(() => {
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2500);
+                      });
+                    }
+                  }
+                }}
+                className={`sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl border transition-all text-xs sm:text-sm font-bold cursor-pointer ${
+                  copiedLink
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                    : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700 shadow-2xs'
+                }`}
+                title="نسخ رابط المنتج المباشر"
+              >
+                {copiedLink ? <Check size={17} className="text-emerald-600 animate-bounce" /> : <Share2 size={17} className="text-gray-500" />}
+                <span>{copiedLink ? 'تم نسخ الرابط ✓' : 'مشاركة الرابط'}</span>
+              </button>
+            </div>
           </div>
 
           {/* Guarantees */}

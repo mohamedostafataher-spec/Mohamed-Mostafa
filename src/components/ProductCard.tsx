@@ -165,9 +165,9 @@ export default function ProductCard({
             priority={priority}
           />
         ) : (
-          <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center p-4 text-center select-none">
+          <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center p-4 text-center select-none aspect-[3/4]">
             <span className="text-xs font-bold text-gray-700 line-clamp-2">{product.nameAr}</span>
-            <span className="text-[10px] text-gray-500 mt-1 font-medium">لا توجد صورة متوفرة</span>
+            <span className="text-[10px] text-gray-500 mt-1 font-medium">الصورة غير متوفرة</span>
           </div>
         )}
       </div>

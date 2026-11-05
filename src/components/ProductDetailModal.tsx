@@ -5,6 +5,7 @@ import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
 import { PACKAGING_INFO } from '../data';
 import { dbService, cleanImgUrl } from '../services/db';
+import { getProductSlug } from '../utils/slugify';
 import { ProductPrice } from './ProductPrice';
 import RealPackagingPreview from './RealPackagingPreview';
 import SmartRecommendations from './SmartRecommendations';
@@ -76,7 +77,7 @@ export default function ProductDetailModal({
       },
       "offers": {
         "@type": "Offer",
-        "url": `https://sulta.vercel.app/?product=${product.id}`,
+        "url": `https://sulta.vercel.app/product/${getProductSlug(product)}/`,
         "priceCurrency": priceCurrency,
         "price": price.toString(),
         "priceValidUntil": "2027-12-31",
@@ -940,7 +941,7 @@ export default function ProductDetailModal({
                     ) : (
                      <SultaImage
                          src={displayImages[activeImageIdx]}
-                         alt={product.nameAr}
+                         alt={`${product.nameAr} - ${selectedCol?.name || product.colors?.[0]?.name || ''} - ${product.material || product.fabricAr || 'قطن مريح'}`}
                          contain={false}
                          alignment="top"
                          width={1000}
@@ -1011,7 +1012,7 @@ export default function ProductDetailModal({
                   {img?.match(/\.(mp4|webm|ogg|mov)$/i) || img?.includes('video') ? (
                      <video src={img} className="w-full h-full object-cover object-center" muted playsInline />
                   ) : (
-                     <SultaImage src={img} alt="Thumb" width={100} contain={true} className="w-full h-full object-contain object-center" referrerPolicy="no-referrer" />
+                     <SultaImage src={img} alt={`${product.nameAr} - ${selectedCol?.name || ''} - صورة ${idx + 1}`} width={100} contain={true} className="w-full h-full object-contain object-center" referrerPolicy="no-referrer" />
                   )}
                 </button>
               ))}
@@ -2057,7 +2058,8 @@ export default function ProductDetailModal({
                   <button
                     type="button"
                     onClick={() => {
-                      const shareUrl = `${window.location.origin}?product=${product.id}`;
+                      const prodSlug = getProductSlug(product);
+                      const shareUrl = `${window.location.origin}/product/${prodSlug}`;
                       const text = `🌸 مرحباً! شاهدت هذا التصميم الراقي من Sulta للأزياء وملابس النوم الفاخرة:\n*${product.nameAr}*\n💰 السعر: ${price.toLocaleString()} ${currencyLabel}\n🎨 الألوان: ${product.colors.map(c => c.name).join(' - ')}\n🔗 رابط المنتج المباشر للاستعراض والطلب:\n${shareUrl}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
@@ -2072,11 +2074,11 @@ export default function ProductDetailModal({
                   <button
                     type="button"
                     onClick={() => {
-                      const productCode = product.code || product.id;
-                      const shareUrl = `${window.location.origin}?product=${productCode}`;
+                      const prodSlug = getProductSlug(product);
+                      const shareUrl = `${window.location.origin}/product/${prodSlug}`;
                       navigator.clipboard.writeText(shareUrl);
                       setCopied(true);
-                      toast('تم نسخ رابط المنتج إلى الحافظة بنجاح! 📋', 'success');
+                      toast('تم نسخ رابط المنتج المباشر إلى الحافظة بنجاح! 📋', 'success');
                       setTimeout(() => setCopied(false), 2500);
                     }}
                     className={`py-2.5 px-3 rounded-xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer border active:scale-98 ${
@@ -2096,11 +2098,11 @@ export default function ProductDetailModal({
                   <button
                     type="button"
                     onClick={() => {
-                      const productCode = product.code || product.id;
-                      const shareUrl = `${window.location.origin}?product=${productCode}`;
+                      const prodSlug = getProductSlug(product);
+                      const shareUrl = `${window.location.origin}/product/${prodSlug}`;
                       navigator.clipboard.writeText(shareUrl);
                       setCopied(true);
-                      toast('تم نسخ رابط المنتج إلى الحافظة بنجاح! 📋', 'success');
+                      toast('تم نسخ رابط المنتج المباشر إلى الحافظة بنجاح! 📋', 'success');
                       setTimeout(() => setCopied(false), 2500);
                     }}
                     className="bg-black hover:bg-gray-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shrink-0 transition-all cursor-pointer"
@@ -2110,7 +2112,7 @@ export default function ProductDetailModal({
                   <input
                     type="text"
                     readOnly
-                    value={`${typeof window !== 'undefined' ? window.location.origin : ''}?product=${product.code || product.id}`}
+                    value={`${typeof window !== 'undefined' ? window.location.origin : ''}/product/${getProductSlug(product)}`}
                     className="text-[10.5px] font-mono text-gray-500 bg-transparent border-0 outline-none w-full text-left truncate select-all"
                   />
                 </div>

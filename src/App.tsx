@@ -927,6 +927,13 @@ function AppContent() {
                 favorites={favorites}
               />
             } />
+            <Route path="/products/:slug" element={
+              <ProductPage 
+                onAddToCart={handleAddToCart}
+                toggleFavorite={toggleFavorite}
+                favorites={favorites}
+              />
+            } />
 
             <Route path="/about" element={<AboutUs homepageSections={homepageSections} />} />
             <Route path="/contact" element={<ContactUs settings={settings} />} />

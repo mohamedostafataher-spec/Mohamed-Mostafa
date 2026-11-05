@@ -10,9 +10,9 @@ interface SultaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   productName?: string;
 }
 
-// Fast check for local optimized WebP asset
+// Clean and resolve direct accessible URL
 const getOptimizedSrc = (url: string, width?: number | string): string => {
-  if (!url) return '';
+  if (!url || typeof url !== 'string' || !url.trim()) return '';
   const cleaned = cleanImgUrl(url, width);
   if (cleaned.startsWith('/img/') && (cleaned.endsWith('.png') || cleaned.endsWith('.jpg'))) {
     return cleaned.replace(/\.(png|jpg)$/, '.webp');
@@ -35,36 +35,16 @@ export default function SultaImage({
 }: SultaImageProps) {
   const initialUrl = src ? getOptimizedSrc(src, width) : fallbackSrc;
   const [currentSrc, setCurrentSrc] = useState<string>(initialUrl);
-  const [errorCount, setErrorCount] = useState(0);
+  const [retryStage, setRetryStage] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasFailed, setHasFailed] = useState(!initialUrl);
   const imgRef = useRef<HTMLImageElement>(null);
-
-  // Responsive sizes for srcSet
-  const generateSrcSet = (url: string) => {
-    if (!url || !url.startsWith('http') || url.includes('data:')) return undefined;
-    
-    const sizes = [400, 800, 1200];
-    return sizes
-      .map(w => {
-        let baseUrl = url;
-        if (url.includes('wsrv.nl')) {
-           try {
-             baseUrl = decodeURIComponent(url.split('url=')[1]?.split('&')[0]);
-           } catch(e) {}
-        }
-        return `https://wsrv.nl/?url=${encodeURIComponent(baseUrl)}&w=${w}&output=webp&q=80&il ${w}w`;
-      })
-      .join(', ');
-  };
-
-  const srcSet = currentSrc ? generateSrcSet(currentSrc) : undefined;
 
   // Sync with prop changes
   useEffect(() => {
     const newUrl = src ? getOptimizedSrc(src, width) : fallbackSrc;
     setCurrentSrc(newUrl);
-    setErrorCount(0);
+    setRetryStage(0);
     setIsLoaded(false);
     setHasFailed(!newUrl);
     
@@ -74,19 +54,33 @@ export default function SultaImage({
   }, [src, fallbackSrc, width]);
 
   const handleError = () => {
-    if (errorCount === 0 && currentSrc.includes('wsrv.nl/?url=')) {
+    // Stage 1: If currentSrc contains wsrv.nl proxy, fall back to the direct Supabase URL
+    if (retryStage === 0 && currentSrc.includes('wsrv.nl/?url=')) {
       try {
         const rawUrl = currentSrc.split('url=')[1]?.split('&')[0];
         if (rawUrl) {
           const decoded = decodeURIComponent(rawUrl);
+          setRetryStage(1);
           setCurrentSrc(decoded);
-          setErrorCount(1);
           return;
         }
-      } catch (e) {}
+      } catch {}
     }
     
-    // Strict requirement: No fake model or stock image fallbacks!
+    // Stage 2: If currentSrc is a direct Supabase/HTTP URL, attempt image proxy fallback
+    if (retryStage === 0 && currentSrc.startsWith('http') && !currentSrc.includes('wsrv.nl')) {
+      const proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(currentSrc)}&output=webp&q=85`;
+      setRetryStage(1);
+      setCurrentSrc(proxyUrl);
+      return;
+    }
+
+    // Both direct and proxy failed: Log warning safely without sensitive tokens
+    if (typeof window !== 'undefined') {
+      const sanitizedName = productName || alt || 'منتج';
+      console.warn(`[Sulta Image Notice] تعذر تحميل صورة المنتج "${sanitizedName}".`);
+    }
+
     setHasFailed(true);
     setCurrentSrc('');
   };
@@ -97,18 +91,23 @@ export default function SultaImage({
   };
 
   const alignmentClass = alignment === 'top' ? 'object-top' : alignment === 'bottom' ? 'object-bottom' : 'object-center';
+  const displayName = productName || alt || 'منتج سولته';
 
-  // Neutral Gray Fallback Box (No fake models, No generic clothes icons)
+  // Neutral Gray Fallback Box with exact 3:4 aspect ratio
   if (hasFailed || !currentSrc) {
-    const displayName = productName || alt || 'سولته';
     return (
       <div 
-        className={`w-full h-full bg-gray-100 flex flex-col items-center justify-center p-4 text-center select-none aspect-[3/4] ${className}`}
+        className={`w-full h-full bg-[#FAF5F0]/60 flex flex-col items-center justify-center p-4 text-center select-none aspect-[3/4] border border-[#A44C5C]/10 rounded-xl ${className}`}
         role="img"
-        aria-label={alt || displayName}
+        aria-label={alt || `${displayName} - الصورة غير متوفرة`}
       >
-        <span className="text-xs font-bold text-gray-700 line-clamp-2 px-2">{displayName}</span>
-        <span className="text-[10px] text-gray-500 mt-1.5 font-medium">لا توجد صورة متوفرة</span>
+        <div className="w-10 h-10 rounded-full bg-white/80 shadow-2xs border border-gray-150 flex items-center justify-center text-gray-400 mb-2">
+          <svg className="w-5 h-5 text-[#A44C5C]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <span className="text-xs font-bold text-gray-800 line-clamp-2 px-2">{displayName}</span>
+        <span className="text-[11px] text-gray-500 mt-1 font-medium">الصورة غير متوفرة</span>
       </div>
     );
   }
@@ -128,16 +127,13 @@ export default function SultaImage({
         key={currentSrc}
         ref={imgRef}
         src={currentSrc}
-        srcSet={srcSet}
-        sizes={props.sizes || "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-        alt={alt || "بيجامة نسائية فاخرة من Sulta"}
+        alt={alt || displayName}
         className={`w-full h-full block ${imgClassName || (contain ? 'object-contain' : 'object-cover')} ${alignmentClass} relative z-10 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onError={handleError}
         onLoad={handleLoad}
         loading={priority ? 'eager' : (props.loading || 'lazy')}
         fetchPriority={priority ? 'high' : 'auto'}
         decoding={priority ? 'sync' : 'async'}
-        referrerPolicy="no-referrer"
         width={typeof width === 'number' ? width : undefined}
         {...props}
       />

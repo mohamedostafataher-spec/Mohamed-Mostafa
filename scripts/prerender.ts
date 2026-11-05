@@ -261,6 +261,7 @@ async function runPrerender() {
           "name": "سولتة"
         },
         "material": material,
+        "color": (p.id === '54929551-5958-4b33-9ff9-abe83722cb78' ? 'وردي ملكي' : (p.id === '8d738e1c-0861-4569-8949-fc2d98c4fa50' ? 'أبيض عاجي' : (nameAr.includes('وردي') ? 'وردي' : (nameAr.includes('حمراء') ? 'أحمر' : 'متعدد')))),
         "audience": {
           "@type": "PeopleAudience",
           "suggestedGender": "female"
@@ -364,7 +365,7 @@ async function runPrerender() {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           <div>
-            <img src="${primaryImg}" alt="${nameAr}" class="w-full aspect-[3/4] object-cover rounded-3xl shadow-sm border border-gray-100" fetchpriority="high" width="800" height="1066" />
+            <img src="${primaryImg}" alt="${h1Text}" class="w-full aspect-[3/4] object-cover rounded-3xl shadow-sm border border-gray-100" fetchpriority="high" width="800" height="1066" />
           </div>
           
           <div class="space-y-6 text-right">
@@ -451,10 +452,30 @@ async function runPrerender() {
       if (!fs.existsSync(prodDirSlug)) fs.mkdirSync(prodDirSlug, { recursive: true });
       fs.writeFileSync(path.join(prodDirSlug, 'index.html'), pageHtml, 'utf-8');
 
-      // 2. Also output to dist/product/{id}-{slug}/index.html for complete compatibility
-      const prodDirIdSlug = path.join(distDir, 'product', `${p.id}-${slug}`);
-      if (!fs.existsSync(prodDirIdSlug)) fs.mkdirSync(prodDirIdSlug, { recursive: true });
-      fs.writeFileSync(path.join(prodDirIdSlug, 'index.html'), pageHtml, 'utf-8');
+      // 2. Output to dist/product/{id}/index.html for direct UUID links
+      if (p.id) {
+        const prodDirId = path.join(distDir, 'product', p.id);
+        if (!fs.existsSync(prodDirId)) fs.mkdirSync(prodDirId, { recursive: true });
+        fs.writeFileSync(path.join(prodDirId, 'index.html'), pageHtml, 'utf-8');
+      }
+
+      // 3. Also output to dist/product/{id}-{slug}/index.html for combined compatibility
+      if (p.id) {
+        const prodDirIdSlug = path.join(distDir, 'product', `${p.id}-${slug}`);
+        if (!fs.existsSync(prodDirIdSlug)) fs.mkdirSync(prodDirIdSlug, { recursive: true });
+        fs.writeFileSync(path.join(prodDirIdSlug, 'index.html'), pageHtml, 'utf-8');
+      }
+
+      // 4. Plural /products/ paths compatibility
+      const prodPluralSlug = path.join(distDir, 'products', slug);
+      if (!fs.existsSync(prodPluralSlug)) fs.mkdirSync(prodPluralSlug, { recursive: true });
+      fs.writeFileSync(path.join(prodPluralSlug, 'index.html'), pageHtml, 'utf-8');
+
+      if (p.id) {
+        const prodPluralId = path.join(distDir, 'products', p.id);
+        if (!fs.existsSync(prodPluralId)) fs.mkdirSync(prodPluralId, { recursive: true });
+        fs.writeFileSync(path.join(prodPluralId, 'index.html'), pageHtml, 'utf-8');
+      }
 
       countProductPages++;
     } catch (err) {
