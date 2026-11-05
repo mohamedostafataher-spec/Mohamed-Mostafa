@@ -3289,16 +3289,34 @@ export const dbService = {
   },
 
   checkIsEmailAuthorized: async (email: string): Promise<{ authorized: boolean; member?: TeamMember }> => {
-    const clean = (email || 'mohamedostafataher@gmail.com').trim().toLowerCase();
-    return {
-      authorized: true,
-      member: {
-        id: 'owner-' + clean,
-        email: clean,
-        name: clean === 'mohamedostafataher@gmail.com' ? 'محمد طاهر (المالك)' : clean.split('@')[0],
-        role: 'owner',
-        addedAt: new Date().toISOString()
+    const clean = (email || '').trim().toLowerCase();
+    if (!clean) return { authorized: false };
+
+    // 1. Primary Owner bypass (always authorized for recovery)
+    if (clean === dbService.DEFAULT_PRIMARY_OWNER_EMAIL) {
+      return {
+        authorized: true,
+        member: {
+          id: 'owner-primary',
+          email: clean,
+          name: 'محمد طاهر (المالك)',
+          role: 'owner',
+          addedAt: '2026-01-01T00:00:00.000Z'
+        }
+      };
+    }
+
+    try {
+      // 2. Real database check
+      const members = await dbService.getTeamMembers();
+      const member = members.find(m => m.email.toLowerCase() === clean);
+      if (member) {
+        return { authorized: true, member };
       }
-    };
+    } catch (err) {
+      console.warn('[Sulta DB] Authorization lookup error:', err);
+    }
+
+    return { authorized: false };
   },
 };

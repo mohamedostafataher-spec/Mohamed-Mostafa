@@ -36,8 +36,7 @@ import SultaImage from './SultaImage';
 import { 
   paymentService, 
   PaymentMethodType, 
-  PaymentGatewayStatus,
-  isPaymobConfigured
+  PaymentGatewayStatus
 } from '../payment';
 import PaymentMethodsDisplay from './PaymentMethodsDisplay';
 
@@ -273,26 +272,6 @@ export default function CheckoutModal({
     };
 
     try {
-      // CARD / MADA / APPLE PAY
-      if (selectedPayment === 'card') {
-        const { order, paymentIntent } = await paymentService.initiateElectronicPayment(
-          orderParams,
-          'card'
-        );
-        setActiveOrder(order);
-
-        if (paymentIntent.success && paymentIntent.iframeUrl) {
-          setIframePaymentUrl(paymentIntent.iframeUrl);
-          return;
-        } else if (paymentIntent.success && paymentIntent.redirectionUrl) {
-          window.location.href = paymentIntent.redirectionUrl;
-          return;
-        } else {
-          setPaymentStatus('failed');
-          setErrorMsg(paymentIntent.errorMessage || 'تعذر بدء عملية الدفع الإلكتروني. يرجى المحاولة لاحقاً.');
-          return;
-        }
-      }
 
       // DIRECT BANK TRANSFER (AL RAJHI BANK)
       if (selectedPayment === 'bank_transfer') {
@@ -905,43 +884,7 @@ export default function CheckoutModal({
                   </div>
 
                   {/* OPTION 3: ONLINE CARD PAYMENT (Mada / Visa / Mastercard / Apple Pay) */}
-                  {isPaymobConfigured() && (
-                    <div
-                      onClick={() => setSelectedPayment('card')}
-                      className={`w-full text-right p-4 rounded-2xl transition-all border cursor-pointer ${
-                        selectedPayment === 'card'
-                          ? 'border-[#A44C5C] bg-[#FCF5F6] shadow-xs ring-1 ring-[#A44C5C]'
-                          : 'border-gray-200 bg-white hover:bg-gray-50/60'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                        <span className="w-12 h-12 rounded-2xl bg-[#FCF5F6] text-[#A44C5C] flex items-center justify-center shrink-0 border border-[#DF8A9D]/20 shadow-2xs">
-                            <CreditCard size={24} strokeWidth={2.5} />
-                          </span>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-black text-sm text-gray-950">
-                                بطاقة مدى أو ائتمانية / Apple Pay
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                              دفع إلكتروني آمن وسريع عبر تشفير 3D Secure (يدعم مدى، فيزا، ماستركارد).
-                            </p>
-                            <div className="mt-2 scale-90 origin-right">
-                               <PaymentMethodsDisplay variant="checkout" />
-                            </div>
-                          </div>
-                        </div>
 
-                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          selectedPayment === 'card' ? 'border-[#A44C5C]' : 'border-gray-300'
-                        }`}>
-                          {selectedPayment === 'card' && <span className="w-2 h-2 bg-[#A44C5C] rounded-full" />}
-                        </span>
-                      </div>
-                    </div>
-                  )}
 
                   {/* OPTION 2: BANK TRANSFER / MADA */}
                   <div

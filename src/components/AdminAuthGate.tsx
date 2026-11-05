@@ -109,7 +109,7 @@ export default function AdminAuthGate({
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin + '/?tab=dashboard'
+            redirectTo: window.location.origin + '/dashboard'
           }
         });
         if (error) {

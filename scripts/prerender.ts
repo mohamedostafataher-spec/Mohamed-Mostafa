@@ -217,7 +217,8 @@ async function runPrerender() {
     { path: '/contact/', title: 'تواصل معنا | سولته', description: truncateWordBoundary('تواصل مع خدمة عملاء متجر سولته عبر واتساب.'), bodyHtml: '' },
     { path: '/faq/', title: 'الأسئلة الشائعة | سولته', description: truncateWordBoundary('دليل الأسئلة الشائعة حول مقاسات البيجامات وخامات القطن وطريقة الغسيل في متجر سولته.'), bodyHtml: '' },
     { path: '/returns/', title: 'سياسة الاستبدال | سولته', description: truncateWordBoundary('تعرفي على شروط وسياسة الاستبدال والاسترجاع في متجر سولته.'), bodyHtml: '' },
-    { path: '/track-order/', title: 'تتبع الطلب | سولته', description: truncateWordBoundary('تتبعي حالة طلبك وشحنتك في سولته.'), noindex: true, bodyHtml: '' }
+    { path: '/track-order/', title: 'تتبع الطلب | سولته', description: truncateWordBoundary('تتبعي حالة طلبك وشحنتك في سولته.'), noindex: true, bodyHtml: '' },
+    { path: '/dashboard/', title: 'لوحة الإدارة | سولته', description: truncateWordBoundary('لوحة التحكم والإدارة لمتجر سولته.'), noindex: true, bodyHtml: '' }
   ];
 
   for (const page of staticRoutes) {

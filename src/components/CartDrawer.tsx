@@ -4,6 +4,7 @@ import { X, Trash2, ShoppingBag, ArrowRight, Percent, Sparkles, Check, Truck, Pl
 import { motion, AnimatePresence } from 'motion/react';
 import { CartItem, Country, Product, DiscountCoupon } from '../types';
 import { dbService } from '../services/db';
+import PaymentMethodsDisplay from './PaymentMethodsDisplay';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -98,22 +99,18 @@ export default function CartDrawer({
         <div className="w-[450px] max-w-[95vw] bg-white h-full shadow-2xl flex flex-col justify-between animate-slide-left pointer-events-auto" dir="rtl">
           
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-150 bg-white flex items-center justify-between">
+          <div className="px-4 py-3 border-b border-gray-150 bg-white flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ShoppingBag size={20} className="text-[#111827]" />
-              <h3 className="font-bold text-base text-[#111827]">سلة المشتريات 🛒</h3>
-              <span className="text-[11px] bg-[#111827] text-white px-2 py-0.5 rounded-full font-bold font-mono">
-                {cart.reduce((sum, i) => sum + i.quantity, 0)}
-              </span>
+              <ShoppingBag size={18} className="text-[#111827]" />
+              <h3 className="font-bold text-sm text-[#111827]">سلة المشتريات</h3>
             </div>
             
             <button 
               onClick={onClose} 
-              aria-label="إغلاق حقيبة التسوق"
-              className="p-1.5 rounded-lg text-gray-400 hover:text-black hover:bg-gray-100 flex items-center gap-1 text-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-[#A44C5C] outline-hidden"
+              className="p-1 rounded-lg text-gray-400 hover:text-black hover:bg-gray-100 flex items-center gap-1 text-[10px] cursor-pointer"
             >
               <span>إغلاق</span>
-              <X size={16} aria-hidden="true" />
+              <X size={14} />
             </button>
           </div>
 
@@ -361,54 +358,40 @@ export default function CartDrawer({
 
           {/* Footer Checkout configuration block */}
           {cart.length > 0 && (
-            <div className="border-t border-gray-100 bg-white p-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] space-y-4">
+            <div className="border-t border-gray-100 bg-white p-4 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] space-y-3">
+              
+              {/* Payment Icons */}
+              <PaymentMethodsDisplay variant="footer" />
               
               {/* Insert Coupon Code Form */}
               <div className="relative">
                 <form onSubmit={handleApplyCoupon} className="flex gap-2">
                   <div className="relative flex-1">
-                    <Percent size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
                     <input
                       type="text"
                       placeholder="كود الخصم"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      aria-label="إدخال كود الخصم"
-                      className="w-full font-bold text-xs border border-gray-100 rounded-xl pr-10 pl-3 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/10 focus:bg-white focus:border-[#A44C5C]/30 transition-all outline-hidden"
+                      className="w-full font-bold text-[11px] border border-gray-100 rounded-lg px-3 py-2.5 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#A44C5C] transition-all outline-hidden"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="bg-[#111827] text-white hover:bg-black px-6 py-3 text-xs font-black rounded-xl transition-all shadow-sm shrink-0 cursor-pointer active:scale-95 focus-visible:ring-2 focus-visible:ring-black outline-hidden"
+                    className="bg-[#111827] text-white hover:bg-black px-4 py-2.5 text-[11px] font-black rounded-lg transition-all shadow-sm shrink-0 cursor-pointer active:scale-95"
                   >
                     تطبيق
                   </button>
                 </form>
-
-                {couponErr && <p className="text-[10px] text-red-700 font-bold mt-2 mr-2" role="alert">{couponErr}</p>}
-                {couponSuccess && appliedCoupon && (
-                  <div className="bg-emerald-50 text-emerald-800 p-2 rounded-lg mt-2 flex items-center gap-2 border border-emerald-100 animate-in fade-in slide-in-from-top-1" role="alert">
-                    <Check size={14} strokeWidth={3} aria-hidden="true" />
-                    <span className="text-[10px] font-black">تم تفعيل خصم {appliedCoupon.discountPercent}% بنجاح!</span>
-                  </div>
-                )}
               </div>
 
               {/* Unified Invoice breakdown Section */}
-              <div className="bg-gray-50 rounded-[1.5rem] p-5 border border-gray-100 space-y-3.5" aria-label="تفاصيل الحساب">
-                <div className="flex justify-between text-xs font-bold text-gray-600">
+              <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2 text-[11px]" aria-label="تفاصيل الحساب">
+                <div className="flex justify-between font-bold text-gray-600">
                   <span>المجموع</span>
                   <span className="font-mono text-gray-950">{subtotal.toLocaleString()} {currencyLabel}</span>
                 </div>
                 
-                {appliedCoupon && (
-                  <div className="flex justify-between items-center text-xs font-bold text-emerald-800">
-                    <span>خصم الكوبون</span>
-                    <span className="font-mono">- {discountAmount.toLocaleString()} {currencyLabel}</span>
-                  </div>
-                )}
-                
-                <div className="flex justify-between items-center text-xs font-bold">
+                <div className="flex justify-between font-bold">
                   <span className="text-gray-600">الشحن والتوصيل</span>
                   {shippingFee === 0 ? (
                     <span className="text-emerald-800 font-black">مجاني ✅</span>
@@ -420,15 +403,12 @@ export default function CartDrawer({
                 <div className="h-px bg-gray-200/50 my-1" aria-hidden="true" />
 
                 <div className="flex justify-between items-end pt-1">
-                  <div className="flex flex-col text-right">
-                    <span className="text-[10px] text-gray-500 font-black mb-0.5" aria-hidden="true">الإجمالي النهائي</span>
-                    <span className="text-sm font-black text-gray-950">شامل الضريبة 15%</span>
-                  </div>
-                  <div className="text-left" aria-label={`الإجمالي النهائي المستحق: ${totalAmount.toLocaleString()} ريال سعودي`}>
-                    <span className="text-2xl font-black text-[#A44C5C] tracking-tight font-mono">
+                  <span className="text-[10px] text-gray-500 font-black">الإجمالي النهائي</span>
+                  <div className="text-left">
+                    <span className="text-lg font-black text-[#A44C5C] font-mono">
                       {totalAmount.toLocaleString()}
                     </span>
-                    <span className="text-xs font-black text-gray-400 mr-1" aria-hidden="true">{currencyLabel}</span>
+                    <span className="text-[10px] font-black text-gray-400 mr-1">{currencyLabel}</span>
                   </div>
                 </div>
               </div>
@@ -436,34 +416,11 @@ export default function CartDrawer({
               {/* Check out buttons */}
               <button
                 onClick={() => onCheckout(appliedCoupon)}
-                className="w-full bg-[#A44C5C] hover:bg-[#8e3e4d] text-white py-4.5 rounded-2xl text-[13px] font-black tracking-wide transition-all flex items-center justify-center gap-3 shadow-xl shadow-[#A44C5C]/20 cursor-pointer active:scale-[0.97] group focus-visible:ring-2 focus-visible:ring-black outline-hidden"
-                aria-label="الانتقال لصفحة الدفع وإتمام الطلب"
+                className="w-full bg-[#A44C5C] hover:bg-[#8e3e4d] text-white py-3.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#A44C5C]/10 cursor-pointer active:scale-[0.98]"
               >
                 <span>إتمام الطلب والدفع الآمن</span>
-                <ArrowRight size={18} className="rotate-180 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
+                <ArrowRight size={14} className="rotate-180" />
               </button>
-
-              <div className="grid grid-cols-3 gap-2 pt-2" aria-hidden="true">
-                <div className="flex flex-col items-center gap-1 text-center">
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
-                    <Check size={14} />
-                  </div>
-                  <span className="text-[8px] font-bold text-gray-600">أصلي 100%</span>
-                </div>
-                <div className="flex flex-col items-center gap-1 text-center border-x border-gray-100">
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
-                    <RefreshCw size={14} />
-                  </div>
-                  <span className="text-[8px] font-bold text-gray-600">استبدال مرن</span>
-                </div>
-                <div className="flex flex-col items-center gap-1 text-center">
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
-                    <ShieldCheck size={14} />
-                  </div>
-                  <span className="text-[8px] font-bold text-gray-600">دفع آمن</span>
-                </div>
-              </div>
-
             </div>
           )}
         </div>

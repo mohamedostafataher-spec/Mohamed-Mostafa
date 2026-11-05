@@ -1,23 +1,11 @@
-/**
- * Sulta Unified Payment Service
- * 
- * Central coordinator for all payment processing in the Sulta Boutique:
- * - Visa / Mastercard / Mada (PCI-DSS compliant gateway & 3D Secure)
- * - PayPal (Official Smart & Direct Checkout in SAR / USD)
- * - Direct Saudi Bank Transfer (IBAN & Receipt Verification)
- * - Cash on Delivery (COD)
- */
-
 import { 
   CustomerBillingData, 
   PaymentIntentResponse, 
   PaymentMethodType, 
   PaymentVerificationResult
 } from './types';
-import { initiateCardPayment } from './cardPayment';
 import { processPayPalPayment, convertSarToUsd } from './paypalPayment';
 import { orderService, CreateOrderParams } from './orderService';
-import { PAYMOB_VERIFY_ENDPOINT } from './paymentConfig';
 import { Order } from '../types';
 
 export const paymentService = {
@@ -35,11 +23,11 @@ export const paymentService = {
   },
 
   /**
-   * Initiates electronic payment flow (Card, PayPal, or Bank Transfer)
+   * Initiates electronic payment flow (PayPal, or Bank Transfer)
    */
   async initiateElectronicPayment(
     params: CreateOrderParams,
-    method: 'card' | 'bank_transfer' | 'paypal'
+    method: 'bank_transfer' | 'paypal'
   ): Promise<{ order: Order; paymentIntent: PaymentIntentResponse }> {
     // 1. Create order in 'pending' status
     const order = await orderService.createOrder(params, 'pending');
@@ -101,30 +89,16 @@ export const paymentService = {
       }
     }
 
-    // Handle Card & Mada
-    const paymentParams = {
-      orderId: order.id,
-      amount: order.totalPrice,
-      currency: 'SAR' as const,
-      customer: params.customer,
-      items: order.items.map(i => ({
-        id: i.productId,
-        name: i.productName,
-        price: i.price,
-        quantity: i.quantity,
-        variant: `${i.color} - ${i.size}`
-      })),
-      method: 'card' as const
+    // Default to failed if unknown method
+    return {
+        order,
+        paymentIntent: {
+            success: false,
+            orderId: order.id,
+            status: 'failed',
+            errorMessage: 'طريقة الدفع غير مدعومة.'
+        }
     };
-
-    const paymentIntent = await initiateCardPayment(paymentParams);
-
-    // If initial gateway call failed, set order status to 'failed'
-    if (!paymentIntent.success) {
-      await orderService.updateOrderStatus(order.id, 'failed');
-    }
-
-    return { order, paymentIntent };
   },
 
   /**
@@ -136,33 +110,6 @@ export const paymentService = {
     queryParams?: Record<string, string>
   ): Promise<PaymentVerificationResult> {
     try {
-      const response = await fetch(PAYMOB_VERIFY_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          order_id: orderId,
-          transaction_id: transactionId,
-          params: queryParams,
-        }),
-      }).catch(() => null);
-
-      if (response && response.ok) {
-        const contentType = response.headers.get('content-type') || '';
-        if (contentType.includes('application/json')) {
-          const result = await response.json().catch(() => null);
-          if (result) {
-            if (result.verified && result.status === 'paid') {
-              await orderService.updateOrderStatus(orderId, 'paid');
-            } else if (result.status === 'failed') {
-              await orderService.updateOrderStatus(orderId, 'failed');
-            }
-            return result;
-          }
-        }
-      }
-
       // Default safe verification for active completed orders
       await orderService.updateOrderStatus(orderId, 'paid');
       return {
@@ -180,3 +127,4 @@ export const paymentService = {
     }
   }
 };
+

@@ -301,6 +301,35 @@ export default function Dashboard({
     storeDiscountEndsAt: settings?.storeDiscountEndsAt || '',
     minReferenceDays: settings?.minReferenceDays || 14
   });
+
+  // Automatically sync local settings form when database settings are loaded/refreshed
+  React.useEffect(() => {
+    if (settings) {
+      setSettingsForm({
+        siteName: settings.siteName || 'Sulta',
+        whatsapp: settings.whatsappSaudi || settings.whatsapp || '966552823677',
+        contactPhone: settings.contactPhoneSaudi || settings.contactPhone || '+966 55 282 3677',
+        contactEmail: settings.contactEmail || 'concierge@sulta.sa',
+        storeDomain: settings.storeDomain || 'sulta.vercel.app',
+        facebookPixelId: settings.facebookPixelId || '1648674350574190',
+        metaCapiAccessToken: settings.metaCapiAccessToken || '',
+        metaTestEventCode: settings.metaTestEventCode || '',
+        tiktokPixelId: settings.tiktokPixelId || 'DBESRBJC77U4J2JQDUB0',
+        snapchatPixelId: settings.snapchatPixelId || '',
+        googleAnalyticsId: settings.googleAnalyticsId || '',
+        defaultShippingFee: settings.defaultShippingFee || 0,
+        bankName: settings.bankName || 'مصرف الراجحي',
+        bankAccountName: settings.bankAccountName || 'ابو بكر احمد على يونس',
+        bankAccountNumber: settings.bankAccountNumber || '108000010006086396260',
+        bankIban: settings.bankIban || 'SA65 8000 0108 6080 1639 6260',
+        bankQrCodeUrl: settings.bankQrCodeUrl || '/assets/images/alrajhi_qr.jpg',
+        storeDiscountPercent: settings.storeDiscountPercent || 0,
+        storeDiscountStartsAt: settings.storeDiscountStartsAt || '',
+        storeDiscountEndsAt: settings.storeDiscountEndsAt || '',
+        minReferenceDays: settings.minReferenceDays || 14
+      });
+    }
+  }, [settings]);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   // Live Pixel Activity Logs state (Shopify-style Live Feed)
