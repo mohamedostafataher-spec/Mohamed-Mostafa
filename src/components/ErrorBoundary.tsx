@@ -25,6 +25,20 @@ class ErrorBoundary extends React.Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Critical App Error:', error, errorInfo);
+    
+    // Auto-recovery for chunk load errors
+    const isChunkError = error.message.includes('Failed to fetch dynamically imported module') || 
+                        error.message.includes('loading chunk') ||
+                        error.name === 'ChunkLoadError';
+
+    if (isChunkError) {
+      const hasReloaded = sessionStorage.getItem('sulta_auto_reload_chunk');
+      if (!hasReloaded) {
+        sessionStorage.setItem('sulta_auto_reload_chunk', 'true');
+        console.warn('[Sulta] Chunk error detected, auto-reloading once...');
+        window.location.reload();
+      }
+    }
   }
 
   public render() {
