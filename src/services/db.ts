@@ -1998,6 +1998,8 @@ export const dbService = {
       ? product.id 
       : 'prod_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
 
+    console.log(`[Sulta DB 2026-LIVE-FIX] Saving product with authoritative ID: ${productId}, Name: ${product.nameAr}`);
+
     const payload: any = {
       id: productId,
       name_ar: product.nameAr,
