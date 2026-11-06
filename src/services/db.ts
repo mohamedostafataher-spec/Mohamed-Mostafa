@@ -434,23 +434,32 @@ function mapProduct(data: any): Product {
 
   // Description resolution
   let rawDesc = data.description_ar || data.description || '';
-  if (rawDesc.includes('[METADATA_Sulta_V2]')) {
+  let metadata: any = null;
+  if (rawDesc.includes('[METADATA_Sulta_V2]:')) {
+    try {
+      const metaStr = rawDesc.substring(rawDesc.indexOf('[METADATA_Sulta_V2]:') + 20);
+      metadata = JSON.parse(metaStr);
+    } catch {}
+    rawDesc = rawDesc.substring(0, rawDesc.indexOf('[METADATA_Sulta_V2]'));
+  } else if (rawDesc.includes('[METADATA_Sulta_V2]')) {
     rawDesc = rawDesc.substring(0, rawDesc.indexOf('[METADATA_Sulta_V2]'));
   }
-  let descriptionAr = parseCleanArabicDescription(rawDesc) || (fallbackProduct ? fallbackProduct.descriptionAr : '');
-  let descriptionEn = (fallbackProduct ? fallbackProduct.descriptionEn : '');
+  let descriptionAr = parseCleanArabicDescription(rawDesc) || metadata?.descriptionAr || (fallbackProduct ? fallbackProduct.descriptionAr : '');
+  let descriptionEn = metadata?.descriptionEn || (fallbackProduct ? fallbackProduct.descriptionEn : '');
 
   // Fabric / Wash
-  let fabricAr = data.fabric_ar || data.material || (fallbackProduct ? fallbackProduct.fabricAr : '');
-  let fabricEn = data.fabric_en || (fallbackProduct ? fallbackProduct.fabricEn : '');
-  let washInstructionsAr = data.wash_instructions_ar || data.care_instructions || (fallbackProduct ? fallbackProduct.washInstructionsAr : '');
+  let fabricAr = data.material || data.fabric_ar || metadata?.fabricAr || (fallbackProduct ? fallbackProduct.fabricAr : '');
+  let fabricEn = data.fabric_en || metadata?.fabricEn || (fallbackProduct ? fallbackProduct.fabricEn : '');
+  let washInstructionsAr = data.care_instructions || data.wash_instructions_ar || metadata?.washInstructionsAr || (fallbackProduct ? fallbackProduct.washInstructionsAr : '');
 
   // Colors & Sizes
-  let colors = Array.isArray(data.colors) ? data.colors : (data.colors ? JSON.parse(data.colors) : (fallbackProduct ? fallbackProduct.colors : []));
+  let colors = Array.isArray(data.colors) ? data.colors : (data.colors ? (typeof data.colors === 'string' ? JSON.parse(data.colors) : data.colors) : (metadata?.colors || (fallbackProduct ? fallbackProduct.colors : [])));
   if (!colors || colors.length === 0) {
     colors = fallbackProduct ? fallbackProduct.colors : [{ name: 'وردي', hex: '#DF8A9D' }];
   }
-  let sizes = ['One Size'];
+  let sizes = (data.sizes && Array.isArray(data.sizes) && data.sizes.length > 0)
+    ? data.sizes
+    : (data.size_info ? data.size_info.split(',').map((s: string) => s.trim()) : (metadata?.sizes || ['One Size']));
 
   // Price resolution: DB physical columns FIRST, then fallback
   let resolvedPriceSA = Number(data.price_sa) > 0 
@@ -1991,62 +2000,48 @@ export const dbService = {
       seo: product.seo || null
     };
 
-    const encodedName = (product.nameAr || '') + ' | ' + (product.nameEn || '');
-    const encodedDescription = (product.descriptionAr || '') + ' | ' + (product.descriptionEn || '') + ' | [METADATA_Sulta_V2]:' + JSON.stringify(metadata);
+    const encodedName = (product.nameAr || '') + (product.nameEn ? ' | ' + product.nameEn : '');
+    const encodedDescription = (product.descriptionAr || '') + (product.descriptionEn ? ' | ' + product.descriptionEn : '') + ' | [METADATA_Sulta_V2]:' + JSON.stringify(metadata);
 
-    const productId = (product.id && typeof product.id === 'string' && product.id.trim() !== '') 
-      ? product.id 
-      : 'prod_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+    // Ensure productId is always a valid UUID (required by public.products.id UUID PK)
+    const productId = (product.id && typeof product.id === 'string' && isUUID(product.id.trim())) 
+      ? product.id.trim() 
+      : (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
+    
+    // Crucial: keep product object reference synced with valid UUID
+    product.id = productId;
 
-    console.log(`[Sulta DB 2026-LIVE-FIX] Saving product with authoritative ID: ${productId}, Name: ${product.nameAr}`);
+    console.log(`[Sulta DB 2026-LIVE-FIX] Saving product with authoritative UUID: ${productId}, Name: ${product.nameAr}`);
 
+    // Map payload strictly matching the verified columns in Supabase public.products
     const payload: any = {
       id: productId,
-      name_ar: product.nameAr,
-      name_en: product.nameEn,
-      category: safeCategory,
-      category_id: resolvedCategoryId || null,
-      category_ar: product.categoryAr,
+      name: encodedName || product.nameAr || 'Sulta Product',
+      name_ar: product.nameAr || '',
+      description: encodedDescription,
+      description_ar: product.descriptionAr || '',
       price: product.priceSA || product.priceEG || 0,
+      price_sa: product.priceSA || 0,
       price_eg: product.priceEG || (product.priceSA ? product.priceSA * 5 : 0),
-      price_sa: product.priceSA,
+      sale_price: product.salePriceSA || product.salePriceEG || null,
+      sale_price_sa: product.salePriceSA || null,
+      sale_price_eg: product.salePriceEG || null,
       regular_price: product.regularPrice || product.priceSA || 69,
       regular_price_since: product.regularPriceSince || new Date().toISOString().split('T')[0],
       discount_percent: product.discountPercent ?? 0,
       discount_starts_at: product.discountStartsAt || null,
       discount_ends_at: product.discountEndsAt || null,
-      discount_status: product.discountStatus || (product.isDiscountActive === false ? 'inactive' : 'active'),
-      is_discount_active: product.isDiscountActive ?? (product.discountStatus === 'inactive' ? false : true),
-      description_ar: product.descriptionAr,
-      description_en: product.descriptionEn,
-      fabric_ar: product.fabricAr,
-      fabric_en: product.fabricEn,
-      wash_instructions_ar: product.washInstructionsAr,
-      images: product.images || [],
-      video: product.video || null,
-      colors: JSON.stringify(product.colors || []),
-      sizes: product.sizes || [],
-      is_best_seller: product.isBestSeller,
-      featured: product.featured || false,
+      stock: Number(product.stock) || 0,
+      images: Array.isArray(product.images) ? product.images : [],
+      category: safeCategory,
+      category_id: (resolvedCategoryId && isUUID(resolvedCategoryId)) ? resolvedCategoryId : null,
+      category_ar: product.categoryAr || 'المجموعة الجديدة',
+      slug: (product.slug && product.slug.trim()) ? product.slug.trim() : productId,
       status: product.status || 'active',
-      sku: product.sku || null,
-      sale_price: product.salePriceSA || product.salePriceEG || null,
-      sale_price_sa: product.salePriceSA || null,
-      sale_price_eg: product.salePriceEG || null,
-      stock: product.stock,
-      rating: product.rating,
-      reviews_count: product.reviewsCount,
-      short_description: product.shortDescription || null,
-      tags: JSON.stringify(product.tags || []),
-      collection: (product.collection && isUUID(product.collection)) ? product.collection : null,
-      name: encodedName,
-      slug: (product.id && !isUUID(product.id)) ? product.id.toLowerCase().replace(/\s+/g, '-') : product.id.toLowerCase().replace(/\s+/g, '-'),
-      description: encodedDescription,
-      seo: product.seo ? JSON.stringify(product.seo) : null
+      material: product.fabricAr || null,
+      care_instructions: product.washInstructionsAr || null,
+      size_info: (product.sizes && product.sizes.length > 0) ? product.sizes.join(', ') : 'One Size'
     };
-
-    // Ensure double-safety mappings for both field variants
-    payload.stock_quantity = product.stock;
 
     let { error } = await supabase.from('products').upsert([payload]);
 
@@ -2111,10 +2106,16 @@ export const dbService = {
             console.warn(`[Sulta DB] No UUID map found. Nullifying category_id to bypass UUID type-casting check.`);
             payload.category_id = null;
           }
+        } else if (payload.id === problematicVal) {
+          // CRITICAL: NEVER set payload.id to null! Assign a brand new valid UUID!
+          const newUuid = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
+          console.warn(`[Sulta DB] Replaced invalid ID with valid UUID: ${newUuid}`);
+          payload.id = newUuid;
+          product.id = newUuid;
         } else {
-          // Look for any keys containing the problematic value and nullify/delete them
+          // Look for any other keys containing the problematic value and nullify them
           for (const key of Object.keys(payload)) {
-            if (payload[key] === problematicVal) {
+            if (key !== 'id' && payload[key] === problematicVal) {
               console.warn(`[Sulta DB] Safety nullifying problematic UUID field: '${key}'`);
               payload[key] = null;
             }
@@ -2290,8 +2291,11 @@ export const dbService = {
 
     // 3. Delete permanently from Supabase products table
     try {
-      const { error } = await supabase.from('products').delete().eq('id', productId);
-      if (error) console.warn('[Sulta DB] Supabase delete notice:', error.message || error);
+      const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+      if (isUUID(productId)) {
+        const { error } = await supabase.from('products').delete().eq('id', productId);
+        if (error) console.warn('[Sulta DB] Supabase delete notice:', error.message || error);
+      }
     } catch (err: any) {
       console.error('[Sulta DB] Supabase delete exception:', err?.message || err);
     }

@@ -802,18 +802,12 @@ export default function CheckoutModal({
                 </div>
 
                 {/* visible Payment Methods in Step 1 to eliminate uncertainty */}
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-right space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-gray-900 flex items-center gap-1.5">
-                      <Lock size={13} className="text-emerald-600" />
-                      <span>وسائل الدفع المتاحة:</span>
-                    </span>
-                    <PaymentMethodsDisplay variant="checkout" />
+                <div className="bg-gray-50/80 border border-gray-200/80 rounded-xl p-2.5 text-right space-y-2">
+                  <div className="flex items-center gap-1.5 text-gray-800">
+                    <Lock size={12} className="text-emerald-600" />
+                    <span className="text-[11px] font-bold">وسائل الدفع المعتمدة للمتجر:</span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    <span className="bg-blue-50 text-blue-850 border border-blue-200 px-2.5 py-0.5 rounded text-[10px] font-bold">تحويل بنكي مباشر (الراجحي / العربي) 🇸🇦</span>
-                    <span className="bg-emerald-50 text-emerald-850 border border-emerald-200 px-2.5 py-0.5 rounded text-[10px] font-bold text-emerald-700">الدفع عند الاستلام (COD) 📦</span>
-                  </div>
+                  <PaymentMethodsDisplay variant="checkout" />
                 </div>
 
                 {/* WhatsApp Opt-in as per Meta guidelines (not pre-selected) */}

@@ -21,6 +21,7 @@ import {
   Check, 
   AlertCircle,
   AlertTriangle,
+  Loader2,
   Bell,
   BellRing,
   TrendingUp,
@@ -249,6 +250,7 @@ export default function Dashboard({
     images: []
   });
   const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
+  const [isSavingProduct, setIsSavingProduct] = useState(false);
   const [newImageUrlInput, setNewImageUrlInput] = useState('');
 
   // Quick inline price editing states
@@ -1125,8 +1127,12 @@ export default function Dashboard({
     }
 
     try {
+      setIsSavingProduct(true);
       const isEditing = !!editingProduct;
-      const targetId = editingProduct ? editingProduct.id : 'prod_' + Date.now();
+      const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+      const targetId = (editingProduct && editingProduct.id && isUUID(editingProduct.id))
+        ? editingProduct.id
+        : (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
       const regularPrice = Number(productForm.regularPrice) || Number(productForm.priceSA) || 69;
       const discountPercent = Number(productForm.discountPercent) || 0;
       const effectiveSA = discountPercent > 0 ? Math.round(regularPrice * (1 - discountPercent / 100)) : regularPrice;
@@ -1164,17 +1170,17 @@ export default function Dashboard({
         reviewsCount: editingProduct?.reviewsCount ?? 10
       };
 
-      // 1. Immediately update products state for all storefront components
+      // 1. Persist to Supabase Database FIRST (do not display success until DB confirms)
+      await dbService.saveProduct(newProd);
+
+      // 2. Only after confirmed DB success: update products state for all storefront components & local UI
       if (isEditing) {
         setProducts(prev => prev.map(p => p.id === targetId ? newProd : p));
-        toast?.(`تم حفظ تعديلات "${newProd.nameAr}" بنجاح ✨ تذكّر: أعد نشر الموقع لتحديث صور الفهرسة بمحركات البحث وجوجل.`, 'success');
+        toast?.(`تم حفظ تعديلات "${newProd.nameAr}" في قاعدة البيانات بنجاح ✨ تذكّر: أعد نشر الموقع لتحديث صور الفهرسة بمحركات البحث وجوجل.`, 'success');
       } else {
         setProducts(prev => [newProd, ...prev]);
-        toast?.(`تمت إضافة القطعة "${newProd.nameAr}" بنجاح للمتجر بالسعر المحدد`, 'success');
+        toast?.(`تمت إضافة القطعة "${newProd.nameAr}" بنجاح في قاعدة البيانات وتظهر الآن بالمتجر 🛍️`, 'success');
       }
-
-      // 2. Persist to DB and local storage
-      await dbService.saveProduct(newProd);
 
       setEditingProduct(null);
       setIsAddProductOpen(false);
@@ -1192,6 +1198,8 @@ export default function Dashboard({
     } catch (err: any) {
       console.error("[Dashboard] Product save critical error:", err);
       toast?.(`فشل حفظ المنتج في قاعدة البيانات: ${err?.message || 'خطأ غير معروف'}`, 'error');
+    } finally {
+      setIsSavingProduct(false);
     }
   };
 
@@ -4888,9 +4896,11 @@ export default function Dashboard({
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#A44C5C] hover:bg-gray-800 text-white font-bold text-xs px-5 py-2 rounded-xl cursor-pointer shadow-sm"
+                  disabled={isSavingProduct || isUploadingProductImage}
+                  className="bg-[#A44C5C] hover:bg-gray-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  حفظ المنتج 🛍️
+                  {isSavingProduct && <Loader2 size={13} className="animate-spin" />}
+                  <span>{isSavingProduct ? 'جاري الحفظ في Supabase... ⏳' : (editingProduct ? 'حفظ التعديلات ✨' : 'حفظ المنتج بالمتجر 🛍️')}</span>
                 </button>
               </div>
             </form>
