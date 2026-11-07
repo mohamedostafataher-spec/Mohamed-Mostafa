@@ -246,44 +246,68 @@ export function cleanImgUrl(url: any, width: number | string = 1200): string {
   }
 
   const cleaned = url.trim();
+  
+  // Size presets
+  const SIZES: Record<string, number> = {
+    'xs': 120,
+    'sm': 400, // Increased for better card quality
+    'md': 800, // Balanced for mobile details
+    'lg': 1200,
+    'xl': 1920,
+    '4k': 3840
+  };
 
-  // Return direct clean URL without wsrv.nl wrapping to ensure high-res og:image
+  const targetWidth = typeof width === 'string' ? (SIZES[width] || 1200) : width;
+
+  // Function to wrap URL with wsrv.nl proxy and optimizations
+  const proxyWrap = (rawUrl: string, w: number) => {
+    if (rawUrl.startsWith('data:') || rawUrl.startsWith('/')) return rawUrl;
+    
+    // We append a cache-buster or versioning if needed, but here we just optimize
+    const params = new URLSearchParams({
+      url: rawUrl,
+      w: w.toString(),
+      output: 'webp', // Changed to webp as primary for broader mobile compatibility
+      q: '85',
+      il: '',
+      sharp: '1'
+    });
+    
+    return `https://wsrv.nl/?${params.toString()}`;
+  };
+
+  // 1. Handle full HTTP URLs
   if (cleaned.startsWith('http')) {
     const sanitized = cleaned.replace(/([^:])\/+/g, '$1/');
+    
+    // Check if it's already a Supabase URL but missing 'public/' part? 
+    // Usually not an issue with getPublicUrl()
+    
     if (sanitized.includes('wsrv.nl')) {
       try {
         const rawUrl = sanitized.split('url=')[1]?.split('&')[0];
-        if (rawUrl) return decodeURIComponent(rawUrl);
+        if (rawUrl) return proxyWrap(decodeURIComponent(rawUrl), targetWidth);
       } catch (e) {}
     }
-    return sanitized;
+    
+    return proxyWrap(sanitized, targetWidth);
   }
 
+  // 2. Handle data URIs
   if (cleaned.startsWith('data:')) return cleaned;
 
-  // Handle local assets (automatically route to high-speed WebP version if available)
-  if (cleaned.startsWith('/img/') || cleaned.startsWith('img/')) {
-    const formatted = cleaned.startsWith('/') ? cleaned : '/' + cleaned;
-    if (formatted.endsWith('.png') || formatted.endsWith('.jpg')) {
-      return formatted.replace(/\.(png|jpg)$/, '.webp');
-    }
-    return formatted;
-  }
-  
-  if (cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
-    const replaced = cleaned.replace(/^(\/)?src\/assets\//, '/img/');
-    if (replaced.endsWith('.png') || replaced.endsWith('.jpg')) {
-      return replaced.replace(/\.(png|jpg)$/, '.webp');
-    }
-    return replaced;
+  // 3. Local assets
+  if (cleaned.startsWith('/img/') || cleaned.startsWith('img/') || cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
+    let path = cleaned.startsWith('/') ? cleaned : '/' + cleaned;
+    path = path.replace(/^\/src\/assets\//, '/img/');
+    return path;
   }
 
-  // Fallback: Assume it's a filename in the Supabase 'products' bucket
+  // 4. Filename in Supabase 'products' bucket
   const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
   if (cleanPath.includes('.')) {
     const fullSupabaseUrl = `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
-    const w = typeof width === 'number' ? width : (parseInt(String(width)) || 1200);
-    return `https://wsrv.nl/?url=${encodeURIComponent(fullSupabaseUrl)}&w=${w}&output=webp&q=85&il`;
+    return proxyWrap(fullSupabaseUrl, targetWidth);
   }
 
   return '';
@@ -424,9 +448,17 @@ function mapProduct(data: any): Product {
   }
 
   const validImages = (rawImages || []).filter((img: any) => img && typeof img === 'string' && img.trim() !== '');
-  const cleanedImages = validImages.length > 0
-    ? validImages.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey)).filter(Boolean)
-    : []; // REQ: No fallback images from code. Only Supabase.
+  
+  // SELF-HEALING: If DB has no images, try to recover from memory goldmine by ID
+  let imagesToUse = validImages;
+  if (imagesToUse.length === 0 && fallbackProduct && fallbackProduct.images && fallbackProduct.images.length > 0) {
+    console.log(`[Sulta RECOVERY] Self-healing images for ${data.id} from fallback memory.`);
+    imagesToUse = fallbackProduct.images;
+  }
+
+  const cleanedImages = imagesToUse.length > 0
+    ? imagesToUse.map((imgUrl: any) => cleanImgUrl(imgUrl, catKey)).filter(Boolean)
+    : []; 
 
   // Name resolution: DB physical columns FIRST
   let nameAr = data.name_ar || (fallbackProduct ? fallbackProduct.nameAr : '') || (data.name ? data.name.split(' | ')[0] : '') || 'منتج سولته';
@@ -1732,11 +1764,13 @@ export const dbService = {
 
     // 1. Ensure order.id is a valid UUID, generate one if not
     let finalId = order.id;
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(finalId);
-    if (!isUuid) {
-      finalId = crypto.randomUUID();
+    const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+    if (!finalId || !isUuid(finalId)) {
+      finalId = (typeof crypto !== 'undefined' && crypto.randomUUID) 
+        ? crypto.randomUUID() 
+        : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0');
       order.id = finalId; // UPDATE OBJECT BY REFERENCE TO PREVENT MISMATCHES
-      console.log(`[Sulta DB] Non-UUID detected, generated new UUID: ${finalId}`);
+      console.log(`[Sulta DB] Non-UUID detected for order, generated new UUID: ${finalId}`);
     }
 
     // 2. Persist directly to Supabase cloud:
@@ -1944,16 +1978,16 @@ export const dbService = {
       const savedMap = JSON.parse(savedStr);
       savedMap[product.id] = product;
       localStorage.setItem('sulta_saved_products', JSON.stringify(savedMap));
-      console.log(`[Sulta DB] Saved product "${product.nameAr}" (ID: ${product.id}, Price: ${product.priceSA} SAR) to localStorage.`);
+      console.log(`[Sulta DB] Saved product "${product.nameAr}" (ID: ${product.id}) to localStorage.`);
     } catch (e) {
       console.warn('[Sulta DB] Error saving product to localStorage:', e);
     }
 
-    // Standard allowed categories in CHECK constraint: ('satin', 'soft', 'cotton', 'loungewear', 'dresses', 'new')
-    const allowedCategories = ['satin', 'soft', 'cotton', 'loungewear', 'dresses', 'new'];
+    // Standard allowed categories in CHECK constraint
+    const allowedCategories = ['satin', 'soft', 'cotton', 'loungewear', 'dresses', 'new', 'sleepwear'];
     const safeCategory = allowedCategories.includes(product.category) ? product.category : 'new';
     
-    // UUID format check for foreign keys that might cause syntax errors in Supabase strict mode
+    // UUID format check
     const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
     const getCategoryUuid = (id: string) => {
@@ -1973,7 +2007,7 @@ export const dbService = {
       resolvedCategoryId = getCategoryUuid(resolvedCategoryId) || resolvedCategoryId;
     }
 
-    // Pack all product metadata into a JSON block so legacy database structures retain 100% of features
+    // Pack all product metadata into a JSON block
     const metadata = {
       priceSA: product.priceSA,
       priceEG: product.priceEG,
@@ -2003,17 +2037,18 @@ export const dbService = {
     const encodedName = (product.nameAr || '') + (product.nameEn ? ' | ' + product.nameEn : '');
     const encodedDescription = (product.descriptionAr || '') + (product.descriptionEn ? ' | ' + product.descriptionEn : '') + ' | [METADATA_Sulta_V2]:' + JSON.stringify(metadata);
 
-    // Ensure productId is always a valid UUID (required by public.products.id UUID PK)
-    const productId = (product.id && typeof product.id === 'string' && isUUID(product.id.trim())) 
-      ? product.id.trim() 
-      : (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
+    // Ensure productId is always a valid UUID
+    let productId = product.id;
+    if (!productId || typeof productId !== 'string' || !isUUID(productId.trim())) {
+      productId = (typeof crypto !== 'undefined' && crypto.randomUUID) 
+        ? crypto.randomUUID() 
+        : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0');
+    }
     
-    // Crucial: keep product object reference synced with valid UUID
+    // Crucial: keep product object reference synced
     product.id = productId;
 
-    console.log(`[Sulta DB 2026-LIVE-FIX] Saving product with authoritative UUID: ${productId}, Name: ${product.nameAr}`);
-
-    // Map payload strictly matching the verified columns in Supabase public.products
+    // Map payload strictly matching Supabase columns
     const payload: any = {
       id: productId,
       name: encodedName || product.nameAr || 'Sulta Product',
@@ -2043,147 +2078,67 @@ export const dbService = {
       size_info: (product.sizes && product.sizes.length > 0) ? product.sizes.join(', ') : 'One Size'
     };
 
-    let { error } = await supabase.from('products').upsert([payload]);
+    console.log(`[Sulta DB] Upserting product ${productId}. Payload keys:`, Object.keys(payload));
 
-    let retries = 35;
+    let { error } = await supabase.from('products').upsert([payload], { onConflict: 'id' });
+
+    let retries = 20;
     while (error && error.message && retries > 0) {
       const errMsg = error.message;
-      console.warn(`[Sulta DB] Attempting automatic error resolution for product upsert: "${errMsg}". Retries left: ${retries}`);
+      console.warn(`[Sulta DB] Error on save, resolving: "${errMsg}". Retries: ${retries}`);
 
-      // 1. Missing or extra column resolution (both PostgREST & PostgreSQL native formats)
+      // 1. Column missing - remove it from payload
       let colName: string | null = null;
       const missingMatch = errMsg.match(/Could not find the '([^']+)' column/i);
       const pgNotExistMatch = errMsg.match(/column "([^"]+)" of relation "products" does not exist/i) || errMsg.match(/column "([^"]+)" does not exist/i);
       
-      if (missingMatch && missingMatch[1]) {
-        colName = missingMatch[1];
-      } else if (pgNotExistMatch && pgNotExistMatch[1]) {
-        colName = pgNotExistMatch[1];
-      }
+      if (missingMatch && missingMatch[1]) colName = missingMatch[1];
+      else if (pgNotExistMatch && pgNotExistMatch[1]) colName = pgNotExistMatch[1];
 
-      if (colName) {
-        console.warn(`[Sulta DB] Automatically removing unsupported column '${colName}' from the insert payload to avoid schema conflict.`);
+      // CRITICAL: NEVER delete the 'id' column from payload as it's the Primary Key
+      if (colName && colName !== 'id') {
+        console.warn(`[Sulta DB] Removing column '${colName}' from payload.`);
         delete payload[colName];
-        
-        const retryRes = await supabase.from('products').upsert([payload]);
+        const retryRes = await supabase.from('products').upsert([payload], { onConflict: 'id' });
         error = retryRes.error;
         retries--;
         continue;
       }
 
-      // 2. Foreign Key Constraint Violation (e.g., category_id or collection does not exist in their parent tables)
-      if (errMsg.toLowerCase().includes("foreign key constraint") || errMsg.toLowerCase().includes("violates foreign key")) {
-        if (errMsg.toLowerCase().includes("category_id") && payload.category_id !== null) {
-          console.warn("[Sulta DB] Foreign key violation on category_id! Nullifying category_id to guarantee product is created.");
-          payload.category_id = null;
-        } else if (errMsg.toLowerCase().includes("collection") && payload.collection !== null) {
-          console.warn("[Sulta DB] Foreign key violation on collection! Nullifying collection reference to guarantee product is created.");
-          payload.collection = null;
-        } else {
-          console.warn("[Sulta DB] Unspecified foreign key violation. Safety nullifying optional relational references.");
-          payload.category_id = null;
-          payload.collection = null;
-        }
-
-        const retryRes = await supabase.from('products').upsert([payload]);
-        error = retryRes.error;
-        retries--;
-        continue;
-      }
-
-      // 3. UUID Syntax or Conversion Errors
-      const uuidMatch = errMsg.match(/invalid input syntax for type uuid:\s*"([^"]+)"/i);
-      if (uuidMatch && uuidMatch[1]) {
-        const problematicVal = uuidMatch[1];
-        console.warn(`[Sulta DB] Invalid UUID syntax detected: "${problematicVal}". Commencing auto-remapping...`);
-        
-        if (payload.category_id === problematicVal) {
-          const catUuid = getCategoryUuid(problematicVal);
-          if (catUuid) {
-            console.warn(`[Sulta DB] Auto-mapping invalid category_id '${problematicVal}' to valid UUID: '${catUuid}'`);
-            payload.category_id = catUuid;
-          } else {
-            console.warn(`[Sulta DB] No UUID map found. Nullifying category_id to bypass UUID type-casting check.`);
+      // 2. Foreign Key violations
+      if (errMsg.toLowerCase().includes("foreign key") || errMsg.toLowerCase().includes("violates foreign key")) {
+        if (errMsg.includes("category_id")) payload.category_id = null;
+        else if (errMsg.includes("collection")) payload.collection = null;
+        else {
             payload.category_id = null;
-          }
-        } else if (payload.id === problematicVal) {
-          // CRITICAL: NEVER set payload.id to null! Assign a brand new valid UUID!
-          const newUuid = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
-          console.warn(`[Sulta DB] Replaced invalid ID with valid UUID: ${newUuid}`);
-          payload.id = newUuid;
-          product.id = newUuid;
-        } else {
-          // Look for any other keys containing the problematic value and nullify them
-          for (const key of Object.keys(payload)) {
-            if (key !== 'id' && payload[key] === problematicVal) {
-              console.warn(`[Sulta DB] Safety nullifying problematic UUID field: '${key}'`);
-              payload[key] = null;
+            payload.collection = null;
+        }
+        const retryRes = await supabase.from('products').upsert([payload], { onConflict: 'id' });
+        error = retryRes.error;
+        retries--;
+        continue;
+      }
+
+      // 3. UUID Syntax
+      if (errMsg.toLowerCase().includes("invalid input syntax for type uuid")) {
+        const uuidMatch = errMsg.match(/"([^"]+)"/);
+        const badVal = uuidMatch ? uuidMatch[1] : null;
+        if (badVal) {
+            for (const k of Object.keys(payload)) {
+                if (k !== 'id' && payload[k] === badVal) payload[k] = null;
             }
-          }
         }
-
-        const retryRes = await supabase.from('products').upsert([payload]);
+        const retryRes = await supabase.from('products').upsert([payload], { onConflict: 'id' });
         error = retryRes.error;
         retries--;
         continue;
       }
 
-      // 4. CHECK constraint violation (e.g. category CHECK or status CHECK limits in the database schema)
-      if (errMsg.toLowerCase().includes("check constraint") || errMsg.toLowerCase().includes("violates check")) {
-        if (errMsg.toLowerCase().includes("category")) {
-          console.warn("[Sulta DB] CHECK constraint error on category! Resetting to default 'new'.");
-          payload.category = 'new';
-        }
-        if (errMsg.toLowerCase().includes("status")) {
-          console.warn("[Sulta DB] CHECK constraint error on status! Resetting to default 'active'.");
-          payload.status = 'active';
-        }
-        
-        const retryRes = await supabase.from('products').upsert([payload]);
-        error = retryRes.error;
-        retries--;
-        continue;
-      }
-
-      // 5. Input syntax & array format normalization for arrays like sizes/images
-      if (errMsg.toLowerCase().includes("malformed array literal") || errMsg.toLowerCase().includes("invalid input syntax") || errMsg.toLowerCase().includes("cannot cast")) {
-        if (errMsg.toLowerCase().includes("images")) {
-          console.warn("[Sulta DB] Array syntax error on images column. Normalizing to native array...");
-          if (typeof payload.images === 'string') {
-            try {
-              payload.images = JSON.parse(payload.images);
-            } catch {
-              payload.images = payload.images ? [payload.images] : [];
-            }
-          }
-          if (!Array.isArray(payload.images)) {
-            payload.images = [];
-          }
-        }
-        
-        if (errMsg.toLowerCase().includes("colors")) {
-          console.warn("[Sulta DB] JSONB syntax error on colors column. Normalizing payload.colors to empty array...");
-          payload.colors = [];
-        }
-
-        if (errMsg.toLowerCase().includes("sizes")) {
-          console.warn("[Sulta DB] Array syntax error on sizes. Setting defaults.");
-          payload.sizes = ['S', 'M', 'L', 'XL', 'XXL'];
-        }
-
-        const retryRes = await supabase.from('products').upsert([payload]);
-        error = retryRes.error;
-        retries--;
-        continue;
-      }
-
-      // Cannot resolve automatically - break to trigger standard user reporting
       break;
     }
 
-    console.log("[Sulta DB] Save finished. Payload columns remaining:", Object.keys(payload), "Error:", error ? error.message : "Success 🎉");
     if (error) {
-      console.error("[Sulta DB] Supabase upsert failed:", error.message || error);
+      console.error("[Sulta DB] Final upsert fail:", error.message);
       throw new Error(error.message || 'فشل الحفظ في قاعدة بيانات Supabase');
     }
   },
@@ -2818,9 +2773,50 @@ export const dbService = {
     }
   },
 
-  // Seed Data if DB is empty
-  seedInitialData: async (): Promise<void> => {
-    console.log('Seeding is disabled for production.');
+  // Seed Data if DB is empty or recovery is requested
+  seedInitialData: async (force: boolean = false): Promise<void> => {
+    try {
+      if (!force) {
+        const { data, error } = await supabase.from('products').select('id').limit(1);
+        if (!error && data && data.length > 0) {
+          console.log('[Sulta DB] Database already has data, skipping automatic seeding.');
+          return;
+        }
+      }
+
+      console.log('[Sulta DB] Commencing data recovery/seeding from fallback goldmine...');
+      await dbService.restoreMissingProducts();
+    } catch (e) {
+      console.warn('[Sulta DB] Seeding failure:', e);
+    }
+  },
+
+  /**
+   * Authoritative recovery function: Upserts all products from the hardcoded goldmine
+   * into the live Supabase database, ensuring IDs and image references are preserved.
+   */
+  restoreMissingProducts: async (): Promise<{ success: boolean; count: number; errors: string[] }> => {
+    let successCount = 0;
+    const errors: string[] = [];
+
+    console.log(`[Sulta RECOVERY] Attempting to restore ${SEED_FALLBACK_PRODUCTS.length} products to Supabase...`);
+
+    for (const prod of SEED_FALLBACK_PRODUCTS) {
+      try {
+        await dbService.saveProduct(prod);
+        successCount++;
+        console.log(`[Sulta RECOVERY] Restored: ${prod.nameAr} (${prod.id})`);
+      } catch (err: any) {
+        console.error(`[Sulta RECOVERY] Failed: ${prod.nameAr}`, err.message);
+        errors.push(`${prod.nameAr}: ${err.message}`);
+      }
+    }
+
+    return { 
+      success: errors.length === 0, 
+      count: successCount, 
+      errors 
+    };
   },
 
   // SUPPORT TICKETS

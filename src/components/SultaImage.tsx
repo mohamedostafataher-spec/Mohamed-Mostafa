@@ -33,7 +33,10 @@ export default function SultaImage({
   productName,
   ...props 
 }: SultaImageProps) {
-  const initialUrl = src ? getOptimizedSrc(src, width) : fallbackSrc;
+  // Use 'md' as a safe default for components that don't specify width
+  const defaultWidth = width || 'md';
+  const initialUrl = src ? cleanImgUrl(src, defaultWidth) : fallbackSrc;
+  
   const [currentSrc, setCurrentSrc] = useState<string>(initialUrl);
   const [retryStage, setRetryStage] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -42,7 +45,7 @@ export default function SultaImage({
 
   // Sync with prop changes
   useEffect(() => {
-    const newUrl = src ? getOptimizedSrc(src, width) : fallbackSrc;
+    const newUrl = src ? cleanImgUrl(src, defaultWidth) : fallbackSrc;
     setCurrentSrc(newUrl);
     setRetryStage(0);
     setIsLoaded(false);
@@ -51,38 +54,38 @@ export default function SultaImage({
     if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
       setIsLoaded(true);
     }
-  }, [src, fallbackSrc, width]);
+  }, [src, fallbackSrc, defaultWidth]);
+
+  // Generate automated srcset for responsive delivery if it's a proxied URL
+  const generateSrcSet = () => {
+    if (!src || src.startsWith('data:') || src.startsWith('/')) return undefined;
+    
+    // We create a standard responsive ramp: sm (320), md (640), lg (1080), xl (1920)
+    return [
+      `${cleanImgUrl(src, 'sm')} 320w`,
+      `${cleanImgUrl(src, 'md')} 640w`,
+      `${cleanImgUrl(src, 'lg')} 1080w`,
+      `${cleanImgUrl(src, 'xl')} 1920w`
+    ].join(', ');
+  };
+
+  const srcSet = generateSrcSet();
+  const sizes = props.sizes || '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw';
 
   const handleError = () => {
-    // Stage 1: If currentSrc contains wsrv.nl proxy, fall back to the direct Supabase URL
-    if (retryStage === 0 && currentSrc.includes('wsrv.nl/?url=')) {
+    if (retryStage === 0 && currentSrc.includes('wsrv.nl')) {
       try {
-        const rawUrl = currentSrc.split('url=')[1]?.split('&')[0];
+        const rawUrl = new URL(currentSrc).searchParams.get('url');
         if (rawUrl) {
-          const decoded = decodeURIComponent(rawUrl);
           setRetryStage(1);
-          setCurrentSrc(decoded);
+          setCurrentSrc(decodeURIComponent(rawUrl));
           return;
         }
       } catch {}
     }
     
-    // Stage 2: If currentSrc is a direct Supabase/HTTP URL, attempt image proxy fallback
-    if (retryStage === 0 && currentSrc.startsWith('http') && !currentSrc.includes('wsrv.nl')) {
-      const proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(currentSrc)}&output=webp&q=85`;
-      setRetryStage(1);
-      setCurrentSrc(proxyUrl);
-      return;
-    }
-
-    // Both direct and proxy failed: Log warning safely without sensitive tokens
-    if (typeof window !== 'undefined') {
-      const sanitizedName = productName || alt || 'منتج';
-      console.warn(`[Sulta Image Notice] تعذر تحميل صورة المنتج "${sanitizedName}".`);
-    }
-
     setHasFailed(true);
-    setCurrentSrc('');
+    console.warn(`[Sulta Image] Failed to load: ${productName || alt}`);
   };
 
   const handleLoad = () => {
@@ -93,50 +96,44 @@ export default function SultaImage({
   const alignmentClass = alignment === 'top' ? 'object-top' : alignment === 'bottom' ? 'object-bottom' : 'object-center';
   const displayName = productName || alt || 'منتج سولته';
 
-  // Neutral Gray Fallback Box with exact 3:4 aspect ratio
   if (hasFailed || !currentSrc) {
     return (
       <div 
-        className={`w-full h-full bg-[#FAF5F0]/60 flex flex-col items-center justify-center p-4 text-center select-none aspect-[3/4] border border-[#A44C5C]/10 rounded-xl ${className}`}
+        className={`w-full h-full bg-gray-50 flex flex-col items-center justify-center p-4 text-center select-none aspect-[3/4] border border-gray-100/50 rounded-2xl ${className}`}
         role="img"
         aria-label={alt || `${displayName} - الصورة غير متوفرة`}
       >
-        <div className="w-10 h-10 rounded-full bg-white/80 shadow-2xs border border-gray-150 flex items-center justify-center text-gray-400 mb-2">
-          <svg className="w-5 h-5 text-[#A44C5C]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </div>
-        <span className="text-xs font-bold text-gray-800 line-clamp-2 px-2">{displayName}</span>
-        <span className="text-[11px] text-gray-500 mt-1 font-medium">الصورة غير متوفرة</span>
+        <span className="text-[10px] font-bold text-gray-400 bg-white/50 px-3 py-1.5 rounded-full border border-gray-100">صورة غير متوفرة</span>
       </div>
     );
   }
 
   return (
     <div 
-      className={`relative overflow-hidden ${contain ? 'bg-white' : 'bg-transparent'} ${className}`}
+      className={`relative overflow-hidden group transition-all duration-500 ${contain ? 'bg-white' : 'bg-gray-50'} ${className}`}
       style={{ aspectRatio: contain ? 'auto' : '3/4' }}
     >
-      {!isLoaded && (
-        <div className="absolute inset-0 z-0 bg-neutral-100 animate-pulse flex items-center justify-center">
-          <div className="w-5 h-5 border-2 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin opacity-40" />
-        </div>
-      )}
+      {/* Skeleton / Placeholder */}
+      <div className={`absolute inset-0 z-0 bg-gradient-to-br from-gray-100 to-gray-50 animate-pulse transition-opacity duration-700 ${isLoaded ? 'opacity-0' : 'opacity-100'}`} />
 
       <img
         key={currentSrc}
         ref={imgRef}
         src={currentSrc}
+        srcSet={srcSet}
+        sizes={sizes}
         alt={alt || displayName}
-        className={`w-full h-full block ${imgClassName || (contain ? 'object-contain' : 'object-cover')} ${alignmentClass} relative z-10 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full block ${imgClassName || (contain ? 'object-contain' : 'object-cover')} ${alignmentClass} relative z-10 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-md'}`}
         onError={handleError}
         onLoad={handleLoad}
-        loading={priority ? 'eager' : (props.loading || 'lazy')}
-        fetchPriority={priority ? 'high' : 'auto'}
-        decoding={priority ? 'sync' : 'async'}
-        width={typeof width === 'number' ? width : undefined}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'low'}
+        decoding="async"
         {...props}
       />
+      
+      {/* Glass overlay on hover for premium feel */}
+      <div className="absolute inset-0 z-20 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none" />
     </div>
   );
 }

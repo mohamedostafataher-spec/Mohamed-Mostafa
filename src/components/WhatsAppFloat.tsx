@@ -25,13 +25,13 @@ export default function WhatsAppFloat({
   };
 
   return (
-    <div className="fixed bottom-28 right-4 md:bottom-8 md:right-8 z-50 select-none font-sans" dir="rtl">
+    <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-50 select-none font-sans" dir="rtl">
       <a
         href={saudiUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="w-10 h-10 md:w-12 md:h-12 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
+        className="w-11 h-11 md:w-12 md:h-12 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full shadow-xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border-2 border-white group relative"
         aria-label="تواصل معنا عبر واتساب Sulta"
         title="تواصل مباشر عبر واتساب 0552823677"
       >

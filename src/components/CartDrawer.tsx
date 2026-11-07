@@ -199,6 +199,7 @@ export default function CartDrawer({
                             src={item.product.images[0]}
                             alt=""
                             className="w-full h-full"
+                            width="xs"
                             imgClassName="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                           />
                         )}

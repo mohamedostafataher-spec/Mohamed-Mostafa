@@ -59,6 +59,15 @@ export default function StoreView({
   const [cardColorSelections, setCardColorSelections] = useState<Record<string, { name: string; hex: string }>>({});
   const [showStyleAssistant, setShowStyleAssistant] = useState(false);
   const [addedItemIds, setAddedItemIds] = useState<Record<string, boolean>>({});
+  const [maxPrice, setMaxPrice] = useState<number>(0);
+  const [isPriceSliderOpen, setIsPriceSliderOpen] = useState<boolean>(true);
+
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [selectedCategory, selectedCollection, searchQuery, sortBy, maxPrice]);
 
   // Dynamic Catalog Price Range Calculation
   const { minPriceCatalog, maxPriceCatalog } = useMemo(() => {
@@ -78,9 +87,6 @@ export default function StoreView({
     const safeMax = max <= safeMin ? safeMin + (country === 'EG' ? 1000 : 500) : Math.ceil(max);
     return { minPriceCatalog: safeMin, maxPriceCatalog: safeMax };
   }, [products, country]);
-
-  const [maxPrice, setMaxPrice] = useState<number>(maxPriceCatalog);
-  const [isPriceSliderOpen, setIsPriceSliderOpen] = useState<boolean>(true);
 
   // Sync maxPrice when country or catalog prices update
   useEffect(() => {
@@ -572,31 +578,50 @@ export default function StoreView({
             </button>
           </div>
         ) : (
-          <div className={`grid ${
-            mobileLayout === 'single'
-              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5'
-              : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5'
-          }`}>
-            
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                favorites={favorites || []}
-                isFavorite={Array.isArray(favorites) ? favorites.includes(product.id) : false}
-                toggleFavorite={toggleFavorite}
-                onToggleFavorite={() => toggleFavorite?.(product.id)}
-                onSelect={() => onSelectProduct?.(product)}
-                onSelectProduct={onSelectProduct}
-                onAddToCart={(p, c, s, q) => {
-                  const chosenCol = c || product.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
-                  const chosenSz = s || product.sizes?.[0] || 'S';
-                  onAddToCart(product, chosenCol, chosenSz);
-                }}
-              />
-            ))}
+          <>
+            <div className={`grid ${
+              mobileLayout === 'single'
+                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5'
+                : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5'
+            }`}>
+              
+              {filteredProducts.slice(0, visibleCount).map((product, idx) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  favorites={favorites || []}
+                  isFavorite={Array.isArray(favorites) ? favorites.includes(product.id) : false}
+                  toggleFavorite={toggleFavorite}
+                  onToggleFavorite={() => toggleFavorite?.(product.id)}
+                  onSelect={() => onSelectProduct?.(product)}
+                  onSelectProduct={onSelectProduct}
+                  priority={idx < 4} // Only prioritize the first row
+                  onAddToCart={(p, c, s, q) => {
+                    const chosenCol = c || product.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
+                    const chosenSz = s || product.sizes?.[0] || 'S';
+                    onAddToCart(product, chosenCol, chosenSz);
+                  }}
+                />
+              ))}
+            </div>
 
-          </div>
+            {/* Load More Trigger */}
+            {visibleCount < filteredProducts.length && (
+              <div className="mt-12 text-center">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount(prev => prev + 12)}
+                  className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-100 px-10 py-3.5 rounded-2xl text-[13px] font-black transition-all active:scale-95 shadow-sm hover:border-gray-200 cursor-pointer"
+                >
+                  <span>استعراض المزيد من القطع ✨</span>
+                  <ChevronDown size={16} />
+                </button>
+                <p className="mt-3 text-[10px] text-gray-400 font-bold">
+                  تُعرض الآن {Math.min(visibleCount, filteredProducts.length)} من أصل {filteredProducts.length} قطعة ملكية
+                </p>
+              </div>
+            )}
+          </>
         )}
 
       </main>

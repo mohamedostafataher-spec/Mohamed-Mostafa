@@ -349,7 +349,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                 alt={descriptiveAlt} 
                 className="w-full h-full"
                 contain={false}
-                width={1000}
+                width="xl"
                 imgClassName="w-full h-full object-cover object-center"
                 priority={true}
               />
@@ -411,7 +411,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                       alt={`${product.h1 || product.nameAr} - صورة ${idx + 1}`} 
                       className="w-full h-full"
                       contain={true}
-                      width={200}
+                      width="xs"
                       imgClassName="object-contain"
                     />
                   </button>

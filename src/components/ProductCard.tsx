@@ -155,12 +155,12 @@ export default function ProductCard({
 
         {primaryImg ? (
           <SultaImage
-            src={cleanImgUrl(primaryImg, product.category)}
+            src={primaryImg}
             alt={imageAlt}
             productName={product.nameAr}
             className="w-full h-full"
             contain={false}
-            width={600}
+            width="sm"
             imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             priority={priority}
           />
@@ -177,7 +177,7 @@ export default function ProductCard({
         <span className="text-[10px] text-gray-500 font-bold mb-0.5" aria-hidden="true">
           {product.categoryAr || 'بيجامات نسائية'}
         </span>
-        <h2 className="text-xs font-bold text-gray-900 line-clamp-2 leading-snug mb-2 flex-1">
+        <h2 className="text-[11px] sm:text-xs font-bold text-gray-900 line-clamp-2 leading-snug mb-2 flex-1">
           {product.nameAr}
         </h2>
 

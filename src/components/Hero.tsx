@@ -95,7 +95,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
                     src={slide.url}
                     alt={slide.alt}
                     className="w-full h-full"
-                    width={1400}
+                    width="xl"
                     imgClassName="object-cover object-center"
                     priority={idx === 0}
                   />

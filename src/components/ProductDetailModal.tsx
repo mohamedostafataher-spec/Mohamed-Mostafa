@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy, ChevronLeft, ChevronRight, Gift, Wind, MessageCircle, Flame, ShieldCheck, Plus, Truck, RefreshCw, CreditCard } from 'lucide-react';
+import { X, Heart, Star, ShoppingBag, Send, Shield, Sparkles, Box, Info, Search, Zap, Check, Share2, Copy, ChevronLeft, ChevronRight, Gift, Wind, MessageCircle, Flame, ShieldCheck, Plus, Truck, RefreshCw, CreditCard, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useToast } from './Toast';
 import { Product, Country, Review, Settings } from '../types';
@@ -147,9 +147,9 @@ export default function ProductDetailModal({
   };
   
   // Luxury Gallery Logic: Show color-specific images if they exist, otherwise show all product images
-  const displayImages = ((selectedCol && selectedCol.images && selectedCol.images.length > 0) 
+  const displayImages = (selectedCol && selectedCol.images && selectedCol.images.length > 0) 
     ? selectedCol.images 
-    : product.images).map(img => cleanImgUrl(img, product.category));
+    : product.images;
 
   // Sync active image if it goes out of bounds for the current display images
   React.useEffect(() => {
@@ -207,6 +207,8 @@ export default function ProductDetailModal({
   const [activeTab, setActiveTab] = useState<'desc' | 'wash' | 'pack' | 'size' | 'ship' | 'reviews' | 'questions'>('desc');
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
+  const [is4kLightboxOpen, setIs4kLightboxOpen] = useState(false);
+  const [lightboxScale, setLightboxScale] = useState(1.5);
   
   // Sulta V3.0 Ultimate 360-rotation view states
   const [is360Active, setIs360Active] = useState(false);
@@ -366,16 +368,19 @@ export default function ProductDetailModal({
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (videoPlaying || is360Active || isMacroZoomActive) return;
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
+    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
     setZoomStyle({
       transformOrigin: `${x}% ${y}%`,
-      transform: 'scale(1.8)',
+      transform: 'scale(2.2)',
     });
   };
 
   const handleMouseLeave = () => {
-    setZoomStyle({});
+    setZoomStyle({
+      transformOrigin: 'center center',
+      transform: 'scale(1)',
+    });
   };
 
   const isFav = favorites.includes(product.id);
@@ -505,10 +510,21 @@ export default function ProductDetailModal({
                           animate={{ scale: 1, x: 0, opacity: 1 }}
                           transition={{ duration: 6, ease: "linear" }}
                         >
+                      <div
+                        className="w-full h-full overflow-hidden relative cursor-zoom-in transition-transform duration-150 ease-out"
+                        style={zoomStyle}
+                        onClick={() => setIs4kLightboxOpen(true)}
+                        title="انقري للتكبير وفحص تفاصيل القماش بدقة 4K الفائقة"
+                      >
                           <SultaImage 
                             src={displayImages[activeImageIdx]} 
-                            className="w-full h-full object-cover" 
+                            alt={product.nameAr}
+                            className="w-full h-full"
+                            imgClassName={`w-full h-full transition-all duration-300 ${imageScaleMode === 'contain' ? 'object-contain' : 'object-cover'}`}
+                            width="xl"
+                            priority={true}
                           />
+                      </div>
                         </motion.div>
 
                         {/* Floating Marketing Texts */}
@@ -939,15 +955,22 @@ export default function ProductDetailModal({
                           autoPlay muted loop playsInline
                        />
                     ) : (
+                      <div
+                        className="w-full h-full overflow-hidden relative cursor-zoom-in transition-transform duration-150 ease-out"
+                        style={zoomStyle}
+                        onClick={() => setIs4kLightboxOpen(true)}
+                        title="انقري للتكبير وفحص تفاصيل القماش بدقة 4K الفائقة"
+                      >
                      <SultaImage
                          src={displayImages[activeImageIdx]}
                          alt={`${product.nameAr} - ${selectedCol?.name || product.colors?.[0]?.name || ''} - ${product.material || product.fabricAr || 'قطن مريح'}`}
                          contain={false}
                          alignment="top"
-                         width={1000}
+                         width={2160}
                          imgClassName="w-full h-full object-cover object-top"
-                         className="w-full h-full"
+                         className="w-full h-full pointer-events-none"
                        />
+                      </div>
                     )}
                   </motion.div>
                 </AnimatePresence>
@@ -978,10 +1001,18 @@ export default function ProductDetailModal({
               </div>
             )}
 
-            {/* Corner label and fit mode indicators */}
+            {/* Corner label and 4K indicator */}
             {!videoPlaying && !is360Active && !isMacroZoomActive && (
-              <div className="absolute bottom-3 right-3 z-10 pointer-events-none select-none">
-                {/* Picture Number indicator - Right aligned */}
+              <div className="absolute bottom-3 inset-x-3 z-10 flex items-center justify-between pointer-events-none select-none">
+                <button
+                  type="button"
+                  onClick={() => setIs4kLightboxOpen(true)}
+                  className="pointer-events-auto bg-black/80 hover:bg-black text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+                  title="عرض تفاصيل القماش والخياطة بدقة 4K الفائقة"
+                >
+                  <Maximize2 size={12} className="text-amber-400" />
+                  <span>تكبير فائق 4K</span>
+                </button>
                 <span className="bg-white/75 backdrop-blur-xs text-[10px] font-sans font-bold text-gray-800 px-3 py-1.5 rounded-full border border-gray-200/50 shadow-sm">
                   صورة {activeImageIdx + 1} / {displayImages.length}
                 </span>
@@ -1012,7 +1043,7 @@ export default function ProductDetailModal({
                   {img?.match(/\.(mp4|webm|ogg|mov)$/i) || img?.includes('video') ? (
                      <video src={img} className="w-full h-full object-cover object-center" muted playsInline />
                   ) : (
-                     <SultaImage src={img} alt={`${product.nameAr} - ${selectedCol?.name || ''} - صورة ${idx + 1}`} width={100} contain={true} className="w-full h-full object-contain object-center" referrerPolicy="no-referrer" />
+                     <SultaImage src={img} alt={`${product.nameAr} - ${selectedCol?.name || ''} - صورة ${idx + 1}`} width="xs" contain={true} className="w-full h-full object-contain object-center" referrerPolicy="no-referrer" />
                   )}
                 </button>
               ))}
@@ -1711,7 +1742,7 @@ export default function ProductDetailModal({
                                {photoReviews.map(r => 
                                   (r.images || []).map((imgUrl, iIdx) => (
                                       <div key={`cust-img-${r.id}-${iIdx}`} className="shrink-0 w-16 h-20 rounded-lg overflow-hidden border border-gray-200 snap-start bg-gray-50 relative group">
-                                         <SultaImage src={cleanImgUrl(imgUrl, product.category)} className="w-full h-full object-cover" alt="Customer Photo" />
+                                         <SultaImage src={imgUrl} className="w-full h-full object-cover" width="sm" alt="Customer Photo" />
                                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                             <span className="text-white text-[8px] font-bold">{r.username}</span>
                                          </div>
@@ -2214,6 +2245,128 @@ export default function ProductDetailModal({
         )}
 
       </div>
+
+      {/* SULTA 4K ULTRA-HD FULLSCREEN LIGHTBOX & TEXTURE INSPECTOR */}
+      {is4kLightboxOpen && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col font-sans select-none animate-fade-in"
+          dir="rtl"
+          onClick={() => setIs4kLightboxOpen(false)}
+        >
+          {/* Header Toolbar */}
+          <div 
+            className="flex items-center justify-between p-3.5 sm:p-4 border-b border-white/10 z-20 bg-black/50 backdrop-blur-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="bg-amber-400 text-black text-[11px] font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                <Sparkles size={13} className="fill-black" />
+                <span>4K Ultra-HD Master</span>
+              </span>
+              <span className="text-white text-xs font-bold hidden sm:inline">
+                {product.nameAr} — تفاصيل القماش والخياطة فائقة الدقة
+              </span>
+            </div>
+
+            {/* Zoom & Navigation controls */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setLightboxScale(s => Math.max(1, Number((s - 0.5).toFixed(1))))}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+                title="تصغير"
+              >
+                <ZoomOut size={16} />
+              </button>
+              <span className="text-white font-mono text-xs px-1 min-w-[44px] text-center font-bold">
+                {Math.round(lightboxScale * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setLightboxScale(s => Math.min(3.5, Number((s + 0.5).toFixed(1))))}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+                title="تكبير"
+              >
+                <ZoomIn size={16} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setLightboxScale(1);
+                  setIs4kLightboxOpen(false);
+                }}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/20 hover:bg-rose-600 text-white flex items-center justify-center transition-all cursor-pointer mr-2"
+                title="إغلاق المعاينة"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Central 4K Canvas Viewport */}
+          <div 
+            className="flex-1 overflow-auto flex items-center justify-center p-2 sm:p-4 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div 
+              className="relative transition-transform duration-200 ease-out cursor-grab active:cursor-grabbing max-h-[85vh] max-w-[90vw] flex items-center justify-center"
+              style={{
+                transform: `scale(${lightboxScale})`,
+              }}
+            >
+              <img
+                src={displayImages[activeImageIdx]}
+                alt={product.nameAr}
+                className="max-h-[80vh] max-w-[85vw] object-contain rounded-xl shadow-2xl pointer-events-auto"
+                style={{ imageRendering: 'auto' }}
+                onDoubleClick={() => setLightboxScale(s => s > 1 ? 1 : 2)}
+              />
+            </div>
+
+            {/* Navigation Arrows */}
+            {displayImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 flex items-center justify-center transition-all shadow-xl cursor-pointer z-20"
+                >
+                  <ChevronLeft size={22} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 flex items-center justify-center transition-all shadow-xl cursor-pointer z-20"
+                >
+                  <ChevronRight size={22} />
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Bottom Thumbnail Strip */}
+          {displayImages.length > 1 && (
+            <div 
+              className="p-3 bg-black/60 border-t border-white/10 flex items-center justify-center gap-2 overflow-x-auto z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {displayImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveImageIdx(idx)}
+                  className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
+                    idx === activeImageIdx ? 'border-amber-400 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   );

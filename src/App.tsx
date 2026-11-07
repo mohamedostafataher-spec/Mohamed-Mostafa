@@ -53,6 +53,8 @@ const RoyalSensesSalon = React.lazy(() => import('./components/RoyalSensesSalon'
 const LiveTrafficMonitor = React.lazy(() => import('./components/LiveTrafficMonitor'));
 // LivePurchaseToasts removed to ensure 100% genuine data only
 const SearchOverlay = React.lazy(() => import('./components/SearchOverlay'));
+const SEOLandingPage = React.lazy(() => import('./components/SEOLandingPage'));
+const AdminGrowth = React.lazy(() => import('./components/AdminGrowth'));
 
 import { dbService, supabase, cleanImgUrl } from './services/db';
 import { SEED_FALLBACK_PRODUCTS } from './data/fallbackProducts';
@@ -800,7 +802,7 @@ function AppContent() {
   const offers = catalogPool.filter(p => p.isDiscountActive && (p.salePriceSA || p.discountPercent > 0));
 
   return (
-      <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-16 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
+      <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-20 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
       
       {/* GLOBAL HEADER BAR */}
       <Header
@@ -993,6 +995,45 @@ function AppContent() {
                   onBackToStore={() => setTab('home')}
                 />
               </AdminAuthGate>
+            } />
+
+            <Route path="/بيجامات-نسائية" element={
+              <SEOLandingPage 
+                keyword="بيجامات نسائية"
+                titleAr="أفضل بيجامات نسائية فاخرة في السعودية | متجر سولته"
+                descriptionAr="استكشفي تشكيلتنا الواسعة من البيجامات النسائية الفاخرة. تصاميم عصرية، أقمشة ناعمة، ومقاسات مريحة. شحن مجاني للطلبات فوق 299 ريال."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/بيجامات-نسائية"
+              />
+            } />
+
+            <Route path="/بيجامات-قطن" element={
+              <SEOLandingPage 
+                keyword="بيجامات قطن"
+                titleAr="بيجامات قطن نسائية ناعمة 100% — راحة وأناقة | سولته"
+                descriptionAr="بيجامات قطن نسائية بجودة عالية. خامات طبيعية تسمح للبشرة بالتنفس، تصاميم مريحة للنوم والاسترخاء. اطلبيها الآن من سولتة."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/بيجامات-قطن"
+              />
+            } />
+
+            <Route path="/ملابس-نوم" element={
+              <SEOLandingPage 
+                keyword="ملابس نوم"
+                titleAr="ملابس نوم نسائية فاخرة — كوليكشن الموسم | متجر سولته"
+                descriptionAr="دليلي نفسك بأجمل ملابس نوم نسائية. أناقة ملكية وراحة لا تضاهى. تشكيلة متنوعة من الألوان والتصاميم التي تليق بكِ."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/ملابس-نوم"
+              />
             } />
 
             <Route path="/404" element={

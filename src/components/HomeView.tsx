@@ -7,6 +7,7 @@ import { ProductPrice } from './ProductPrice';
 import ProductCard from './ProductCard';
 import SEO from './SEO';
 import Features from './Features';
+import SeasonalCampaign from './SeasonalCampaign';
 
 interface HomeViewProps {
   products: Product[];
@@ -99,6 +100,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                     onToggleFavorite={() => toggleFavorite?.(prod.id)}
                     onSelect={() => handleSelectProduct?.(prod)}
                     onSelectProduct={handleSelectProduct}
+                    priority={sectionIdx === 0 && section.data.indexOf(prod) < 4}
                     onAddToCart={(p, c, s, q) => {
                       const chosenCol = c || prod.colors?.[0] || { name: 'Rose', hex: '#DF8A9D' };
                       const chosenSz = s || prod.sizes?.[0] || 'S';
@@ -159,6 +161,13 @@ const HomeView: React.FC<HomeViewProps> = ({
 
       {/* FEATURES & UNBOXING */}
       <Features homepageSections={homepageSections} />
+
+      {/* SEASONAL CAMPAIGN 2026 */}
+      <SeasonalCampaign 
+        products={products}
+        onSelectProduct={handleSelectProduct}
+        onExplore={() => setTab('store')}
+      />
 
       {/* NEWSLETTER JOIN SECTION */}
       <section className="py-16 bg-[#F8F9FA] text-gray-900 border-t border-gray-200">

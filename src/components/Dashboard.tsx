@@ -53,6 +53,7 @@ import {
   Printer,
   Download,
   History,
+  RefreshCw,
   ArrowUp,
   ArrowDown,
   Upload,
@@ -73,6 +74,7 @@ import {
 } from 'recharts';
 import { Product, Order, DiscountCoupon, Settings, Category, Collection, TeamMember, TeamMemberRole } from '../types';
 import { dbService, cleanImgUrl, supabase } from '../services/db';
+import { optimizeImageForUpload } from '../services/imageOptimizer';
 import { WhatsAppService } from '../services/whatsappService';
 import { PixelEventLog, subscribePixelLogs, subscribeVisitorCount, getComprehensiveVisitorStats, getProductAnalytics, ProductMetric } from '../utils/analytics';
 import PixelDiagnosticsView from './PixelDiagnosticsView';
@@ -82,6 +84,7 @@ import SmartOrderStatusManager from './SmartOrderStatusManager';
 import AdminInventory from './AdminInventory';
 import AdminCustomers from './AdminCustomers';
 import AdminActivityLogs from './AdminActivityLogs';
+import AdminGrowth from './AdminGrowth';
 
 interface DashboardProps {
   products: Product[];
@@ -173,10 +176,11 @@ export default function Dashboard({
   onSignOut
 }: DashboardProps) {
   // Navigation tabs: comprehensive real-time e-commerce operations
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'orders' | 'products' | 'inventory' | 'customers' | 'coupons' | 'team' | 'settings' | 'audit-logs' | 'pixel-diagnostics'>(() => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'growth' | 'analytics' | 'orders' | 'products' | 'inventory' | 'customers' | 'coupons' | 'team' | 'settings' | 'audit-logs' | 'pixel-diagnostics'>(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search);
       const sub = p.get('subtab') || p.get('tab') || p.get('page') || p.get('section');
+      if (sub === 'growth') return 'growth';
       if (sub === 'pixel' || sub === 'pixel-diagnostics' || sub === 'diagnostics') return 'pixel-diagnostics';
       if (sub === 'team' || sub === 'members') return 'team';
       if (sub === 'inventory' || sub === 'stock') return 'inventory';
@@ -1132,7 +1136,13 @@ export default function Dashboard({
       const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
       const targetId = (editingProduct && editingProduct.id && isUUID(editingProduct.id))
         ? editingProduct.id
-        : (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
+        : (typeof crypto !== 'undefined' && crypto.randomUUID 
+            ? crypto.randomUUID() 
+            : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
+      
+      if (!targetId) {
+        throw new Error("Failed to generate a valid target ID for the product.");
+      }
       const regularPrice = Number(productForm.regularPrice) || Number(productForm.priceSA) || 69;
       const discountPercent = Number(productForm.discountPercent) || 0;
       const effectiveSA = discountPercent > 0 ? Math.round(regularPrice * (1 - discountPercent / 100)) : regularPrice;
@@ -1215,13 +1225,21 @@ export default function Dashboard({
 
     try {
       setIsUploadingProductImage(true);
-      const publicUrl = await dbService.uploadImage(file);
+      
+      // Client-side 4K optimization & texture enhancement
+      const optimizedFile = await optimizeImageForUpload(file, {
+        maxWidth: 2160,
+        quality: 0.92,
+        applySharpen: true
+      });
+      
+      const publicUrl = await dbService.uploadImage(optimizedFile);
       if (publicUrl) {
         setProductForm(prev => {
           const current = Array.isArray(prev.images) ? prev.images : [];
           return { ...prev, images: [...current, publicUrl] };
         });
-        toast?.('تم رفع الصورة بنجاح إلى Supabase (products) 📸', 'success');
+        toast?.('تم تحسين ورفع الصورة بدقة 4K بنجاح ✨', 'success');
       } else {
         toast?.('تعذر رفع الصورة، يرجى التحقق من الاتصال', 'error');
       }
@@ -1718,6 +1736,18 @@ export default function Dashboard({
             >
               <LayoutDashboard size={15} />
               <span>نظرة عامة</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('growth')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'growth'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50'
+              }`}
+            >
+              <TrendingUp size={15} />
+              <span>تحليل النمو 🚀</span>
             </button>
 
             <button
@@ -2537,6 +2567,15 @@ export default function Dashboard({
           </div>
         )}
         {/* ======================================================== */}
+        {/* TAB: GROWTH CENTER (CONVERSION & ADS ROI) */}
+        {/* ======================================================== */}
+        {activeTab === 'growth' && (
+          <React.Suspense fallback={<div className="p-12 text-center animate-pulse text-gray-500 font-bold">جاري تحميل مركز النمو الملكي... ✨</div>}>
+            <AdminGrowth orders={orders} products={products} />
+          </React.Suspense>
+        )}
+
+        {/* ======================================================== */}
         {/* TAB 2: ORDERS MANAGEMENT & WHATSAPP INVOICING */}
         {/* ======================================================== */}
         {activeTab === 'orders' && (
@@ -2999,6 +3038,31 @@ export default function Dashboard({
                 <span className="text-xs text-gray-400 font-mono">
                   إجمالي المنتجات: <strong className="text-black font-bold">{filteredProducts.length}</strong>
                 </span>
+                
+                {/* Data Recovery / Restore Button */}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (window.confirm('هل أنتِ متأكدة من رغبتكِ في استعادة كافة المنتجات الأصلية المفقودة؟ سيتم تحديث قاعدة البيانات بالبيانات الأصلية فوراً.')) {
+                        try {
+                            const res = await dbService.restoreMissingProducts();
+                            if (res.success) {
+                                toast?.(`تمت استعادة ${res.count} منتج بنجاح إلى قاعدة البيانات السحابية 👑`, 'success');
+                            } else {
+                                toast?.(`تم استعادة ${res.count} منتج، مع وجود ${res.errors.length} خطأ.`, 'error');
+                            }
+                        } catch (err: any) {
+                            toast?.('فشل عملية الاستعادة: ' + err.message, 'error');
+                        }
+                    }
+                  }}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer transition-all border border-gray-200"
+                  title="استعادة المنتجات الأصلية من كود المصدر في حال اختفائها من قاعدة البيانات"
+                >
+                  <RefreshCw size={13} className="text-gray-500" />
+                  <span>استعادة المفقود</span>
+                </button>
+
                 <button
                   onClick={() => {
                     setEditingProduct(null);
