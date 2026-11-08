@@ -6,6 +6,7 @@ import { ProductPrice } from './ProductPrice';
 import { dbService, cleanImgUrl } from '../services/db';
 import { getProductSlug } from '../utils/slugify';
 import { formatStockBadge } from '../utils/discountUtils';
+import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 interface ProductCardProps {
   product: Product;
@@ -85,15 +86,21 @@ export default function ProductCard({
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  const primaryImg = product.images?.[0] || '';
+  let primaryImg = product.images?.[0] || '';
+  if (!primaryImg) {
+    const norm = (s: string) => (s || '').replace(/[\u064B-\u065F\u0670]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/[-—_]/g, ' ').trim();
+    const cleanName = norm(product.nameAr || '');
+    const fallback = SEED_FALLBACK_PRODUCTS.find(p => 
+      p.id === product.id || 
+      (cleanName && (norm(p.nameAr).includes(cleanName) || cleanName.includes(norm(p.nameAr))))
+    );
+    if (fallback && fallback.images?.[0]) {
+      primaryImg = fallback.images[0];
+    }
+  }
   const colorDesc = product.colors?.[0]?.name ? ` - ${product.colors[0].name}` : '';
   const fabricDesc = product.material || product.fabricAr ? ` - ${product.material || product.fabricAr}` : '';
   const imageAlt = `${product.nameAr}${colorDesc}${fabricDesc}`;
-
-  // Console warning for products without images
-  if (!primaryImg && typeof window !== 'undefined') {
-    console.warn(`[Sulta Store] تنبيه: المنتج "${product.nameAr}" (ID: ${product.id}) بدون صورة مخزنة في Supabase.`);
-  }
 
   return (
     <div

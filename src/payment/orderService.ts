@@ -92,6 +92,30 @@ export const orderService = {
     // Save order through database service
     await dbService.saveOrder(newOrder);
 
+    // Trigger Automated WhatsApp Notification to Store Owner (Idempotent)
+    try {
+      const notifiedKey = `sulta_notif_sent_${newOrder.id}`;
+      if (typeof window !== 'undefined' && !sessionStorage.getItem(notifiedKey)) {
+        sessionStorage.setItem(notifiedKey, 'true');
+        const { WhatsAppApiService } = await import('../services/whatsappApi');
+        WhatsAppApiService.notifyAdminNewOrder(
+          newOrder.trackingNumber || newOrder.id.slice(0, 8),
+          newOrder.customerName,
+          newOrder.totalPrice
+        ).catch(err => console.warn("[OrderService] WhatsApp notification non-fatal:", err));
+      }
+    } catch (wErr) {
+      console.warn("[OrderService] WhatsApp notification non-blocking exception:", wErr);
+    }
+
+    // Record purchase analytics event
+    try {
+      dbService.trackAnalyticsEvent('purchase', newOrder.id, newOrder.customerName, {
+        totalPrice: newOrder.totalPrice,
+        itemsCount: newOrder.items.length
+      });
+    } catch {}
+
     return newOrder;
   },
 

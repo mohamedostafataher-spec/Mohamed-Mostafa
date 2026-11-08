@@ -85,6 +85,9 @@ import AdminInventory from './AdminInventory';
 import AdminCustomers from './AdminCustomers';
 import AdminActivityLogs from './AdminActivityLogs';
 import AdminGrowth from './AdminGrowth';
+import AdminFinancials from './AdminFinancials';
+import AdminReturns from './AdminReturns';
+import AdminSystemHealth from './AdminSystemHealth';
 
 interface DashboardProps {
   products: Product[];
@@ -176,11 +179,14 @@ export default function Dashboard({
   onSignOut
 }: DashboardProps) {
   // Navigation tabs: comprehensive real-time e-commerce operations
-  const [activeTab, setActiveTab] = useState<'overview' | 'growth' | 'analytics' | 'orders' | 'products' | 'inventory' | 'customers' | 'coupons' | 'team' | 'settings' | 'audit-logs' | 'pixel-diagnostics'>(() => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'growth' | 'finances' | 'orders' | 'products' | 'returns' | 'inventory' | 'customers' | 'coupons' | 'analytics' | 'team' | 'settings' | 'audit-logs' | 'pixel-diagnostics' | 'system-health'>(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search);
       const sub = p.get('subtab') || p.get('tab') || p.get('page') || p.get('section');
       if (sub === 'growth') return 'growth';
+      if (sub === 'finances' || sub === 'profit' || sub === 'cogs') return 'finances';
+      if (sub === 'returns' || sub === 'refunds') return 'returns';
+      if (sub === 'health' || sub === 'system-health' || sub === 'monitor') return 'system-health';
       if (sub === 'pixel' || sub === 'pixel-diagnostics' || sub === 'diagnostics') return 'pixel-diagnostics';
       if (sub === 'team' || sub === 'members') return 'team';
       if (sub === 'inventory' || sub === 'stock') return 'inventory';
@@ -1133,15 +1139,16 @@ export default function Dashboard({
     try {
       setIsSavingProduct(true);
       const isEditing = !!editingProduct;
-      const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
-      const targetId = (editingProduct && editingProduct.id && isUUID(editingProduct.id))
+      const isUUID = (str: any) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str.trim());
+      
+      let targetId = (editingProduct && editingProduct.id && isUUID(editingProduct.id))
         ? editingProduct.id
         : (typeof crypto !== 'undefined' && crypto.randomUUID 
             ? crypto.randomUUID() 
             : '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0'));
       
-      if (!targetId) {
-        throw new Error("Failed to generate a valid target ID for the product.");
+      if (!targetId || targetId === 'undefined' || targetId === 'null') {
+        targetId = '00000000-0000-4000-8000-' + Date.now().toString(16).padStart(12, '0');
       }
       const regularPrice = Number(productForm.regularPrice) || Number(productForm.priceSA) || 69;
       const discountPercent = Number(productForm.discountPercent) || 0;
@@ -1162,6 +1169,7 @@ export default function Dashboard({
         isDiscountActive: productForm.isDiscountActive ?? (productForm.discountStatus === 'inactive' ? false : true),
         priceSA: effectiveSA,
         priceEG,
+        costPrice: productForm.costPrice !== undefined ? Number(productForm.costPrice) : editingProduct?.costPrice,
         stock: Number(productForm.stock) || 0,
         category: productForm.category || 'new',
         categoryAr: productForm.categoryAr || 'المجموعة الجديدة',
@@ -1751,6 +1759,18 @@ export default function Dashboard({
             </button>
 
             <button
+              onClick={() => setActiveTab('finances')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'finances'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <DollarSign size={15} />
+              <span>الأرباح والمالية 💰</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('orders')}
               className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 relative ${
                 activeTab === 'orders'
@@ -1765,6 +1785,18 @@ export default function Dashboard({
                   {metrics.pendingOrders}
                 </span>
               )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab('returns')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                activeTab === 'returns'
+                  ? 'bg-purple-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+              }`}
+            >
+              <RefreshCw size={15} />
+              <span>المرتجعات والاستبدال 🔄</span>
             </button>
 
             <button
@@ -1839,6 +1871,18 @@ export default function Dashboard({
             >
               <History size={15} />
               <span>سجل النشاط 🛡️</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('system-health')}
+              className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border ${
+                activeTab === 'system-health'
+                  ? 'bg-black text-white border-black shadow-xs'
+                  : 'text-gray-700 hover:text-black hover:bg-gray-100 border-gray-200'
+              }`}
+            >
+              <Activity size={15} className="text-[#F6E7A6]" />
+              <span>مراقب النظام ⚡</span>
             </button>
 
             <button
@@ -2921,6 +2965,91 @@ export default function Dashboard({
                                 }
                               }}
                             />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Shipping & Fulfillment Operations Box */}
+                      <div className="bg-[#FAF9F6] border border-gray-200/80 rounded-2xl p-3 space-y-2 text-xs">
+                        <div className="flex items-center justify-between border-b border-gray-200/60 pb-1.5">
+                          <span className="font-bold text-gray-900 flex items-center gap-1.5">
+                            <Truck size={14} className="text-[#A44C5C]" />
+                            <span>بيانات الشحن والتوصيل (Fulfillment & Tracking)</span>
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            order.fulfillmentStatus === 'delivered' ? 'bg-emerald-100 text-emerald-800' :
+                            order.fulfillmentStatus === 'shipped' ? 'bg-indigo-100 text-indigo-800' :
+                            order.fulfillmentStatus === 'ready_for_pickup' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-600'
+                          }`}>
+                            {order.fulfillmentStatus === 'delivered' ? 'تم التوصيل للعميلة ✓' :
+                             order.fulfillmentStatus === 'shipped' ? 'في الطريق مع شركة الشحن 🚚' :
+                             order.fulfillmentStatus === 'ready_for_pickup' ? 'جاهز للاستلام من المندوب' :
+                             order.fulfillmentStatus === 'processing' ? 'جاري التجهيز' : 'بانتظار التجهيز والشحن'}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-600 block mb-0.5">شركة الشحن:</label>
+                            <select
+                              defaultValue={order.shippingCarrier || 'SMSA'}
+                              onChange={(e) => {
+                                const carrier = e.target.value;
+                                const updated = { ...order, shippingCarrier: carrier };
+                                setOrders(prev => prev.map(o => o.id === order.id ? updated : o));
+                                dbService.updateOrder(updated);
+                              }}
+                              className="w-full bg-white border border-gray-300 rounded-lg p-1.5 text-xs text-gray-900 outline-hidden font-sans"
+                            >
+                              <option value="SMSA">سمسا إكسبريس (SMSA)</option>
+                              <option value="Aramex">أرامكس (Aramex)</option>
+                              <option value="SPL">سبل البريد السعودي (SPL)</option>
+                              <option value="JT">جي آند تي (J&T Express)</option>
+                              <option value="RedBox">ريد بوكس (RedBox)</option>
+                              <option value="Fastlo">فاستلو (Fastlo)</option>
+                              <option value="Other">شركة أخرى</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-600 block mb-0.5">رقم التتبع (Tracking #):</label>
+                            <input
+                              type="text"
+                              defaultValue={order.trackingNumber || ''}
+                              placeholder="مثال: 2984719283"
+                              onBlur={(e) => {
+                                if (e.target.value !== (order.trackingNumber || '')) {
+                                  const updated = { ...order, trackingNumber: e.target.value.trim() };
+                                  setOrders(prev => prev.map(o => o.id === order.id ? updated : o));
+                                  dbService.updateOrder(updated);
+                                  toast?.('تم تحديث رقم التتبع بنجاح 🚚', 'success');
+                                }
+                              }}
+                              className="w-full bg-white border border-gray-300 rounded-lg p-1.5 text-xs text-gray-900 font-mono outline-hidden"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-600 block mb-0.5">حالة التجهيز:</label>
+                            <select
+                              value={order.fulfillmentStatus || 'unfulfilled'}
+                              onChange={async (e) => {
+                                const nextStatus = e.target.value as any;
+                                const updated = { ...order, fulfillmentStatus: nextStatus };
+                                setOrders(prev => prev.map(o => o.id === order.id ? updated : o));
+                                await dbService.updateOrder(updated);
+                                toast?.('تم تحديث حالة التجهيز والشحن ✓', 'success');
+                              }}
+                              className="w-full bg-white border border-gray-300 rounded-lg p-1.5 text-xs text-gray-900 outline-hidden font-sans"
+                            >
+                              <option value="unfulfilled">بانتظار التجهيز (Unfulfilled)</option>
+                              <option value="processing">جاري التغليف والتجهيز (Processing)</option>
+                              <option value="ready_for_pickup">جاهز للاستلام من المندوب (Ready)</option>
+                              <option value="shipped">تم التسليم للشحن (Shipped)</option>
+                              <option value="delivered">تم التسليم النهائي (Delivered)</option>
+                              <option value="failed">تعذر التسليم (Delivery Failed)</option>
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -4463,6 +4592,45 @@ export default function Dashboard({
           </div>
         )}
 
+        {/* ======================================================== */}
+        {/* TAB: REAL FINANCIALS & P&L INTELLIGENCE */}
+        {/* ======================================================== */}
+        {activeTab === 'finances' && (
+          <div className="animate-fade-in-rapid">
+            <AdminFinancials 
+              orders={orders} 
+              products={products} 
+              toast={toast}
+              onUpdateProductCost={async (id, cost) => {
+                setProducts(prev => prev.map(p => p.id === id ? { ...p, costPrice: cost } : p));
+              }}
+            />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB: RETURNS, EXCHANGES & REFUNDS */}
+        {/* ======================================================== */}
+        {activeTab === 'returns' && (
+          <div className="animate-fade-in-rapid">
+            <AdminReturns 
+              orders={orders} 
+              products={products} 
+              toast={toast}
+              adminName={activeAdminUser?.name}
+            />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB: SYSTEM HEALTH MONITOR */}
+        {/* ======================================================== */}
+        {activeTab === 'system-health' && (
+          <div className="animate-fade-in-rapid">
+            <AdminSystemHealth toast={toast} />
+          </div>
+        )}
+
       </main>
 
       {/* ======================================================== */}
@@ -4615,6 +4783,31 @@ export default function Dashboard({
                       onChange={(e) => setProductForm(prev => ({ ...prev, stock: Number(e.target.value) }))}
                       className="w-16 bg-[#F8F9FA] border border-gray-200 rounded-lg px-2 py-1 text-center font-bold"
                     />
+                  </div>
+                </div>
+
+                {/* Confidential COGS Purchase Cost Field */}
+                <div className="bg-purple-50/70 border border-purple-200/80 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+                  <div>
+                    <span className="font-bold text-purple-950 flex items-center gap-1.5">
+                      <Tag size={13} className="text-purple-700" />
+                      <span>تكلفة شراء القطعة (COGS - سرية للإدارة فقط):</span>
+                    </span>
+                    <p className="text-[10px] text-purple-800 mt-0.5">
+                      تُستخدم لحساب صافي الأرباح وقائمة الدخل الحقيقية. لا تظهر للعميلات بالمتجر إطلاقاً.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={productForm.costPrice === undefined ? (editingProduct?.costPrice || '') : productForm.costPrice}
+                      onChange={(e) => setProductForm(prev => ({ ...prev, costPrice: e.target.value === '' ? undefined : Number(e.target.value) }))}
+                      className="w-24 bg-white border border-purple-300 rounded-lg px-2.5 py-1 font-mono font-bold text-center text-purple-950 outline-hidden"
+                    />
+                    <span className="text-xs text-purple-900 font-bold">ر.س</span>
                   </div>
                 </div>
 

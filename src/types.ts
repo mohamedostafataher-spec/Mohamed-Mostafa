@@ -86,7 +86,7 @@ export interface Settings {
   adminTeamMembers?: any[];
 }
 
-export type TeamMemberRole = 'owner' | 'manager' | 'orders_agent' | 'viewer';
+export type TeamMemberRole = 'owner' | 'manager' | 'orders' | 'inventory' | 'support' | 'marketing' | 'viewer' | 'orders_agent';
 
 export interface TeamMember {
   id: string;
@@ -105,6 +105,7 @@ export interface Product {
   categoryAr: string;
   priceEG: number;
   priceSA: number;
+  costPrice?: number; // Internal COGS purchase cost (kept confidential from storefront)
   // Percentage Discount System Fields
   regularPrice?: number;
   regularPriceSince?: string; // YYYY-MM-DD
@@ -262,6 +263,11 @@ export interface Order {
   shippingFee?: number;
   trackingNumber?: string;
   trackingUrl?: string;
+  shippingCarrier?: string; // Aramex, SMSA, SPL, J&T, RedBox, Fastlo, etc.
+  fulfillmentStatus?: 'unfulfilled' | 'processing' | 'ready_for_pickup' | 'shipped' | 'delivered' | 'failed';
+  shippingCost?: number; // Cost paid to shipping company
+  expectedDeliveryDate?: string;
+  deliveryFailureReason?: string;
   items: {
     productId: string;
     productName: string;
@@ -269,6 +275,7 @@ export interface Order {
     size: string;
     quantity: number;
     price: number;
+    costPrice?: number; // Snapshot of cost at order time
   }[];
   totalPrice: number;
   currency: Currency;
@@ -286,6 +293,73 @@ export interface Order {
   couponCode?: string;
   date: string;
   createdAt?: string;
+}
+
+export interface ReturnRefundRequest {
+  id: string;
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  requestType: 'return' | 'exchange';
+  reason: string;
+  items: {
+    productId: string;
+    productName: string;
+    color?: string;
+    size?: string;
+    quantity: number;
+    price: number;
+  }[];
+  requestedAction: 'refund' | 'store_credit' | 'replacement';
+  status: 'pending' | 'approved' | 'rejected' | 'item_received' | 'inspected' | 'refunded' | 'completed';
+  inspectionNotes?: string;
+  inspectionResult?: 'passed' | 'damaged' | 'missing_tags' | 'rejected';
+  refundAmount: number;
+  refundMethod?: 'bank_transfer' | 'card_refund' | 'store_credit';
+  restocked: boolean;
+  adminNotes?: string;
+  statusHistory?: { status: string; date: string; note?: string; updatedBy?: string }[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface OperatingExpense {
+  id: string;
+  title: string;
+  category: 'marketing' | 'shipping' | 'packaging' | 'software' | 'salaries' | 'other';
+  amount: number;
+  date: string;
+  notes?: string;
+  createdBy?: string;
+  createdAt: string;
+}
+
+export interface AnalyticsEvent {
+  id: string;
+  eventName: 'product_view' | 'category_view' | 'search' | 'add_to_cart' | 'cart_view' | 'checkout_start' | 'purchase';
+  entityId?: string;
+  entityName?: string;
+  metadata?: Record<string, any>;
+  sessionId?: string;
+  createdAt: string;
+}
+
+export interface FinancialAnalyticsSummary {
+  grossSales: number;
+  totalDiscounts: number;
+  shippingRevenue: number;
+  totalRefunds: number;
+  netSales: number;
+  cogs: number;
+  grossProfit: number;
+  operatingExpenses: number;
+  estimatedNetProfit: number;
+  totalOrdersCount: number;
+  deliveredOrdersCount: number;
+  cancelledOrdersCount: number;
+  returnedOrdersCount: number;
+  aov: number;
+  cogsReliability: 'exact' | 'partial' | 'unavailable';
 }
 
 export type DiscountType = 'percentage' | 'fixed';

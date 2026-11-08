@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cleanImgUrl } from '../services/db';
+import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 interface SultaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
@@ -33,7 +34,6 @@ export default function SultaImage({
   productName,
   ...props 
 }: SultaImageProps) {
-  // Use 'md' as a safe default for components that don't specify width
   const defaultWidth = width || 'md';
   const initialUrl = src ? cleanImgUrl(src, defaultWidth) : fallbackSrc;
   
@@ -56,23 +56,9 @@ export default function SultaImage({
     }
   }, [src, fallbackSrc, defaultWidth]);
 
-  // Generate automated srcset for responsive delivery if it's a proxied URL
-  const generateSrcSet = () => {
-    if (!src || src.startsWith('data:') || src.startsWith('/')) return undefined;
-    
-    // We create a standard responsive ramp: sm (320), md (640), lg (1080), xl (1920)
-    return [
-      `${cleanImgUrl(src, 'sm')} 320w`,
-      `${cleanImgUrl(src, 'md')} 640w`,
-      `${cleanImgUrl(src, 'lg')} 1080w`,
-      `${cleanImgUrl(src, 'xl')} 1920w`
-    ].join(', ');
-  };
-
-  const srcSet = generateSrcSet();
-  const sizes = props.sizes || '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw';
-
   const handleError = () => {
+    // Multi-tier recovery sequence:
+    // Tier 1: If current URL was a proxy or wsrv.nl, extract the raw URL
     if (retryStage === 0 && currentSrc.includes('wsrv.nl')) {
       try {
         const rawUrl = new URL(currentSrc).searchParams.get('url');
@@ -83,9 +69,36 @@ export default function SultaImage({
         }
       } catch {}
     }
+
+    // Tier 2: If it is an enhanced_4k webp that failed, try the unenhanced original JPEG/PNG
+    if (retryStage <= 1 && currentSrc.includes('enhanced_4k_')) {
+      const originalPath = currentSrc.replace('enhanced_4k_', '').replace(/\.webp$/, '.jpeg');
+      setRetryStage(2);
+      setCurrentSrc(originalPath);
+      return;
+    }
+
+    // Tier 3: If productName is provided, look up from SEED_FALLBACK_PRODUCTS
+    if (retryStage <= 2 && productName) {
+      const norm = (s: string) => s.replace(/[\u064B-\u065F\u0670]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/[-—_]/g, ' ').trim();
+      const cleanTarget = norm(productName);
+      const match = SEED_FALLBACK_PRODUCTS.find(p => norm(p.nameAr).includes(cleanTarget) || cleanTarget.includes(norm(p.nameAr)));
+      if (match && match.images && match.images[0] && match.images[0] !== currentSrc) {
+        setRetryStage(3);
+        setCurrentSrc(match.images[0]);
+        return;
+      }
+    }
+
+    // Tier 4: If fallbackSrc was provided and different
+    if (retryStage <= 3 && fallbackSrc && fallbackSrc !== currentSrc) {
+      setRetryStage(4);
+      setCurrentSrc(fallbackSrc);
+      return;
+    }
     
     setHasFailed(true);
-    console.warn(`[Sulta Image] Failed to load: ${productName || alt}`);
+    console.warn(`[Sulta Image] Failed to load after recovery attempts: ${productName || alt}`);
   };
 
   const handleLoad = () => {
@@ -120,8 +133,8 @@ export default function SultaImage({
         key={currentSrc}
         ref={imgRef}
         src={currentSrc}
-        srcSet={srcSet}
-        sizes={sizes}
+        srcSet={props.srcSet}
+        sizes={props.sizes}
         alt={alt || displayName}
         className={`w-full h-full block ${imgClassName || (contain ? 'object-contain' : 'object-cover')} ${alignmentClass} relative z-10 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-md'}`}
         onError={handleError}
