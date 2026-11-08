@@ -186,7 +186,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const shortDesc = product.shortDescription || product.descriptionAr.slice(0, 150);
   const formattedTitle = product.seoTitle || `${product.nameAr} | سولته`;
   const productSlug = product.slug || getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr });
-  const canonicalUrl = `https://sulta.vercel.app/product/${productSlug}/`;
+  const canonicalUrl = `https://sulta.vercel.app/product/${productSlug}`;
 
   // Effective discount info
   const discountInfo = dbService.getProductActualPrice(product, 'SA', settings);
@@ -197,25 +197,28 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const whatsappText = encodeURIComponent(`مرحباً سولته، أود الاستفسار والطلب لمنتج: ${product.nameAr}\nالسعر الحالي: ${discountInfo.unitPrice} ر.س\nالرابط: ${canonicalUrl}`);
   const whatsappUrl = `https://wa.me/966552823677?text=${whatsappText}`;
 
-  // JSON-LD for Product (STRICT: NO reviews, NO aggregateRating)
-  const jsonLd: any = {
+  const absImages = displayImages.map(img => img.startsWith('http') ? img : `https://sulta.vercel.app${img.startsWith('/') ? '' : '/'}${img}`);
+
+  const rawMaterial = product.material || product.fabricAr;
+  const rawColor = selectedColor?.name || product.colors?.[0]?.name;
+  const rawSize = product.sizeInfo || (product.sizes && product.sizes.length > 0 ? product.sizes.join(', ') : 'One Size (45-80 kg)');
+
+  // JSON-LD for Product (STRICT: Real data only, NO fake reviews, NO fake ratings, NO invented fields)
+  const productJsonLd: any = {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": product.nameAr,
-    "image": displayImages,
+    "image": absImages,
     "description": shortDesc,
     "sku": product.sku || product.id,
     "brand": {
       "@type": "Brand",
       "name": "سولته"
     },
-    "material": product.material || product.fabricAr,
-    "color": colorName,
     "audience": {
       "@type": "PeopleAudience",
       "suggestedGender": "female"
     },
-    "size": "One Size (45-80 kg)",
     "offers": {
       "@type": "Offer",
       "url": canonicalUrl,
@@ -226,8 +229,21 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     }
   };
 
+  // Only attach optional fields if genuine data exists
+  if (rawMaterial && typeof rawMaterial === 'string' && rawMaterial.trim() !== '') {
+    productJsonLd.material = rawMaterial.trim();
+  }
+
+  if (rawColor && typeof rawColor === 'string' && rawColor.trim() !== '') {
+    productJsonLd.color = rawColor.trim();
+  }
+
+  if (rawSize && typeof rawSize === 'string' && rawSize.trim() !== '') {
+    productJsonLd.size = rawSize.trim();
+  }
+
   if (discountInfo.hasDiscount && discountInfo.endsAt) {
-    jsonLd.offers.priceValidUntil = discountInfo.endsAt;
+    productJsonLd.offers.priceValidUntil = discountInfo.endsAt;
   }
 
   // BreadcrumbList JSON-LD
@@ -239,13 +255,13 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
         "@type": "ListItem",
         "position": 1,
         "name": "الرئيسية",
-        "item": "https://sulta.vercel.app/"
+        "item": "https://sulta.vercel.app"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "المتجر",
-        "item": "https://sulta.vercel.app/store/"
+        "item": "https://sulta.vercel.app/store"
       },
       {
         "@type": "ListItem",
@@ -305,14 +321,11 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
       <SEO 
         title={formattedTitle}
         description={shortDesc}
-        path={`/product/${productSlug}/`}
+        path={`/product/${productSlug}`}
         image={currentMainImage}
         type="product"
+        jsonLd={[productJsonLd, breadcrumbJsonLd, faqJsonLd]}
       />
-      
-      <script type="application/ld+json">
-        {JSON.stringify([jsonLd, breadcrumbJsonLd, faqJsonLd])}
-      </script>
 
       {/* Free Shipping Banner */}
       <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl flex items-center justify-between shadow-2xs">
@@ -486,6 +499,21 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             <p className="text-gray-700 leading-relaxed text-sm sm:text-base pt-2 whitespace-pre-line">
               {product.descriptionAr}
             </p>
+
+            <div className="pt-2 text-xs text-gray-500">
+              <span>تصفحي المزيد من </span>
+              <a 
+                href="/store" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/store');
+                }}
+                className="text-[#A44C5C] font-bold hover:underline"
+              >
+                تشكيلة البيجامات النسائية القطنية
+              </a>
+              <span> في متجر سولته.</span>
+            </div>
           </div>
 
           {/* Color Selector */}
@@ -686,7 +714,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                   return (
                     <a
                       key={sim.id}
-                      href={`/product/${simSlug}/`}
+                      href={`/product/${simSlug}`}
                       onClick={(e) => {
                         e.preventDefault();
                         navigate(`/product/${simSlug}`);

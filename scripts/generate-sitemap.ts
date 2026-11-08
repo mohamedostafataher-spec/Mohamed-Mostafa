@@ -19,15 +19,15 @@ async function generateSitemaps() {
   const todayIso = new Date().toISOString().split('T')[0];
 
   const staticPages = [
-    { route: '/', priority: '1.0', changefreq: 'daily' },
-    { route: '/store/', priority: '0.9', changefreq: 'daily' },
-    { route: '/best-sellers/', priority: '0.8', changefreq: 'weekly' },
-    { route: '/offers/', priority: '0.8', changefreq: 'weekly' },
-    { route: '/new-arrivals/', priority: '0.8', changefreq: 'weekly' },
-    { route: '/about/', priority: '0.6', changefreq: 'monthly' },
-    { route: '/contact/', priority: '0.6', changefreq: 'monthly' },
-    { route: '/faq/', priority: '0.6', changefreq: 'monthly' },
-    { route: '/returns/', priority: '0.5', changefreq: 'monthly' }
+    { route: '', priority: '1.0', changefreq: 'daily' },
+    { route: '/store', priority: '0.9', changefreq: 'daily' },
+    { route: '/best-sellers', priority: '0.8', changefreq: 'weekly' },
+    { route: '/offers', priority: '0.8', changefreq: 'weekly' },
+    { route: '/new-arrivals', priority: '0.8', changefreq: 'weekly' },
+    { route: '/about', priority: '0.6', changefreq: 'monthly' },
+    { route: '/contact', priority: '0.6', changefreq: 'monthly' },
+    { route: '/faq', priority: '0.6', changefreq: 'monthly' },
+    { route: '/returns', priority: '0.5', changefreq: 'monthly' }
   ];
 
   let activeProducts: any[] = [];
@@ -49,7 +49,7 @@ async function generateSitemaps() {
     const slug = p.slug || getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr });
     const lastmod = p.updated_at ? p.updated_at.split('T')[0] : (p.created_at ? p.created_at.split('T')[0] : '2026-11-01');
     return {
-      route: `/product/${slug}/`,
+      route: `/product/${slug}`,
       lastmod,
       priority: '0.9',
       changefreq: 'weekly'
@@ -80,7 +80,7 @@ ${xmlEntries.join('\n')}
     const cleanImgs = imgs.map((img: string) => img.startsWith('http') ? img : `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`);
 
     return `  <url>
-    <loc>${BASE_URL}/product/${slug}/</loc>
+    <loc>${BASE_URL}/product/${slug}</loc>
 ${cleanImgs.map((img: string) => `    <image:image>
       <image:loc>${img}</image:loc>
       <image:title>${nameAr}</image:title>

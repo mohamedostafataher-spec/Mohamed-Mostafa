@@ -49,15 +49,18 @@ const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="space-y-0">
       <SEO 
-        title="بيجامات نسائية قطن فاخرة ومريحة | سولته"
-        description="تسوقي بيجامات نسائية من قطن ناعم ومريح بمقاس واحد يناسب من 45 إلى 80 كجم. تصاميم أنثوية بكميات محدودة من سولته."
+        title="بيجامات نسائية قطنية ومريحة في السعودية | سولته"
+        description="تسوقي بيجامات نسائية قطنية ومريحة في السعودية من متجر سولته. أقمشة قطن ناعم وكوريشة بمقاس واحد يناسب 45 إلى 80 كجم مع توصيل سريع وتغليف أنيق."
         path="/"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-right">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 mb-0">
-          بيجامات نسائية قطن ناعمة — سولته
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 mb-2">
+          بيجامات نسائية قطنية ومريحة في السعودية — متجر سولته
         </h1>
+        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-3xl mb-4">
+          أهلاً بكِ في سولته، وجهتكِ للأزياء والبيجامات النسائية القطنية في السعودية. نختار لكِ خامات القطن المريح والقطن الكوريشة الناعم بمقاس واحد يناسب الأوزان من 45 إلى 80 كجم مع عناية بالتفاصيل وتوصيل سريع.
+        </p>
       </div>
 
       {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}

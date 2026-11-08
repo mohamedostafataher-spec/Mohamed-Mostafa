@@ -98,9 +98,9 @@ export default function ProductCard({
       primaryImg = fallback.images[0];
     }
   }
-  const colorDesc = product.colors?.[0]?.name ? ` - ${product.colors[0].name}` : '';
-  const fabricDesc = product.material || product.fabricAr ? ` - ${product.material || product.fabricAr}` : '';
-  const imageAlt = `${product.nameAr}${colorDesc}${fabricDesc}`;
+  const fabricTag = product.material || product.fabricAr ? ` من ${product.material || product.fabricAr}` : '';
+  const colorTag = product.colors?.[0]?.name ? ` بلون ${product.colors[0].name}` : '';
+  const imageAlt = `${product.nameAr}${fabricTag}${colorTag} — متجر سولته`;
 
   return (
     <div
@@ -108,7 +108,7 @@ export default function ProductCard({
       onClick={handleCardClick}
       dir="rtl"
     >
-      <a href={`/product/${prodSlug}/`} className="sr-only">
+      <a href={`/product/${prodSlug}`} className="sr-only">
         تصفح تفاصيل منتج {product.nameAr}
       </a>
 
@@ -185,7 +185,9 @@ export default function ProductCard({
           {product.categoryAr || 'بيجامات نسائية'}
         </span>
         <h2 className="text-[11px] sm:text-xs font-bold text-gray-900 line-clamp-2 leading-snug mb-2 flex-1">
-          {product.nameAr}
+          <a href={`/product/${prodSlug}`} className="hover:text-[#A44C5C] transition-colors focus:outline-hidden">
+            {product.nameAr}
+          </a>
         </h2>
 
         <div className="mt-auto space-y-3">

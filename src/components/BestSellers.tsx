@@ -33,22 +33,22 @@ export default function BestSellers({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-right" dir="rtl">
       <SEO 
-        title="الأكثر طلباً ومبيعاً - قطع سولته المفضلة" 
-        description="اكتشفي القطع التي نالت إعجاب عميلاتنا وحققت أعلى مبيعات. بيجامات حريرية وأرواب نوم مترفة تليق بكِ." 
+        title="بيجامات نسائية قطن الأكثر طلباً ومبيعاً | سولته" 
+        description="تسوقي أكثر موديلات البيجامات النسائية القطنية طلباً في متجر سولته بالسعودية. خامات قطن ناعم ومقاس واحد مريح 45-80 كجم." 
         path="/best-sellers" 
       />
       {/* Editorial Header */}
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <div className="flex justify-center items-center gap-1.5 text-[#A44C5C] text-xs font-serif tracking-widest font-bold">
           <Award size={14} className="animate-bounce" />
-          <span>CELEBRATED CLASSICS</span>
+          <span>الأكثر طلباً</span>
         </div>
-        <h2 className="font-serif text-3xl md:text-4xl font-light text-[#0B0B0B] tracking-wide">
-          الأكثر مبيعاً وطلباً | Sulta Best Sellers
-        </h2>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-[#0B0B0B] tracking-wide">
+          بيجامات نسائية قطن الأكثر طلباً — متجر سولته
+        </h1>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
-        <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
-          القطع التي شكلت ثورة في ذوق عميلات النخبة في المملكة العربية السعودية. اخترناها لكِ من نسيج الكوتور الدائري والريش الطبيعي والقطع الملكية التي تسابقت العرائس لاقتنائها.
+        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto">
+          الموديلات الأكثر طلباً وإعجاباً من عميلات سولته في السعودية: بيجامات قطن ناعم وقطن كوريشة بتصاميم مريحة ومقاس واحد انسيابي يناسب من 45 إلى 80 كيلو.
         </p>
       </div>
 

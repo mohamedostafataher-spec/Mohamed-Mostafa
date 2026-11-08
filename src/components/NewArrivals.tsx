@@ -39,9 +39,9 @@ export default function NewArrivals({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-right" dir="rtl">
       <SEO 
-        title="أحدث بيجامات نسائية وصل حديثًا | سولته" 
-        description="اكتشفي أحدث تصاميم ملابس النوم والبيجامات النسائية القطنية التي وصلت حديثاً إلى متجر سولته." 
-        path="/new-arrivals/" 
+        title="أحدث بيجامات نسائية قطنية وصل حديثًا | سولته" 
+        description="اكتشفي أحدث تصاميم ملابس النوم والبيجامات النسائية القطنية التي وصلت حديثاً إلى متجر سولته بالسعودية بمقاس واحد يناسب 45-80 كجم." 
+        path="/new-arrivals" 
       />
       {/* Editorial Header */}
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
@@ -50,7 +50,7 @@ export default function NewArrivals({
           <span>وصل حديثاً</span>
         </div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-[#0B0B0B] tracking-wide">
-          أحدث البيجامات النسائية من سولته
+          أحدث البيجامات النسائية القطنية من سولته
         </h1>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-600 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto">

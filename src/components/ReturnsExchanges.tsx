@@ -94,8 +94,8 @@ export default function ReturnsExchanges() {
   return (
     <div className="bg-gray-50 min-h-screen pb-20 font-sans" dir="rtl">
       <SEO 
-        title="سياسة الاستبدال والاسترجاع - سولته" 
-        description="تعرفي على سياسة سولته المرنة للاستبدال والاسترجاع خلال ١٤ يوماً. نضمن لكِ الجودة والرضا التام في كل قطعة." 
+        title="سياسة الاستبدال والاسترجاع | متجر سولته" 
+        description="تعرفي على شروط وسياسة الاستبدال والاسترجاع المرنة في متجر سولته خلال 14 يوماً من الاستلام مع شروط الحفاظ على جودة القطعة." 
         path="/returns" 
       />
       {/* Hero Section */}
@@ -104,11 +104,11 @@ export default function ReturnsExchanges() {
         <Sparkles className="absolute bottom-10 left-10 text-[#DF8A9D]/30" size={48} />
         
         <div className="max-w-3xl mx-auto relative z-10 animate-fade-in-up">
-          <h1 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] mb-4 uppercase tracking-wide">
-            سياسة الاستبدال والاسترجاع
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#0B0B0B] mb-4 tracking-wide">
+            سياسة الاستبدال والاسترجاع في متجر سولته
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 font-sans mt-4">
-            رضاكِ هو أولويتنا في Sulta ✨
+          <p className="text-base md:text-lg text-gray-600 font-sans mt-4">
+            رضاكِ التام وراحتكِ هما أولويتنا الدائمة في سولته ✨
           </p>
         </div>
       </div>

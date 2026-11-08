@@ -36,22 +36,22 @@ export default function AboutUs({ homepageSections = [] }: AboutUsProps) {
   return (
     <div className="bg-[#FAF4F5] min-h-screen animate-fade-in py-12" dir="rtl">
       <SEO 
-        title="قصتنا وإرثنا - دار سولته Sulta House" 
-        description="تعرفي على إرث سولته في تصميم أزياء النوم الراقية. نؤمن أن الراحة والأناقة وجهان لعملة واحدة تليق بملكة." 
+        title="عن متجر سولته للبيجامات النسائية | قصتنا" 
+        description="تعرفي على متجر سولته السعودي المتخصص في أزياء النوم والبيجامات النسائية القطنية المريحة بمقاس وان سايز يناسب من 45 إلى 80 كجم." 
         path="/about" 
       />
       
       {/* Hero Header */}
       <div className="bg-[#FAF5F0] py-20 border-b border-[#DF8A9D]/20">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] tracking-widest mb-4 uppercase">
-            {aboutData.title || 'Sulta HOUSE'}
-          </h2>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B0B0B] mb-4">
+            عن متجر سولته لأزياء النوم والبيجامات النسائية
+          </h1>
           <div className="py-2">
             <RibbonBowDivider />
           </div>
-          <p className="font-serif text-base md:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed mt-4">
-            "{aboutData.quote || 'We believe that comfort and elegance are never mutually exclusive.'}"
+          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mt-4">
+            نؤمن في سولته بأن ملابس النوم ليست مجرد ملابس للبيت، بل هي تجربة يومية للاسترخاء والراحة والاعتناء بالنفس بأقمشة قطنية ناعمة وتصاميم أنثوية مريحة.
           </p>
         </div>
       </div>

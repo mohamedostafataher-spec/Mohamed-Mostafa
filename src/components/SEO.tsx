@@ -8,6 +8,7 @@ interface SEOProps {
   image?: string;
   type?: 'website' | 'product' | 'article';
   noindex?: boolean;
+  jsonLd?: any | any[];
 }
 
 const SEO: React.FC<SEOProps> = ({ 
@@ -16,7 +17,8 @@ const SEO: React.FC<SEOProps> = ({
   path = '/', 
   image = '/img/sulta_hero_banner_real.webp', 
   type = 'website',
-  noindex = false
+  noindex = false,
+  jsonLd
 }) => {
   const siteUrl = 'https://sulta.vercel.app';
   
@@ -36,14 +38,14 @@ const SEO: React.FC<SEOProps> = ({
   const rawDescription = description || 'متجر سولته لأزياء النوم والبيجامات النسائية القطنية المريحة بمقاس وان سايز يناسب من 45 إلى 80 كيلو.';
   const fullDescription = truncateWordBoundary(rawDescription);
   
-  // Trailing slash canonical
-  const cleanPath = path ? (path.split('?')[0].replace(/\/+$/, '') + '/') : '/';
-  const url = `${siteUrl}${cleanPath}`;
+  // Canonical URL without trailing slash (matching Vercel trailingSlash: false)
+  const rawPath = path ? path.split('?')[0].trim().replace(/^\/+/, '').replace(/\/+$/, '') : '';
+  const url = rawPath ? `${siteUrl}/${rawPath}` : siteUrl;
   
   // Ensure image URL is absolute and direct (no wsrv.nl)
   const absoluteImage = image.startsWith('http') ? image : `${siteUrl}${image.startsWith('/') ? '' : '/'}${image}`;
 
-  const shouldNoIndex = noindex || cleanPath.includes('/track-order/') || cleanPath.includes('/checkout/') || cleanPath.includes('/cart/') || cleanPath === '/404/';
+  const shouldNoIndex = noindex || rawPath.includes('track-order') || rawPath.includes('checkout') || rawPath.includes('cart') || rawPath.includes('dashboard') || rawPath.includes('admin') || rawPath === '404';
 
   return (
     <Helmet>
@@ -61,7 +63,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:type" content={absoluteImage.endsWith('.webp') ? 'image/webp' : 'image/jpeg'} />
-      <meta property="og:site_name" content="سولته | Sulta" />
+      <meta property="og:site_name" content="سولته" />
       <meta property="og:locale" content="ar_SA" />
 
       {/* Twitter */}
@@ -75,6 +77,21 @@ const SEO: React.FC<SEOProps> = ({
         <meta name="robots" content="noindex, nofollow" />
       ) : (
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+      )}
+
+      {/* Structured Data (JSON-LD) */}
+      {jsonLd && (
+        Array.isArray(jsonLd) ? (
+          jsonLd.map((schema, idx) => (
+            <script key={idx} type="application/ld+json">
+              {JSON.stringify(schema)}
+            </script>
+          ))
+        ) : (
+          <script type="application/ld+json">
+            {JSON.stringify(jsonLd)}
+          </script>
+        )
       )}
     </Helmet>
   );

@@ -72,23 +72,23 @@ export default function Faq() {
   return (
     <div className="bg-white min-h-screen">
       <SEO 
-        title="الأسئلة الشائعة للعرائس - مساعدة سولته" 
-        description="كل ما تحتاجين معرفته عن خاماتنا الملكية، المقاسات، سياسة التوصيل والتغليف الفاخر لطلبياتكِ من سولته." 
+        title="الأسئلة الشائعة حول المقاسات والخامات والتوصيل | سولته" 
+        description="إجابات شاملة حول مقاسات بيجامات سولته (45-80 كجم)، خامات القطن وطرق الغسيل، الشحن لمدن السعودية وسياسة الاستبدال." 
         path="/faq" 
       />
       
       {/* Editorial Header */}
       <div className="bg-[#FAF5F0] py-24 md:py-32 border-b border-[#DF8A9D]/20" dir="rtl">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <span className="font-serif italic text-xs tracking-[0.2em] text-[#A44C5C] block mb-3 uppercase">
-            مركز المعرفة والدعم
+          <span className="text-xs font-bold text-[#A44C5C] block mb-3 uppercase">
+            مركز المساعدة والأسئلة الشائعة
           </span>
-          <h2 className="font-serif text-4xl md:text-5xl font-light text-[#0B0B0B] tracking-wide mb-6 uppercase">
-            مساعدة Sulta
-          </h2>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#0B0B0B] tracking-wide mb-4">
+            الأسئلة الشائعة حول بيجامات سولته النسائية
+          </h1>
           <div className="w-12 h-[1px] bg-[#A44C5C] mx-auto mb-4" />
-          <p className="text-sm text-gray-500 font-sans max-w-xl mx-auto leading-relaxed mb-8">
-            في "سُلْطَة"، نحن مكرسون لتقديم تجربة تسوق متميزة. تصفحي الإجابات المعتمدة من فريقنا لمساعدتكِ، أو تواصلي مع فريق العناية بالعملاء مباشرة.
+          <p className="text-sm text-gray-600 max-w-xl mx-auto leading-relaxed mb-8">
+            إجابات واضحة ومباشرة عن كافة تساؤلاتكِ حول خامات القطن، نظام المقاس الواحد (45-80 كجم)، طرق العناية والغسيل، والشحن والتوصيل لجميع مناطق المملكة.
           </p>
           <div className="flex justify-center gap-4">
             <button className="bg-[#A44C5C] text-white px-8 py-3 text-xs tracking-widest uppercase font-serif hover:bg-[#A44C5C] transition-colors" onClick={() => window.scrollTo({top: 800, behavior: 'smooth'})}>

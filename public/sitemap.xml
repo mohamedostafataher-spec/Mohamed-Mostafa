@@ -1,63 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sulta.vercel.app/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/store/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/store</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/best-sellers/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/best-sellers</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/offers/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/offers</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/new-arrivals/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/new-arrivals</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/about/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/about</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/contact/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/contact</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/faq/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/faq</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/returns/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <loc>https://sulta.vercel.app/returns</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/78f851f3-5f75-4153-9fbe-0e8ad54825be/</loc>
+    <loc>https://sulta.vercel.app/product/78f851f3-5f75-4153-9fbe-0e8ad54825be</loc>
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/8d738e1c-0861-4569-8949-fc2d98c4fa50/</loc>
+    <loc>https://sulta.vercel.app/product/8d738e1c-0861-4569-8949-fc2d98c4fa50</loc>
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/54929551-5958-4b33-9ff9-abe83722cb78/</loc>
+    <loc>https://sulta.vercel.app/product/54929551-5958-4b33-9ff9-abe83722cb78</loc>
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/51005136-8066-4844-8efe-718cd7644e6b/</loc>
+    <loc>https://sulta.vercel.app/product/51005136-8066-4844-8efe-718cd7644e6b</loc>
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/rosa-evening-bloom-pajama-set/</loc>
+    <loc>https://sulta.vercel.app/product/rosa-evening-bloom-pajama-set</loc>
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://sulta.vercel.app/product/614f6daa-d291-410b-a450-be23de75f868/</loc>
+    <loc>https://sulta.vercel.app/product/614f6daa-d291-410b-a450-be23de75f868</loc>
     <lastmod>2026-11-01</lastmod>
+  </url>
+  <url>
+    <loc>https://sulta.vercel.app/product/557b0a79-e2de-4cbb-9711-087ca55b4fa5</loc>
+    <lastmod>2026-11-06</lastmod>
   </url>
 </urlset>

@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /dashboard
 Disallow: /checkout
 Disallow: /cart
 Disallow: /track-order

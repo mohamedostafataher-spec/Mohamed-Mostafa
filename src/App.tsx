@@ -144,53 +144,6 @@ function AppContent() {
     // Track page view
     supabase.from('page_views').insert([{ page_path: window.location.pathname }]).then();
 
-    // 🌐 GLOBAL SEO SCHEMA (Organization & WebSite)
-    const scriptId = 'sulta-global-schema';
-    let script = document.getElementById(scriptId) as HTMLScriptElement;
-    if (!script) {
-      script = document.createElement('script');
-      script.id = scriptId;
-      script.type = 'application/ld+json';
-      document.head.appendChild(script);
-    }
-
-    const organizationSchema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "سولته | Sulta",
-      "url": "https://sulta.vercel.app",
-      "logo": "https://sulta.vercel.app/img/sulta_hero_banner_real.webp",
-      "sameAs": [
-        "https://instagram.com/sulta.sa",
-        "https://tiktok.com/@sulta.sa"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+966552823677",
-        "contactType": "customer service",
-        "areaServed": "SA",
-        "availableLanguage": ["Arabic", "English"]
-      }
-    };
-
-    const websiteSchema = {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Sulta",
-      "url": "https://sulta.vercel.app",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://sulta.vercel.app/store?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    };
-
-    script.textContent = JSON.stringify([organizationSchema, websiteSchema]);
-
-    return () => {
-      const el = document.getElementById(scriptId);
-      if (el) el.remove();
-    };
   }, [country]);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
