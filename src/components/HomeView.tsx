@@ -46,12 +46,44 @@ const HomeView: React.FC<HomeViewProps> = ({
   handleSubscribe,
   settings
 }) => {
+  const homeFaqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "ما هي خامات البيجامات المتوفرة في متجر سولته؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "نوفر تشكيلة فاخرة من بيجامات القطن الطبيعي عالي النعومة والقطن الكوريشة الخفيف والمناسب للأجواء الحارة والمعتدلة لتوفير أقصى درجات الراحة أثناء النوم والاسترخاء."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "ما هو المقاس المعتمد لبيجامات سولته؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "معظم موديلاتنا مصممة بمقاس موحد (One Size / فري سايز) مريح ومدروس بقصات انسيابية تناسب الأوزان من 45 إلى 80 كجم."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "ما هي مدة وتكلفة الشحن داخل السعودية؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "الشحن يستغرق من 2 إلى 5 أيام عمل لكافة مدن المملكة، مع شحن مجاني تماماً للطلبات التي تتجاوز 299 ريال سعودي."
+        }
+      }
+    ]
+  };
+
   return (
     <div className="space-y-0">
       <SEO 
         title="بيجامات نسائية قطنية ومريحة في السعودية | سولته"
         description="تسوقي بيجامات نسائية قطنية ومريحة في السعودية من متجر سولته. أقمشة قطن ناعم وكوريشة بمقاس واحد يناسب 45 إلى 80 كجم مع توصيل سريع وتغليف أنيق."
         path="/"
+        jsonLd={homeFaqSchema}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-right">

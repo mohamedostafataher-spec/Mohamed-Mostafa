@@ -252,12 +252,28 @@ export default function StoreView({
 
   const currencyLabel = country === 'EG' ? 'ج.م' : 'ر.س';
 
+  // Generate ItemList JSON-LD schema for catalog products
+  const storeItemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": selectedCategory === 'offers' ? "عروض وتخفيضات بيجامات نسائية قطن | سولته" : "تشكيلة بيجامات نسائية قطن وملابس نوم قطنية | سولته",
+    "url": selectedCategory === 'offers' ? "https://sulta.vercel.app/offers" : "https://sulta.vercel.app/store",
+    "numberOfItems": filteredProducts.length,
+    "itemListElement": filteredProducts.slice(0, 12).map((p, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "name": p.nameAr,
+      "url": `https://sulta.vercel.app/product/${p.slug || getProductSlug({ id: p.id, nameEn: p.nameEn, nameAr: p.nameAr })}`
+    }))
+  };
+
   return (
     <div className="bg-white min-h-screen text-[#111827] font-sans antialiased text-xs md:text-sm select-none" dir="rtl">
       <SEO 
         title={selectedCategory === 'offers' ? 'عروض وتخفيضات بيجامات نسائية قطن | سولته' : 'بيجامات نسائية قطن وملابس نوم قطنية | سولته'} 
         description={selectedCategory === 'offers' ? 'عروض وتخفيضات حصرية على بيجامات نسائية قطن من متجر سولته بالسعودية. تسوقي بأفضل الأسعار مع توصيل سريع.' : 'تصفحي تشكيلة بيجامات نسائية قطن وملابس نوم نسائية قطنية من متجر سولته بالسعودية. موديلات قطن كوريشة وقطن ناعم مقاس واحد 45-80 كجم مع شحن سريع.'}
         path={selectedCategory === 'offers' ? '/offers' : '/store'} 
+        jsonLd={storeItemListSchema}
       />
       
       {/* Breadcrumb Navigation (Salla / Nalah Style) */}

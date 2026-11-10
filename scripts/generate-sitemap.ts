@@ -46,7 +46,7 @@ async function generateSitemaps() {
 
   // 1. Regular sitemap.xml
   const productEntries = activeProducts.map((p: any) => {
-    const slug = p.slug || getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr });
+    const slug = getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr, slug: p.slug });
     const lastmod = p.updated_at ? p.updated_at.split('T')[0] : (p.created_at ? p.created_at.split('T')[0] : '2026-11-01');
     return {
       route: `/product/${slug}`,

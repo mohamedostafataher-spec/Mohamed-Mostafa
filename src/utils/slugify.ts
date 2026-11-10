@@ -37,11 +37,13 @@ export const SLUG_TO_ID_MAP: Record<string, string> = {
 };
 
 export const getProductSlug = (product: { id: string; nameEn?: string; nameAr?: string; slug?: string }) => {
-  if (product.slug && typeof product.slug === 'string' && product.slug.trim()) {
-    return product.slug.trim();
-  }
+  const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
   if (product.id && PRODUCT_SLUGS[product.id]) {
     return PRODUCT_SLUGS[product.id];
+  }
+  if (product.slug && typeof product.slug === 'string' && product.slug.trim() && !isUuid(product.slug.trim())) {
+    return product.slug.trim();
   }
   const base = product.nameEn || product.nameAr || 'product';
   return slugify(base);
