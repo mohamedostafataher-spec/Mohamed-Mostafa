@@ -75,7 +75,8 @@ export const orderService = {
           color: item.selectedColor?.name || 'افتراضي',
           size: item.selectedSize,
           quantity: item.quantity,
-          price: actualPrice
+          price: actualPrice,
+          costPrice: item.product.costPrice || 0
         };
       }),
       totalPrice: params.totalPrice,

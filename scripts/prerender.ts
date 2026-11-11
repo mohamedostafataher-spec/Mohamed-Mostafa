@@ -413,6 +413,8 @@ async function runPrerender() {
         </div>
       </article>`
     },
+    { path: 'contact', title: 'اتصلي بنا | متجر سولته', description: 'تواصلي مع خدمة عملاء متجر سولته للبيجامات النسائية عبر الواتساب أو الهاتف في السعودية.', bodyHtml: '' },
+    { path: 'account', title: 'حسابي وطلباتي | متجر سولته', description: 'الملف الشخصي وإدارة وتتبع الطلبات في متجر سولته.', noindex: true, bodyHtml: '' },
     { path: 'track-order', title: 'تتبع الطلب | سولته', description: 'تتبعي حالة طلبك وشحنتك في سولته.', noindex: true, bodyHtml: '' },
     { path: 'dashboard', title: 'لوحة الإدارة | سولته', description: 'لوحة التحكم والإدارة لمتجر سولته.', noindex: true, bodyHtml: '' }
   ];
@@ -435,11 +437,47 @@ async function runPrerender() {
     }
   }
 
+  // Generate dedicated, luxury branded 404.html page for Vercel and Express
+  const html404 = buildPageHtml(template, '404', {
+    title: 'الصفحة غير موجودة (404) | سولته',
+    description: 'عذراً، الصفحة التي تبحثين عنها غير موجودة أو تم نقلها في متجر سولته للأزياء النسائية.',
+    noindex: true,
+    bodyHtml: `<main dir="rtl" class="min-h-[75vh] flex flex-col items-center justify-center text-center px-4 py-16 bg-[#FAF5F0] font-sans">
+      <div class="max-w-md w-full bg-white p-8 sm:p-12 rounded-3xl border border-[#DF8A9D]/15 shadow-sm space-y-6">
+        <span class="text-7xl font-serif font-black text-[#A44C5C]/25 block tracking-widest">404</span>
+        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900">الغرفة غير موجودة</h1>
+        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+          عذراً، الصفحة التي تبحثين عنها لم تعد متوفرة أو تم نقلها. تشكيلات سولته الملكية تتجدد باستمرار لتناسب ذوقكِ الرفيع.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <a href="/" class="flex-1 bg-[#A44C5C] text-white py-3.5 px-6 rounded-2xl font-bold text-xs hover:bg-[#8e3f4d] transition-all shadow-sm">
+            العودة للرئيسية
+          </a>
+          <a href="/store" class="flex-1 bg-gray-100 text-gray-900 py-3.5 px-6 rounded-2xl font-bold text-xs hover:bg-gray-200 transition-all border border-gray-200">
+            تصفحي المتجر
+          </a>
+        </div>
+        <div class="pt-6 border-t border-gray-100 flex items-center justify-center gap-4 text-xs font-semibold text-gray-500">
+          <a href="/best-sellers" class="hover:text-[#A44C5C] transition-colors">الأكثر طلباً</a>
+          <span>•</span>
+          <a href="/new-arrivals" class="hover:text-[#A44C5C] transition-colors">وصل حديثاً</a>
+          <span>•</span>
+          <a href="/faq" class="hover:text-[#A44C5C] transition-colors">الأسئلة الشائعة</a>
+          <span>•</span>
+          <a href="/returns" class="hover:text-[#A44C5C] transition-colors">الاستبدال</a>
+        </div>
+      </div>
+    </main>`
+  });
+  fs.writeFileSync(path.join(distDir, '404.html'), html404, 'utf-8');
+  const publicDir = path.resolve(process.cwd(), 'public');
+  fs.writeFileSync(path.join(publicDir, '404.html'), html404, 'utf-8');
+
   // Pre-render Active Product Pages
   let countProductPages = 0;
   for (const p of rawProducts) {
     try {
-      const slug = p.slug || getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr });
+      const slug = getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr, slug: p.slug });
       const nameAr = p.name_ar || p.nameAr || p.name;
       const h1Text = p.h1 || `${nameAr} — قطن وان سايز`;
       let seoTitleText = p.seo_title || p.seoTitle || `${nameAr} | سولته`;

@@ -11,14 +11,15 @@ interface SultaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   productName?: string;
 }
 
-// Clean and resolve direct accessible URL
-const getOptimizedSrc = (url: string, width?: number | string): string => {
-  if (!url || typeof url !== 'string' || !url.trim()) return '';
-  const cleaned = cleanImgUrl(url, width);
-  if (cleaned.startsWith('/img/') && (cleaned.endsWith('.png') || cleaned.endsWith('.jpg'))) {
-    return cleaned.replace(/\.(png|jpg)$/, '.webp');
-  }
-  return cleaned;
+// Clean and resolve direct accessible URL with automatic srcSet generation
+const getResponsiveSrcSet = (url: string): string => {
+  if (!url || typeof url !== 'string' || !url.trim() || url.includes('base64')) return '';
+  
+  // Standard responsive widths for e-commerce
+  const widths = [400, 800, 1200];
+  return widths
+    .map(w => `${cleanImgUrl(url, w)} ${w}w`)
+    .join(', ');
 };
 
 export default function SultaImage({ 
@@ -38,6 +39,7 @@ export default function SultaImage({
   const initialUrl = src ? cleanImgUrl(src, defaultWidth) : fallbackSrc;
   
   const [currentSrc, setCurrentSrc] = useState<string>(initialUrl);
+  const [currentSrcSet, setCurrentSrcSet] = useState<string>(src ? getResponsiveSrcSet(src) : '');
   const [retryStage, setRetryStage] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasFailed, setHasFailed] = useState(!initialUrl);
@@ -47,6 +49,7 @@ export default function SultaImage({
   useEffect(() => {
     const newUrl = src ? cleanImgUrl(src, defaultWidth) : fallbackSrc;
     setCurrentSrc(newUrl);
+    setCurrentSrcSet(src ? getResponsiveSrcSet(src) : '');
     setRetryStage(0);
     setIsLoaded(false);
     setHasFailed(!newUrl);
@@ -65,6 +68,7 @@ export default function SultaImage({
         if (rawUrl) {
           setRetryStage(1);
           setCurrentSrc(decodeURIComponent(rawUrl));
+          setCurrentSrcSet(''); // Disable srcSet on retry
           return;
         }
       } catch {}
@@ -75,6 +79,7 @@ export default function SultaImage({
       const originalPath = currentSrc.replace('enhanced_4k_', '').replace(/\.webp$/, '.jpeg');
       setRetryStage(2);
       setCurrentSrc(originalPath);
+      setCurrentSrcSet('');
       return;
     }
 
@@ -86,6 +91,7 @@ export default function SultaImage({
       if (match && match.images && match.images[0] && match.images[0] !== currentSrc) {
         setRetryStage(3);
         setCurrentSrc(match.images[0]);
+        setCurrentSrcSet(getResponsiveSrcSet(match.images[0]));
         return;
       }
     }
@@ -94,6 +100,7 @@ export default function SultaImage({
     if (retryStage <= 3 && fallbackSrc && fallbackSrc !== currentSrc) {
       setRetryStage(4);
       setCurrentSrc(fallbackSrc);
+      setCurrentSrcSet('');
       return;
     }
     
@@ -133,8 +140,8 @@ export default function SultaImage({
         key={currentSrc}
         ref={imgRef}
         src={currentSrc}
-        srcSet={props.srcSet}
-        sizes={props.sizes}
+        srcSet={currentSrcSet || props.srcSet}
+        sizes={props.sizes || "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
         alt={alt || displayName}
         className={`w-full h-full block ${imgClassName || (contain ? 'object-contain' : 'object-cover')} ${alignmentClass} relative z-10 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-md'}`}
         onError={handleError}

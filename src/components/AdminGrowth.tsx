@@ -4,7 +4,7 @@ import {
   ArrowUpRight, ArrowDownRight, Target, BarChart3,
   Globe, Smartphone, MousePointer2, Percent
 } from 'lucide-react';
-import { supabase } from '../services/db';
+import { supabase, dbService } from '../services/db';
 import { Order, Product } from '../types';
 
 interface AdminGrowthProps {
@@ -19,7 +19,9 @@ export default function AdminGrowth({ orders, products }: AdminGrowthProps) {
     conversionRate: 0,
     avgOrderValue: 0,
     totalRevenue: 0,
-    cartAdditions: 0
+    cartAdditions: 0,
+    productViews: 0,
+    checkoutStarts: 0
   });
 
   const [loading, setLoading] = useState(true);
@@ -29,32 +31,42 @@ export default function AdminGrowth({ orders, products }: AdminGrowthProps) {
       try {
         setLoading(true);
         
-        // 1. Fetch total page views from supabase
-        const { count: viewCount } = await supabase
-          .from('page_views')
-          .select('*', { count: 'exact', head: true });
-
-        // 2. Fetch unique visitors
-        const { count: visitorCount } = await supabase
-          .from('visitor_logs')
-          .select('*', { count: 'exact', head: true });
-
-        // 3. Calculate order stats
-        const totalRevenue = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
-        const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
+        // 1. Fetch Funnel Metrics from dedicated analytics events table
+        const funnel = await dbService.getAnalyticsFunnel(30);
         
-        // 4. Calculate conversion rate (orders / unique visitors)
-        const conversionRate = (visitorCount && visitorCount > 0) 
-          ? (orders.length / visitorCount) * 100 
+        // 2. Fetch total page views and unique visitors
+        const [viewCountRes, visitorCountRes] = await Promise.all([
+          supabase.from('page_views').select('*', { count: 'exact', head: true }),
+          supabase.from('visitor_logs').select('*', { count: 'exact', head: true })
+        ]);
+
+        // 3. Fetch comprehensive history from API
+        let apiData: any = null;
+        try {
+          const res = await fetch('/api/analytics/visit');
+          if (res.ok) apiData = await res.json();
+        } catch (e) {}
+
+        // 4. Calculate order stats
+        const validOrders = orders.filter(o => o.status !== 'cancelled' && o.status !== 'failed');
+        const totalRevenue = validOrders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+        const avgOrderValue = validOrders.length > 0 ? totalRevenue / validOrders.length : 0;
+        
+        // 5. Calculate conversion rate (orders / unique visitors)
+        const visitorCount = Math.max(visitorCountRes.count || 0, apiData?.uniqueCount || 0);
+        const conversionRate = (visitorCount > 0) 
+          ? (validOrders.length / visitorCount) * 100 
           : 0;
 
         setStats({
-          pageViews: viewCount || 0,
-          uniqueVisitors: visitorCount || 0,
+          pageViews: Math.max(viewCountRes.count || 0, apiData?.totalHits || 0),
+          uniqueVisitors: visitorCount,
           conversionRate,
           avgOrderValue,
           totalRevenue,
-          cartAdditions: orders.length * 1.5 // Mock heuristic for cart additions if not tracked
+          cartAdditions: funnel.addToCart || 0,
+          productViews: funnel.views || 0,
+          checkoutStarts: funnel.checkoutStart || 0
         });
       } catch (error) {
         console.error("[Growth] Error fetching metrics:", error);
@@ -165,10 +177,13 @@ export default function AdminGrowth({ orders, products }: AdminGrowthProps) {
             <div className="space-y-2 pr-4">
               <div className="flex justify-between text-xs font-bold mb-1">
                 <span>مشاهدة المنتجات</span>
-                <span>{Math.round(stats.pageViews * 0.4).toLocaleString()}</span>
+                <span>{stats.productViews.toLocaleString()}</span>
               </div>
               <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500" style={{ width: '40%' }} />
+                <div 
+                  className="h-full bg-indigo-500" 
+                  style={{ width: stats.pageViews > 0 ? `${Math.min(100, (stats.productViews / stats.pageViews) * 100)}%` : '0%' }} 
+                />
               </div>
             </div>
 
@@ -176,10 +191,13 @@ export default function AdminGrowth({ orders, products }: AdminGrowthProps) {
             <div className="space-y-2 pr-8">
               <div className="flex justify-between text-xs font-bold mb-1">
                 <span>إضافة للسلة</span>
-                <span>{Math.round(orders.length * 2.5).toLocaleString()}</span>
+                <span>{stats.cartAdditions.toLocaleString()}</span>
               </div>
               <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500" style={{ width: '15%' }} />
+                <div 
+                  className="h-full bg-amber-500" 
+                  style={{ width: stats.productViews > 0 ? `${Math.min(100, (stats.cartAdditions / stats.productViews) * 100)}%` : '0%' }} 
+                />
               </div>
             </div>
 
@@ -190,7 +208,10 @@ export default function AdminGrowth({ orders, products }: AdminGrowthProps) {
                 <span>{orders.length.toLocaleString()}</span>
               </div>
               <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500" style={{ width: '5%' }} />
+                <div 
+                  className="h-full bg-emerald-500" 
+                  style={{ width: stats.cartAdditions > 0 ? `${Math.min(100, (orders.length / stats.cartAdditions) * 100)}%` : '0%' }} 
+                />
               </div>
             </div>
           </div>
@@ -198,15 +219,21 @@ export default function AdminGrowth({ orders, products }: AdminGrowthProps) {
           <div className="mt-8 grid grid-cols-3 gap-4 pt-8 border-t border-gray-50 text-center">
             <div>
               <p className="text-gray-400 text-[10px] font-bold uppercase mb-1">نسبة التصفح</p>
-              <p className="text-lg font-black text-gray-900">40%</p>
+              <p className="text-lg font-black text-gray-900">
+                {stats.pageViews > 0 ? Math.round((stats.productViews / stats.pageViews) * 100) : 0}%
+              </p>
             </div>
             <div>
               <p className="text-gray-400 text-[10px] font-bold uppercase mb-1">نسبة السلة</p>
-              <p className="text-lg font-black text-gray-900">15%</p>
+              <p className="text-lg font-black text-gray-900">
+                {stats.productViews > 0 ? Math.round((stats.cartAdditions / stats.productViews) * 100) : 0}%
+              </p>
             </div>
             <div>
               <p className="text-gray-400 text-[10px] font-bold uppercase mb-1">نسبة الشراء</p>
-              <p className="text-lg font-black text-emerald-600">5%</p>
+              <p className="text-lg font-black text-emerald-600">
+                {stats.cartAdditions > 0 ? Math.round((orders.length / stats.cartAdditions) * 100) : 0}%
+              </p>
             </div>
           </div>
         </div>

@@ -66,6 +66,7 @@ import {
   trackViewContent,
   trackAddToCart,
   trackPurchase,
+  trackPageView,
   initPixels,
   initGlobalSync,
   trackAddToWishlist,
@@ -145,6 +146,17 @@ function AppContent() {
     supabase.from('page_views').insert([{ page_path: window.location.pathname }]).then();
 
   }, [country]);
+
+  // Comprehensive SPA Route Tracking (GA4, Meta, TikTok)
+  useEffect(() => {
+    const pageName = document.title || 'سولته';
+    trackPageView(pageName);
+    
+    // Luxurious smooth scroll to top on every navigation
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname]);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {

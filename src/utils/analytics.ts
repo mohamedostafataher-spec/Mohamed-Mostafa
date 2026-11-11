@@ -1,5 +1,5 @@
 import { Product, Order, Settings } from '../types';
-import { supabase } from '../services/db';
+import { supabase, dbService } from '../services/db';
 
 export interface ProductMetric {
   id: string;
@@ -701,6 +701,9 @@ export const trackViewContent = (product: Product, currency: string = 'SAR') => 
   }
   dispatchMetaCapi('ViewContent', eventId, metaData);
 
+  // Sulta Real-Time Analytics
+  dbService.trackAnalyticsEvent('product_view', product.id, product.nameAr, { price, currency });
+
   if (window.ttq) {
     window.ttq.track('ViewContent', {
       content_id: product.id,
@@ -750,6 +753,9 @@ export const trackAddToCart = (product: Product, quantity: number = 1, currency:
     logPixelEvent('Meta (Facebook)', 'AddToCart', `إضافة للسلة: ${product.nameAr} × ${quantity}`, 'sent', price, currency);
   }
   dispatchMetaCapi('AddToCart', eventId, metaData);
+
+  // Sulta Real-Time Analytics
+  dbService.trackAnalyticsEvent('add_to_cart', product.id, product.nameAr, { price, quantity, currency });
 
   if (window.ttq) {
     window.ttq.track('AddToCart', {
@@ -801,6 +807,9 @@ export const trackInitiateCheckout = (items: any[], totalValue: number, currency
     logPixelEvent('Meta (Facebook)', 'InitiateCheckout', `بدء إتمام الطلب (عدد القطع: ${items.length})`, 'sent', totalValue, currency);
   }
   dispatchMetaCapi('InitiateCheckout', eventId, metaData);
+
+  // Sulta Real-Time Analytics
+  dbService.trackAnalyticsEvent('checkout_start', undefined, undefined, { items_count: items.length, total_value: totalValue, currency });
 
   if (window.ttq) {
     window.ttq.track('InitiateCheckout', {

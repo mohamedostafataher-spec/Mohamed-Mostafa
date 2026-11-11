@@ -91,8 +91,8 @@ export default function AdminFinancials({ orders, products, toast, onUpdateProdu
 
   // Calculate comprehensive P&L financial summary
   const summary: FinancialAnalyticsSummary = useMemo(() => {
-    return dbService.calculateFinancialSummary(filteredOrders, filteredExpenses, returns);
-  }, [filteredOrders, filteredExpenses, returns]);
+    return dbService.calculateFinancialSummary(filteredOrders, filteredExpenses, returns, products);
+  }, [filteredOrders, filteredExpenses, returns, products]);
 
   // Handle Add Expense
   const handleAddExpense = async (e: React.FormEvent) => {

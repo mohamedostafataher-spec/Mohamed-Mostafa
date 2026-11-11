@@ -17,7 +17,8 @@ export const PRODUCT_SLUGS: Record<string, string> = {
   '54929551-5958-4b33-9ff9-abe83722cb78': 'sugar-bow-pajama-set-royal-pink',
   '8d738e1c-0861-4569-8949-fc2d98c4fa50': 'sugar-bow-pajama-set-ivory-white',
   'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc': 'rosa-evening-bloom-pajama-set',
-  '1d4e8104-17c9-4b64-8300-38340bdeaa18': 'classic-dot-pajama-set'
+  '1d4e8104-17c9-4b64-8300-38340bdeaa18': 'classic-dot-pajama-set',
+  '557b0a79-e2de-4cbb-9711-087ca55b4fa5': 'rosie-soft-crinkle-cotton-pajama'
 };
 
 export const SLUG_TO_ID_MAP: Record<string, string> = {
@@ -29,6 +30,7 @@ export const SLUG_TO_ID_MAP: Record<string, string> = {
   'sugar-bow-pajama-set-ivory-white': '8d738e1c-0861-4569-8949-fc2d98c4fa50',
   'rosa-evening-bloom-pajama-set': 'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc',
   'classic-dot-pajama-set': '1d4e8104-17c9-4b64-8300-38340bdeaa18',
+  'rosie-soft-crinkle-cotton-pajama': '557b0a79-e2de-4cbb-9711-087ca55b4fa5',
 
   // Backward compatibility redirects & mappings
   'red-polka-dot-strappy-pajama': '51005136-8066-4844-8efe-718cd7644e6b',
@@ -39,14 +41,21 @@ export const SLUG_TO_ID_MAP: Record<string, string> = {
 export const getProductSlug = (product: { id: string; nameEn?: string; nameAr?: string; slug?: string }) => {
   const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
-  if (product.id && PRODUCT_SLUGS[product.id]) {
-    return PRODUCT_SLUGS[product.id];
+  if (product.id) {
+    const id = product.id.toLowerCase().trim();
+    if (PRODUCT_SLUGS[id]) {
+      return PRODUCT_SLUGS[id];
+    }
   }
-  if (product.slug && typeof product.slug === 'string' && product.slug.trim() && !isUuid(product.slug.trim())) {
-    return product.slug.trim();
+
+  if (product.slug && typeof product.slug === 'string' && product.slug.trim()) {
+    const s = product.slug.trim();
+    if (!isUuid(s)) return s;
   }
+
   const base = product.nameEn || product.nameAr || 'product';
-  return slugify(base);
+  const generated = slugify(base);
+  return generated;
 };
 
 export const getIdFromSlug = (slug: string) => {

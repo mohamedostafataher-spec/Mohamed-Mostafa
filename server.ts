@@ -918,6 +918,82 @@ async function startServer() {
     }
   });
 
+  // Valid Route Registry for Zero Soft-404 Guarantee (Shared across dev and prod)
+  const VALID_STATIC_PATHS = new Set([
+    '/',
+    '/store',
+    '/best-sellers',
+    '/new-arrivals',
+    '/offers',
+    '/about',
+    '/contact',
+    '/track-order',
+    '/account',
+    '/faq',
+    '/returns',
+    '/magazine',
+    '/blog',
+    '/blog/ultimate-womens-sleepwear-cotton-guide',
+    '/dashboard',
+    '/بيجامات-نسائية',
+    '/بيجامات-قطن',
+    '/ملابس-نوم',
+    '/404'
+  ]);
+
+  const KNOWN_PRODUCT_SLUGS = new Set([
+    'red-polka-dot-strappy-cotton-pajama',
+    'tulip-crinkle-cotton-womens-pajama',
+    'pink-floral-crinkle-cotton-womens-pajama',
+    'sugar-bow-pajama-set-royal-pink',
+    'sugar-bow-pajama-set-ivory-white',
+    'rosa-evening-bloom-pajama-set',
+    'classic-dot-pajama-set',
+    'red-polka-dot-strappy-pajama',
+    'tulip-crinkle-cotton-pajama',
+    'floral-crinkle-cotton-pajama-box',
+    '51005136-8066-4844-8efe-718cd7644e6b',
+    '614f6daa-d291-410b-a450-be23de75f868',
+    '78f851f3-5f75-4153-9fbe-0e8ad54825be',
+    '54929551-5958-4b33-9ff9-abe83722cb78',
+    '8d738e1c-0861-4569-8949-fc2d98c4fa50',
+    'bf2ba4f4-9c60-42d1-8566-b2e2735c3bdc',
+    '1d4e8104-17c9-4b64-8300-38340bdeaa18'
+  ]);
+
+  function isRouteValid(reqPath: string): boolean {
+    try {
+      const raw = (reqPath.split('?')[0] || '/').replace(/\/+$/, '') || '/';
+      let decoded = raw;
+      try {
+        decoded = decodeURIComponent(raw);
+      } catch {}
+
+      if (VALID_STATIC_PATHS.has(raw) || VALID_STATIC_PATHS.has(decoded)) {
+        return true;
+      }
+
+      if (raw.startsWith('/product/') || raw.startsWith('/products/')) {
+        const slug = raw.replace(/^\/products?\//, '').replace(/\/+$/, '');
+        let decodedSlug = slug;
+        try {
+          decodedSlug = decodeURIComponent(slug);
+        } catch {}
+
+        if (KNOWN_PRODUCT_SLUGS.has(slug) || KNOWN_PRODUCT_SLUGS.has(decodedSlug)) {
+          return true;
+        }
+        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -939,9 +1015,18 @@ async function startServer() {
     // Dynamic SEO middleware for development
     app.use("*", async (req, res, next) => {
       const url = req.originalUrl;
-      // Skip API if not handled by previous routes, and skip anything that looks like a file
-      if (url.startsWith('/api') || url.includes('.')) {
+      // Skip API if not handled by previous routes, and skip anything that looks like a static asset file
+      if (url.startsWith('/api') || /\.(webp|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|css|js|map|json|txt|xml)$/i.test(url)) {
         return next();
+      }
+
+      const pathOnly = url.split('?')[0];
+      if (!isRouteValid(pathOnly)) {
+        const error404Path = path.resolve(__dirname, 'public/404.html');
+        if (fs.existsSync(error404Path)) {
+          return res.status(404).set({ 'Content-Type': 'text/html; charset=utf-8' }).sendFile(error404Path);
+        }
+        return res.status(404).set({ 'Content-Type': 'text/html; charset=utf-8' }).send("<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1></body></html>");
       }
 
       try {
@@ -976,6 +1061,34 @@ async function startServer() {
     
     app.get('*', async (req, res) => {
       try {
+        const rawUrl = req.path || '/';
+        const pathOnly = rawUrl.split('?')[0];
+
+        // Route validation: Reject non-existent URLs with genuine HTTP 404
+        if (!isRouteValid(pathOnly)) {
+          const error404Dist = path.join(distPath, '404.html');
+          const error404Public = path.resolve(__dirname, 'public/404.html');
+          if (fs.existsSync(error404Dist)) {
+            return res.status(404).set({ 'Content-Type': 'text/html; charset=utf-8' }).sendFile(error404Dist);
+          } else if (fs.existsSync(error404Public)) {
+            return res.status(404).set({ 'Content-Type': 'text/html; charset=utf-8' }).sendFile(error404Public);
+          }
+          return res.status(404).set({ 'Content-Type': 'text/html; charset=utf-8' }).send("<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1></body></html>");
+        }
+
+        // For valid routes, serve pre-rendered HTML if available
+        const cleanPath = pathOnly.replace(/^\/+/, '').replace(/\/+$/, '');
+        if (cleanPath) {
+          const candidateHtml = path.join(distPath, `${cleanPath}.html`);
+          const candidateIndex = path.join(distPath, cleanPath, 'index.html');
+          if (fs.existsSync(candidateHtml)) {
+            return res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).sendFile(candidateHtml);
+          }
+          if (fs.existsSync(candidateIndex)) {
+            return res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).sendFile(candidateIndex);
+          }
+        }
+
         const indexPath = path.join(distPath, 'index.html');
         if (!fs.existsSync(indexPath)) {
           return res.status(404).send("Index file not found");

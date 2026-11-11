@@ -3402,7 +3402,7 @@ export const dbService = {
   },
 
   // --- PHASE 2: REAL SALES & PROFIT FINANCIAL INTELLIGENCE ---
-  calculateFinancialSummary: (orders: Order[], expenses: OperatingExpense[], returns: ReturnRefundRequest[]): FinancialAnalyticsSummary => {
+  calculateFinancialSummary: (orders: Order[], expenses: OperatingExpense[], returns: ReturnRefundRequest[], products: Product[] = []): FinancialAnalyticsSummary => {
     const validOrders = orders.filter(o => o.status !== 'cancelled' && o.status !== 'failed');
     
     let grossSales = 0;
@@ -3412,6 +3412,12 @@ export const dbService = {
     let hasMissingCost = false;
     let hasAnyCost = false;
 
+    // Build cost map for fast fallback
+    const costMap = new Map<string, number>();
+    products.forEach(p => {
+      if (p.costPrice) costMap.set(p.id, p.costPrice);
+    });
+
     for (const o of validOrders) {
       totalDiscounts += Number(o.discountAmount || 0);
       shippingRevenue += Number(o.shippingFee || 0);
@@ -3420,8 +3426,12 @@ export const dbService = {
         const itemTotal = (Number(item.price) || 0) * (Number(item.quantity) || 1);
         grossSales += itemTotal;
 
-        if (item.costPrice !== undefined && item.costPrice > 0) {
-          cogs += Number(item.costPrice) * (Number(item.quantity) || 1);
+        const itemCost = (item.costPrice !== undefined && item.costPrice > 0) 
+          ? item.costPrice 
+          : (item.productId ? costMap.get(item.productId) : 0);
+
+        if (itemCost && itemCost > 0) {
+          cogs += Number(itemCost) * (Number(item.quantity) || 1);
           hasAnyCost = true;
         } else {
           hasMissingCost = true;
@@ -3619,9 +3629,9 @@ export const dbService = {
   // --- PHASE 2: STOREFRONT ANALYTICS TRACKING & FUNNEL ---
   trackAnalyticsEvent: async (eventName: AnalyticsEvent['eventName'], entityId?: string, entityName?: string, metadata?: any): Promise<void> => {
     try {
-      const sessionId = (typeof window !== 'undefined' && sessionStorage.getItem('sulta_session_id')) || 
-        'sess_' + Math.random().toString(36).substring(2, 10);
-      if (typeof window !== 'undefined') sessionStorage.setItem('sulta_session_id', sessionId);
+      const sessionId = (typeof window !== 'undefined' && sessionStorage.getItem('sulta_visitor_session_id')) || 
+        'guest_' + Math.random().toString(36).substring(2, 12);
+      if (typeof window !== 'undefined') sessionStorage.setItem('sulta_visitor_session_id', sessionId);
 
       await supabase.from('analytics_events').insert([{
         event_name: eventName,
