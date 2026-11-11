@@ -372,7 +372,7 @@ function mapSettings(data: any): Settings {
     facebookPixelId: data.facebook_pixel_id || '1648674350574190',
     metaCapiAccessToken: data.metaCapiAccessToken || data.meta_capi_access_token || 'EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD',
     metaTestEventCode: data.metaTestEventCode || data.meta_test_event_code || '',
-    googleAnalyticsId: data.google_analytics_id,
+    googleAnalyticsId: data.google_analytics_id || 'G-Q3TBBTHEJL',
     snapchatPixelId: data.snapchat_pixel_id,
     tiktokPixelId: data.tiktok_pixel_id || 'DBESRBJC77U4J2JQDUB0',
     shippingRates: Array.isArray(data.shipping_rates) ? data.shipping_rates : (data.shipping_rates ? JSON.parse(data.shipping_rates) : []),

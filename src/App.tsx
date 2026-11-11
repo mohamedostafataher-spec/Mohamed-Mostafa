@@ -197,17 +197,15 @@ function AppContent() {
   const [homepageSections, setHomepageSections] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
  
-  // Initialize and synchronize tracking pixels (Meta Pixel 1648674350574190 & TikTok Pixel DBESRBJC77U4J2JQDUB0)
+  // Initialize and synchronize tracking pixels (GA4 G-Q3TBBTHEJL, Meta, TikTok)
   useEffect(() => {
-    // Only initGlobalSync immediately to track real-time visitors
     initGlobalSync(); 
-    
-    // If settings change, we can re-init pixels if they were already initialized by user interaction
-    const wasInitialized = localStorage.getItem('sulta_analytics_initialized') === 'true';
-    if (wasInitialized && settings) {
-       initPixels(settings);
-    }
-  }, [settings]);
+    initPixels({
+      googleAnalyticsId: 'G-Q3TBBTHEJL',
+      facebookPixelId: '1648674350574190',
+      tiktokPixelId: 'DBESRBJC77U4J2JQDUB0'
+    });
+  }, []);
 
   // Sulta Order Tracking Center Deep-link Routing
   useEffect(() => {
