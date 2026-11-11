@@ -255,14 +255,14 @@ export function calculateShippingFee(discountedSubtotal: number, country: Countr
   return 0;
 }
 
-export function cleanImgUrl(url: any, width: number | string = 1200): string {
+export function cleanImgUrl(url: any, _width: number | string = 1200): string {
   if (!url || typeof url !== 'string' || url.trim() === '' || url.trim() === 'null' || url.trim() === 'undefined') {
     return '';
   }
 
   let cleaned = url.trim();
 
-  // If already a wsrv.nl proxy URL, strip the proxy and recover original raw URL
+  // If wsrv.nl proxy URL, extract raw URL for instant direct loading
   if (cleaned.includes('wsrv.nl')) {
     try {
       const parsed = new URL(cleaned);
@@ -271,42 +271,33 @@ export function cleanImgUrl(url: any, width: number | string = 1200): string {
     } catch {}
   }
 
-  let finalUrl = '';
-
-  // 1. Direct Supabase Storage URLs
+  // 1. Direct Supabase Storage URLs - lightning-fast direct CDN delivery
   if (cleaned.includes('supabase.co/storage/v1/object/public/')) {
-    finalUrl = cleaned.replace(/([^:])\/+/g, '$1/');
+    return cleaned.replace(/([^:])\/+/g, '$1/');
   }
+
   // 2. Local assets
-  else if (cleaned.startsWith('/img/') || cleaned.startsWith('img/') || cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
+  if (cleaned.startsWith('/img/') || cleaned.startsWith('img/') || cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
     let path = cleaned.startsWith('/') ? cleaned : '/' + cleaned;
     path = path.replace(/^\/src\/assets\//, '/img/');
-    // For local assets in development/AISTUDIO, we might not want to proxy them if they aren't publicly accessible
-    // But for a deployed app, they are.
-    finalUrl = typeof window !== 'undefined' ? `${window.location.origin}${path}` : path;
+    return path;
   }
-  // 3. Data URIs - Don't proxy
-  else if (cleaned.startsWith('data:')) return cleaned;
+
+  // 3. Data URIs
+  if (cleaned.startsWith('data:')) return cleaned;
+
   // 4. Filename in Supabase 'products' bucket
-  else if (!cleaned.startsWith('http') && cleaned.includes('.')) {
+  if (!cleaned.startsWith('http') && cleaned.includes('.')) {
     const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
-    finalUrl = `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
+    return `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
   }
+
   // 5. Full HTTP URLs
-  else if (cleaned.startsWith('http')) {
-    finalUrl = cleaned.replace(/([^:])\/+/g, '$1/');
+  if (cleaned.startsWith('http')) {
+    return cleaned.replace(/([^:])\/+/g, '$1/');
   }
 
-  if (!finalUrl) return '';
-
-  // Apply wsrv.nl optimization proxy
-  // q: quality (80), output: webp, w: width, il: interlaced (progressive)
-  const numericWidth = typeof width === 'number' ? width : (width === 'xxl' ? 1600 : width === 'xl' ? 1200 : width === 'lg' ? 1000 : width === 'md' ? 800 : width === 'sm' ? 400 : 800);
-  
-  // Don't proxy if it's already a data URI or blob
-  if (finalUrl.startsWith('data:') || finalUrl.startsWith('blob:')) return finalUrl;
-
-  return `https://wsrv.nl/?url=${encodeURIComponent(finalUrl)}&w=${numericWidth}&q=80&output=webp&il`;
+  return cleaned;
 }
 
 
