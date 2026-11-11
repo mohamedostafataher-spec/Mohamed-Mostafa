@@ -1001,6 +1001,71 @@ function AppContent() {
               />
             } />
 
+            <Route path="/بيجامات-عروس" element={
+              <SEOLandingPage 
+                keyword="بيجامات عروس"
+                titleAr="بيجامات عروس فاخرة وأطقم ليلة الدخلة في السعودية | سولته"
+                descriptionAr="تألقي في ليلة عمركِ وأجمل أوقاتكِ مع تشكيلة بيجامات عروس فاخرة ومصممة بعناية فائقة. أقمشة بيضاء ووردية ناصعة مع تفاصيل كوتور راقية."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/بيجامات-عروس"
+              />
+            } />
+
+            <Route path="/ملابس-استرخاء" element={
+              <SEOLandingPage 
+                keyword="ملابس استرخاء"
+                titleAr="ملابس استرخاء منزلية فاخرة للنساء — راحة تامة | سولته"
+                descriptionAr="تشكيلة ملابس استرخاء منزلية راقية تجمع بين الأناقة والنعومة المطلقة. اختاري ما يعبر عن ذوقكِ الرفيع من صالات سولته."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/ملابس-استرخاء"
+              />
+            } />
+
+            <Route path="/قمصان-نوم" element={
+              <SEOLandingPage 
+                keyword="قمصان نوم"
+                titleAr="قمصان نوم نسائية ناعمة وفاخرة — تصاميم ملكية | سولته"
+                descriptionAr="اكتشفي أجمل قمصان النوم النسائية الطويلة والقصيرة المصنوعة من أجود الأنسجة الناعمة. أناقة لا توصف للياليكِ الخاصة."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/قمصان-نوم"
+              />
+            } />
+
+            <Route path="/أرواب-استحمام" element={
+              <SEOLandingPage 
+                keyword="أرواب"
+                titleAr="أرواب نسائية فاخرة ومنشفة استرخاء ملكية | سولته"
+                descriptionAr="أرواب استحيام واستقبال منزلية مصممة بأعلى معايير النعومة والامتصاص. أناقة متكاملة بعد الاستحمام."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/أرواب-استحمام"
+              />
+            } />
+
+            <Route path="/تخفيضات-سولته" element={
+              <SEOLandingPage 
+                keyword="تخفيضات"
+                titleAr="تخفيضات وعروض بيجامات وملابس نوم نسائية | سولته"
+                descriptionAr="تخفيضات حصرية على تشكيلة واسعة من البيجامات النسائية الفاخرة وملابس النوم. جودة لا تُعوض بأسعار استثنائية."
+                products={products}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                onSelectProduct={handleSelectProduct}
+                path="/تخفيضات-سولته"
+              />
+            } />
+
             <Route path="/404" element={
               <div className="py-32 flex flex-col items-center justify-center text-center bg-[#FAF9F6] min-h-[60vh] px-4" dir="rtl">
                 <SEO title="الصفحة غير موجودة - 404" path="/404" />
