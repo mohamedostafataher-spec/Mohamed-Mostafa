@@ -256,6 +256,36 @@ export default function Header({
             </button>
           </div>
         </div>
+
+        {/* Desktop Luxury Navigation Menu */}
+        <nav className="hidden lg:flex items-center justify-center gap-8 pt-2 pb-1 border-t border-gray-100 text-xs font-medium text-gray-700" aria-label="التنقل الرئيسي">
+          {[
+            { id: 'home', label: 'الرئيسية' },
+            { id: 'store', label: 'المتجر والكتالوج' },
+            { id: 'best-sellers', label: 'الأكثر طلباً' },
+            { id: 'new-arrivals', label: 'وصل حديثاً' },
+            { id: 'offers', label: 'العروض' },
+            { id: 'about', label: 'عن سولته' },
+            { id: 'faq', label: 'الأسئلة الشائعة' },
+            { id: 'returns', label: 'الاستبدال والاسترجاع' }
+          ].map((item) => {
+            const isActive = currentTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setTab(item.id)}
+                className={`py-1.5 transition-all relative cursor-pointer hover:text-[#A44C5C] ${
+                  isActive ? 'text-[#A44C5C] font-bold' : 'text-gray-600'
+                }`}
+              >
+                <span>{item.label}</span>
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#A44C5C] rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </div>
     </header>
   );

@@ -8,7 +8,7 @@ interface LiveTrafficMonitorProps {
 }
 
 export default function LiveTrafficMonitor({ compact = false, onClearLogs }: LiveTrafficMonitorProps) {
-  const [liveCount, setLiveCount] = useState<number>(1);
+  const [liveCount, setLiveCount] = useState<number>(0);
   const [stats, setStats] = useState<ComprehensiveVisitorStats>(() => getComprehensiveVisitorStats());
   const [activeTab, setActiveTab] = useState<'live' | 'today' | 'weekly' | 'monthly'>('live');
   const [selectedCity, setSelectedCity] = useState<string>('all');

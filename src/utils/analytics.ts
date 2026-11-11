@@ -1303,21 +1303,21 @@ export const isTrafficSpike = (liveCount: number, threshold: number = 20): boole
 };
 
 export const getLiveVisitorStats = (): LiveVisitorMetrics => {
-  const baseCount = liveVisitorCount || 1;
+  const baseCount = liveVisitorCount;
 
   return {
     liveCount: baseCount,
     devices: {
-      mobile: 1,
+      mobile: baseCount > 0 ? 1 : 0,
       desktop: 0,
       tablet: 0
     },
-    cities: [
-      { city: 'المملكة العربية السعودية (الرياض)', count: 1, flag: '🇸🇦' }
-    ],
-    currentPages: [
+    cities: baseCount > 0 ? [
+      { city: 'المملكة العربية السعودية (الرياض)', count: baseCount, flag: '🇸🇦' }
+    ] : [],
+    currentPages: baseCount > 0 ? [
       { page: 'تصفح المتجر والكتالوج', visitors: baseCount }
-    ]
+    ] : []
   };
 };
 

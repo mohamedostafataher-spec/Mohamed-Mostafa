@@ -153,6 +153,21 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     status: "published"
+  },
+  {
+    id: "art-003",
+    title: "دليل بيجامات النوم النسائية الفاخرة — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟",
+    slug: "ultimate-womens-sleepwear-cotton-guide",
+    content: "تعتبر ملابس النوم والبيجامات النسائية ركيزة أساسية في جودة الراحة والاسترخاء اليومي. في هذا الدليل التخصصي من دار سولته، نستعرض الفروقات الجوهرية بين القطن الطبيعي المعالج عالي النعومة وأقمشة قطن الكوريشة (Seersucker Crinkle Cotton) الباردة المقاومة للحرارة. كما نوضح سر نجاح قصّات المقاس الموحد (One Size) التي تناسب الأوزان من 45 إلى 80 كجم بانسيابية وراحة فائقة تناسب أجواء منازل السعودية والخليج، مع إرشادات الغسيل بالماء البارد للحفاظ على نعومة النسيج وألوانه الملكية.",
+    excerpt: "دليل شامل ومفصل لاختيار بيجامات النوم القطنية والقطن الكوريشة ومقاس وان سايز من دار سولته.",
+    imageUrl: "/img/sulta_hero_banner_real.webp",
+    author: "فريق التحرير والأزياء في سولته",
+    category: "أدلة الموضة",
+    tags: ["بيجامات نسائية", "قطن كوريشة", "مقاس موحد", "أزياء النوم السعودية"],
+    publishedAt: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "published"
   }
 ];
 

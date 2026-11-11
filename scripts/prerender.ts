@@ -380,6 +380,39 @@ async function runPrerender() {
         </div>
       </main>`
     },
+    {
+      path: 'blog',
+      title: 'مجلة ومقالات أزياء النوم والبيجامات الفاخرة | سولته',
+      description: truncateWordBoundary('مقالات وأدلة متخصصة في أزياء النوم، العناية بأقمشة القطن الطبيعي والقطن الكوريشة، ونصائح اختيار بيجامات وان سايز من سولته.'),
+      bodyHtml: `<main dir="rtl" class="max-w-4xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">مجلة سولته لأزياء النوم والراحة المنزلية</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <article class="border border-gray-200 rounded-2xl p-6 bg-white shadow-xs">
+            <h2 class="text-xl font-bold text-gray-900 mb-2"><a href="/blog/ultimate-womens-sleepwear-cotton-guide" class="hover:text-[#A44C5C]">دليل بيجامات النوم النسائية الفاخرة — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟</a></h2>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">دليل شامل ومفصل لاختيار بيجامات النوم القطنية والقطن الكوريشة ومقاس وان سايز من دار سولته في السعودية.</p>
+            <a href="/blog/ultimate-womens-sleepwear-cotton-guide" class="text-[#A44C5C] font-bold text-sm">اقرئي الدليل الكامل ←</a>
+          </article>
+        </div>
+      </main>`
+    },
+    {
+      path: 'blog/ultimate-womens-sleepwear-cotton-guide',
+      title: 'دليل بيجامات النوم النسائية الفاخرة — قطن طبيعي وكوريشة | سولته',
+      description: truncateWordBoundary('دليل شامل ومفصل لاختيار بيجامات النوم القطنية والقطن الكوريشة ومقاس وان سايز 45-80 كجم من دار سولته للأزياء في السعودية.'),
+      bodyHtml: `<article dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6">دليل بيجامات النوم النسائية الفاخرة — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟</h1>
+        <div class="prose prose-lg text-gray-700 leading-relaxed space-y-4">
+          <p>تعتبر ملابس النوم والبيجامات النسائية ركيزة أساسية في جودة الراحة والاسترخاء اليومي داخل المنزل. في هذا الدليل التخصصي من دار سولته، نستعرض الفروقات الجوهرية بين القطن الطبيعي المعالج عالي النعومة وأقمشة قطن الكوريشة (Seersucker Crinkle Cotton) الباردة المقاومة للحرارة.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">1. ما هو قطن الكوريشة (Seersucker) ولماذا يناسب صيف السعودية؟</h2>
+          <p>يتميز نسيج الكوريشة بتموجاته الطبيعية الخفيفة التي تبعد القماش عن الالتصاق المباشر بالبشرة، مما يخلق قنوات تهوية مستمرة تمنح إحساساً دائماً بالانتعاش والبرودة حتى في درجات الحرارة المرتفعة، دون الحاجة للكي المستمر.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">2. سر نجاح المقاس الموحد (One Size) من 45 إلى 80 كجم</h2>
+          <p>صُممت بيجامات سولته بقصّة انسيابية مدروسة بعناية لتلائم الأوزان من 45 إلى 80 كجم بمرونة تامة وتمنح حرية الحركة المطلقة في أوقات النوم والاسترخاء المنزلي.</p>
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <a href="/store" class="inline-block bg-[#A44C5C] text-white font-bold px-8 py-3 rounded-xl hover:bg-[#8e3f4d] transition-colors">تصفحي تشكيلة بيجامات سولته الآن</a>
+          </div>
+        </div>
+      </article>`
+    },
     { path: 'track-order', title: 'تتبع الطلب | سولته', description: 'تتبعي حالة طلبك وشحنتك في سولته.', noindex: true, bodyHtml: '' },
     { path: 'dashboard', title: 'لوحة الإدارة | سولته', description: 'لوحة التحكم والإدارة لمتجر سولته.', noindex: true, bodyHtml: '' }
   ];

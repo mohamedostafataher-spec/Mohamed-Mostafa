@@ -27,7 +27,9 @@ async function generateSitemaps() {
     { route: '/about', priority: '0.6', changefreq: 'monthly' },
     { route: '/contact', priority: '0.6', changefreq: 'monthly' },
     { route: '/faq', priority: '0.6', changefreq: 'monthly' },
-    { route: '/returns', priority: '0.5', changefreq: 'monthly' }
+    { route: '/returns', priority: '0.5', changefreq: 'monthly' },
+    { route: '/blog', priority: '0.7', changefreq: 'weekly' },
+    { route: '/blog/ultimate-womens-sleepwear-cotton-guide', priority: '0.8', changefreq: 'monthly' }
   ];
 
   let activeProducts: any[] = [];

@@ -4,7 +4,7 @@ import { subscribeVisitorCount, subscribePixelLogs, PixelEventLog } from '../uti
 import { useToast } from './Toast';
 
 export default function LiveVisitorCounter() {
-  const [visitorCount, setVisitorCount] = useState(1);
+  const [visitorCount, setVisitorCount] = useState(0);
   const { toast } = useToast();
   const [isVisible, setIsVisible] = useState(false);
   const seenEventIds = React.useRef<Set<string>>(new Set());
@@ -30,7 +30,7 @@ export default function LiveVisitorCounter() {
     };
   }, [toast]);
 
-  if (!isVisible) return null;
+  if (!isVisible || visitorCount <= 0) return null;
 
   return (
     <div className="fixed bottom-20 md:bottom-6 left-4 z-40 animate-fade-in">

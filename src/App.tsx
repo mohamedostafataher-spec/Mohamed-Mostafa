@@ -1205,14 +1205,18 @@ function AppContent() {
               {/* Navigation Cards List */}
               <div className="space-y-1.5 py-4">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2 px-1">
-                  تصفحي البوتيك وعالمنا الفاخر ✦
+                  تصفحي المتجر
                 </span>
                 
                 {[
-                  { id: 'home', label: 'الرئيسية 🏠' },
-                  { id: 'store', label: 'المتجر والكتالوج 🛍️' },
-                  { id: 'best-sellers', label: 'الأكثر مبيعاً 🏆' },
-                  { id: 'offers', label: 'العروض والتخفيضات 🏷️' },
+                  { id: 'home', label: 'الرئيسية' },
+                  { id: 'store', label: 'المتجر والكتالوج' },
+                  { id: 'best-sellers', label: 'الأكثر طلباً' },
+                  { id: 'new-arrivals', label: 'وصل حديثاً' },
+                  { id: 'offers', label: 'العروض الخاصة' },
+                  { id: 'about', label: 'عن سولته' },
+                  { id: 'faq', label: 'الأسئلة الشائعة' },
+                  { id: 'returns', label: 'الاستبدال والاسترجاع' },
                 ].map((item) => {
                   const isActive = currentTab === item.id;
                   return (
@@ -1224,12 +1228,12 @@ function AppContent() {
                       }}
                       className={`w-full text-right text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
                         isActive
-                          ? 'bg-[#111827] text-white font-bold shadow-xs'
+                          ? 'bg-[#A44C5C] text-white font-bold shadow-xs'
                           : 'text-gray-700 bg-gray-50 hover:bg-gray-100 hover:text-black border border-transparent'
                       }`}
                     >
-                      <span className="font-sans text-[11.5px]">{item.label}</span>
-                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-black" />}
+                      <span className="font-sans text-[12px]">{item.label}</span>
+                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                     </button>
                   );
                 })}
@@ -1238,32 +1242,47 @@ function AppContent() {
               {/* Extra Account section for quick access */}
               <div className="border-t border-gray-100 pt-3 mt-1 space-y-1.5">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1 px-1">
-                  حسابكِ الملكي:
+                  خدمات وتتبع:
                 </span>
                 
+                <button
+                  onClick={() => {
+                    setTab('track-order');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-right text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                    currentTab === 'track-order' ? 'bg-[#A44C5C] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
+                  }`}
+                >
+                  <span>تتبع طلبي وشحنتي</span>
+                  <span className="text-[10px] text-gray-400 text-left">كود التتبع</span>
+                </button>
+
                 <button
                   onClick={() => {
                     setTab('account');
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
-                    currentTab === 'account' ? 'bg-[#111827] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
+                  className={`w-full text-right text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                    currentTab === 'account' ? 'bg-[#A44C5C] text-white' : 'text-gray-700 bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
-                  <span>الملف الشخصي وطلباتكِ 👤</span>
-                  <span className="text-[10px] text-gray-400 text-left">تابع شحنتك</span>
+                  <span>حسابكِ وطلباتكِ</span>
+                  <span className="text-[10px] text-gray-400 text-left">الملف الشخصي</span>
                 </button>
 
-                <button
-                  onClick={() => {
-                    setTab('dashboard');
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full text-right text-xs font-semibold py-2 px-4 rounded-xl transition-all flex items-center justify-between cursor-pointer bg-[#A44C5C] text-white mt-1 shadow-md`}
-                >
-                  <span>لوحة تحكم الإدارة ⚙️</span>
-                  <span className="bg-black/20 text-white px-2 py-0.5 rounded text-[9px] font-bold">بوابة الإدارة</span>
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => {
+                      setTab('dashboard');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-right text-xs font-semibold py-2 px-4 rounded-xl text-amber-900 bg-amber-50 hover:bg-amber-100 flex items-center justify-between cursor-pointer"
+                  >
+                    <span>لوحة إدارة المتجر</span>
+                    <span className="text-[10px] bg-amber-200 px-2 py-0.5 rounded-md font-mono">Admin</span>
+                  </button>
+                )}
               </div>
             </div>
 
