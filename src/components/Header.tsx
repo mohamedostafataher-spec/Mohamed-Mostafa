@@ -157,27 +157,27 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 font-sans transition-all duration-200" dir="rtl">
-      {/* 1. Global Announcement / Promo Bar (100% Responsive, Zero Clipping on Mobile) */}
-      <div className="bg-[#111827] text-white py-2 px-3 border-b border-white/5 select-none" dir="rtl">
+      {/* 1. Global Announcement / Promo Bar (High Contrast & High Readability) */}
+      <div className="bg-[#0B0B0B] text-white py-2.5 px-3 border-b border-white/10 select-none shadow-sm" dir="rtl">
         <div className="max-w-[1440px] mx-auto">
-          {/* Mobile View: Single rotating announcement (320px-430px optimized) */}
-          <div className="flex sm:hidden items-center justify-center min-h-[20px] overflow-hidden">
+          {/* Mobile View: Single rotating announcement (Optimized contrast and size) */}
+          <div className="flex sm:hidden items-center justify-center min-h-[22px] overflow-hidden">
             <div 
               key={promoIndex}
-              className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-center animate-fade-in px-1"
+              className="flex items-center justify-center gap-2 text-xs font-extrabold text-center animate-fade-in px-1"
             >
-              {promoItems[promoIndex].icon}
-              <span className="tracking-tight">{promoItems[promoIndex].text}</span>
+              <span className="text-amber-400 drop-shadow-sm">{promoItems[promoIndex].icon}</span>
+              <span className="tracking-tight leading-none">{promoItems[promoIndex].text}</span>
             </div>
           </div>
 
           {/* Desktop View: Full 3-message banner */}
-          <div className="hidden sm:flex items-center justify-center gap-6 text-xs font-bold tracking-tight">
+          <div className="hidden sm:flex items-center justify-center gap-8 text-[13px] font-bold tracking-tight">
             {promoItems.map((item, idx) => (
               <React.Fragment key={idx}>
-                {idx > 0 && <span className="text-gray-600">•</span>}
-                <span className="flex items-center gap-1.5 hover:text-amber-300 transition-colors">
-                  {item.icon}
+                {idx > 0 && <span className="text-gray-500 opacity-50" aria-hidden="true">•</span>}
+                <span className="flex items-center gap-2 hover:text-amber-300 transition-colors group">
+                  <span className="text-amber-400 group-hover:scale-110 transition-transform">{item.icon}</span>
                   <span>{item.text}</span>
                 </span>
               </React.Fragment>

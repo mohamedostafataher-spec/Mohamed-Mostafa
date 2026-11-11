@@ -255,49 +255,58 @@ export function calculateShippingFee(discountedSubtotal: number, country: Countr
   return 0;
 }
 
-export function cleanImgUrl(url: any, _width: number | string = 1200): string {
+export function cleanImgUrl(url: any, width: number | string = 1200): string {
   if (!url || typeof url !== 'string' || url.trim() === '' || url.trim() === 'null' || url.trim() === 'undefined') {
     return '';
   }
 
-  const cleaned = url.trim();
+  let cleaned = url.trim();
 
   // If already a wsrv.nl proxy URL, strip the proxy and recover original raw URL
   if (cleaned.includes('wsrv.nl')) {
     try {
       const parsed = new URL(cleaned);
       const raw = parsed.searchParams.get('url');
-      if (raw) return decodeURIComponent(raw);
+      if (raw) cleaned = decodeURIComponent(raw);
     } catch {}
   }
 
-  // 1. Direct Supabase Storage URLs - fast, cached on Cloudflare, 100% reliable
-  if (cleaned.includes('supabase.co/storage/v1/object/public/')) {
-    return cleaned.replace(/([^:])\/+/g, '$1/');
-  }
+  let finalUrl = '';
 
+  // 1. Direct Supabase Storage URLs
+  if (cleaned.includes('supabase.co/storage/v1/object/public/')) {
+    finalUrl = cleaned.replace(/([^:])\/+/g, '$1/');
+  }
   // 2. Local assets
-  if (cleaned.startsWith('/img/') || cleaned.startsWith('img/') || cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
+  else if (cleaned.startsWith('/img/') || cleaned.startsWith('img/') || cleaned.startsWith('/src/assets/') || cleaned.startsWith('src/assets/')) {
     let path = cleaned.startsWith('/') ? cleaned : '/' + cleaned;
     path = path.replace(/^\/src\/assets\//, '/img/');
-    return path;
+    // For local assets in development/AISTUDIO, we might not want to proxy them if they aren't publicly accessible
+    // But for a deployed app, they are.
+    finalUrl = typeof window !== 'undefined' ? `${window.location.origin}${path}` : path;
   }
-
-  // 3. Data URIs
-  if (cleaned.startsWith('data:')) return cleaned;
-
+  // 3. Data URIs - Don't proxy
+  else if (cleaned.startsWith('data:')) return cleaned;
   // 4. Filename in Supabase 'products' bucket
-  const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
-  if (cleanPath.includes('.')) {
-    return `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
+  else if (!cleaned.startsWith('http') && cleaned.includes('.')) {
+    const cleanPath = cleaned.replace(/^\/+/, '').replace(/^products\//, '');
+    finalUrl = `https://fwadgmhabzaudusxghnh.supabase.co/storage/v1/object/public/products/${cleanPath}`;
   }
-
   // 5. Full HTTP URLs
-  if (cleaned.startsWith('http')) {
-    return cleaned.replace(/([^:])\/+/g, '$1/');
+  else if (cleaned.startsWith('http')) {
+    finalUrl = cleaned.replace(/([^:])\/+/g, '$1/');
   }
 
-  return '';
+  if (!finalUrl) return '';
+
+  // Apply wsrv.nl optimization proxy
+  // q: quality (80), output: webp, w: width, il: interlaced (progressive)
+  const numericWidth = typeof width === 'number' ? width : (width === 'xxl' ? 1600 : width === 'xl' ? 1200 : width === 'lg' ? 1000 : width === 'md' ? 800 : width === 'sm' ? 400 : 800);
+  
+  // Don't proxy if it's already a data URI or blob
+  if (finalUrl.startsWith('data:') || finalUrl.startsWith('blob:')) return finalUrl;
+
+  return `https://wsrv.nl/?url=${encodeURIComponent(finalUrl)}&w=${numericWidth}&q=80&output=webp&il`;
 }
 
 
@@ -1249,21 +1258,26 @@ export const dbService = {
     onSuccess: (categories: Category[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('categories').select('id, name, name_ar, name_en, slug, image_url').then(({ data, error }) => {
-      if (error) {
-        onSuccess([]);
-      } else if (data) {
-        onSuccess(data.map(mapCategory));
-      }
-    }).catch(() => onSuccess([]));
-
-    const channelName = 'public:categories:' + Math.random().toString(36).substring(2, 15);
-    const channel = supabase
-      .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, async () => {
+    const fetchCats = async () => {
         try {
           const { data, error } = await supabase.from('categories').select('id, name, name_ar, name_en, slug, image_url');
           if (error) {
+            console.warn('[Sulta DB] Categories table might be missing, falling back to products extract:', error.message);
+            // Fallback: extract unique categories from products if table missing
+            const { data: prods } = await supabase.from('products').select('category, category_ar');
+            if (prods) {
+              const uniqueNames = Array.from(new Set(prods.map(p => p.category_ar || p.category)));
+              const fallbackCats = uniqueNames.map((name, idx) => ({
+                id: `fallback-${idx}`,
+                name: String(name),
+                nameAr: String(name),
+                nameEn: String(name),
+                slug: String(name).toLowerCase().replace(/\s+/g, '-'),
+                imageUrl: ''
+              }));
+              onSuccess(fallbackCats);
+              return;
+            }
             onSuccess([]);
           } else if (data) {
             onSuccess(data.map(mapCategory));
@@ -1271,6 +1285,15 @@ export const dbService = {
         } catch {
           onSuccess([]);
         }
+    };
+
+    fetchCats();
+
+    const channelName = 'public:categories:' + Math.random().toString(36).substring(2, 15);
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+        fetchCats();
       })
       .subscribe();
 
@@ -1335,14 +1358,28 @@ export const dbService = {
     onSuccess: (collections: Collection[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('collections').select('id, name_ar, name_en, description_ar, description_en, image_url').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapCollection)); }).catch((err) => { console.warn('Supabase fetch failed for collections', err); /* fallback provided by state default */ });
+    const fetchColls = async () => {
+        try {
+            const { data, error } = await supabase.from('collections').select('id, name_ar, name_en, description_ar, description_en, image_url');
+            if (error) {
+                console.warn('[Sulta DB] Collections fetch failed, table might be missing:', error.message);
+                onSuccess([]);
+            } else if (data) {
+                onSuccess(data.map(mapCollection));
+            }
+        } catch (err) {
+            console.warn('Supabase exception for collections', err);
+            onSuccess([]);
+        }
+    };
+
+    fetchColls();
 
     const channelName = 'public:collections:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'collections' }, async () => {
-        const { data } = await supabase.from('collections').select('id, name_ar, name_en, description_ar, description_en, image_url');
-        if (data) onSuccess(data.map(mapCollection));
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'collections' }, () => {
+        fetchColls();
       })
       .subscribe();
 
@@ -1499,13 +1536,29 @@ export const dbService = {
     onSuccess: (reviews: Review[]) => void, 
     _onError: (error: any) => void
   ): (() => void) => {
-    supabase.from('reviews').select('id, product_id, user_id, username, avatar, rating, comment, country, product_name, is_verified_purchase, status, images, created_at').then(({ data, error }) => { if (error) throw error; if (data)   onSuccess(data.map(mapReview)); }).catch((err) => { console.warn('Supabase fetch failed for reviews', err); /* fallback provided by state default */ });
+    // Select only columns that are known to exist in standard schema
+    const REVIEWS_COLUMNS = 'id, product_id, username, avatar, rating, comment, country, is_verified_purchase, status, images, created_at';
+    
+    supabase.from('reviews').select(REVIEWS_COLUMNS).then(({ data, error }) => { 
+      if (error) {
+        console.warn('[Sulta DB] Reviews fetch failed, columns might be missing:', error.message);
+        // Try minimal select if standard fails
+        supabase.from('reviews').select('id, rating, comment').then(minimal => {
+            if (minimal.data) onSuccess(minimal.data.map(mapReview));
+        }).catch(() => onSuccess([]));
+      } else if (data) {
+        onSuccess(data.map(mapReview)); 
+      }
+    }).catch((err) => { 
+      console.warn('Supabase exception for reviews', err); 
+      onSuccess([]);
+    });
 
     const channelName = 'public:reviews:' + Math.random().toString(36).substring(2, 15);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, async () => {
-        const { data } = await supabase.from('reviews').select('id, product_id, user_id, username, avatar, rating, comment, country, product_name, is_verified_purchase, status, images, created_at');
+        const { data } = await supabase.from('reviews').select(REVIEWS_COLUMNS);
         if (data) onSuccess(data.map(mapReview));
       })
       .subscribe();

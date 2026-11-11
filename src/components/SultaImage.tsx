@@ -9,6 +9,8 @@ interface SultaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   contain?: boolean;
   alignment?: 'center' | 'top' | 'bottom';
   productName?: string;
+  width?: number | string;
+  height?: number | string;
 }
 
 // Clean and resolve direct accessible URL with automatic srcSet generation
@@ -32,6 +34,7 @@ export default function SultaImage({
   contain = false,
   alignment = 'center',
   width,
+  height,
   productName,
   ...props 
 }: SultaImageProps) {
@@ -143,6 +146,8 @@ export default function SultaImage({
         srcSet={currentSrcSet || props.srcSet}
         sizes={props.sizes || "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
         alt={alt || displayName}
+        width={width || (contain ? undefined : 600)}
+        height={height || (contain ? undefined : 800)}
         className={`w-full h-full block ${imgClassName || (contain ? 'object-contain' : 'object-cover')} ${alignmentClass} relative z-10 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-md'}`}
         onError={handleError}
         onLoad={handleLoad}
