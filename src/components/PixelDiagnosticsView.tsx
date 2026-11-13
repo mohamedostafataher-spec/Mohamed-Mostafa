@@ -940,7 +940,7 @@ ${diagnostics.conflictDetected ? diagnostics.conflictDetails.map(d => `- تنب�
           <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
             <span className="text-gray-400 text-[11px] block">توكن المصادقة (CAPI Access Token):</span>
             <span className="font-mono text-[11px] text-emerald-300 font-bold flex items-center gap-1">
-              <Check size={12} /> صالح وموثق (EABD8o49...6uBwZDZD)
+              <Check size={12} /> محمّي في الخادم (Server Env Variable)
             </span>
           </div>
 

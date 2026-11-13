@@ -1,6 +1,8 @@
 /**
- * SULTA — Official WhatsApp Business Cloud API Service
- * Handles automated notifications for new orders and status updates.
+ * SULTA — Free & Secure WhatsApp Notification Helper
+ * No API secrets are ever read or stored in browser bundles.
+ * Uses free wa.me deep-links on the client side; automated Cloud API
+ * credentials (if used later) belong exclusively in server-side Vercel Functions.
  */
 
 export interface WhatsAppMessagePayload {
@@ -10,93 +12,61 @@ export interface WhatsAppMessagePayload {
   components?: any[];
 }
 
-const WHATSAPP_API_URL = 'https://graph.facebook.com/v21.0';
-
 export const WhatsAppApiService = {
   /**
-   * Sends a template-based message via WhatsApp Cloud API
+   * Builds a free wa.me manual message URL (zero paid API / zero browser secrets).
    */
-  sendMessage: async (payload: WhatsAppMessagePayload): Promise<{ success: boolean; messageId?: string; error?: string }> => {
-    const phoneId = (import.meta as any).env.VITE_WHATSAPP_PHONE_ID;
-    const token = (import.meta as any).env.VITE_WHATSAPP_ACCESS_TOKEN;
-
-    if (!phoneId || !token) {
-      console.warn("[WhatsApp API] Credentials missing. Skipping automated notification.");
-      return { success: false, error: "Credentials missing" };
+  buildManualWhatsAppUrl: (phone: string, text: string): string => {
+    let clean = (phone || '').replace(/[^\d]/g, '');
+    if (clean.startsWith('05')) {
+      clean = '966' + clean.substring(1);
     }
-
-    try {
-      const response = await fetch(`${WHATSAPP_API_URL}/${phoneId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messaging_product: "whatsapp",
-          to: payload.to.replace(/\D/g, ''),
-          type: "template",
-          template: {
-            name: payload.templateName,
-            language: {
-              code: payload.languageCode || "ar"
-            },
-            components: payload.components || []
-          }
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.messages?.[0]?.id) {
-        console.log("[WhatsApp API] Message sent successfully:", data.messages[0].id);
-        return { success: true, messageId: data.messages[0].id };
-      } else {
-        console.error("[WhatsApp API] Error response:", data);
-        return { success: false, error: data.error?.message || "Unknown API error" };
-      }
-    } catch (err: any) {
-      console.error("[WhatsApp API] Network error:", err);
-      return { success: false, error: err.message };
-    }
+    return `https://wa.me/${clean}?text=${encodeURIComponent(text)}`;
   },
 
-  /**
-   * Notifies the admin about a new order
-   */
+  sendMessage: async (
+    _payload: WhatsAppMessagePayload
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> => {
+    // Cloud API tokens are never stored in browser JS (VITE_ prefix forbidden for secrets).
+    return {
+      success: false,
+      error: 'الإرسال المباشر عبر الخادم يتطلب ربط WHATSAPP_ACCESS_TOKEN في Vercel، ويمكن استخدام روابط wa.me المجانية فوراً.'
+    };
+  },
+
   notifyAdminNewOrder: async (orderId: string, customerName: string, amount: number) => {
-    const adminPhone = (import.meta as any).env.VITE_ADMIN_WHATSAPP_PHONE || '966552823677';
-    
     return WhatsAppApiService.sendMessage({
-      to: adminPhone,
-      templateName: "sulta_new_order_admin",
+      to: '966552823677',
+      templateName: 'sulta_new_order_admin',
       components: [
         {
-          type: "body",
+          type: 'body',
           parameters: [
-            { type: "text", text: orderId },
-            { type: "text", text: customerName },
-            { type: "text", text: amount.toString() }
+            { type: 'text', text: orderId },
+            { type: 'text', text: customerName },
+            { type: 'text', text: amount.toString() }
           ]
         }
       ]
     });
   },
 
-  /**
-   * Notifies the customer about their order status change
-   */
-  notifyCustomerStatusUpdate: async (phone: string, customerName: string, orderId: string, statusLabel: string) => {
+  notifyCustomerStatusUpdate: async (
+    phone: string,
+    customerName: string,
+    orderId: string,
+    statusLabel: string
+  ) => {
     return WhatsAppApiService.sendMessage({
       to: phone,
-      templateName: "sulta_order_status_update",
+      templateName: 'sulta_order_status_update',
       components: [
         {
-          type: "body",
+          type: 'body',
           parameters: [
-            { type: "text", text: customerName },
-            { type: "text", text: orderId },
-            { type: "text", text: statusLabel }
+            { type: 'text', text: customerName },
+            { type: 'text', text: orderId },
+            { type: 'text', text: statusLabel }
           ]
         }
       ]

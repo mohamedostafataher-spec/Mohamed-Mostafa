@@ -29,19 +29,40 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed bottom-6 right-6 z-[1000] flex flex-col gap-3">
+      <div
+        className="fixed bottom-20 lg:bottom-6 left-4 right-4 sm:right-auto sm:left-6 z-[1100] flex flex-col gap-2.5 pointer-events-none max-w-md"
+        dir="rtl"
+        role="status"
+        aria-live="polite"
+      >
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl animate-fade-in border dir-rtl ${
-              t.type === 'success' ? 'bg-[#FCF5F6] text-[#A44C5C] border-[#DF8A9D]/30' : 
-              t.type === 'error' ? 'bg-[#FFF5F5] text-red-700 border-red-200' : 'bg-white text-gray-800 border-gray-200'
+            className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-2xl shadow-xl animate-fade-in border ${
+              t.type === 'success'
+                ? 'bg-[#FCF5F6] text-[#8E3E4D] border-[#A44C5C]/30'
+                : t.type === 'error'
+                ? 'bg-rose-50 text-rose-900 border-rose-200'
+                : 'bg-white text-gray-900 border-gray-200'
             }`}
           >
-            {t.type === 'success' ? <CheckCircle size={20} className="text-[#DF8A9D]" /> : t.type === 'error' ? <AlertCircle size={20} className="text-red-500" /> : <Info size={20} className="text-[#A44C5C]" />}
-            <p className="text-sm font-bold font-sans">{t.message}</p>
-            <button onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))} className="opacity-70 hover:opacity-100">
-                <X size={16} />
+            <div className="flex items-center gap-2.5 min-w-0">
+              {t.type === 'success' ? (
+                <CheckCircle size={18} className="text-[#A44C5C] shrink-0" />
+              ) : t.type === 'error' ? (
+                <AlertCircle size={18} className="text-rose-700 shrink-0" />
+              ) : (
+                <Info size={18} className="text-[#A44C5C] shrink-0" />
+              )}
+              <p className="text-xs sm:text-sm font-bold font-sans leading-snug">{t.message}</p>
+            </div>
+            <button
+              type="button"
+              aria-label="إغلاق الإشعار"
+              onClick={() => setToasts((prev) => prev.filter((item) => item.id !== t.id))}
+              className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl opacity-75 hover:opacity-100 hover:bg-black/5 cursor-pointer shrink-0"
+            >
+              <X size={16} />
             </button>
           </div>
         ))}

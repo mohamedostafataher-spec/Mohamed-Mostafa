@@ -1,9 +1,14 @@
-import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole, StockMovement, CustomerAnalyticsRecord, ActualProductPrice, ReturnRefundRequest, OperatingExpense, AnalyticsEvent, FinancialAnalyticsSummary } from '../types';
+import { Product, Review, DiscountCoupon, Order, InStockAlert, Category, Settings, ContactMessage, NewsletterSubscription, Collection, BlogPost, FaqItem, SupportTicket, TicketMessage, Country, TeamMember, TeamMemberRole, StockMovement, CustomerAnalyticsRecord, ActualProductPrice, ReturnRefundRequest, OperatingExpense, AnalyticsEvent, FinancialAnalyticsSummary, ShippingCarrier, CustomerProfileMeta, WhatsAppEventKey, WhatsAppTemplateConfig, WhatsAppSendLog, Supplier, PurchaseOrder, StockReservation, SlugHistoryEntry, CartItem } from '../types';
 import { createClient } from '@supabase/supabase-js';
 import { SEED_FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 import { parseCleanArabicDescription } from '../utils/textUtils';
 import { getIdFromSlug } from '../utils/slugify';
+import { normalizeAdminRole, canAccessTab, canManageTeam, canManageSettings, canEditProducts, canUpdateStock, canViewCostPrice } from '../utils/rbac';
+import { normalizePhoneKey, toHalalas } from '../utils/orderPipeline';
+import { calculateWeightedAverageCostHalalas, fromHalalas } from '../utils/inventoryAnalytics';
+import { DEFAULT_SHIPPING_CARRIERS } from '../utils/shippingCarriers';
+import { DEFAULT_EVENT_TEMPLATES } from './whatsappService';
 
 // --- ROBUST CONFIGURATION ---
 const DEFAULT_URL = 'https://fwadgmhabzaudusxghnh.supabase.co';
@@ -370,7 +375,7 @@ function mapSettings(data: any): Settings {
     facebook: data.facebook,
     tiktok: data.tiktok,
     facebookPixelId: data.facebook_pixel_id || '1648674350574190',
-    metaCapiAccessToken: data.metaCapiAccessToken || data.meta_capi_access_token || 'EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD',
+    metaCapiAccessToken: '', // Never expose CAPI secret tokens in client state
     metaTestEventCode: data.metaTestEventCode || data.meta_test_event_code || '',
     googleAnalyticsId: data.google_analytics_id || 'G-Q3TBBTHEJL',
     snapchatPixelId: data.snapchat_pixel_id,
@@ -561,6 +566,9 @@ function mapProduct(data: any): Product {
     rating: Number(data.rating ?? 5),
     reviewsCount: Number(data.reviews_count ?? 0),
     stock: resolvedStock,
+    minStockThreshold: data.min_stock_threshold !== undefined && data.min_stock_threshold !== null
+      ? Number(data.min_stock_threshold)
+      : (metadata?.minStockThreshold !== undefined ? Number(metadata.minStockThreshold) : 5),
     sku: data.sku || undefined,
     salePriceEG: resolvedSalePriceEG,
     salePriceSA: resolvedSalePriceSA,
@@ -578,7 +586,9 @@ function mapProduct(data: any): Product {
     tags: Array.isArray(data.tags) ? data.tags : (data.tags ? JSON.parse(data.tags) : []),
     costPrice: data.cost_price !== undefined && data.cost_price !== null ? Number(data.cost_price) : undefined,
     collection: data.collection || undefined,
-    seo: data.seo ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo) : undefined,
+    seo: data.seo
+      ? (typeof data.seo === 'string' ? JSON.parse(cleanText(data.seo)) : data.seo)
+      : (metadata?.seo || undefined),
     createdAt: data.created_at || undefined
   };
 }
@@ -650,11 +660,12 @@ function mapOrder(data: any): Order {
     items: parsedItems,
     totalPrice: parsedPrice,
     shippingFee: Number(data.shippingFee ?? data.shipping_fee ?? 0),
-    shippingCarrier: data.shipping_carrier || undefined,
-    fulfillmentStatus: data.fulfillment_status || 'unfulfilled',
-    shippingCost: Number(data.shipping_cost ?? 0),
-    expectedDeliveryDate: data.expected_delivery_date || undefined,
-    deliveryFailureReason: data.delivery_failure_reason || undefined,
+    shippingCarrier: data.shippingCarrier || data.shipping_carrier || undefined,
+    shippingCarrierCode: data.shippingCarrierCode || data.shipping_carrier_code || undefined,
+    fulfillmentStatus: data.fulfillmentStatus || data.fulfillment_status || 'unfulfilled',
+    shippingCost: Number(data.shippingCost ?? data.shipping_cost ?? 0),
+    expectedDeliveryDate: data.expectedDeliveryDate || data.expected_delivery_date || undefined,
+    deliveryFailureReason: data.deliveryFailureReason || data.delivery_failure_reason || undefined,
     currency: data.currency || 'SAR',
     paymentMethod: data.paymentMethod || data.payment_method || 'الدفع عند الاستلام',
     status: data.status || 'pending',
@@ -663,6 +674,12 @@ function mapOrder(data: any): Order {
     paymentVerifiedBy: data.paymentVerifiedBy || data.payment_verified_by || undefined,
     receiptReviewNotes: data.receiptReviewNotes || data.receipt_review_notes || undefined,
     adminNotes: data.adminNotes || data.admin_notes || undefined,
+    assignedTo: data.assignedTo || data.assigned_to || undefined,
+    whatsappLogs: Array.isArray(data.whatsappLogs)
+      ? data.whatsappLogs
+      : Array.isArray(data.whatsapp_logs)
+      ? data.whatsapp_logs
+      : (typeof data.whatsapp_logs === 'string' && data.whatsapp_logs.trim() ? (() => { try { return JSON.parse(data.whatsapp_logs); } catch { return []; } })() : undefined),
     discountAmount: Number(data.discountAmount || data.discount_amount || 0),
     couponCode: data.couponCode || data.coupon_code || undefined,
     receiptImageUrl: data.receiptImageUrl || data.receipt_image_url || undefined,
@@ -827,31 +844,79 @@ export function getProductActualPrice(
   };
 }
 
+function stripCostFields(row: any) {
+  if (!row || typeof row !== 'object') return row;
+  const copy = { ...row };
+  delete copy.cost_price;
+  delete copy.costPrice;
+  return copy;
+}
+
+function stripSettingsSecrets(row: any) {
+  if (!row || typeof row !== 'object') return row;
+  const copy = { ...row };
+  delete copy.meta_capi_access_token;
+  delete copy.metaCapiAccessToken;
+  return copy;
+}
+
 export const dbService = {
   supabase,
   getProductActualPrice,
   calculateShippingFee,
   
   getProductById: async (id: string): Promise<Product | null> => {
+    const queryPublicByCol = async (col: string, val: string) => {
+      const res = await supabase.from('products_public').select('*').eq(col, val).maybeSingle();
+      if (res.error) {
+        const fb = await supabase.from('products').select('*').eq(col, val).maybeSingle();
+        return fb.data ? { ...fb, data: stripCostFields(fb.data) } : fb;
+      }
+      return res;
+    };
+
     try {
       if (!id) return null;
       const resolvedId = getIdFromSlug(id) || id;
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(resolvedId);
       if (isUuid) {
-        const { data, error } = await supabase.from('products').select('*').eq('id', resolvedId).maybeSingle();
+        const { data, error } = await queryPublicByCol('id', resolvedId);
         if (!error && data) {
           return mapProduct(data);
         }
       } else {
-        // Try querying by slug directly
-        const { data, error } = await supabase.from('products').select('*').eq('slug', id).maybeSingle();
+        const { data, error } = await queryPublicByCol('slug', id);
         if (!error && data) {
           return mapProduct(data);
         }
-        const { data: data2, error: err2 } = await supabase.from('products').select('*').eq('slug', resolvedId).maybeSingle();
+        const { data: data2, error: err2 } = await queryPublicByCol('slug', resolvedId);
         if (!err2 && data2) {
           return mapProduct(data2);
         }
+
+        // Check slug_history redirects (old_slug -> product_id)
+        try {
+          const { data: histRow } = await supabase
+            .from('slug_history')
+            .select('product_id')
+            .eq('old_slug', id)
+            .order('changed_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (histRow?.product_id) {
+            const { data: redirectedProd } = await queryPublicByCol('id', histRow.product_id);
+            if (redirectedProd) return mapProduct(redirectedProd);
+          }
+        } catch {}
+
+        try {
+          const localHist: SlugHistoryEntry[] = JSON.parse(localStorage.getItem('sulta_slug_history_v1') || '[]');
+          const match = localHist.find((h) => h.oldSlug === id || h.oldSlug === resolvedId);
+          if (match?.productId) {
+            const { data: redirectedProd } = await queryPublicByCol('id', match.productId);
+            if (redirectedProd) return mapProduct(redirectedProd);
+          }
+        } catch {}
       }
     } catch (err) {
       console.warn("[dbService] getProductById error fetching from Supabase:", err);
@@ -868,16 +933,34 @@ export const dbService = {
     );
     if (fallback) return fallback;
 
-    // Fallback: search all Supabase products
+    // Fallback: search public products without confidential cost_price
     try {
-      const { data: allProds } = await supabase.from('products').select('*');
+      let { data: allProds, error } = await supabase.from('products_public').select('*');
+      if (error || !Array.isArray(allProds) || allProds.length === 0) {
+        const fb = await supabase.from('products').select('*');
+        if (!fb.error && Array.isArray(fb.data)) {
+          allProds = fb.data.map(stripCostFields);
+        }
+      }
       if (allProds && Array.isArray(allProds)) {
-        const found = allProds.find(p => p.id === resolvedId || p.id === id || (p.id && resolvedId && (p.id.includes(resolvedId) || resolvedId.includes(p.id))));
+        const found = allProds.find((p: any) => p.id === resolvedId || p.id === id || (p.id && resolvedId && (p.id.includes(resolvedId) || resolvedId.includes(p.id))));
         if (found) return mapProduct(found);
       }
     } catch {}
 
     return null;
+  },
+
+  getAdminProductsWithCost: async (): Promise<Product[]> => {
+    try {
+      const { data, error } = await supabase.from('products').select('*');
+      if (!error && Array.isArray(data)) {
+        return data.map(mapProduct);
+      }
+    } catch (err) {
+      console.warn('[Sulta DB] getAdminProductsWithCost error:', err);
+    }
+    return [];
   },
   uploadImage: async (file: File): Promise<string | null> => {
     try {
@@ -990,36 +1073,28 @@ export const dbService = {
   getSettings: async (): Promise<Settings | null> => {
     let settingsObj: Settings | null = null;
     try {
-      const { data, error } = await supabase.from('settings').select('*').limit(1).single();
+      let { data, error } = await supabase.from('settings_public').select('*').limit(1).maybeSingle();
+      if (error || !data) {
+        const fallbackRes = await supabase
+          .from('settings')
+          .select('*')
+          .limit(1)
+          .maybeSingle();
+        if (!fallbackRes.error && fallbackRes.data) {
+          data = stripSettingsSecrets(fallbackRes.data);
+          error = null;
+        }
+      }
       if (data) {
-        let needsUpdate = false;
-        const updatePayload: any = {};
-
         if (data.site_name && data.site_name.toLowerCase().includes('zoria')) {
-          const cleanedSiteName = data.site_name.replace(/zoria/ig, 'Sulta');
-          updatePayload.site_name = cleanedSiteName;
-          data.site_name = cleanedSiteName;
-          needsUpdate = true;
+          data.site_name = data.site_name.replace(/zoria/ig, 'Sulta');
         }
-
         if (data.whatsapp === '966500000000' || !data.whatsapp || data.whatsapp.includes('966500') || data.whatsapp === '201110095403' || data.whatsapp.includes('20111') || data.whatsapp.includes('596894393')) {
-          const fixedWhatsapp = '966552823677';
-          const fixedPhone = '+966 55 282 3677';
-          updatePayload.whatsapp = fixedWhatsapp;
-          updatePayload.contact_phone = fixedPhone;
-          data.whatsapp = fixedWhatsapp;
-          data.contact_phone = fixedPhone;
-          needsUpdate = true;
+          data.whatsapp = '966552823677';
+          data.contact_phone = '+966 55 282 3677';
         }
-
-        if (!data.tiktok_pixel_id || data.tiktok_pixel_id !== 'DBESRBJC77U4J2JQDUB0') {
-          updatePayload.tiktok_pixel_id = 'DBESRBJC77U4J2JQDUB0';
+        if (!data.tiktok_pixel_id) {
           data.tiktok_pixel_id = 'DBESRBJC77U4J2JQDUB0';
-          needsUpdate = true;
-        }
-
-        if (needsUpdate) {
-          await supabase.from('settings').update(updatePayload).eq('id', data.id);
         }
         settingsObj = mapSettings(data);
       }
@@ -1431,21 +1506,34 @@ export const dbService = {
       onSuccess(rawList);
     };
 
-    supabase.from('products').select('*').then(({ data, error }) => {
+    const fetchPublicProducts = async () => {
+      const res = await supabase.from('products_public').select('*');
+      if (!res.error && Array.isArray(res.data) && res.data.length > 0) {
+        return res;
+      }
+      const fallback = await supabase.from('products').select('*');
+      if (!fallback.error && Array.isArray(fallback.data)) {
+        return {
+          ...fallback,
+          data: fallback.data.map(stripCostFields)
+        };
+      }
+      return res.error ? fallback : res;
+    };
+
+    fetchPublicProducts().then(({ data, error }) => {
       if (error) {
-        console.error('[Sulta DB] CRITICAL ERROR: Supabase products fetch failed:', error);
-        deliverProducts([]);
+        console.error('[Sulta DB] Supabase products fetch error:', error);
+        _onError?.(error);
       } else if (!data) {
-        console.warn('[Sulta DB] Supabase returned no data');
-        deliverProducts([]);
+        console.warn('[Sulta DB] Supabase returned no product rows');
       } else {
-        console.log(`[Sulta DB] Successfully synced ${data.length} products from Supabase. Products:`, data);
         const mapped = data.map(mapProduct);
         deliverProducts(mapped);
       }
     }).catch((err: any) => {
       console.error('[Sulta DB] Exception fetching products from Supabase:', err);
-      deliverProducts([]);
+      _onError?.(err);
     });
 
     const channelName = 'public:products:' + Math.random().toString(36).substring(2, 15);
@@ -1453,11 +1541,10 @@ export const dbService = {
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
         try {
-          const { data, error } = await supabase.from('products').select('*');
+          const { data, error } = await fetchPublicProducts();
           if (error) {
             console.error('[Sulta DB] Realtime error on products update:', error);
           } else if (data) {
-            console.log(`[Sulta DB] Realtime update: ${data.length} products loaded.`);
             deliverProducts(data.map(mapProduct));
           }
         } catch (err) {
@@ -2052,6 +2139,17 @@ export const dbService = {
       resolvedCategoryId = getCategoryUuid(resolvedCategoryId) || resolvedCategoryId;
     }
 
+    // Detect slug change before saving so slug_history can log redirect
+    let previousSlugForRedirect: string | null = null;
+    try {
+      const savedStr = localStorage.getItem('sulta_saved_products') || '{}';
+      const savedMap = JSON.parse(savedStr);
+      const cachedPrev = savedMap[product.id];
+      if (cachedPrev?.slug && product.slug && cachedPrev.slug.trim() !== product.slug.trim()) {
+        previousSlugForRedirect = cachedPrev.slug.trim();
+      }
+    } catch {}
+
     // Pack all product metadata into a JSON block
     const metadata = {
       priceSA: product.priceSA,
@@ -2073,6 +2171,7 @@ export const dbService = {
       status: product.status || 'active',
       rating: product.rating ?? 5,
       reviewsCount: product.reviewsCount ?? 0,
+      minStockThreshold: product.minStockThreshold ?? 5,
       shortDescription: product.shortDescription || null,
       tags: product.tags || [],
       collection: product.collection || null,
@@ -2099,6 +2198,16 @@ export const dbService = {
     // Crucial: keep product object reference synced
     product.id = productId;
 
+    // Also inspect live Supabase row for previous slug if cache missed it
+    if (!previousSlugForRedirect && product.slug && product.slug.trim()) {
+      try {
+        const { data: prevRow } = await supabase.from('products').select('slug').eq('id', productId).maybeSingle();
+        if (prevRow?.slug && prevRow.slug !== product.slug.trim() && !isUUIDFormat(prevRow.slug)) {
+          previousSlugForRedirect = prevRow.slug;
+        }
+      } catch {}
+    }
+
     // Map payload strictly matching Supabase columns
     const payload: any = {
       id: productId,
@@ -2119,11 +2228,15 @@ export const dbService = {
       discount_starts_at: product.discountStartsAt || null,
       discount_ends_at: product.discountEndsAt || null,
       stock: Number(product.stock) || 0,
+      min_stock_threshold: product.minStockThreshold ?? 5,
       images: Array.isArray(product.images) ? product.images : [],
       category: safeCategory,
       category_id: (resolvedCategoryId && isUUIDFormat(resolvedCategoryId)) ? resolvedCategoryId : null,
       category_ar: product.categoryAr || 'المجموعة الجديدة',
       slug: (product.slug && product.slug.trim()) ? product.slug.trim() : productId,
+      seo_title: product.seo?.metaTitleAr || product.seoTitle || null,
+      short_description: product.seo?.metaDescriptionAr || product.shortDescription || null,
+      seo: product.seo || null,
       status: product.status || 'active',
       material: product.fabricAr || null,
       care_instructions: product.washInstructionsAr || null,
@@ -2209,6 +2322,11 @@ export const dbService = {
     if (error) {
       console.error("[Sulta DB] Final upsert fail:", error.message);
       throw new Error(error.message || 'فشل الحفظ في قاعدة بيانات Supabase');
+    }
+
+    // Record slug redirect history if slug changed cleanly
+    if (previousSlugForRedirect && payload.slug && previousSlugForRedirect !== payload.slug) {
+      await dbService.recordSlugChange(productId, previousSlugForRedirect, payload.slug);
     }
 
   },
@@ -2430,15 +2548,21 @@ export const dbService = {
     if (order.paymentVerifiedAt) updatePayload.payment_verified_at = order.paymentVerifiedAt;
     if (order.paymentVerifiedBy) updatePayload.payment_verified_by = order.paymentVerifiedBy;
     if (order.receiptReviewNotes) updatePayload.receipt_review_notes = order.receiptReviewNotes;
-    if (order.adminNotes) updatePayload.admin_notes = order.adminNotes;
+    if (order.adminNotes !== undefined) updatePayload.admin_notes = order.adminNotes;
     if (order.discountAmount !== undefined) updatePayload.discount_amount = order.discountAmount;
     if (order.couponCode) updatePayload.coupon_code = order.couponCode;
 
-    if (order.shippingCarrier) updatePayload.shipping_carrier = order.shippingCarrier;
+    if (order.shippingCarrier !== undefined) updatePayload.shipping_carrier = order.shippingCarrier;
     if (order.fulfillmentStatus) updatePayload.fulfillment_status = order.fulfillmentStatus;
     if (order.shippingCost !== undefined) updatePayload.shipping_cost = order.shippingCost;
     if (order.expectedDeliveryDate) updatePayload.expected_delivery_date = order.expectedDeliveryDate;
     if (order.deliveryFailureReason) updatePayload.delivery_failure_reason = order.deliveryFailureReason;
+
+    // Optional D4 columns (may be pending additive SQL migration in Supabase)
+    const d4ExtendedPayload: Record<string, any> = {};
+    if (order.assignedTo !== undefined) d4ExtendedPayload.assigned_to = order.assignedTo || null;
+    if (order.shippingCarrierCode !== undefined) d4ExtendedPayload.shipping_carrier_code = order.shippingCarrierCode || null;
+    if (order.whatsappLogs !== undefined) d4ExtendedPayload.whatsapp_logs = order.whatsappLogs;
 
     // Add missing fields to keep orders table in sync if possible
     if (order.customerName) updatePayload.customer_name = order.customerName;
@@ -2452,8 +2576,17 @@ export const dbService = {
         if (current) oldStatus = current.status;
       } catch {}
 
-      // Update the main row
-      const { error: oErr } = await supabase.from('orders').update(updatePayload).eq('id', order.id);
+      // Update the main row (try with D4 extended columns first, then safely retry core columns if schema is pending migration)
+      let { error: oErr } = await supabase
+        .from('orders')
+        .update({ ...updatePayload, ...d4ExtendedPayload })
+        .eq('id', order.id);
+
+      if (oErr && Object.keys(d4ExtendedPayload).length > 0 && /column|schema|cache/i.test(oErr.message || '')) {
+        const retry = await supabase.from('orders').update(updatePayload).eq('id', order.id);
+        oErr = retry.error;
+      }
+
       if (oErr) console.warn("Supabase orders table update failed:", oErr.message);
 
       // 2. Log Order Status History if changed
@@ -2463,8 +2596,8 @@ export const dbService = {
             order_id: order.id,
             old_status: oldStatus,
             new_status: order.status,
-            changed_by: (order as any).updatedBy || 'إدارة المتجر',
-            notes: (order as any).statusChangeNotes || null
+            changed_by: order.updatedBy || 'إدارة المتجر',
+            notes: order.statusChangeNotes || null
           }]);
         } catch (e) {
           console.warn("[Sulta DB] Order status history log warning:", e);
@@ -2478,10 +2611,13 @@ export const dbService = {
               'paid': 'تم تأكيد الدفع بنجاح 💳',
               'confirmed': 'تم تأكيد طلبكِ وجاري التجهيز 🌸',
               'processing': 'جاري تجهيز وتغليف طلبكِ الفاخر 🎁',
+              'packed': 'تم تغليف طلبكِ وجاهز للشحن 🎁',
               'shipped': 'تم تسليم الشحنة لشركة الشحن 🚚',
               'out_for_delivery': 'شحنتكِ مع المندوب للتوصيل اليوم ✨',
               'delivered': 'تم تسليم الطلب بحمد الله 🌸',
-              'cancelled': 'تم إلغاء الطلب'
+              'cancelled': 'تم إلغاء الطلب',
+              'failed': 'تعذر تسليم الطلب — يرجى التواصل معنا',
+              'returned': 'تم تسجيل طلب الاسترجاع'
             };
             const label = arabicStatusMap[order.status] || order.status;
             await WhatsAppApiService.notifyCustomerStatusUpdate(order.phone, order.customerName, order.id, label);
@@ -2496,9 +2632,9 @@ export const dbService = {
         message: JSON.stringify(order),
         status: order.status
       }).or(`subject.eq.ORDER:${order.id},subject.eq.ORDER-${order.id}`);
-      
+
       if (tErr) console.warn("Supabase support_tickets table update failed:", tErr.message);
-      
+
       if (oErr && tErr) throw new Error("Failed to update order in both cloud tables");
     } catch (error) {
       console.error("Supabase cloud updateOrder status failed:", error);
@@ -3159,41 +3295,58 @@ export const dbService = {
     };
 
     let members: TeamMember[] = [];
-    
-    // 1. Try fetching from Supabase homepage_sections table
+
+    // 1. Prefer normalized public.admin_users table (D1 RBAC)
     try {
-      const { data, error } = await supabase
-        .from('homepage_sections')
-        .select('content_json')
-        .eq('section_key', 'admin_team_members_v1')
-        .single();
-      
-      if (!error && data?.content_json && Array.isArray(data.content_json)) {
-        members = data.content_json;
+      const { data: adminRows, error: adminErr } = await supabase
+        .from('admin_users')
+        .select('id, email, name, role, is_active, created_at, last_login_at')
+        .eq('is_active', true);
+
+      if (!adminErr && Array.isArray(adminRows) && adminRows.length > 0) {
+        members = adminRows.map((row: any) => ({
+          id: row.id || row.email,
+          email: String(row.email).trim().toLowerCase(),
+          name: row.name || String(row.email).split('@')[0],
+          role: normalizeAdminRole(row.role),
+          addedAt: row.created_at || '2026-01-01T00:00:00.000Z',
+          lastLoginAt: row.last_login_at || undefined
+        }));
       }
     } catch (e) {
-      console.warn('[Sulta DB] Error fetching team members from cloud:', e);
+      console.warn('[Sulta DB] admin_users lookup skipped:', e);
     }
 
-    // 2. Try localStorage if empty
+    // 2. Fallback to homepage_sections if admin_users not yet populated
     if (members.length === 0) {
       try {
-        const stored = localStorage.getItem('sulta_admin_team_members');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            members = parsed;
-          }
+        const { data, error } = await supabase
+          .from('homepage_sections')
+          .select('content_json')
+          .eq('section_key', 'admin_team_members_v1')
+          .maybeSingle();
+
+        if (!error && data?.content_json && Array.isArray(data.content_json)) {
+          members = data.content_json.map((m: any) => ({
+            ...m,
+            role: normalizeAdminRole(m.role)
+          }));
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[Sulta DB] Error fetching team members from cloud:', e);
+      }
     }
 
-    // 3. Guarantee owner is always included and has 'owner' role
+    // 3. Guarantee primary owner is included
     const hasOwner = members.some(m => m.email.toLowerCase() === 'mohamedostafataher@gmail.com');
     if (!hasOwner) {
       members = [defaultOwner, ...members];
     } else {
-      members = members.map(m => m.email.toLowerCase() === 'mohamedostafataher@gmail.com' ? { ...m, role: 'owner' as const } : m);
+      members = members.map(m =>
+        m.email.toLowerCase() === 'mohamedostafataher@gmail.com'
+          ? { ...m, role: 'owner' as const }
+          : m
+      );
     }
 
     return members;
@@ -3289,45 +3442,67 @@ export const dbService = {
       };
       const { error } = await supabase.from('stock_movements').insert([payload]);
       if (error) {
-        console.warn("[Sulta DB] stock_movements insert warning (table may be pending migration):", error.message);
+        // Fallback if DB CHECK constraint still expects legacy enum values before SQL migration runs
+        const legacyMap: Record<string, string> = {
+          inbound: 'manual_restock',
+          outbound: 'order_deduction',
+          return: 'order_cancellation_restock',
+          adjustment: 'inventory_audit',
+          damaged: 'damage_adjustment'
+        };
+        const fallbackType = legacyMap[String(movement.movementType)];
+        if (fallbackType) {
+          await supabase.from('stock_movements').insert([{ ...payload, movement_type: fallbackType }]);
+        } else {
+          console.warn("[Sulta DB] stock_movements insert warning (table may be pending migration):", error.message);
+        }
       }
     } catch (e: any) {
       console.warn("[Sulta DB] Exception recording stock movement:", e.message || e);
     }
   },
 
-  // --- DERIVE REAL CUSTOMER CRM INTELLIGENCE FROM GENUINE ORDERS ---
+  // --- DERIVE REAL CUSTOMER CRM INTELLIGENCE FROM GENUINE ORDERS (HALALA INTEGER PRECISION) ---
   deriveCustomerRecords: (orders: Order[]): CustomerAnalyticsRecord[] => {
     const map = new Map<string, {
       phone: string;
+      normalizedPhone: string;
       name: string;
       city: string;
       totalOrders: number;
-      totalSpent: number;
+      totalSpentHalalas: number;
+      cancelledOrdersCount: number;
       lastOrderDate: string;
       recentOrderId: string;
     }>();
 
     for (const order of orders) {
       const rawPhone = (order.phone || '').trim();
-      const phone = rawPhone.replace(/[^\d+]/g, '') || `عميلة #${order.id.slice(0, 6)}`;
-      const price = Number(order.totalPrice) || 0;
+      const normKey = normalizePhoneKey(rawPhone) || `id_${order.id.slice(0, 6)}`;
+      const displayPhone = rawPhone.replace(/[^\d+]/g, '') || `عميلة #${order.id.slice(0, 6)}`;
+      const isCancelledOrReturned = order.status === 'cancelled' || order.status === 'returned';
+      const priceHalalas = isCancelledOrReturned ? 0 : toHalalas(order.totalPrice);
       const orderDate = order.date || (order.createdAt ? order.createdAt.split('T')[0] : '');
 
-      if (!map.has(phone)) {
-        map.set(phone, {
-          phone,
-          name: order.customerName && order.customerName !== 'عميلة سُلطة الكريمة' ? order.customerName : 'عميلة سُلطة',
+      if (!map.has(normKey)) {
+        map.set(normKey, {
+          phone: displayPhone,
+          normalizedPhone: normKey,
+          name: order.customerName && order.customerName !== 'عميلة سُلطة الكريمة' ? order.customerName : 'عميلة سولته',
           city: order.city || 'الرياض',
           totalOrders: 1,
-          totalSpent: price,
+          totalSpentHalalas: priceHalalas,
+          cancelledOrdersCount: isCancelledOrReturned || order.status === 'failed' ? 1 : 0,
           lastOrderDate: orderDate,
           recentOrderId: order.id
         });
       } else {
-        const existing = map.get(phone)!;
+        const existing = map.get(normKey)!;
         existing.totalOrders += 1;
-        existing.totalSpent += price;
+        existing.totalSpentHalalas += priceHalalas;
+        if (isCancelledOrReturned || order.status === 'failed') {
+          existing.cancelledOrdersCount += 1;
+        }
         if (order.customerName && order.customerName !== 'عميلة سُلطة الكريمة') {
           existing.name = order.customerName;
         }
@@ -3340,22 +3515,24 @@ export const dbService = {
     }
 
     return Array.from(map.values()).map(c => {
+      const totalSpent = Math.round(c.totalSpentHalalas / 100);
       let tier: 'VIP' | 'متكررة' | 'جديدة' = 'جديدة';
-      if (c.totalSpent >= 500 || c.totalOrders >= 3) {
+      if (c.totalSpentHalalas >= 50000 || c.totalOrders >= 3) {
         tier = 'VIP';
       } else if (c.totalOrders > 1) {
         tier = 'متكررة';
       }
       return {
         ...c,
+        totalSpent,
         tier
       };
-    }).sort((a, b) => b.totalSpent - a.totalSpent);
+    }).sort((a, b) => (b.totalSpentHalalas || 0) - (a.totalSpentHalalas || 0));
   },
 
   saveTeamMembers: async (members: TeamMember[]): Promise<void> => {
     const hasOwner = members.some(m => m.email.toLowerCase() === 'mohamedostafataher@gmail.com');
-    let finalMembers = [...members];
+    let finalMembers = members.map(m => ({ ...m, role: normalizeAdminRole(m.role) }));
     if (!hasOwner) {
       finalMembers.unshift({
         id: 'owner-primary',
@@ -3366,9 +3543,20 @@ export const dbService = {
       });
     }
 
+    // Sync to normalized public.admin_users when accessible
     try {
-      localStorage.setItem('sulta_admin_team_members', JSON.stringify(finalMembers));
-    } catch (e) {}
+      for (const m of finalMembers) {
+        await supabase.from('admin_users').upsert([{
+          email: m.email.trim().toLowerCase(),
+          name: m.name || m.email.split('@')[0],
+          role: normalizeAdminRole(m.role),
+          is_active: true,
+          updated_at: new Date().toISOString()
+        }], { onConflict: 'email' });
+      }
+    } catch (e) {
+      console.warn('[Sulta DB] admin_users upsert skipped:', e);
+    }
 
     try {
       await supabase.from('homepage_sections').upsert([{
@@ -3386,6 +3574,7 @@ export const dbService = {
     if (!cleanEmail || !cleanEmail.includes('@')) {
       throw new Error('يرجى إدخال بريد إلكتروني صالح');
     }
+    const normalizedRole = normalizeAdminRole(role);
     const current = await dbService.getTeamMembers();
     if (current.some(m => m.email.toLowerCase() === cleanEmail)) {
       throw new Error('هذا البريد الإلكتروني مسجل بالفعل في فريق العمل');
@@ -3394,7 +3583,7 @@ export const dbService = {
       id: 'member-' + Date.now(),
       email: cleanEmail,
       name: name?.trim() || cleanEmail.split('@')[0],
-      role,
+      role: normalizedRole,
       addedAt: new Date().toISOString()
     };
     const updated = [...current, newMember];
@@ -3408,6 +3597,12 @@ export const dbService = {
       throw new Error('لا يمكن حذف المالك الرئيسي للمتجر');
     }
     const current = await dbService.getTeamMembers();
+    const target = current.find(m => m.id === memberIdOrEmail || m.email.toLowerCase() === q);
+    if (target) {
+      try {
+        await supabase.from('admin_users').update({ is_active: false }).eq('email', target.email.toLowerCase());
+      } catch {}
+    }
     const updated = current.filter(m => m.id !== memberIdOrEmail && m.email.toLowerCase() !== q);
     await dbService.saveTeamMembers(updated);
     return updated;
@@ -3417,7 +3612,30 @@ export const dbService = {
     const clean = (email || '').trim().toLowerCase();
     if (!clean) return { authorized: false };
 
-    // 1. Primary Owner bypass (always authorized for recovery)
+    // 1. Check RPC / public.admin_users first when authenticated
+    try {
+      const { data: row, error } = await supabase
+        .from('admin_users')
+        .select('id, email, name, role, is_active, created_at')
+        .ilike('email', clean)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (!error && row) {
+        return {
+          authorized: true,
+          member: {
+            id: row.id || clean,
+            email: String(row.email).toLowerCase(),
+            name: row.name || clean.split('@')[0],
+            role: normalizeAdminRole(row.role),
+            addedAt: row.created_at || '2026-01-01T00:00:00.000Z'
+          }
+        };
+      }
+    } catch {}
+
+    // 2. Fallback to primary owner / homepage_sections team list (only trusted once Supabase JWT verifies email)
     if (clean === dbService.DEFAULT_PRIMARY_OWNER_EMAIL) {
       return {
         authorized: true,
@@ -3432,11 +3650,13 @@ export const dbService = {
     }
 
     try {
-      // 2. Real database check
       const members = await dbService.getTeamMembers();
       const member = members.find(m => m.email.toLowerCase() === clean);
       if (member) {
-        return { authorized: true, member };
+        return {
+          authorized: true,
+          member: { ...member, role: normalizeAdminRole(member.role) }
+        };
       }
     } catch (err) {
       console.warn('[Sulta DB] Authorization lookup error:', err);
@@ -3724,11 +3944,14 @@ export const dbService = {
     let latencyMs = 0;
 
     try {
-      const { error } = await supabase.from('products').select('id').limit(1);
+      const { error } = await supabase.from('products_public').select('id').limit(1);
       latencyMs = Math.round(performance.now() - start);
       if (error) {
-        dbStatus = 'degraded';
-        dbMsg = error.message;
+        const fb = await supabase.from('products').select('id').limit(1);
+        if (fb.error) {
+          dbStatus = 'degraded';
+          dbMsg = fb.error.message;
+        }
       }
     } catch (err: any) {
       dbStatus = 'error';
@@ -3747,17 +3970,13 @@ export const dbService = {
       storageMsg = 'تعذر فحص حاوية التخزين بدقة، الصور العامة تعمل.';
     }
 
-    const hasPhoneId = !!(import.meta as any).env.VITE_WHATSAPP_PHONE_ID;
-    const hasToken = !!(import.meta as any).env.VITE_WHATSAPP_ACCESS_TOKEN;
-    const whatsappStatus = (hasPhoneId && hasToken) ? 'configured' : 'pending_credentials';
-    const whatsappMsg = (hasPhoneId && hasToken)
-      ? 'الربط البرمجي مع WhatsApp Business Cloud API مفعل بنجاح.'
-      : 'بانتظار إدخال VITE_WHATSAPP_PHONE_ID و VITE_WHATSAPP_ACCESS_TOKEN لتفعيل الإرسال السحابي التلقائي. (الإرسال اليدوي عبر الويب يعمل 100%).';
+    const whatsappStatus: 'configured' | 'pending_credentials' = 'configured';
+    const whatsappMsg = 'روابط الإشعارات المجانية عبر wa.me تعمل 100% بأمان دون تخزين أي مفاتيح سرية في المتصفح.';
 
     return {
       database: { status: dbStatus, latencyMs, message: dbMsg },
       storage: { status: storageStatus, message: storageMsg },
-      auth: { status: 'healthy', message: 'بوابة التحقق الإدارية ونظام الأدوار نشط ومؤمّن.' },
+      auth: { status: 'healthy', message: 'بوابة المصادقة عبر Supabase Auth ونظام الصلاحيات الستة (RBAC) نشط.' },
       whatsapp: { status: whatsappStatus, message: whatsappMsg },
       timestamp: new Date().toISOString()
     };
@@ -3808,15 +4027,741 @@ export const dbService = {
     }
   },
 
+  // --- PHASE D4: SHIPPING CARRIERS, CUSTOMER PROFILES & WHATSAPP TEMPLATES ---
+  getShippingCarriers: async (): Promise<ShippingCarrier[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('shipping_carriers')
+        .select('*')
+        .order('id', { ascending: true });
+      if (!error && data && data.length > 0) {
+        const mapped: ShippingCarrier[] = data.map((row: any) => ({
+          id: row.id,
+          nameAr: row.name_ar || row.nameAr || row.id,
+          nameEn: row.name_en || row.nameEn || undefined,
+          trackingUrlTemplate: row.tracking_url_template || row.trackingUrlTemplate || '',
+          isActive: row.is_active !== false
+        }));
+        try { localStorage.setItem('sulta_shipping_carriers', JSON.stringify(mapped)); } catch {}
+        return mapped;
+      }
+    } catch {}
+
+    try {
+      const { data: sec } = await supabase
+        .from('homepage_sections')
+        .select('config')
+        .eq('id', 'shipping_carriers_config')
+        .maybeSingle();
+      if (sec?.config?.carriers && Array.isArray(sec.config.carriers) && sec.config.carriers.length > 0) {
+        return sec.config.carriers;
+      }
+    } catch {}
+
+    try {
+      const cached = localStorage.getItem('sulta_shipping_carriers');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+
+    return DEFAULT_SHIPPING_CARRIERS;
+  },
+
+  saveShippingCarriers: async (carriers: ShippingCarrier[]): Promise<void> => {
+    try {
+      localStorage.setItem('sulta_shipping_carriers', JSON.stringify(carriers));
+    } catch {}
+
+    try {
+      const rows = carriers.map((c) => ({
+        id: c.id,
+        name_ar: c.nameAr,
+        name_en: c.nameEn || null,
+        tracking_url_template: c.trackingUrlTemplate,
+        is_active: c.isActive !== false
+      }));
+      const { error } = await supabase.from('shipping_carriers').upsert(rows);
+      if (!error) return;
+    } catch {}
+
+    await supabase.from('homepage_sections').upsert({
+      id: 'shipping_carriers_config',
+      section_key: 'shipping_carriers_config',
+      title_ar: 'شركات الشحن',
+      config: { carriers }
+    }).catch(() => {});
+  },
+
+  getCustomerProfilesMeta: async (): Promise<Record<string, CustomerProfileMeta>> => {
+    const out: Record<string, CustomerProfileMeta> = {};
+    try {
+      const cached = localStorage.getItem('sulta_customer_profiles_meta');
+      if (cached) Object.assign(out, JSON.parse(cached));
+    } catch {}
+
+    try {
+      const { data, error } = await supabase.from('customer_profiles').select('*');
+      if (!error && data) {
+        data.forEach((row: any) => {
+          const key = normalizePhoneKey(row.phone);
+          if (!key) return;
+          out[key] = {
+            phone: row.phone,
+            customerName: row.customer_name || undefined,
+            city: row.city || undefined,
+            tags: Array.isArray(row.tags) ? row.tags : [],
+            notes: row.notes || '',
+            updatedAt: row.updated_at || undefined,
+            updatedBy: row.updated_by || undefined
+          };
+        });
+        try { localStorage.setItem('sulta_customer_profiles_meta', JSON.stringify(out)); } catch {}
+        return out;
+      }
+    } catch {}
+
+    try {
+      const { data: sec } = await supabase
+        .from('homepage_sections')
+        .select('config')
+        .eq('id', 'customer_profiles_meta_fallback')
+        .maybeSingle();
+      if (sec?.config?.profiles) {
+        Object.assign(out, sec.config.profiles);
+      }
+    } catch {}
+
+    return out;
+  },
+
+  saveCustomerProfileMeta: async (profile: CustomerProfileMeta): Promise<Record<string, CustomerProfileMeta>> => {
+    const key = normalizePhoneKey(profile.phone) || profile.phone;
+    const now = new Date().toISOString();
+    const record: CustomerProfileMeta = {
+      ...profile,
+      phone: profile.phone,
+      updatedAt: now
+    };
+
+    const existing = await dbService.getCustomerProfilesMeta();
+    const nextMap = { ...existing, [key]: record };
+    try {
+      localStorage.setItem('sulta_customer_profiles_meta', JSON.stringify(nextMap));
+    } catch {}
+
+    let savedInTable = false;
+    try {
+      const { error } = await supabase.from('customer_profiles').upsert({
+        phone: key,
+        customer_name: record.customerName || null,
+        city: record.city || null,
+        tags: record.tags || [],
+        notes: record.notes || '',
+        updated_by: record.updatedBy || 'فريق سولته',
+        updated_at: now
+      });
+      if (!error) savedInTable = true;
+    } catch {}
+
+    if (!savedInTable) {
+      await supabase.from('homepage_sections').upsert({
+        id: 'customer_profiles_meta_fallback',
+        section_key: 'customer_profiles_meta_fallback',
+        title_ar: 'بيانات وملاحظات العميلات',
+        config: { profiles: nextMap }
+      }).catch(() => {});
+    }
+
+    return nextMap;
+  },
+
+  getWhatsappTemplates: async (): Promise<Record<WhatsAppEventKey, WhatsAppTemplateConfig>> => {
+    const base = { ...DEFAULT_EVENT_TEMPLATES };
+    try {
+      const cached = localStorage.getItem('sulta_whatsapp_event_templates_v1');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        (Object.keys(base) as WhatsAppEventKey[]).forEach((k) => {
+          if (parsed[k]?.body) base[k] = { ...base[k], ...parsed[k], eventKey: k };
+        });
+      }
+    } catch {}
+
+    try {
+      const { data, error } = await supabase.from('whatsapp_templates').select('*');
+      if (!error && data && data.length > 0) {
+        data.forEach((row: any) => {
+          const key = (row.event_key || row.id) as WhatsAppEventKey;
+          if (base[key] && row.body) {
+            base[key] = {
+              ...base[key],
+              titleAr: row.title_ar || base[key].titleAr,
+              body: row.body,
+              updatedAt: row.updated_at || undefined
+            };
+          }
+        });
+        try { localStorage.setItem('sulta_whatsapp_event_templates_v1', JSON.stringify(base)); } catch {}
+        return base;
+      }
+    } catch {}
+
+    try {
+      const { data: sec } = await supabase
+        .from('homepage_sections')
+        .select('config')
+        .eq('id', 'whatsapp_templates_config')
+        .maybeSingle();
+      if (sec?.config?.templates) {
+        (Object.keys(base) as WhatsAppEventKey[]).forEach((k) => {
+          if (sec.config.templates[k]?.body) {
+            base[k] = { ...base[k], ...sec.config.templates[k], eventKey: k };
+          }
+        });
+      }
+    } catch {}
+
+    return base;
+  },
+
+  saveWhatsappTemplates: async (
+    templates: Record<WhatsAppEventKey, WhatsAppTemplateConfig>
+  ): Promise<void> => {
+    try {
+      localStorage.setItem('sulta_whatsapp_event_templates_v1', JSON.stringify(templates));
+    } catch {}
+
+    const now = new Date().toISOString();
+    let savedInTable = false;
+    try {
+      const rows = (Object.values(templates) as WhatsAppTemplateConfig[]).map((t) => ({
+        event_key: t.eventKey,
+        title_ar: t.titleAr,
+        body: t.body,
+        updated_at: now
+      }));
+      const { error } = await supabase.from('whatsapp_templates').upsert(rows);
+      if (!error) savedInTable = true;
+    } catch {}
+
+    if (!savedInTable) {
+      await supabase.from('homepage_sections').upsert({
+        id: 'whatsapp_templates_config',
+        section_key: 'whatsapp_templates_config',
+        title_ar: 'قوالب الواتساب المجانية',
+        config: { templates }
+      }).catch(() => {});
+    }
+  },
+
   // --- PHASE 2: STAFF ROLE PERMISSION CHECKER ---
-  hasPermission: (role: TeamMemberRole, permission: 'financials' | 'customers' | 'orders' | 'inventory' | 'products' | 'settings' | 'team'): boolean => {
-    if (role === 'owner') return true;
-    if (role === 'manager') return permission !== 'team';
-    if (role === 'orders' || role === 'orders_agent') return permission === 'orders' || permission === 'customers';
-    if (role === 'inventory') return permission === 'inventory' || permission === 'products';
-    if (role === 'support') return permission === 'orders' || permission === 'customers';
-    if (role === 'marketing') return permission === 'products' || permission === 'orders';
-    if (role === 'viewer') return false;
+  hasPermission: (
+    role: TeamMemberRole,
+    permission: 'financials' | 'customers' | 'orders' | 'inventory' | 'products' | 'settings' | 'team' | 'cost_price'
+  ): boolean => {
+    if (permission === 'financials') return canAccessTab(role, 'finances');
+    if (permission === 'customers') return canAccessTab(role, 'customers');
+    if (permission === 'orders') return canAccessTab(role, 'orders');
+    if (permission === 'inventory') return canUpdateStock(role) || canAccessTab(role, 'inventory');
+    if (permission === 'products') return canEditProducts(role) || canAccessTab(role, 'products');
+    if (permission === 'settings') return canManageSettings(role);
+    if (permission === 'team') return canManageTeam(role);
+    if (permission === 'cost_price') return canViewCostPrice(role);
     return false;
+  },
+
+  // ==========================================================
+  // PHASE D5: SLUG HISTORY REDIRECTS
+  // ==========================================================
+  recordSlugChange: async (
+    productId: string,
+    oldSlug: string,
+    newSlug: string,
+    changedBy: string = 'إدارة المتجر'
+  ): Promise<void> => {
+    const cleanOld = oldSlug.trim();
+    const cleanNew = newSlug.trim();
+    if (!cleanOld || !cleanNew || cleanOld === cleanNew) return;
+
+    const entry: SlugHistoryEntry = {
+      id: crypto.randomUUID(),
+      productId,
+      oldSlug: cleanOld,
+      newSlug: cleanNew,
+      changedBy,
+      changedAt: new Date().toISOString()
+    };
+
+    try {
+      const existing: SlugHistoryEntry[] = JSON.parse(localStorage.getItem('sulta_slug_history_v1') || '[]');
+      const filtered = existing.filter((x) => !(x.productId === productId && x.oldSlug === cleanOld));
+      filtered.unshift(entry);
+      localStorage.setItem('sulta_slug_history_v1', JSON.stringify(filtered.slice(0, 100)));
+    } catch {}
+
+    try {
+      await supabase.from('slug_history').insert([{
+        id: entry.id,
+        product_id: productId,
+        old_slug: cleanOld,
+        new_slug: cleanNew,
+        changed_by: changedBy,
+        changed_at: entry.changedAt
+      }]);
+    } catch {}
+  },
+
+  getSlugHistory: async (productId?: string): Promise<SlugHistoryEntry[]> => {
+    let entries: SlugHistoryEntry[] = [];
+    try {
+      let query = supabase.from('slug_history').select('*').order('changed_at', { ascending: false }).limit(100);
+      if (productId) query = query.eq('product_id', productId);
+      const { data, error } = await query;
+      if (!error && Array.isArray(data)) {
+        entries = data.map((r: any) => ({
+          id: r.id,
+          productId: r.product_id,
+          oldSlug: r.old_slug,
+          newSlug: r.new_slug,
+          changedBy: r.changed_by || undefined,
+          changedAt: r.changed_at
+        }));
+      }
+    } catch {}
+
+    if (entries.length === 0) {
+      try {
+        const local: SlugHistoryEntry[] = JSON.parse(localStorage.getItem('sulta_slug_history_v1') || '[]');
+        entries = productId ? local.filter((l) => l.productId === productId) : local;
+      } catch {}
+    }
+    return entries;
+  },
+
+  // ==========================================================
+  // PHASE D5: CHECKOUT STOCK RESERVATIONS (OVERSELL GUARD)
+  // ==========================================================
+  getOrCreateCheckoutSessionId: (): string => {
+    try {
+      const key = 'sulta_checkout_session_id';
+      let sid = sessionStorage.getItem(key);
+      if (!sid) {
+        sid = `chk_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        sessionStorage.setItem(key, sid);
+      }
+      return sid;
+    } catch {
+      return `chk_${Date.now()}`;
+    }
+  },
+
+  getActiveStockReservations: async (): Promise<StockReservation[]> => {
+    const nowIso = new Date().toISOString();
+    const results: StockReservation[] = [];
+    try {
+      const { data, error } = await supabase
+        .from('stock_reservations')
+        .select('*')
+        .eq('status', 'active')
+        .gt('expires_at', nowIso)
+        .order('created_at', { ascending: false });
+      if (!error && Array.isArray(data)) {
+        for (const r of data) {
+          results.push({
+            id: r.id,
+            sessionId: r.session_id,
+            productId: r.product_id,
+            productName: r.product_name || undefined,
+            variant: r.variant || undefined,
+            quantity: Number(r.quantity || 1),
+            status: r.status || 'active',
+            expiresAt: r.expires_at,
+            createdAt: r.created_at
+          });
+        }
+        return results;
+      }
+    } catch {}
+
+    try {
+      const local: StockReservation[] = JSON.parse(localStorage.getItem('sulta_stock_reservations_v1') || '[]');
+      const nowMs = Date.now();
+      return local.filter((r) => r.status === 'active' && new Date(r.expiresAt).getTime() > nowMs);
+    } catch {
+      return [];
+    }
+  },
+
+  reserveCheckoutStock: async (
+    sessionId: string,
+    items: CartItem[],
+    holdMinutes: number = 15
+  ): Promise<{
+    ok: boolean;
+    conflicts: Array<{ productId: string; productName: string; availableQty: number; requestedQty: number }>;
+  }> => {
+    const conflicts: Array<{ productId: string; productName: string; availableQty: number; requestedQty: number }> = [];
+    if (!items || items.length === 0) return { ok: true, conflicts };
+
+    const nowMs = Date.now();
+    const expiresAt = new Date(nowMs + holdMinutes * 60 * 1000).toISOString();
+    const activeReservations = await dbService.getActiveStockReservations();
+
+    // Aggregate requested qty per productId across cart variants
+    const requestedByProduct = new Map<string, { qty: number; productName: string; fallbackStock: number }>();
+    for (const it of items) {
+      const pid = it.product.id;
+      const prev = requestedByProduct.get(pid) || {
+        qty: 0,
+        productName: it.product.nameAr,
+        fallbackStock: Number(it.product.stock || 0)
+      };
+      requestedByProduct.set(pid, {
+        ...prev,
+        qty: prev.qty + Math.max(1, Number(it.quantity || 1))
+      });
+    }
+
+    for (const [productId, req] of requestedByProduct.entries()) {
+      let physicalStock = req.fallbackStock;
+      try {
+        const { data: prodRow } = await supabase.from('products').select('stock').eq('id', productId).maybeSingle();
+        if (prodRow && prodRow.stock !== undefined && prodRow.stock !== null) {
+          physicalStock = Number(prodRow.stock);
+        }
+      } catch {}
+
+      const reservedByOthers = activeReservations
+        .filter((r) => r.productId === productId && r.sessionId !== sessionId)
+        .reduce((sum, r) => sum + Number(r.quantity || 0), 0);
+
+      const availableQty = Math.max(0, physicalStock - reservedByOthers);
+      if (req.qty > availableQty) {
+        conflicts.push({
+          productId,
+          productName: req.productName,
+          availableQty,
+          requestedQty: req.qty
+        });
+      }
+    }
+
+    if (conflicts.length > 0) {
+      return { ok: false, conflicts };
+    }
+
+    const newReservations: StockReservation[] = items.map((it) => ({
+      id: `${sessionId}_${it.product.id}_${it.selectedColor?.name || 'def'}_${it.selectedSize || 'one'}`,
+      sessionId,
+      productId: it.product.id,
+      productName: it.product.nameAr,
+      variant: `${it.selectedColor?.name || ''} - ${it.selectedSize || ''}`.trim(),
+      quantity: Math.max(1, Number(it.quantity || 1)),
+      status: 'active',
+      expiresAt,
+      createdAt: new Date(nowMs).toISOString()
+    }));
+
+    try {
+      const local: StockReservation[] = JSON.parse(localStorage.getItem('sulta_stock_reservations_v1') || '[]');
+      const others = local.filter((r) => r.sessionId !== sessionId && new Date(r.expiresAt).getTime() > nowMs && r.status === 'active');
+      localStorage.setItem('sulta_stock_reservations_v1', JSON.stringify([...newReservations, ...others]));
+    } catch {}
+
+    try {
+      await supabase.from('stock_reservations').delete().eq('session_id', sessionId).eq('status', 'active');
+      const rows = newReservations.map((r) => ({
+        session_id: r.sessionId,
+        product_id: r.productId,
+        product_name: r.productName,
+        variant: r.variant,
+        quantity: r.quantity,
+        status: 'active',
+        expires_at: r.expiresAt,
+        created_at: r.createdAt
+      }));
+      await supabase.from('stock_reservations').insert(rows);
+    } catch {}
+
+    return { ok: true, conflicts: [] };
+  },
+
+  releaseCheckoutReservations: async (sessionId: string, markConsumed: boolean = false): Promise<void> => {
+    const nextStatus: StockReservation['status'] = markConsumed ? 'consumed' : 'released';
+    try {
+      const local: StockReservation[] = JSON.parse(localStorage.getItem('sulta_stock_reservations_v1') || '[]');
+      const updated = local
+        .filter((r) => r.sessionId !== sessionId)
+        .filter((r) => r.status === 'active' && new Date(r.expiresAt).getTime() > Date.now());
+      localStorage.setItem('sulta_stock_reservations_v1', JSON.stringify(updated));
+    } catch {}
+
+    try {
+      await supabase
+        .from('stock_reservations')
+        .update({ status: nextStatus })
+        .eq('session_id', sessionId)
+        .eq('status', 'active');
+    } catch {}
+  },
+
+  // ==========================================================
+  // PHASE D5: SUPPLIERS & PURCHASE ORDERS (WEIGHTED AVG COST)
+  // ==========================================================
+  getSuppliers: async (): Promise<Supplier[]> => {
+    try {
+      const { data, error } = await supabase.from('suppliers').select('*').order('created_at', { ascending: false });
+      if (!error && Array.isArray(data)) {
+        const mapped = data.map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          contactName: r.contact_name || undefined,
+          phone: r.phone || undefined,
+          email: r.email || undefined,
+          city: r.city || undefined,
+          notes: r.notes || undefined,
+          createdAt: r.created_at,
+          updatedAt: r.updated_at
+        }));
+        try { localStorage.setItem('sulta_suppliers_v1', JSON.stringify(mapped)); } catch {}
+        return mapped;
+      }
+    } catch {}
+
+    try {
+      const { data: sec } = await supabase.from('homepage_sections').select('config').eq('id', 'inventory_suppliers_v1').maybeSingle();
+      if (Array.isArray(sec?.config?.suppliers)) {
+        return sec.config.suppliers;
+      }
+    } catch {}
+
+    try {
+      return JSON.parse(localStorage.getItem('sulta_suppliers_v1') || '[]');
+    } catch {
+      return [];
+    }
+  },
+
+  saveSupplier: async (supplier: Supplier): Promise<Supplier> => {
+    const clean: Supplier = {
+      ...supplier,
+      id: supplier.id || crypto.randomUUID(),
+      createdAt: supplier.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const existing = await dbService.getSuppliers();
+    const nextList = [clean, ...existing.filter((s) => s.id !== clean.id)];
+    try { localStorage.setItem('sulta_suppliers_v1', JSON.stringify(nextList)); } catch {}
+
+    let savedDirect = false;
+    try {
+      const { error } = await supabase.from('suppliers').upsert([{
+        id: clean.id,
+        name: clean.name,
+        contact_name: clean.contactName || null,
+        phone: clean.phone || null,
+        email: clean.email || null,
+        city: clean.city || null,
+        notes: clean.notes || null,
+        created_at: clean.createdAt,
+        updated_at: clean.updatedAt
+      }], { onConflict: 'id' });
+      if (!error) savedDirect = true;
+    } catch {}
+
+    if (!savedDirect) {
+      await supabase.from('homepage_sections').upsert({
+        id: 'inventory_suppliers_v1',
+        section_key: 'inventory_suppliers_v1',
+        title_ar: 'دليل الموردين',
+        config: { suppliers: nextList }
+      }).catch(() => {});
+    }
+
+    return clean;
+  },
+
+  deleteSupplier: async (supplierId: string): Promise<void> => {
+    const existing = await dbService.getSuppliers();
+    const nextList = existing.filter((s) => s.id !== supplierId);
+    try { localStorage.setItem('sulta_suppliers_v1', JSON.stringify(nextList)); } catch {}
+
+    let deletedDirect = false;
+    try {
+      const { error } = await supabase.from('suppliers').delete().eq('id', supplierId);
+      if (!error) deletedDirect = true;
+    } catch {}
+
+    if (!deletedDirect) {
+      await supabase.from('homepage_sections').upsert({
+        id: 'inventory_suppliers_v1',
+        section_key: 'inventory_suppliers_v1',
+        title_ar: 'دليل الموردين',
+        config: { suppliers: nextList }
+      }).catch(() => {});
+    }
+  },
+
+  getPurchaseOrders: async (): Promise<PurchaseOrder[]> => {
+    try {
+      const { data, error } = await supabase.from('purchase_orders').select('*').order('created_at', { ascending: false });
+      if (!error && Array.isArray(data)) {
+        const mapped: PurchaseOrder[] = data.map((r: any) => ({
+          id: r.id,
+          referenceCode: r.reference_code || `PO-${String(r.id).slice(0, 6).toUpperCase()}`,
+          supplierId: r.supplier_id || '',
+          supplierName: r.supplier_name || 'مورد',
+          status: r.status || 'draft',
+          items: Array.isArray(r.items) ? r.items : [],
+          totalCostHalalas: Number(r.total_cost_halalas || 0),
+          notes: r.notes || undefined,
+          orderedAt: r.ordered_at || undefined,
+          receivedAt: r.received_at || undefined,
+          createdAt: r.created_at || new Date().toISOString(),
+          createdBy: r.created_by || undefined
+        }));
+        try { localStorage.setItem('sulta_purchase_orders_v1', JSON.stringify(mapped)); } catch {}
+        return mapped;
+      }
+    } catch {}
+
+    try {
+      const { data: sec } = await supabase.from('homepage_sections').select('config').eq('id', 'inventory_purchase_orders_v1').maybeSingle();
+      if (Array.isArray(sec?.config?.purchaseOrders)) {
+        return sec.config.purchaseOrders;
+      }
+    } catch {}
+
+    try {
+      return JSON.parse(localStorage.getItem('sulta_purchase_orders_v1') || '[]');
+    } catch {
+      return [];
+    }
+  },
+
+  savePurchaseOrder: async (po: PurchaseOrder): Promise<PurchaseOrder> => {
+    const clean: PurchaseOrder = {
+      ...po,
+      id: po.id || crypto.randomUUID(),
+      referenceCode: po.referenceCode || `PO-${Date.now().toString().slice(-6)}`,
+      createdAt: po.createdAt || new Date().toISOString()
+    };
+
+    const existing = await dbService.getPurchaseOrders();
+    const nextList = [clean, ...existing.filter((x) => x.id !== clean.id)];
+    try { localStorage.setItem('sulta_purchase_orders_v1', JSON.stringify(nextList)); } catch {}
+
+    let savedDirect = false;
+    try {
+      const { error } = await supabase.from('purchase_orders').upsert([{
+        id: clean.id,
+        reference_code: clean.referenceCode,
+        supplier_id: clean.supplierId || null,
+        supplier_name: clean.supplierName,
+        status: clean.status,
+        items: clean.items,
+        total_cost_halalas: clean.totalCostHalalas,
+        notes: clean.notes || null,
+        ordered_at: clean.orderedAt || null,
+        received_at: clean.receivedAt || null,
+        created_at: clean.createdAt,
+        created_by: clean.createdBy || null
+      }], { onConflict: 'id' });
+      if (!error) savedDirect = true;
+    } catch {}
+
+    if (!savedDirect) {
+      await supabase.from('homepage_sections').upsert({
+        id: 'inventory_purchase_orders_v1',
+        section_key: 'inventory_purchase_orders_v1',
+        title_ar: 'أوامر الشراء والموردين',
+        config: { purchaseOrders: nextList }
+      }).catch(() => {});
+    }
+
+    return clean;
+  },
+
+  receivePurchaseOrder: async (
+    po: PurchaseOrder,
+    receiveQtyByProductId: Record<string, number>,
+    currentProducts: Product[],
+    adminName: string = 'إدارة المستودع'
+  ): Promise<{ updatedPO: PurchaseOrder; updatedProducts: Product[] }> => {
+    const updatedProducts = [...currentProducts];
+    const nowIso = new Date().toISOString();
+
+    const updatedItems = po.items.map((item) => {
+      const remaining = Math.max(0, item.quantity - item.receivedQuantity);
+      const recvNow = Math.min(remaining, Math.max(0, Math.floor(Number(receiveQtyByProductId[item.productId] || 0))));
+      return {
+        ...item,
+        _recvNow: recvNow,
+        receivedQuantity: item.receivedQuantity + recvNow
+      };
+    });
+
+    for (const item of updatedItems) {
+      if (item._recvNow <= 0) continue;
+      const idx = updatedProducts.findIndex((p) => p.id === item.productId);
+      const prod = idx >= 0 ? updatedProducts[idx] : undefined;
+      if (!prod) continue;
+
+      const currentStock = Math.max(0, Number(prod.stock || 0));
+      const unitCostHalalas = item.unitCostHalalas ?? toHalalas(item.unitCost);
+      const currentCostHalalas = toHalalas(prod.costPrice);
+
+      const newWeightedCostHalalas = calculateWeightedAverageCostHalalas({
+        currentStock,
+        currentUnitCostHalalas: currentCostHalalas,
+        receivedQty: item._recvNow,
+        receivedUnitCostHalalas: unitCostHalalas
+      });
+
+      const nextStock = currentStock + item._recvNow;
+      const nextCostSAR = fromHalalas(newWeightedCostHalalas);
+
+      const updatedProd: Product = {
+        ...prod,
+        stock: nextStock,
+        costPrice: nextCostSAR
+      };
+      updatedProducts[idx] = updatedProd;
+
+      await dbService.saveProduct(updatedProd);
+      await dbService.recordStockMovement({
+        productId: prod.id,
+        productName: prod.nameAr,
+        changeQty: item._recvNow,
+        newStockLevel: nextStock,
+        movementType: 'inbound',
+        reason: `استلام أمر شراء ${po.referenceCode} من ${po.supplierName} (متوسط تكلفة جديد: ${nextCostSAR} ر.س)`,
+        referenceId: po.id,
+        unitCostHalalas,
+        adminName
+      });
+    }
+
+    const cleanItems = updatedItems.map(({ _recvNow, ...rest }) => rest);
+    const allReceived = cleanItems.every((i) => i.receivedQuantity >= i.quantity);
+    const anyReceived = cleanItems.some((i) => i.receivedQuantity > 0);
+    const nextStatus: PurchaseOrder['status'] = allReceived
+      ? 'received'
+      : anyReceived
+        ? 'partially_received'
+        : po.status;
+
+    const updatedPO: PurchaseOrder = {
+      ...po,
+      items: cleanItems,
+      status: nextStatus,
+      receivedAt: allReceived ? nowIso : po.receivedAt
+    };
+
+    await dbService.savePurchaseOrder(updatedPO);
+    return { updatedPO, updatedProducts };
   }
 };

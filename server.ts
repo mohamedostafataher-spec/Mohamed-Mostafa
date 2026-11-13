@@ -361,7 +361,7 @@ async function startServer() {
   // Enables maximum Event Match Quality, iOS 14.5+ resilience & browser deduplication
   // =========================================================================
   const DEFAULT_META_PIXEL_ID = process.env.META_PIXEL_ID || "1648674350574190";
-  const DEFAULT_META_CAPI_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || "EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD";
+  const SERVER_META_CAPI_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || "";
 
   function hashSha256(val: string): string {
     if (!val || typeof val !== "string") return "";
@@ -386,16 +386,23 @@ async function startServer() {
         user_data = {},
         custom_data = {},
         test_event_code,
-        pixel_id,
-        access_token
+        pixel_id
       } = req.body;
 
       if (!event_name) {
         return res.status(400).json({ error: "Missing required event_name" });
       }
 
-      const activePixelId = (pixel_id || DEFAULT_META_PIXEL_ID).trim();
-      const activeToken = (access_token || DEFAULT_META_CAPI_TOKEN).trim();
+      const activeToken = SERVER_META_CAPI_TOKEN.trim();
+      if (!activeToken) {
+        return res.status(200).json({
+          success: false,
+          skipped: true,
+          error: "META_CAPI_ACCESS_TOKEN is not configured in environment variables"
+        });
+      }
+
+      const activePixelId = String(pixel_id || DEFAULT_META_PIXEL_ID).replace(/[^\d]/g, "") || DEFAULT_META_PIXEL_ID;
 
       // Extract client network identity
       const rawIp = (req.headers["x-forwarded-for"] as string) || req.socket.remoteAddress || "127.0.0.1";
@@ -513,9 +520,16 @@ async function startServer() {
    */
   app.post("/api/meta/test-connection", async (req, res) => {
     try {
-      const { pixel_id, access_token, test_event_code } = req.body || {};
-      const activePixelId = (pixel_id || DEFAULT_META_PIXEL_ID).trim();
-      const activeToken = (access_token || DEFAULT_META_CAPI_TOKEN).trim();
+      const { pixel_id, test_event_code } = req.body || {};
+      const activePixelId = String(pixel_id || DEFAULT_META_PIXEL_ID).replace(/[^\d]/g, "") || DEFAULT_META_PIXEL_ID;
+      const activeToken = SERVER_META_CAPI_TOKEN.trim();
+
+      if (!activeToken) {
+        return res.status(400).json({
+          success: false,
+          error: "META_CAPI_ACCESS_TOKEN is not configured in server environment variables"
+        });
+      }
 
       const testPayload: Record<string, any> = {
         data: [
@@ -523,7 +537,7 @@ async function startServer() {
             event_name: "PageView",
             event_time: Math.floor(Date.now() / 1000),
             action_source: "website",
-            event_source_url: "https://sulta-atelier.com/diagnostics",
+            event_source_url: "https://sulta.vercel.app/dashboard",
             user_data: {
               client_ip_address: "127.0.0.1",
               client_user_agent: "SULTA-Diagnostics/1.0"

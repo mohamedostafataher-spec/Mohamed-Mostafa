@@ -1,57 +1,161 @@
-import { Order } from '../types';
+import { Order, WhatsAppEventKey, WhatsAppSendLog, WhatsAppTemplateConfig } from '../types';
 
 /**
- * Service to handle WhatsApp interactions, invoice generation, status updates, and template customization.
+ * Free WhatsApp (wa.me) communication engine with editable Arabic templates
+ * for all customer lifecycle events and per-order sent history logging.
  */
 
 export const DEFAULT_ORDER_TEMPLATE = `👑 يا هلا بسلطانتنا الغالية {customerName} 🌸✨
-يسعدنا ويشرفنا اختياركِ لقطع Sulta الفريدة التي تليق بذوقكِ الرفيع.
+يسعدنا اختياركِ لقطع سولته القطنية التي تليق بذوقكِ الرفيع.
 
-لقد تم تسجيل طلبكِ الأنيق بنجاح:
+لقد تم تسجيل طلبكِ بنجاح:
 📋 رقم الطلب: #{trackingCode}
 💰 القيمة الإجمالية: {totalPrice} {currency}
 📦 القطع المختارة:
 {itemsList}
 
-🏦 ✦ بيانات التحويل البنكي المعتمد (مدى) ✦
-• اسم البنك: البنك العربي الوطني 🇸🇦
-• اسم المستفيد: ابو بكر احمد على يونس
-• رقم الحساب: 991100960601337
-• الآيبان (IBAN): SA3530100991100960601337
+🔍 رابط متابعة طلبكِ:
+{trackUrl}
 
-📸 فضلاً سلطانتنا، أرسلي صورة (سكرين شوت) لإيصال التحويل الآن في هذه المحادثة لتأكيد الحجز فوراً. أنا متواجد معكِ الآن لمراجعة الإشعار وتأكيد الطلب والبدء في التغليف الملكي الفاخر تمهيداً للشحن السريع لباب منزلكِ 🚚🌸✨
-
-شكراً لاختياركِ Sulta 👑💎`;
+شكراً لاختياركِ سولته 👑💎`;
 
 export const DEFAULT_RECOVERY_TEMPLATE = `👑 يا هلا بسلطانتنا الغالية {customerName} 🌸✨
-معكِ خدمة العملاء من بوتيك Sulta للأزياء وملابس النوم المترفة.
+معكِ خدمة عملاء متجر سولته لملابس النوم القطنية المريحة.
 
-لاحظنا أنكِ اخترتِ قطعاً رائعة في سلتكِ ولم تكملي التحويل البنكي بعد، وحرصنا منا على ألا تفوتكِ هذه القطع الحصرية:
+لاحظنا أنكِ اخترتِ قطعاً رائعة في سلتكِ ولم تكملي الطلب بعد:
 📦 السلة المختارة:
 {itemsList}
 💰 المبلغ الإجمالي: {totalPrice} {currency}
 
-🏦 بيانات التحويل للبنك العربي الوطني (مدى):
-• رقم الحساب: 991100960601337
-• الآيبان (IBAN): SA3530100991100960601337
-
-🎁 ويسعدنا جداً تقديم كود خصم حصري لكِ لتأكيد طلبكِ الآن: Sulta20 (خصم 20%) + شحن سريع وتغليف فاخر مجاني!
-
-هل نساعدكِ في أي استفسار بخصوص المقاسات أو التحويل؟ نحن بانتظار إشعاركِ لتأكيد الطلب فوراً ✨🌸`;
+هل نساعدكِ في المقاسات أو تأكيد الطلب؟ يسعدنا خدمتكِ فوراً ✨🌸`;
 
 export const DEFAULT_STATUS_TEMPLATE = `👑 سلطانتنا العزيزة {customerName} 🌸
 يسعدنا إعلامكِ بأنه تم تحديث حالة طلبكِ رقم [#{trackingCode}] إلى:
 ✨ *{statusLabel}* ✨
 
-📦 تفاصيل الطلب: {totalPrice} {currency}
+📦 قيمة الطلب: {totalPrice} {currency}
 
-🔍 يمكنكِ متابعة خط سير شحنتكِ وتحديثاتها لحظة بلحظة عبر الرابط التالي:
+🔍 يمكنكِ متابعة طلبكِ عبر الرابط التالي:
 {trackUrl}
 
-شكراً لثقتكِ واختياركِ الدائم لـ Sulta 🌸`;
+شكراً لثقتكِ واختياركِ سولته 🌸`;
+
+export const DEFAULT_EVENT_TEMPLATES: Record<WhatsAppEventKey, WhatsAppTemplateConfig> = {
+  confirmed: {
+    eventKey: 'confirmed',
+    titleAr: 'تأكيد الطلب',
+    descriptionAr: 'تُرسل للعميلة فور مراجعة الطلب وتأكيده قبل التغليف.',
+    body: `أهلاً بكِ عزيزتنا {customerName} 🌸
+تم تأكيد طلبكِ رقم #{orderId} من متجر سولته بنجاح ✨
+
+📦 تفاصيل القطع:
+{itemsList}
+
+💰 الإجمالي: {totalPrice} {currency}
+📍 المدينة: {city}
+
+نبدأ الآن بتجهيز طلبكِ بعناية، ويمكنكِ متابعته في أي وقت عبر الرابط:
+{trackUrl}`
+  },
+  shipped: {
+    eventKey: 'shipped',
+    titleAr: 'تم الشحن',
+    descriptionAr: 'تُرسل بعد تسليم الشحنة لشركة الشحن مع رقم التتبع.',
+    body: `بشرى سارة عزيزتنا {customerName} 🚚✨
+تم شحن طلبكِ رقم #{orderId} من متجر سولته عبر شركة: *{carrier}*
+
+🔖 رقم التتبع: {trackingNumber}
+🔗 تتبع الشحنة لدى شركة النقل:
+{carrierTrackUrl}
+
+🔍 صفحة طلبكِ في المتجر:
+{trackUrl}
+
+تصل بالسلامة يا رب 🤍`
+  },
+  delivered: {
+    eventKey: 'delivered',
+    titleAr: 'تم التسليم',
+    descriptionAr: 'رسالة اطمئنان للعميلة بعد وصول الشحنة.',
+    body: `أهلاً بكِ عزيزتنا {customerName} 🌸
+نبارك لكِ استلام طلبكِ رقم #{orderId} من متجر سولته ✨
+
+نتمنى أن تنال خامة القطن والمقاس إعجابكِ التام 🤍
+إذا احتجتِ أي مساعدة أو استبدال، نحن بخدمتكِ دائماً هنا.`
+  },
+  reminder: {
+    eventKey: 'reminder',
+    titleAr: 'تذكير دفع / تأكيد',
+    descriptionAr: 'تذكير لطيف للطلبات المعلقة (تحويل بنكي أو تأكيد COD).',
+    body: `مرحباً عزيزتنا {customerName} 🌸
+معكِ خدمة عملاء سولته بخصوص طلبكِ رقم #{orderId} بقيمة {totalPrice} {currency}.
+
+نود فقط التأكد من جاهزيتكِ لاستلام الطلب / إرفاق إيصال التحويل حتى نتمكن من شحنه لكِ في أقرب وقت ✨
+رابط الطلب: {trackUrl}`
+  },
+  review: {
+    eventKey: 'review',
+    titleAr: 'طلب تقييم',
+    descriptionAr: 'طلب مشاركة رأي العميلة بعد تجربة القطعة.',
+    body: `يا هلا عزيزتنا {customerName} 🌸
+مضت أيام قليلة على وصول طلبكِ رقم #{orderId} من سولته، ويهمنا جداً نسمع رأيكِ في جودة القطن والراحة!
+
+مشاركتكِ تقييم بسيط تساعدنا نقدم الأفضل دائماً 🤍✨`
+  },
+  abandoned: {
+    eventKey: 'abandoned',
+    titleAr: 'تذكير سلة متروكة',
+    descriptionAr: 'رسالة استعادة للعميلات اللاتي وافقن على إشعارات الواتساب ولم يكملن الدفع.',
+    body: DEFAULT_RECOVERY_TEMPLATE
+  }
+};
+
+const STORAGE_KEY_EVENT_TEMPLATES = 'sulta_whatsapp_event_templates_v1';
+
+export function formatSaudiWhatsAppNumber(rawPhone: string): string {
+  const digits = (rawPhone || '').replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits.startsWith('00966')) return '966' + digits.slice(5);
+  if (digits.startsWith('05') && digits.length === 10) return '966' + digits.slice(1);
+  if (digits.startsWith('5') && digits.length === 9) return '966' + digits;
+  return digits;
+}
+
+export interface WhatsAppFormatContext {
+  customerName?: string;
+  orderId?: string;
+  trackingNumber?: string;
+  carrier?: string;
+  carrierTrackUrl?: string;
+  trackUrl?: string;
+  totalPrice?: number;
+  currency?: string;
+  itemsList?: string;
+  city?: string;
+  statusLabel?: string;
+  paymentMethod?: string;
+}
+
+export function interpolateWhatsAppTemplate(template: string, ctx: WhatsAppFormatContext): string {
+  const trackingCode = ctx.trackingNumber || ctx.orderId || '';
+  return (template || '')
+    .replace(/\{customerName\}/g, ctx.customerName || 'العميلة الكريمة')
+    .replace(/\{trackingCode\}/g, trackingCode)
+    .replace(/\{trackingNumber\}/g, ctx.trackingNumber || 'سيتم التزويد به قريباً')
+    .replace(/\{orderId\}/g, ctx.orderId ? ctx.orderId.slice(0, 8).toUpperCase() : '')
+    .replace(/\{fullOrderId\}/g, ctx.orderId || '')
+    .replace(/\{carrier\}/g, ctx.carrier || 'شركة الشحن المعتمدة')
+    .replace(/\{carrierTrackUrl\}/g, ctx.carrierTrackUrl || ctx.trackUrl || '')
+    .replace(/\{trackUrl\}/g, ctx.trackUrl || '')
+    .replace(/\{totalPrice\}/g, (ctx.totalPrice || 0).toLocaleString())
+    .replace(/\{currency\}/g, ctx.currency || 'ر.س')
+    .replace(/\{itemsList\}/g, ctx.itemsList || 'منتجات سولته')
+    .replace(/\{city\}/g, ctx.city || 'السعودية')
+    .replace(/\{statusLabel\}/g, ctx.statusLabel || '')
+    .replace(/\{paymentMethod\}/g, ctx.paymentMethod || 'تحويل بنكي');
+}
 
 export const WhatsAppService = {
-  // Get active custom template from localStorage or fallback to default
   getCustomOrderTemplate: (): string => {
     try {
       const saved = localStorage.getItem('sulta_whatsapp_order_template');
@@ -82,69 +186,135 @@ export const WhatsAppService = {
     } catch {}
   },
 
-  // Formats raw order message string with dynamic variables
+  getEventTemplates: (): Record<WhatsAppEventKey, WhatsAppTemplateConfig> => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_EVENT_TEMPLATES);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const merged = { ...DEFAULT_EVENT_TEMPLATES };
+        (Object.keys(DEFAULT_EVENT_TEMPLATES) as WhatsAppEventKey[]).forEach((k) => {
+          if (parsed[k]?.body) {
+            merged[k] = {
+              ...DEFAULT_EVENT_TEMPLATES[k],
+              ...parsed[k],
+              eventKey: k
+            };
+          }
+        });
+        return merged;
+      }
+    } catch {}
+    return { ...DEFAULT_EVENT_TEMPLATES };
+  },
+
+  saveEventTemplates: (templates: Record<WhatsAppEventKey, WhatsAppTemplateConfig>) => {
+    try {
+      localStorage.setItem(STORAGE_KEY_EVENT_TEMPLATES, JSON.stringify(templates));
+    } catch {}
+  },
+
+  buildOrderContext: (
+    order: Order,
+    options?: { statusLabel?: string; carrierName?: string; carrierTrackUrl?: string | null }
+  ): WhatsAppFormatContext => {
+    const origin =
+      typeof window !== 'undefined' && window.location.origin
+        ? window.location.origin
+        : 'https://sulta.vercel.app';
+    const trackingCode = order.trackingNumber || order.id;
+    const trackUrl = `${origin}/?tab=track-order&id=${encodeURIComponent(order.id)}`;
+    const itemsList = (order.items || [])
+      .map((i) => `• ${i.productName} (${i.color} - ${i.size}) × ${i.quantity}`)
+      .join('\n');
+
+    return {
+      customerName: order.customerName,
+      orderId: order.id,
+      trackingNumber: order.trackingNumber || trackingCode,
+      carrier: options?.carrierName || order.shippingCarrier || 'شركة الشحن المعتمدة',
+      carrierTrackUrl: options?.carrierTrackUrl || trackUrl,
+      trackUrl,
+      totalPrice: order.totalPrice || 0,
+      currency: order.currency === 'EGP' ? 'ج.م' : 'ر.س',
+      itemsList,
+      city: order.city || 'الرياض',
+      statusLabel: options?.statusLabel || '',
+      paymentMethod: order.paymentMethod || 'تحويل بنكي'
+    };
+  },
+
+  formatEventMessage: (
+    eventKey: WhatsAppEventKey,
+    order: Order,
+    options?: {
+      customBody?: string;
+      statusLabel?: string;
+      carrierName?: string;
+      carrierTrackUrl?: string | null;
+    }
+  ): string => {
+    const templates = WhatsAppService.getEventTemplates();
+    const body = options?.customBody || templates[eventKey]?.body || DEFAULT_EVENT_TEMPLATES[eventKey].body;
+    const ctx = WhatsAppService.buildOrderContext(order, options);
+    return interpolateWhatsAppTemplate(body, ctx);
+  },
+
   formatOrderMessage: (order: Order, customTemplate?: string): string => {
-    const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://sulta.store';
-    const trackingCode = order.trackingNumber || order.id;
-    const trackUrl = `${origin}/?tab=track-order&id=${encodeURIComponent(trackingCode)}`;
-    const itemsList = order.items.map(i => `• ${i.productName} (${i.color} - ${i.size}) × ${i.quantity}`).join('\n');
-    
     const template = customTemplate || WhatsAppService.getCustomOrderTemplate();
-
-    return template
-      .replace(/\{customerName\}/g, order.customerName || 'العميلة الكريمة')
-      .replace(/\{trackingCode\}/g, trackingCode)
-      .replace(/\{orderId\}/g, order.id)
-      .replace(/\{totalPrice\}/g, (order.totalPrice || 0).toLocaleString())
-      .replace(/\{currency\}/g, order.currency || 'ر.س')
-      .replace(/\{itemsList\}/g, itemsList)
-      .replace(/\{trackUrl\}/g, trackUrl)
-      .replace(/\{paymentMethod\}/g, order.paymentMethod || 'تحويل بنكي');
+    return interpolateWhatsAppTemplate(template, WhatsAppService.buildOrderContext(order));
   },
 
-  // Formats status update message string with dynamic variables
   formatStatusMessage: (order: Order, statusLabel: string, customTemplate?: string): string => {
-    const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://sulta.store';
-    const trackingCode = order.trackingNumber || order.id;
-    const trackUrl = `${origin}/?tab=track-order&id=${encodeURIComponent(trackingCode)}`;
-    
     const template = customTemplate || WhatsAppService.getCustomStatusTemplate();
-
-    return template
-      .replace(/\{customerName\}/g, order.customerName || 'العميلة الكريمة')
-      .replace(/\{trackingCode\}/g, trackingCode)
-      .replace(/\{orderId\}/g, order.id)
-      .replace(/\{statusLabel\}/g, statusLabel)
-      .replace(/\{totalPrice\}/g, (order.totalPrice || 0).toLocaleString())
-      .replace(/\{currency\}/g, order.currency || 'ر.س')
-      .replace(/\{trackUrl\}/g, trackUrl);
+    return interpolateWhatsAppTemplate(
+      template,
+      WhatsAppService.buildOrderContext(order, { statusLabel })
+    );
   },
 
-  // Returns the WhatsApp URL with formatted invoice message
+  buildWhatsAppUrl: (phoneNumber: string, message: string): string => {
+    const formattedPhone = formatSaudiWhatsAppNumber(phoneNumber);
+    return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+  },
+
   getInvoiceLink: (order: Order, phoneNumber: string) => {
     const message = WhatsAppService.formatOrderMessage(order);
-    return `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+    return WhatsAppService.buildWhatsAppUrl(phoneNumber, message);
   },
 
-  // Returns the WhatsApp URL with formatted status update message
   getStatusUpdateLink: (order: Order, statusLabel: string, phoneNumber: string) => {
     const message = WhatsAppService.formatStatusMessage(order, statusLabel);
-    return `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+    return WhatsAppService.buildWhatsAppUrl(phoneNumber, message);
   },
 
-  // Direct send opening WhatsApp web / app for invoice
   sendInvoice: (order: Order, phoneNumber: string) => {
     const url = WhatsAppService.getInvoiceLink(order, phoneNumber);
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   },
 
-  // Direct send opening WhatsApp web / app for status update
   sendStatusUpdate: (order: Order, statusLabel: string, phoneNumber: string) => {
     const url = WhatsAppService.getStatusUpdateLink(order, statusLabel, phoneNumber);
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   },
 
-  // Copy text to clipboard helper
+  createSendLogEntry: (
+    eventKey: WhatsAppEventKey,
+    recipientPhone: string,
+    messageText: string,
+    sentBy: string
+  ): WhatsAppSendLog => {
+    const meta = DEFAULT_EVENT_TEMPLATES[eventKey];
+    return {
+      id: `wa_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      eventKey,
+      eventLabel: meta?.titleAr || eventKey,
+      sentAt: new Date().toISOString(),
+      sentBy: sentBy || 'فريق سولته',
+      recipientPhone,
+      previewText: messageText.slice(0, 140)
+    };
+  },
+
   copyToClipboard: async (text: string): Promise<boolean> => {
     try {
       await navigator.clipboard.writeText(text);

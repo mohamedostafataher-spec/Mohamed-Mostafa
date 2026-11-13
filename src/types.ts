@@ -86,7 +86,18 @@ export interface Settings {
   adminTeamMembers?: any[];
 }
 
-export type TeamMemberRole = 'owner' | 'manager' | 'orders' | 'inventory' | 'support' | 'marketing' | 'viewer' | 'orders_agent';
+export type TeamMemberRole =
+  | 'owner'
+  | 'manager'
+  | 'sales'
+  | 'warehouse'
+  | 'accountant'
+  | 'support'
+  | 'orders'
+  | 'inventory'
+  | 'marketing'
+  | 'viewer'
+  | 'orders_agent';
 
 export interface TeamMember {
   id: string;
@@ -135,6 +146,7 @@ export interface Product {
   rating: number;
   reviewsCount: number;
   stock: number;
+  minStockThreshold?: number;
   h1?: string;
   seoTitle?: string;
   shortDescription?: string;
@@ -289,10 +301,53 @@ export interface Order {
   paymentVerifiedBy?: string;
   receiptReviewNotes?: string;
   adminNotes?: string;
+  assignedTo?: string;
+  shippingCarrierCode?: string;
+  whatsappLogs?: WhatsAppSendLog[];
+  statusChangeNotes?: string;
+  updatedBy?: string;
   discountAmount?: number;
   couponCode?: string;
   date: string;
   createdAt?: string;
+}
+
+export type WhatsAppEventKey = 'confirmed' | 'shipped' | 'delivered' | 'reminder' | 'review' | 'abandoned';
+
+export interface WhatsAppSendLog {
+  id: string;
+  eventKey: WhatsAppEventKey;
+  eventLabel: string;
+  sentAt: string;
+  sentBy: string;
+  recipientPhone: string;
+  previewText: string;
+}
+
+export interface WhatsAppTemplateConfig {
+  eventKey: WhatsAppEventKey;
+  titleAr: string;
+  descriptionAr: string;
+  body: string;
+  updatedAt?: string;
+}
+
+export interface ShippingCarrier {
+  id: string;
+  nameAr: string;
+  nameEn?: string;
+  trackingUrlTemplate: string; // e.g. https://www.smsaexpress.com/sa/en/trackingdetails?tracknumbers={tracking}
+  isActive: boolean;
+}
+
+export interface CustomerProfileMeta {
+  phone: string;
+  customerName?: string;
+  city?: string;
+  tags: string[];
+  notes: string;
+  updatedAt?: string;
+  updatedBy?: string;
 }
 
 export interface ReturnRefundRequest {
@@ -472,6 +527,18 @@ export interface TicketMessage {
   createdAt: string;
 }
 
+export type StockMovementType =
+  | 'inbound'
+  | 'outbound'
+  | 'return'
+  | 'adjustment'
+  | 'damaged'
+  | 'order_deduction'
+  | 'order_cancellation_restock'
+  | 'manual_restock'
+  | 'inventory_audit'
+  | 'damage_adjustment';
+
 export interface StockMovement {
   id: string;
   productId: string;
@@ -479,22 +546,86 @@ export interface StockMovement {
   variant?: string;
   changeQty: number;
   newStockLevel?: number;
-  movementType: 'order_deduction' | 'order_cancellation_restock' | 'manual_restock' | 'inventory_audit' | 'damage_adjustment';
+  movementType: StockMovementType;
   reason?: string;
   referenceOrderId?: string;
+  referenceId?: string;
+  unitCostHalalas?: number;
   adminName?: string;
   createdAt: string;
 }
 
+export interface Supplier {
+  id: string;
+  name: string;
+  contactName?: string;
+  phone?: string;
+  email?: string;
+  city?: string;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PurchaseOrderItem {
+  productId: string;
+  productName: string;
+  quantity: number;
+  receivedQuantity: number;
+  unitCost: number;
+  unitCostHalalas?: number;
+}
+
+export interface PurchaseOrder {
+  id: string;
+  referenceCode: string;
+  supplierId: string;
+  supplierName: string;
+  status: 'draft' | 'ordered' | 'partially_received' | 'received' | 'cancelled';
+  items: PurchaseOrderItem[];
+  totalCostHalalas: number;
+  notes?: string;
+  orderedAt?: string;
+  receivedAt?: string;
+  createdAt: string;
+  createdBy?: string;
+}
+
+export interface StockReservation {
+  id: string;
+  sessionId: string;
+  productId: string;
+  productName?: string;
+  variant?: string;
+  quantity: number;
+  status: 'active' | 'consumed' | 'released';
+  expiresAt: string;
+  createdAt: string;
+}
+
+export interface SlugHistoryEntry {
+  id: string;
+  productId: string;
+  oldSlug: string;
+  newSlug: string;
+  changedBy?: string;
+  changedAt: string;
+}
+
 export interface CustomerAnalyticsRecord {
   phone: string;
+  normalizedPhone?: string;
   name: string;
   city: string;
   totalOrders: number;
   totalSpent: number;
+  totalSpentHalalas?: number;
+  cancelledOrdersCount?: number;
   lastOrderDate: string;
   tier: 'VIP' | 'متكررة' | 'جديدة';
   recentOrderId: string;
+  tags?: string[];
+  notes?: string;
 }
 
 export interface ActualProductPrice {

@@ -7,9 +7,10 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase, cleanImgUrl, dbService } from '../services/db';
-import { Order, Product, OrderStatus, Settings, Review } from '../types';
+import { Order, Product, OrderStatus, Settings, Review, ShippingCarrier } from '../types';
 import { jsPDF } from 'jspdf';
 import { agentSystem, VipCustomer } from '../services/agentSystem';
+import { DEFAULT_SHIPPING_CARRIERS, buildCarrierTrackingUrl, getCarrierDisplayName } from '../utils/shippingCarriers';
 
 interface OrderDetailViewProps {
   orderId: string;
@@ -33,6 +34,7 @@ export default function OrderDetailView({
   const [copiedId, setCopiedId] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [shippingCarriers, setShippingCarriers] = useState<ShippingCarrier[]>(DEFAULT_SHIPPING_CARRIERS);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
   const [ratings, setRatings] = useState<Record<string, number>>({
     'المنتج': 5,
@@ -108,6 +110,8 @@ export default function OrderDetailView({
         trackingNumber: data.tracking_number || undefined
       };
     };
+
+    dbService.getShippingCarriers().then(setShippingCarriers).catch(() => {});
 
     const fetchOrder = async () => {
       setLoading(true);
@@ -1217,26 +1221,45 @@ export default function OrderDetailView({
             <h4 className="font-serif text-xs font-bold text-black border-r-3 border-amber-500/60 pr-2">
               مسار الشحن اللوجستي وتحديث شركة النقل:
             </h4>
-            
+
             <div className="font-sans text-xs space-y-3">
               <div className="flex justify-between items-center flex-row-reverse text-right">
                 <span className="text-gray-400">رقم تتبع الشحنة:</span>
-                <span className="font-mono font-bold text-gray-950">
-                  {order.trackingNumber || 'SUL-TRK-PENDING'}
+                <span className="font-mono font-bold text-gray-950" dir="ltr">
+                  {order.trackingNumber || 'بانتظار إصدار البوليصة'}
                 </span>
               </div>
               <div className="flex justify-between items-center flex-row-reverse text-right">
-                <span className="text-gray-400">شركة الخدمات اللوجستية:</span>
-                <span className="font-serif text-gray-900 font-bold">
-                  {order.country === 'EG' ? 'سولته إكسبريس (الأسرع بمصر)' : 'أرامكس لخدمات الطيران المتقدم'}
+                <span className="text-gray-400">شركة الشحن:</span>
+                <span className="font-sans text-gray-900 font-bold">
+                  {getCarrierDisplayName(order, shippingCarriers)}
                 </span>
               </div>
               <div className="flex justify-between items-center flex-row-reverse text-right">
                 <span className="text-gray-400">النافذة الزمنية للتسليم:</span>
-                <span className="font-sans text-[#DF8A9C] font-bold">
+                <span className="font-sans text-[#A44C5C] font-bold">
                   {order.country === 'EG' ? 'خلال ٢٤ إلى ٤٨ ساعة' : 'خلال ٣ إلى ٥ أيام عمل كحد أقصى'}
                 </span>
               </div>
+              {(() => {
+                const externalUrl = buildCarrierTrackingUrl(
+                  order.shippingCarrierCode || order.shippingCarrier,
+                  order.trackingNumber,
+                  shippingCarriers
+                );
+                if (!externalUrl) return null;
+                return (
+                  <a
+                    href={externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 w-full min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-[#A44C5C] hover:bg-[#8D3E4D] text-white text-xs font-bold px-4 py-2.5 transition-colors shadow-2xs"
+                  >
+                    <Truck size={15} />
+                    <span>تتبع الشحنة لدى شركة النقل</span>
+                  </a>
+                );
+              })()}
             </div>
           </div>
 

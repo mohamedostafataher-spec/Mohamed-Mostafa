@@ -13,9 +13,9 @@ export interface VercelResponse {
 }
 import crypto from 'crypto';
 
-const DEFAULT_META_PIXEL_ID = '1648674350574190';
-// Read from environment variable first, with fallback to configured token
-const DEFAULT_META_CAPI_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || 'EABD8o49XjZBMBSx1kZCB94D9h5hYDZB4rTMd7Fq8byLh0U2AvjYZAutqsrIHDghcrnkOVvQ7LdtD6p4d45ZCNx4KCNU5ZCXyRQJA2rQoLjiqfRgtY7TqjLZCulfVa4jOZAKZAPHHhijFcVcunEPB9UwWFOsnbQQIiTj2D5gBwA8BZBZBZCHZAaopoi0wcIZA2fx6ZBRau6uBwZDZD';
+const DEFAULT_META_PIXEL_ID = process.env.META_PIXEL_ID || '1648674350574190';
+// Server-only environment variable (never expose or fallback to hardcoded token)
+const SERVER_META_CAPI_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || '';
 
 function hashSha256(val: string): string {
   if (!val) return '';
@@ -60,16 +60,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       user_data = {},
       custom_data = {},
       test_event_code,
-      pixel_id,
-      access_token
+      pixel_id
     } = req.body || {};
 
     if (!event_name) {
       return res.status(400).json({ error: 'Missing required event_name' });
     }
 
-    const activePixelId = (pixel_id || DEFAULT_META_PIXEL_ID).trim();
-    const activeToken = (access_token || process.env.META_CAPI_ACCESS_TOKEN || DEFAULT_META_CAPI_TOKEN).trim();
+    const activeToken = SERVER_META_CAPI_TOKEN.trim();
+    if (!activeToken) {
+      return res.status(200).json({
+        success: false,
+        skipped: true,
+        error: 'META_CAPI_ACCESS_TOKEN is not configured in server environment variables'
+      });
+    }
+
+    const activePixelId = String(pixel_id || DEFAULT_META_PIXEL_ID).replace(/[^\d]/g, '') || DEFAULT_META_PIXEL_ID;
 
     // Extract client IP and user agent
     const rawIp = (req.headers['x-forwarded-for'] as string) || req.socket?.remoteAddress || '127.0.0.1';

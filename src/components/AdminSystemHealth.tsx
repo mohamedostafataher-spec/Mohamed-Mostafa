@@ -44,7 +44,7 @@ export default function AdminSystemHealth({ toast }: AdminSystemHealthProps) {
       if (res.success) {
         toast?.(`تم إرسال إشعار WhatsApp التجريبي بنجاح إلى ${testOrderPhone} 🎉`, 'success');
       } else {
-        toast?.(`تنبيه الواتساب: ${res.error || 'يرجى إدخال بيانات الاعتماد VITE_WHATSAPP_ACCESS_TOKEN'}. الإرسال اليدوي يعمل 100%.`, 'info');
+        toast?.(`تنبيه الواتساب: ${res.error || 'الإرسال اليدوي عبر روابط wa.me يعمل 100% بأمان.'}`, 'info');
       }
     } catch (err: any) {
       toast?.(`خطأ في الإرسال: ${err?.message || ''}`, 'error');

@@ -1,11 +1,10 @@
 /**
- * SULTA Client-Side 4K Image Optimizer
- * 
- * Automatically processes images before upload to Supabase Storage:
- * - Upscales / resizes to 4K-ready dimensions (up to 2160px width for portrait / 3840px for banners)
+ * SULTA Client-Side 4K & WebP Image Optimizer
+ *
+ * Automatically processes images in browser before upload to Supabase Storage:
+ * - Resizes to 4K-ready dimensions (up to 2160px width for portrait / 3840px for banners)
  * - Applies subtle unsharp masking for fabric texture & lace clarity
- * - Converts to optimized WebP format (smaller file size, higher quality)
- * - Preserves authentic product colors (sRGB profile)
+ * - Converts cleanly to optimized WebP format with compression statistics
  */
 
 export interface OptimizeOptions {
@@ -16,37 +15,55 @@ export interface OptimizeOptions {
   applySharpen?: boolean;
 }
 
-export async function optimizeImageForUpload(
-  file: File, 
+export interface OptimizedImageResult {
+  file: File;
+  originalBytes: number;
+  compressedBytes: number;
+  savedPercent: number;
+  width: number;
+  height: number;
+  format: string;
+}
+
+export async function optimizeImageWithStats(
+  file: File,
   options: OptimizeOptions = {}
-): Promise<File> {
+): Promise<OptimizedImageResult> {
   const {
     maxWidth = 2160,
     maxHeight = 3840,
-    quality = 0.92,
+    quality = 0.86,
     targetFormat = 'image/webp',
     applySharpen = true
   } = options;
 
-  // If not an image, return original
-  if (!file.type.startsWith('image/')) return file;
+  const originalBytes = file.size;
+
+  if (!file.type.startsWith('image/')) {
+    return {
+      file,
+      originalBytes,
+      compressedBytes: file.size,
+      savedPercent: 0,
+      width: 0,
+      height: 0,
+      format: file.type || 'unknown'
+    };
+  }
 
   try {
     const bitmap = await createImageBitmap(file);
-    let { width, height } = bitmap;
+    const { width, height } = bitmap;
 
-    // Calculate dimensions
     let targetW = width;
     let targetH = height;
 
     if (width > height) {
-      // Landscape
       if (width > 3840) {
         targetW = 3840;
         targetH = Math.round((3840 / width) * height);
       }
     } else {
-      // Portrait / Square
       if (width > maxWidth) {
         targetW = maxWidth;
         targetH = Math.round((maxWidth / width) * height);
@@ -57,32 +74,38 @@ export async function optimizeImageForUpload(
       }
     }
 
-    // Render to canvas with high quality image smoothing
     const canvas = document.createElement('canvas');
     canvas.width = targetW;
     canvas.height = targetH;
     const ctx = canvas.getContext('2d', { willReadFrequently: applySharpen });
-    if (!ctx) return file;
+    if (!ctx) {
+      bitmap.close();
+      return {
+        file,
+        originalBytes,
+        compressedBytes: file.size,
+        savedPercent: 0,
+        width,
+        height,
+        format: file.type
+      };
+    }
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(bitmap, 0, 0, targetW, targetH);
     bitmap.close();
 
-    // Subtle edge enhancement for fabric & lace textures if needed
     if (applySharpen && targetW <= 2160) {
       try {
         const imgData = ctx.getImageData(0, 0, targetW, targetH);
         const data = imgData.data;
-        // Mild unsharp filter kernel (center 1.15, neighbors -0.0375)
-        // Only run subtle micro-contrast to prevent haloing
         const copy = new Uint8ClampedArray(data);
         const w = targetW;
         const h = targetH;
-        
-        // Fast horizontal-vertical 3x3 unsharp for high-res e-commerce
-        const amount = 0.18; // gentle sharpness
-        for (let y = 1; y < h - 1; y += 2) { // step by 2 for extreme speed
+        const amount = 0.16;
+
+        for (let y = 1; y < h - 1; y += 2) {
           for (let x = 1; x < w - 1; x += 2) {
             const idx = (y * w + x) * 4;
             for (let c = 0; c < 3; c++) {
@@ -98,27 +121,61 @@ export async function optimizeImageForUpload(
           }
         }
         ctx.putImageData(imgData, 0, 0);
-      } catch (e) {
-        // Non-fatal, continue with smooth canvas
+      } catch {
+        // Non-fatal
       }
     }
 
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          resolve(file);
-          return;
-        }
-        const ext = targetFormat === 'image/webp' ? 'webp' : 'jpg';
-        const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || 'image';
-        const newFileName = `${baseName}_4k.${ext}`;
-        const optimizedFile = new File([blob], newFileName, { type: targetFormat });
-        resolve(optimizedFile);
-      }, targetFormat, quality);
+    const optimizedFile = await new Promise<File>((resolve) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            resolve(file);
+            return;
+          }
+          const isWebP = blob.type === 'image/webp' || targetFormat === 'image/webp';
+          const ext = isWebP ? 'webp' : 'jpg';
+          const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || 'image';
+          const safeBase = baseName.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'sulta';
+          const newFileName = `${safeBase}_webp.${ext}`;
+          resolve(new File([blob], newFileName, { type: blob.type || targetFormat }));
+        },
+        targetFormat,
+        quality
+      );
     });
 
+    const compressedBytes = optimizedFile.size;
+    const savedPercent =
+      originalBytes > 0 ? Math.max(0, Math.round(((originalBytes - compressedBytes) / originalBytes) * 100)) : 0;
+
+    return {
+      file: optimizedFile,
+      originalBytes,
+      compressedBytes,
+      savedPercent,
+      width: targetW,
+      height: targetH,
+      format: optimizedFile.type || targetFormat
+    };
   } catch (err) {
     console.warn('[Image Optimizer] Fallback to original file:', err);
-    return file;
+    return {
+      file,
+      originalBytes,
+      compressedBytes: file.size,
+      savedPercent: 0,
+      width: 0,
+      height: 0,
+      format: file.type
+    };
   }
+}
+
+export async function optimizeImageForUpload(
+  file: File,
+  options: OptimizeOptions = {}
+): Promise<File> {
+  const res = await optimizeImageWithStats(file, options);
+  return res.file;
 }

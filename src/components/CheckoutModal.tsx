@@ -84,6 +84,33 @@ export default function CheckoutModal({
   const [iframePaymentUrl, setIframePaymentUrl] = useState<string | null>(null);
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
+  const [checkoutSessionId] = useState<string>(() => dbService.getOrCreateCheckoutSessionId());
+  const [reservationNotice, setReservationNotice] = useState<string | null>(null);
+
+  const handleCloseWithRelease = () => {
+    dbService.releaseCheckoutReservations(checkoutSessionId, false).catch(() => {});
+    onClose();
+  };
+
+  // Reserve cart stock when entering checkout (15-min hold to prevent overselling)
+  useEffect(() => {
+    let active = true;
+    dbService.reserveCheckoutStock(checkoutSessionId, cart, 15).then((res) => {
+      if (!active) return;
+      if (!res.ok && res.conflicts.length > 0) {
+        const c = res.conflicts[0];
+        setReservationNotice(
+          `تنبيه المخزون: الكمية المتاحة حالياً من "${c.productName}" هي ${c.availableQty} قطعة فقط (طلبتِ ${c.requestedQty}). يرجى تعديل السلة قبل إتمام الطلب.`
+        );
+      } else {
+        setReservationNotice('تم حجز قطع سلتكِ مؤقتاً لمدة 15 دقيقة لضمان توفرها أثناء الدفع 🔒');
+      }
+    }).catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [checkoutSessionId, cart]);
 
   const handleReceiptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -206,41 +233,45 @@ export default function CheckoutModal({
       trackAddPaymentInfo(cart, totalAmount, 'SAR', selectedPayment);
     } catch {}
 
-    // Save lead data immediately so abandoned carts can be recovered via WhatsApp
-    try {
-      const leadData = {
-        id: `lead_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-        customerName: name.trim(),
-        phone: normalizedPhone,
-        city: city.trim(),
-        address: address.trim(),
-        totalAmount,
-        currency: 'SAR',
-        date: new Date().toISOString(),
-        items: cart.map(i => ({
-          productId: i.product.id,
-          productName: i.product.nameAr,
-          color: i.selectedColor.name,
-          size: i.selectedSize,
-          quantity: i.quantity,
-          price: dbService.getProductActualPrice(i.product, country, settings).unitPrice
-        })),
-        converted: false
-      };
+    // Record abandoned checkout ONLY after explicit privacy/WhatsApp consent (whatsappOptIn)
+    if (whatsappOptIn) {
+      try {
+        const leadData = {
+          id: `lead_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          customerName: name.trim(),
+          phone: normalizedPhone,
+          city: city.trim(),
+          address: address.trim(),
+          totalAmount,
+          currency: 'SAR',
+          consentGiven: true,
+          consentDate: new Date().toISOString(),
+          date: new Date().toISOString(),
+          items: cart.map(i => ({
+            productId: i.product.id,
+            productName: i.product.nameAr,
+            color: i.selectedColor.name,
+            size: i.selectedSize,
+            quantity: i.quantity,
+            price: dbService.getProductActualPrice(i.product, country, settings).unitPrice
+          })),
+          converted: false
+        };
 
-      const existingLeads = JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
-      const filtered = existingLeads.filter((l: any) => l.phone !== normalizedPhone);
-      filtered.unshift(leadData);
-      localStorage.setItem('sulta_abandoned_checkouts', JSON.stringify(filtered.slice(0, 50)));
+        const existingLeads = JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
+        const filtered = existingLeads.filter((l: any) => l.phone !== normalizedPhone);
+        filtered.unshift(leadData);
+        localStorage.setItem('sulta_abandoned_checkouts', JSON.stringify(filtered.slice(0, 50)));
 
-      // Sync lead to Supabase for multi-device admin visibility
-      supabase.from('support_tickets').insert([{
-        subject: `LEAD:${normalizedPhone}`,
-        message: JSON.stringify(leadData),
-        status: 'open'
-      }]).then(() => {}).catch(() => {});
-    } catch (e) {
-      console.warn("Abandoned checkout lead save notice:", e);
+        // Sync consented lead to Supabase for multi-device admin visibility
+        supabase.from('support_tickets').insert([{
+          subject: `LEAD:${normalizedPhone}`,
+          message: JSON.stringify(leadData),
+          status: 'open'
+        }]).then(() => {}).catch(() => {});
+      } catch (e) {
+        console.warn("Abandoned checkout lead save notice:", e);
+      }
     }
 
     setStep(2);
@@ -251,6 +282,19 @@ export default function CheckoutModal({
     if (e) e.preventDefault();
     setErrorMsg('');
     setIsSubmitting(true);
+
+    // Final atomic stock reservation verification before creating the order
+    try {
+      const resCheck = await dbService.reserveCheckoutStock(checkoutSessionId, cart, 15);
+      if (!resCheck.ok && resCheck.conflicts.length > 0) {
+        const c = resCheck.conflicts[0];
+        setErrorMsg(
+          `عذراً، الكمية المتاحة حالياً من "${c.productName}" هي ${c.availableQty} قطعة فقط (تم حجزها لطلب آخر). يرجى تعديل الكمية في السلة.`
+        );
+        setIsSubmitting(false);
+        return;
+      }
+    } catch {}
 
     const normalizedPhone = formatSaudiPhone(phone);
     const orderParams = {
@@ -288,7 +332,8 @@ export default function CheckoutModal({
           return;
         }
 
-        // Mark abandoned lead as converted
+        // Mark abandoned lead as converted & consume active checkout hold
+        dbService.releaseCheckoutReservations(checkoutSessionId, true).catch(() => {});
         try {
           const existingLeads = JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
           const updated = existingLeads.map((l: any) => {
@@ -316,7 +361,8 @@ export default function CheckoutModal({
         setActiveOrder(order);
         setPaymentStatus('cod');
 
-        // Mark abandoned lead as converted
+        // Consume active checkout hold & mark abandoned lead as converted
+        dbService.releaseCheckoutReservations(checkoutSessionId, true).catch(() => {});
         try {
           const existingLeads = JSON.parse(localStorage.getItem('sulta_abandoned_checkouts') || '[]');
           const updated = existingLeads.map((l: any) => {
@@ -626,13 +672,13 @@ export default function CheckoutModal({
   // MAIN CHECKOUT MODAL
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4" dir="rtl">
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" onClick={handleCloseWithRelease} />
 
       <div className="relative bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[92vh] z-30 border border-gray-200 font-sans">
         
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={handleCloseWithRelease}
           type="button"
           className="absolute top-4 left-4 z-40 bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-500 p-2 rounded-full border border-gray-200 transition-all cursor-pointer"
           title="إغلاق"
@@ -666,6 +712,17 @@ export default function CheckoutModal({
                 />
               </div>
             </div>
+
+            {reservationNotice && (
+              <div className={`text-[11px] p-2.5 rounded-xl border mb-3 text-right flex items-center gap-2 font-bold ${
+                reservationNotice.startsWith('تنبيه')
+                  ? 'bg-amber-50 border-amber-200 text-amber-900'
+                  : 'bg-emerald-50/80 border-emerald-200 text-emerald-900'
+              }`}>
+                <Lock size={14} className="shrink-0" />
+                <span>{reservationNotice}</span>
+              </div>
+            )}
 
             {/* Error Message Box */}
             {errorMsg && (
@@ -822,9 +879,9 @@ export default function CheckoutModal({
                     <Check className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 transition-opacity peer-checked:opacity-100" strokeWidth={4} />
                   </div>
                   <div className="flex-1 space-y-0.5">
-                    <p className="text-xs font-bold text-gray-950">أوافق على استلام رسائل واتساب من Sulta 🌸</p>
+                    <p className="text-xs font-bold text-gray-950">أوافق على حفظ بيانات الطلب وإشعارات واتساب من سولته 🌸</p>
                     <p className="text-[10px] text-gray-500 leading-relaxed">
-                      سأستلم تفاصيل الحساب البنكي لتأكيد الدفع، تحديثات الشحن، ومتابعة الطلب.
+                      بموافقتكِ، نستطيع تذكيركِ بسلتكِ عند انقطاع الاتصال وإرسال تحديثات الشحن ورقم التتبع عبر واتساب وفق سياسة الخصوصية.
                     </p>
                   </div>
                 </label>

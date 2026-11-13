@@ -54,9 +54,9 @@ const LiveTrafficMonitor = React.lazy(() => import('./components/LiveTrafficMoni
 // LivePurchaseToasts removed to ensure 100% genuine data only
 const SearchOverlay = React.lazy(() => import('./components/SearchOverlay'));
 const SEOLandingPage = React.lazy(() => import('./components/SEOLandingPage'));
-const AdminGrowth = React.lazy(() => import('./components/AdminGrowth'));
 
 import { dbService, supabase, cleanImgUrl } from './services/db';
+import { CanonicalAdminRole } from './utils/rbac';
 import { SEED_FALLBACK_PRODUCTS } from './data/fallbackProducts';
 import { Product, CartItem, Country, DiscountCoupon, Order, Review, NewsletterSubscription, Collection, BlogPost } from './types';
 import { getProductSlug } from './utils/slugify';
@@ -112,40 +112,33 @@ function AppContent() {
   const [country, setCountry] = useState<Country>('SA');
   const [autoTrackId, setAutoTrackId] = useState<string | null>(null);
 
-  // Admin status check (Only authorized admins see live visitor counter badge)
-  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    try {
-      return !!localStorage.getItem('sulta_admin_auth_user');
-    } catch {
-      return false;
-    }
-  });
+  const isDashboardRoute = location.pathname.startsWith('/dashboard');
+
+  // Verified Admin state (derived strictly from Supabase Auth + AdminAuthGate)
+  const [authorizedAdmin, setAuthorizedAdmin] = useState<{
+    email: string;
+    name: string;
+    role: CanonicalAdminRole;
+  } | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   useEffect(() => {
-    const syncAdminStatus = () => {
-      try {
-        setIsAdmin(!!localStorage.getItem('sulta_admin_auth_user'));
-      } catch {
-        setIsAdmin(false);
-      }
-    };
-    syncAdminStatus();
-    window.addEventListener('storage', syncAdminStatus);
-    return () => window.removeEventListener('storage', syncAdminStatus);
+    if (!session?.user?.email) {
+      setAuthorizedAdmin(null);
+      setIsAdmin(false);
+    }
   }, [session]);
 
   // High-precision geographic country detector
   useEffect(() => {
-    // Synchronise manually chosen country changes to localStorage
     try {
       localStorage.setItem('sulta_user_country_preference', country);
     } catch (e) {}
 
-    // Track page view
-    supabase.from('page_views').insert([{ page_path: window.location.pathname }]).then();
-
-  }, [country]);
+    if (!isDashboardRoute) {
+      supabase.from('page_views').insert([{ page_path: window.location.pathname }]).then();
+    }
+  }, [country, isDashboardRoute]);
 
   // Comprehensive SPA Route Tracking (GA4, Meta, TikTok)
   useEffect(() => {
@@ -765,44 +758,46 @@ function AppContent() {
   const offers = catalogPool.filter(p => p.isDiscountActive && (p.salePriceSA || p.discountPercent > 0));
 
   return (
-      <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 pb-20 md:pb-0 transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
+      <div dir="rtl" className={`min-h-screen bg-[#FAF4F5] font-sans text-gray-900 ${isDashboardRoute ? 'pb-0' : 'pb-20 md:pb-0'} transition-all duration-1000 ${isMidnightVelvet ? 'midnight-velvet-active bg-[#0B0B0B] text-white' : ''}`}>
       
-      {/* GLOBAL HEADER BAR */}
-      <Header
-        session={session}
-        currentTab={currentTab}
-        setTab={setTab}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-        country={country}
-        setCountry={setCountry}
-        cart={cart}
-        favorites={favorites}
-        settings={settings}
-        products={products}
-        isAdmin={isAdmin}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenFavorites={() => {
-          setTab('account');
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('openAccountTab', { detail: 'wishlist' }));
-          }, 60);
-        }} // wishlist is in Account screen tab
-        onSearch={(query) => {
-          if (!query) {
-            setIsSearchOpen(true);
-          } else {
-            handleSearchQueryChange(query);
-            setTab('store');
-          }
-        }}
-      />
+      {/* GLOBAL HEADER BAR (Hidden on dedicated Admin Dashboard workspace) */}
+      {!isDashboardRoute && (
+        <Header
+          session={session}
+          currentTab={currentTab}
+          setTab={setTab}
+          mobileMenuOpen={mobileMenuOpen}
+          setMobileMenuOpen={setMobileMenuOpen}
+          country={country}
+          setCountry={setCountry}
+          cart={cart}
+          favorites={favorites}
+          settings={settings}
+          products={products}
+          isAdmin={isAdmin}
+          onOpenCart={() => setIsCartOpen(true)}
+          onOpenFavorites={() => {
+            setTab('account');
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent('openAccountTab', { detail: 'wishlist' }));
+            }, 60);
+          }}
+          onSearch={(query) => {
+            if (!query) {
+              setIsSearchOpen(true);
+            } else {
+              handleSearchQueryChange(query);
+              setTab('store');
+            }
+          }}
+        />
+      )}
 
       {/* REDIRECT HANDLER FOR LEGACY ?tab= LINKS */}
       <RedirectHandler />
 
       {/* CORE DYNAMIC LAYOUT BASED ON ROUTES */}
-      <main className="animate-fade-in-rapid overflow-x-hidden">
+      <main className={isDashboardRoute ? '' : 'animate-fade-in-rapid overflow-x-hidden'}>
         <Suspense fallback={
           <div className="min-h-[60vh] flex items-center justify-center">
             <div className="w-10 h-10 border-4 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin"></div>
@@ -931,15 +926,17 @@ function AppContent() {
             <Route path="/dashboard" element={
               <AdminAuthGate
                 session={session}
+                authLoading={authLoading}
                 onAuthorized={(user) => {
+                  setAuthorizedAdmin(user);
                   setIsAdmin(true);
-                  console.log("[AUTH] Admin access granted to:", user.email);
                 }}
                 onBackToStore={() => setTab('home')}
               >
                 <Dashboard
                   session={session}
                   authLoading={authLoading}
+                  adminUser={authorizedAdmin}
                   products={products}
                   setProducts={syncProducts}
                   orders={orders}
@@ -956,6 +953,17 @@ function AppContent() {
                   toast={toast}
                   deleteProduct={deleteProduct}
                   onBackToStore={() => setTab('home')}
+                  onSignOut={async () => {
+                    try {
+                      localStorage.removeItem('sulta_admin_auth_user');
+                    } catch {}
+                    try {
+                      await supabase.auth.signOut();
+                    } catch {}
+                    setAuthorizedAdmin(null);
+                    setIsAdmin(false);
+                    setTab('home');
+                  }}
                 />
               </AdminAuthGate>
             } />
@@ -1155,8 +1163,9 @@ function AppContent() {
       )}
       </Suspense>
 
-      {/* GLOBAL SALLA / NALAH STYLE CLEAN WHITE FOOTER */}
-      <footer className="bg-white text-gray-900 pt-16 pb-8 border-t border-gray-200 select-none font-sans text-xs" dir="rtl">
+      {/* GLOBAL SALLA / NALAH STYLE CLEAN WHITE FOOTER (Hidden on Dashboard) */}
+      {!isDashboardRoute && (
+        <footer className="bg-white text-gray-900 pt-16 pb-8 border-t border-gray-200 select-none font-sans text-xs" dir="rtl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           
           {/* Logo & Brand Story Column */}
@@ -1252,9 +1261,10 @@ function AppContent() {
           </div>
         </div>
       </footer>
+      )}
 
       {/* MOBILE DRAWER MODAL OVERLAY (Simplified and completely bug-free on all mobile viewports) */}
-      {mobileMenuOpen && (
+      {!isDashboardRoute && mobileMenuOpen && (
         <div className="fixed inset-0 z-[100] font-sans">
           {/* Blur backdrop overlay */}
           <div 
@@ -1395,15 +1405,17 @@ function AppContent() {
         </div>
       )}
 
-      {/* SALLA MOBILE BOTTOM NAVIGATION BAR */}
-      <MobileBottomNav
-        currentTab={currentTab}
-        setTab={setTab}
-        cart={cart}
-        favorites={favorites}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenFavorites={() => setTab('account')}
-      />
+      {/* SALLA MOBILE BOTTOM NAVIGATION BAR (Hidden on Dashboard) */}
+      {!isDashboardRoute && (
+        <MobileBottomNav
+          currentTab={currentTab}
+          setTab={setTab}
+          cart={cart}
+          favorites={favorites}
+          onOpenCart={() => setIsCartOpen(true)}
+          onOpenFavorites={() => setTab('account')}
+        />
+      )}
 
       <Suspense fallback={null}>
         <SearchOverlay 
@@ -1415,11 +1427,13 @@ function AppContent() {
         />
       </Suspense>
 
-      <WhatsAppFloat 
-        number={settings?.whatsappSaudi || settings?.whatsapp || '966552823677'} 
-        saudiNumber="966552823677" 
-        country={country} 
-      />
+      {!isDashboardRoute && (
+        <WhatsAppFloat 
+          number={settings?.whatsappSaudi || settings?.whatsapp || '966552823677'} 
+          saudiNumber="966552823677" 
+          country={country} 
+        />
+      )}
       {/* Genuine orders only */}
     </div>
   );
