@@ -419,6 +419,73 @@ async function runPrerender() {
     { path: 'dashboard', title: 'لوحة الإدارة | سولته', description: 'لوحة التحكم والإدارة لمتجر سولته.', noindex: true, bodyHtml: '' }
   ];
 
+  // Category / keyword landing pages (served as real static pages so crawlers get HTTP 200, not the SPA 404)
+  const categoryLandingPages = [
+  {
+    "path": "بيجامات-نسائية",
+    "keyword": "بيجامات نسائية",
+    "title": "أفضل بيجامات نسائية فاخرة في السعودية | متجر سولته",
+    "description": "استكشفي تشكيلتنا الواسعة من البيجامات النسائية الفاخرة. تصاميم عصرية، أقمشة ناعمة، ومقاسات مريحة. شحن مجاني للطلبات فوق 299 ريال."
+  },
+  {
+    "path": "بيجامات-قطن",
+    "keyword": "بيجامات قطن",
+    "title": "بيجامات قطن نسائية ناعمة 100% — راحة وأناقة | سولته",
+    "description": "بيجامات قطن نسائية بجودة عالية. خامات طبيعية تسمح للبشرة بالتنفس، تصاميم مريحة للنوم والاسترخاء. اطلبيها الآن من سولتة."
+  },
+  {
+    "path": "ملابس-نوم",
+    "keyword": "ملابس نوم",
+    "title": "ملابس نوم نسائية فاخرة — كوليكشن الموسم | متجر سولته",
+    "description": "دليلي نفسك بأجمل ملابس نوم نسائية. أناقة ملكية وراحة لا تضاهى. تشكيلة متنوعة من الألوان والتصاميم التي تليق بكِ."
+  },
+  {
+    "path": "بيجامات-عروس",
+    "keyword": "بيجامات عروس",
+    "title": "بيجامات عروس فاخرة وأطقم ليلة الدخلة في السعودية | سولته",
+    "description": "تألقي في ليلة عمركِ وأجمل أوقاتكِ مع تشكيلة بيجامات عروس فاخرة ومصممة بعناية فائقة. أقمشة بيضاء ووردية ناصعة مع تفاصيل كوتور راقية."
+  },
+  {
+    "path": "ملابس-استرخاء",
+    "keyword": "ملابس استرخاء",
+    "title": "ملابس استرخاء منزلية فاخرة للنساء — راحة تامة | سولته",
+    "description": "تشكيلة ملابس استرخاء منزلية راقية تجمع بين الأناقة والنعومة المطلقة. اختاري ما يعبر عن ذوقكِ الرفيع من صالات سولته."
+  },
+  {
+    "path": "قمصان-نوم",
+    "keyword": "قمصان نوم",
+    "title": "قمصان نوم نسائية ناعمة وفاخرة — تصاميم ملكية | سولته",
+    "description": "اكتشفي أجمل قمصان النوم النسائية الطويلة والقصيرة المصنوعة من أجود الأنسجة الناعمة. أناقة لا توصف للياليكِ الخاصة."
+  },
+  {
+    "path": "أرواب-استحمام",
+    "keyword": "أرواب",
+    "title": "أرواب نسائية فاخرة ومنشفة استرخاء ملكية | سولته",
+    "description": "أرواب استحيام واستقبال منزلية مصممة بأعلى معايير النعومة والامتصاص. أناقة متكاملة بعد الاستحمام."
+  },
+  {
+    "path": "تخفيضات-سولته",
+    "keyword": "تخفيضات",
+    "title": "تخفيضات وعروض بيجامات وملابس نوم نسائية | سولته",
+    "description": "تخفيضات حصرية على تشكيلة واسعة من البيجامات النسائية الفاخرة وملابس النوم. جودة لا تُعوض بأسعار استثنائية."
+  }
+];
+  for (const c of categoryLandingPages) {
+    const grid = rawProducts.map((p: any) => {
+      const slug = p.slug || getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr });
+      const nameAr = p.name_ar || p.nameAr || p.name;
+      const price = Number(p.price || p.price_sa || p.priceSA || 69);
+      const imgUrl = cleanImgUrl(Array.isArray(p.images) ? p.images[0] : p.image_url);
+      return `<article><a href="/product/${slug}"><img src="${imgUrl}" alt="${nameAr} - متجر سولته" loading="lazy" width="600" height="800" /><h2>${nameAr}</h2></a><p>${price} ر.س</p></article>`;
+    }).join('');
+    staticRoutes.push({
+      path: c.path,
+      title: c.title,
+      description: c.description,
+      bodyHtml: `<main dir="rtl"><h1>${c.title.split('|')[0].trim()}</h1><p>${c.description}</p><div>${grid}</div></main>`
+    } as any);
+  }
+
   for (const page of staticRoutes) {
     const pageHtml = buildPageHtml(template, page.path, {
       title: page.title,
