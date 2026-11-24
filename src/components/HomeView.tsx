@@ -97,7 +97,7 @@ const HomeView: React.FC<HomeViewProps> = ({
 
       {/* DYNAMIC HOMEPAGE PRODUCT SECTIONS */}
       {[
-        { title: 'الأكثر طلباً ومبيعاً 🔥', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
+        { title: 'الأكثر طلباً ومبيعاً', label: 'قطع نالت إعجاب واختيار العميلات', data: bestSellers },
         { title: 'وصل حديثاً ✨', label: 'أحدث تصاميم أزياء النوم والقطع المريحة', data: newArrivals },
         { title: 'عروض وتخفيضات حصرية 🏷️', label: 'فرصتكِ للتسوق بأفضل الأسعار', data: offers }
       ].map((section, sectionIdx) => (
