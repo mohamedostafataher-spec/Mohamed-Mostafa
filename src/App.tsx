@@ -1174,7 +1174,7 @@ function AppContent() {
               <span className="font-serif text-2xl font-black tracking-widest text-[#111827] uppercase">
                 Sulta
               </span>
-              <span className="text-[#A44C5C] text-sm">👑</span>
+              
             </div>
             <span className="text-[11px] uppercase tracking-[0.2em] font-bold block text-gray-900 font-sans -mt-2">
               سولته · أزياء النوم الفاخرة
