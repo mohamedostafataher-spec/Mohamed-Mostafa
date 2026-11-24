@@ -132,22 +132,22 @@ export default function Header({
   const promoItems = [
     {
       icon: <Truck size={13} className="text-amber-400 shrink-0" />,
-      text: `شحن مجاني للطلبات فوق ${country === 'SA' ? '299' : '1000'} ${country === 'SA' ? 'ر.س' : 'ج.م'} 🇸🇦`
+      text: `شحن مجاني للطلبات فوق ${country === 'SA' ? '299' : '1000'} ${country === 'SA' ? 'ر.س' : 'ج.م'}`
     },
     {
       icon: <Sparkles size={13} className="text-amber-400 shrink-0" />,
-      text: 'بيجامات قطن كوريشة فاخرة بكميات محدودة ✨'
+      text: 'بيجامات قطن كوريشة فاخرة بكميات محدودة'
     },
     {
       icon: <Check size={13} className="text-amber-400 shrink-0" />,
-      text: 'استبدال سهل ومرن لضمان رضاكِ التام ✅'
+      text: 'استبدال سهل ومرن لضمان رضاكِ التام'
     }
   ];
 
   const navCategories = [
     { id: 'home', label: 'الرئيسية 🏠' },
     { id: 'store', label: 'المتجر 🛍️' },
-    { id: 'best-sellers', label: 'الأكثر طلباً 🔥' },
+    { id: 'best-sellers', label: 'الأكثر طلباً' },
     { id: 'offers', label: 'العروض 🏷️' }
   ].filter(cat => !(cat as any).adminOnly || isAdmin);
 
@@ -220,7 +220,7 @@ export default function Header({
                 <span className="text-xl sm:text-2xl font-black tracking-widest text-[#111827] font-serif uppercase">
                   Sulta
                 </span>
-                <span className="text-[#A44C5C] text-sm sm:text-base" aria-hidden="true">👑</span>
+                
               </div>
               <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-bold text-gray-500 font-sans -mt-0.5 hidden sm:block">
                 سولته · أزياء النوم الفاخرة
