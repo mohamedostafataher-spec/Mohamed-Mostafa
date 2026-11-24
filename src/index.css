@@ -230,3 +230,47 @@ header, .fixed, .absolute {
 
 
 
+
+
+/* ===== SULTA global minimal theme (neutral, editorial, premium) ===== */
+@theme {
+  --font-sans: "IBM Plex Sans Arabic", "Inter", "Tajawal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+:root {
+  --brand: #1A1A1A;
+  --brand-hover: #000000;
+  --color-primary: #1A1A1A;
+  --color-primary-hover: #000000;
+  --color-surface-soft: #F6F5F2;
+  --color-border: #E7E5E0;
+}
+body { font-family: var(--font-sans); background:#FFFFFF; color:#161616; letter-spacing: 0; }
+h1, h2, h3 { letter-spacing: -0.01em; font-weight: 600; }
+
+/* Brand accent: burgundy -> ink black */
+.bg-\[\#A44C5C\] { background-color:#161616 !important; }
+.hover\:bg-\[\#A44C5C\]:hover, .hover\:bg-\[\#8F3F4E\]:hover, .hover\:bg-\[\#8B3D4C\]:hover { background-color:#000 !important; }
+.text-\[\#A44C5C\] { color:#161616 !important; }
+.hover\:text-\[\#A44C5C\]:hover { color:#000 !important; }
+.border-\[\#A44C5C\] { border-color:#161616 !important; }
+.ring-\[\#A44C5C\], .focus-visible\:ring-\[\#A44C5C\]:focus-visible { --tw-ring-color:#161616 !important; }
+.bg-\[\#A44C5C\]\/10, .bg-\[\#A44C5C\]\/5 { background-color:#F3F2EF !important; }
+.text-\[\#DF8A9C\], .text-\[\#DF8A9D\] { color:#6B6B6B !important; }
+.bg-\[\#DF8A9C\], .bg-\[\#DF8A9D\] { background-color:#161616 !important; }
+.bg-\[\#FCF5F6\], .bg-\[\#FAF4F5\], .bg-\[\#FAF8F8\], .bg-\[\#FAF5F0\], .bg-light-pink, .bg-\[\#F8F9FA\] { background-color:#F6F5F2 !important; }
+.bg-\[\#F6E7A6\], .text-\[\#F6E7A6\], .text-\[\#E5C470\] { color:#8A8A8A !important; }
+
+/* Shapes: sharper, editorial */
+.rounded-2xl, .rounded-3xl { border-radius: 4px !important; }
+.rounded-xl { border-radius: 3px !important; }
+.rounded-lg { border-radius: 2px !important; }
+button.bg-\[\#A44C5C\], a.bg-\[\#A44C5C\] { border-radius: 2px !important; letter-spacing: .02em; font-weight: 600; box-shadow:none !important; }
+.shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: 0 1px 2px rgba(0,0,0,.06) !important; }
+
+/* Product cards: flat, hairline border */
+article, .group.flex.flex-col.h-full { border-color:#ECEAE5 !important; }
+.group.flex.flex-col.h-full:hover { box-shadow:none !important; border-color:#161616 !important; }
+
+/* Top announcement bar and nav: quiet */
+.bg-\[\#0B0B0B\], .bg-luxury-black { background-color:#161616 !important; }
+header, nav { border-color:#EFEDE8 !important; }
