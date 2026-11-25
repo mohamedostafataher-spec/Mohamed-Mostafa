@@ -33,6 +33,7 @@ const InfoPage = React.lazy(() => import('./components/InfoPage'));
 const ReturnsExchanges = React.lazy(() => import('./components/ReturnsExchanges'));
 const DatabaseTest = React.lazy(() => import('./components/DatabaseTest'));
 const BlogView = React.lazy(() => import('./components/BlogView'));
+const StaticBlog = React.lazy(() => import('./components/StaticBlog'));
 const BlogPostView = React.lazy(() => import('./components/BlogPostView'));
 const TrackOrder = React.lazy(() => import('./components/TrackOrder'));
 const SystemStatus = React.lazy(() => import('./components/SystemStatus'));
@@ -921,6 +922,8 @@ function AppContent() {
             } />
             <Route path="/faq" element={<Faq />} />
             <Route path="/returns" element={<ReturnsExchanges />} />
+            <Route path="/blog" element={<StaticBlog />} />
+            <Route path="/blog/:slug" element={<StaticBlog />} />
             <Route path="/magazine" element={
               selectedBlogPost ? (
                 <BlogPostView post={selectedBlogPost} onBack={() => setSelectedBlogPost(null)} />
