@@ -393,6 +393,21 @@ async function runPrerender() {
             <p class="text-gray-600 text-sm leading-relaxed mb-4">دليل شامل ومفصل لاختيار بيجامات النوم القطنية والقطن الكوريشة ومقاس وان سايز من دار سولته في السعودية.</p>
             <a href="/blog/ultimate-womens-sleepwear-cotton-guide" class="text-[#A44C5C] font-bold text-sm">اقرئي الدليل الكامل ←</a>
           </article>
+          <article class="border border-gray-200 rounded-2xl p-6 bg-white shadow-xs">
+            <h2 class="text-xl font-bold text-gray-900 mb-2"><a href="/blog/one-size-pajama-45-80-kg-guide" class="hover:text-[#A44C5C]">كيف تعرفين إن بيجامة سولته وان سايز تناسبك؟</a></h2>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">بيجامات سولته بمقاس واحد (وان سايز) يناسب من 45 إلى 80 كيلو. تعرفي كيف تختارين وتتأكدين قبل الطلب.</p>
+            <a href="/blog/one-size-pajama-45-80-kg-guide" class="text-[#A44C5C] font-bold text-sm">اقرئي المقال ←</a>
+          </article>
+          <article class="border border-gray-200 rounded-2xl p-6 bg-white shadow-xs">
+            <h2 class="text-xl font-bold text-gray-900 mb-2"><a href="/blog/how-to-wash-crinkle-cotton-pajamas" class="hover:text-[#A44C5C]">طريقة غسيل بيجامة قطن كوريشة</a></h2>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">تعليمات الغسيل اللطيف لبيجامات القطن الكوريشة من سولته عشان تحافظين على نعومتها وألوانها.</p>
+            <a href="/blog/how-to-wash-crinkle-cotton-pajamas" class="text-[#A44C5C] font-bold text-sm">اقرئي المقال ←</a>
+          </article>
+          <article class="border border-gray-200 rounded-2xl p-6 bg-white shadow-xs">
+            <h2 class="text-xl font-bold text-gray-900 mb-2"><a href="/blog/order-shipping-returns-sulta-saudi" class="hover:text-[#A44C5C]">كيف تطلبين من سولته: الشحن والدفع والاسترجاع</a></h2>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">كل ما تحتاجين تعرفينه قبل الطلب من سولته: الشحن داخل السعودية، طرق الدفع، الاسترجاع والاستبدال.</p>
+            <a href="/blog/order-shipping-returns-sulta-saudi" class="text-[#A44C5C] font-bold text-sm">اقرئي المقال ←</a>
+          </article>
         </div>
       </main>`
     },
@@ -411,6 +426,56 @@ async function runPrerender() {
           <div class="mt-8 pt-6 border-t border-gray-200">
             <a href="/store" class="inline-block bg-[#A44C5C] text-white font-bold px-8 py-3 rounded-xl hover:bg-[#8e3f4d] transition-colors">تصفحي تشكيلة بيجامات سولته الآن</a>
           </div>
+        </div>
+      </article>`
+    },
+    {
+      path: 'blog/one-size-pajama-45-80-kg-guide',
+      title: 'كيف تعرفين إن بيجامة سولته وان سايز تناسبك؟ | سولته',
+      description: 'بيجامات سولته بمقاس واحد (وان سايز) يناسب من 45 إلى 80 كيلو. تعرفي كيف تختارين وتتأكدين قبل الطلب.',
+      bodyHtml: `<article dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6">كيف تعرفين إن بيجامة سولته وان سايز تناسبك؟</h1>
+        <div class="text-gray-700 leading-relaxed space-y-4">
+          <p>كل بيجامات سولته بمقاس واحد (وان سايز)، وهو يناسب الوزن من 45 إلى 80 كيلو. يعني ما تحتاجين تحتارين بين S وM وL.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">قبل ما تطلبين</h2>
+          <p>إذا وزنك بين 45 و80 كيلو، المقاس يناسبك. وإذا كنتِ قريبة من أحد الطرفين وعندك سؤال عن الطول أو القصّة، راسلينا على واتساب قبل الطلب ونرد عليك.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">ولو ما ناسبك المقاس؟</h2>
+          <p>عندك استبدال واسترجاع خلال 14 يوم من استلام الطلب، بشرط تكون القطعة بحالتها الأصلية.</p>
+          <p><a href="/size-guide" class="text-[#A44C5C] font-bold">شوفي دليل المقاسات الكامل</a></p>
+        </div>
+      </article>`
+    },
+    {
+      path: 'blog/how-to-wash-crinkle-cotton-pajamas',
+      title: 'طريقة غسيل بيجامة قطن كوريشة | سولته',
+      description: 'تعليمات الغسيل اللطيف لبيجامات القطن الكوريشة من سولته عشان تحافظين على نعومتها وألوانها.',
+      bodyHtml: `<article dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6">طريقة غسيل بيجامة قطن كوريشة</h1>
+        <div class="text-gray-700 leading-relaxed space-y-4">
+          <p>بيجامات سولته من قطن كوريشة ناعم. عشان تبقى ناعمة ومرتبة مع الغسيل، اتبعي هالخطوات البسيطة.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">الغسيل</h2>
+          <ul class="list-disc list-inside space-y-2"><li>غسيل لطيف بماء بارد، وهذي تعليمات الغسيل المكتوبة في صفحة المنتج.</li><li>افصلي القطع الفاتحة (الأبيض العاجي والوردي) عن الألوان الغامقة والحمراء.</li><li>لا تتركينها مبللة لفترة طويلة داخل الغسالة أو السلة.</li></ul>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">نصيحة</h2>
+          <p>اقرئي تعليمات العناية في صفحة كل منتج قبل الغسيل، لأن التعليمات الخاصة بالقطعة هي الأساس.</p>
+          <p><a href="/store" class="text-[#A44C5C] font-bold">تصفحي بيجامات سولته</a></p>
+        </div>
+      </article>`
+    },
+    {
+      path: 'blog/order-shipping-returns-sulta-saudi',
+      title: 'كيف تطلبين من سولته: الشحن والدفع والاسترجاع | سولته',
+      description: 'كل ما تحتاجين تعرفينه قبل الطلب من سولته: الشحن داخل السعودية، طرق الدفع، الاسترجاع والاستبدال.',
+      bodyHtml: `<article dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6">كيف تطلبين من سولته: الشحن والدفع والاسترجاع</h1>
+        <div class="text-gray-700 leading-relaxed space-y-4">
+          <p>هنا ملخص واضح لخطوات الطلب من سولته داخل السعودية.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">الشحن</h2>
+          <ul class="list-disc list-inside space-y-2"><li>نوصّل لجميع مدن المملكة، والتوصيل من 2 إلى 4 أيام عمل.</li><li>الشحن 40 ر.س، ومجاني للطلبات فوق 299 ر.س.</li></ul>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">الدفع</h2>
+          <p>الدفع عند الاستلام أو بالتحويل البنكي.</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-6">الاستبدال والاسترجاع</h2>
+          <ul class="list-disc list-inside space-y-2"><li>استبدال واسترجاع خلال 14 يوم من استلام الطلب، والقطعة بحالتها الأصلية.</li><li>إذا وصلتك القطعة فيها ضرر، بلغينا خلال 48 ساعة.</li></ul>
+          <p><a href="/shipping" class="text-[#A44C5C] font-bold">تفاصيل الشحن</a> · <a href="/returns" class="text-[#A44C5C] font-bold">سياسة الاسترجاع</a></p>
         </div>
       </article>`
     },
