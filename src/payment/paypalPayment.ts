@@ -71,16 +71,16 @@ export async function processPayPalPayment(
       }
     }
 
-    // Direct verified client completion for instant PayPal checkout
+    // Online PayPal payment is not integrated. Never report a payment as completed.
     return {
-      success: true,
+      success: false,
       orderId: params.orderId,
-      paypalOrderId,
-      transactionId,
+      paypalOrderId: '',
+      transactionId: '',
       amountUSD,
       amountSAR: params.amountSAR,
-      status: 'COMPLETED',
-      payerEmail: params.customerEmail || 'customer@paypal.com'
+      status: 'FAILED',
+      errorMessage: 'الدفع الإلكتروني غير متاح حالياً. يرجى اختيار الدفع عند الاستلام أو التحويل البنكي.'
     };
   } catch (error: any) {
     console.error('[PayPalPayment] Error:', error);
