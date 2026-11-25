@@ -136,7 +136,7 @@ export default function Header({
     },
     {
       icon: <Sparkles size={13} className="text-amber-400 shrink-0" />,
-      text: 'بيجامات قطن كوريشة فاخرة بكميات محدودة'
+      text: 'بيجامات نسائية من سولته، توصيل لجميع مدن المملكة'
     },
     {
       icon: <Check size={13} className="text-amber-400 shrink-0" />,
