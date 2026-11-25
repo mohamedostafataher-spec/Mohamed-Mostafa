@@ -524,6 +524,16 @@ async function runPrerender() {
       </main>`
     })),
     {
+      path: 'blog/how-to-track-your-sulta-order',
+      title: 'كيف تتبعين طلبك من سولته؟ | سولته',
+      description: 'خطوات تتبع طلبك من سولته، ومتى توصل الشحنة، وكيف تتواصلين معنا إذا احتجتِ مساعدة.',
+      bodyHtml: `<article dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-6">كيف تتبعين طلبك من سولته؟</h1>
+        <p class="text-gray-700 mb-4">بعد إرسال الطلب ادخلي صفحة تتبع الطلب واكتبي رقم الطلب. التوصيل يكون خلال 2 إلى 4 أيام عمل. إذا احتجتِ مساعدة راسلينا على واتساب 0552823677.</p>
+        <p><a href="/track-order" class="text-[#A44C5C] font-bold">تتبعي طلبك</a></p>
+      </article>`
+    },
+    {
       path: 'blog/pajama-gift-for-her-guide',
       title: 'كيف تختارين بيجامة هدية لها؟ | سولته',
       description: 'نصائح بسيطة لاختيار بيجامة هدية من سولته: المقاس، اللون، وكيف تطلبينها وتوصل لعنوان المستلمة.',
@@ -533,7 +543,7 @@ async function runPrerender() {
         <p><a href="/gift" class="text-[#A44C5C] font-bold">صفحة الهدايا</a></p>
       </article>`
     },
-    { path: 'contact', title: 'اتصلي بنا | متجر سولته', description: 'تواصلي مع خدمة عملاء متجر سولته للبيجامات النسائية عبر الواتساب أو الهاتف في السعودية.', bodyHtml: '' },
+    { path: 'contact', title: 'اتصلي بنا | متجر سولته', description: 'تواصلي مع خدمة عملاء متجر سولته للبيجامات النسائية عبر الواتساب أو الهاتف في السعودية.', bodyHtml: `<main dir="rtl" class="max-w-3xl mx-auto px-4 py-12"><h1 class="text-3xl font-extrabold text-gray-900 mb-4">اتصلي بنا</h1><p class="text-gray-700">لأي سؤال عن طلبك أو المقاس راسلينا على واتساب <a href="https://wa.me/966552823677" class="text-[#A44C5C] font-bold">0552823677</a>.</p></main>` },
     { path: 'account', title: 'حسابي وطلباتي | متجر سولته', description: 'الملف الشخصي وإدارة وتتبع الطلبات في متجر سولته.', noindex: true, bodyHtml: '' },
     { path: 'track-order', title: 'تتبع الطلب | سولته', description: 'تتبعي حالة طلبك وشحنتك في سولته.', noindex: true, bodyHtml: '' },
     { path: 'dashboard', title: 'لوحة الإدارة | سولته', description: 'لوحة التحكم والإدارة لمتجر سولته.', noindex: true, bodyHtml: '' }
