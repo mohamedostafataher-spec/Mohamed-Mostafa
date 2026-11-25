@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { Product } from '../types';
 import { getIdFromSlug, getProductSlug } from '../utils/slugify';
-import ReelVideo from './ReelVideo';
+import ReelSlide from './ReelSlide';
 import { findReelForSlug, REELS_MUSIC_CREDIT } from '../data/reels';
 import { dbService, cleanImgUrl } from '../services/db';
 import { trackViewContent } from '../utils/analytics';
@@ -133,6 +133,22 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     );
   }
 
+  const galleryReel = product ? findReelForSlug(getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr, slug: product.slug })) : undefined;
+  const galleryImgCount = Array.isArray(product?.images) ? product!.images.filter(i => i && typeof i === 'string' && i.trim() !== '').length : 0;
+  const slideCount = galleryImgCount + (galleryReel ? 1 : 0);
+  const [galleryPausedUntil, setGalleryPausedUntil] = useState(0);
+  const pauseGallery = () => setGalleryPausedUntil(Date.now() + 8000);
+  const onVideoSlide = !!galleryReel && activeImageIdx === galleryImgCount;
+
+  // Auto-advance through photos and the reel; pauses 8s after any touch/click
+  useEffect(() => {
+    if (slideCount < 2 || onVideoSlide) return;
+    const t = setTimeout(() => {
+      setActiveImageIdx(i => (i + 1) % slideCount);
+    }, Math.max(4000, galleryPausedUntil - Date.now() + 1000));
+    return () => clearTimeout(t);
+  }, [activeImageIdx, slideCount, onVideoSlide, galleryPausedUntil]);
+
   if (!product) return null;
 
   const isFav = favorites.includes(product.id);
@@ -154,14 +170,15 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
   const descriptiveAlt = `${product.nameAr || 'منتج سولته'} - ${colorName} - ${fabricName}`;
 
   const handleNextImage = () => {
-    setActiveImageIdx(prev => (prev + 1) % displayImages.length);
+    setActiveImageIdx(prev => (prev + 1) % Math.max(slideCount, 1));
   };
 
   const handlePrevImage = () => {
-    setActiveImageIdx(prev => (prev - 1 + displayImages.length) % displayImages.length);
+    setActiveImageIdx(prev => (prev - 1 + Math.max(slideCount, 1)) % Math.max(slideCount, 1));
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    pauseGallery();
     touchStartX.current = e.targetTouches[0].clientX;
   };
 
@@ -359,7 +376,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {currentMainImage ? (
+            {galleryReel && (
+              <ReelSlide reel={galleryReel} active={onVideoSlide} onEnded={() => setActiveImageIdx(0)} />
+            )}
+            {onVideoSlide ? null : currentMainImage ? (
               <SultaImage 
                 src={currentMainImage} 
                 alt={descriptiveAlt} 
@@ -377,7 +397,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               </div>
             )}
 
-            {displayImages.length > 1 && (
+            {slideCount > 1 && (
               <>
                 <button
                   type="button"
@@ -406,7 +426,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           </div>
 
           {/* Interactive Thumbnails */}
-          {displayImages.length > 1 && (
+          {slideCount > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none pt-1">
               {displayImages.map((img, idx) => {
                 const isSelected = activeImageIdx === idx;
@@ -433,7 +453,21 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                   </button>
                 );
               })}
+              {galleryReel && (
+                <button
+                  type="button"
+                  onClick={() => { pauseGallery(); setActiveImageIdx(galleryImgCount); }}
+                  className={`relative flex-shrink-0 w-20 h-24 rounded-2xl overflow-hidden bg-black border-2 cursor-pointer ${onVideoSlide ? 'border-[#A44C5C] ring-2 ring-[#A44C5C]/30 shadow-md' : 'border-gray-200 opacity-70'}`}
+                  aria-label="عرض الفيديو"
+                >
+                  <img src={`/reels/${galleryReel.file}-poster.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  <span className="absolute inset-0 flex items-center justify-center text-white text-xl bg-black/25">▶</span>
+                </button>
+              )}
             </div>
+          )}
+          {galleryReel && (
+            <p className="text-[10px] text-gray-400 text-center" dir="ltr">{REELS_MUSIC_CREDIT}</p>
           )}
         </div>
 
@@ -707,16 +741,6 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             </div>
           </div>
 
-          {(() => {
-            const reel = findReelForSlug(productSlug);
-            return reel ? (
-              <div className="max-w-xs mx-auto my-8">
-                <h3 className="text-sm font-bold text-center mb-3">شاهديها في فيديو</h3>
-                <ReelVideo reel={reel} />
-                <p className="text-[10px] text-gray-400 text-center mt-2" dir="ltr">{REELS_MUSIC_CREDIT}</p>
-              </div>
-            ) : null;
-          })()}
           <ProductReviews productId={product.id} productName={product.nameAr} />
 
           {/* Similar Products */}
