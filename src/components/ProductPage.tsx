@@ -65,7 +65,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           trackTikTokViewContent(p, 'SAR');
 
           // Ensure clean slug in URL
-          const correctSlug = p.slug || getProductSlug({ id: p.id, nameEn: p.nameEn, nameAr: p.nameAr });
+          const correctSlug = getProductSlug({ id: p.id, nameEn: p.nameEn, nameAr: p.nameAr, slug: p.slug });
           if (slug !== correctSlug && slug !== `${p.id}-${correctSlug}`) {
             navigate(`/product/${correctSlug}`, { replace: true });
           }
@@ -708,7 +708,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
           </div>
 
           {(() => {
-            const reel = findReelForSlug(product.slug, productSlug, slug);
+            const reel = findReelForSlug(productSlug);
             return reel ? (
               <div className="max-w-xs mx-auto my-8">
                 <h3 className="text-sm font-bold text-center mb-3">شاهديها في فيديو</h3>
