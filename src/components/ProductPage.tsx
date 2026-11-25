@@ -749,7 +749,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
       </div>
 
       {/* Sticky Bottom Action Bar for Mobile Devices */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-2.5 shadow-lg flex items-center justify-between gap-3" dir="rtl">
+      <div className="md:hidden fixed bottom-[64px] left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-2.5 shadow-lg flex items-center justify-between gap-3" dir="rtl">
         <div className="text-right">
           <span className="text-[11px] text-gray-500 block">السعر شامل الضريبة</span>
           <span className="text-base font-black text-[#A44C5C]">{discountInfo.unitPrice} ر.س</span>
