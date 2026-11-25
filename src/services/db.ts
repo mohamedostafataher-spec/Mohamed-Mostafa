@@ -161,7 +161,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
   },
   {
     id: "art-003",
-    title: "دليل بيجامات النوم النسائية الفاخرة — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟",
+    title: "دليل بيجامات النوم النسائية — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟",
     slug: "ultimate-womens-sleepwear-cotton-guide",
     content: "تعتبر ملابس النوم والبيجامات النسائية ركيزة أساسية في جودة الراحة والاسترخاء اليومي. في هذا الدليل التخصصي من دار سولته، نستعرض الفروقات الجوهرية بين القطن الطبيعي المعالج عالي النعومة وأقمشة قطن الكوريشة (Seersucker Crinkle Cotton) الباردة المقاومة للحرارة. كما نوضح سر نجاح قصّات المقاس الموحد (One Size) التي تناسب الأوزان من 45 إلى 80 كجم بانسيابية وراحة فائقة تناسب أجواء منازل السعودية والخليج، مع إرشادات الغسيل بالماء البارد للحفاظ على نعومة النسيج وألوانه الملكية.",
     excerpt: "دليل شامل ومفصل لاختيار بيجامات النوم القطنية والقطن الكوريشة ومقاس وان سايز من دار سولته.",
@@ -178,7 +178,7 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
 
 export const SEED_FAQ: FaqItem[] = [
   { id: "faq-1", question: "كيف أقوم بتنظيف قطع الأنسجة الطبيعية من سولته؟", answer: "ننصح بإن تودع القطع في الغسيل الجاف أو غسيل يدوي لطيف للغاية بالماء البارد دون تعريض للفرك العنيف.", category: "المنسوجات", orderIndex: 1 },
-  { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل الفاخر؟", answer: "بالتأكيد، يوفر Sulta علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
+  { id: "faq-2", question: "هل تتوفر عينات من الأقمشة قبل التفصيل؟", answer: "بالتأكيد، يوفر Sulta علبة منسوجات نموذجية تُرسل لعملاء باقة الصالون لتنسيق الألوان المطلوبة.", category: "الخدمة", orderIndex: 2 }
 ];
 
 export const SEED_ADVANCED_COUPONS: any[] = [
@@ -187,7 +187,7 @@ export const SEED_ADVANCED_COUPONS: any[] = [
 ];
 
 export const SEED_PROMOTIONS: any[] = [
-  { id: 'prom-1', name: 'أسبوع الأنسجة الملكية', description: 'خصم ٢٥٪ على جميع مشغولات الأنسجة الملكية الصافية بمناسبة تدشين مجموعة العروس الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الأنسجة الملكية الفاخر - خصم ٢٥٪' }
+  { id: 'prom-1', name: 'أسبوع الأنسجة الملكية', description: 'خصم ٢٥٪ على جميع مشغولات الأنسجة الملكية الصافية بمناسبة تدشين مجموعة العروس الجديدة.', discount_type: 'percentage', discount_value: 25, is_active: true, banner_text: 'عروض أسبوع الأنسجة الملكية - خصم ٢٥٪' }
 ];
 
 export const SEED_ACTIVITY_LOGS: any[] = [
@@ -215,10 +215,10 @@ export function cleanText(text: any): any {
     .replace(/zoria/ig, 'Sulta')
     .replace(/زوريا/g, 'سولته')
     .replace(/كوتور ساتان/g, 'كوتور ناعم')
-    .replace(/الساتان/g, 'الأنسجة الفاخرة')
-    .replace(/الستان/g, 'الأنسجة الفاخرة')
-    .replace(/ساتان/g, 'أنسجة فاخرة')
-    .replace(/ستان/g, 'أنسجة فاخرة')
+    .replace(/الساتان/g, 'الأنسجة')
+    .replace(/الستان/g, 'الأنسجة')
+    .replace(/ساتان/g, 'أنسجة')
+    .replace(/ستان/g, 'أنسجة')
     .replace(/الإيطالي|الايطالي/g, 'الملكي')
     .replace(/إيطالي|ايطالي/g, 'ملكي')
     .replace(/الإيطالية|الايطالية/g, 'الملكية')
@@ -239,7 +239,11 @@ export function cleanText(text: any): any {
     .replace(/(ملكي\s+)+ملكي/g, 'ملكي')
     .replace(/(ملكية\s+)+ملكية/g, 'ملكية')
     .replace(/فاخرةي/g, 'فاخرة')
-    .replace(/سولتة/g, 'سولته');
+    .replace(/سولتة/g, 'سولته')
+    // "فاخرة" is not a confirmed brand claim: drop it from any text coming from the database
+    .replace(/(^|[\s،,(])(?:ال)?فاخر(?:ة|ات)?(?![\u0621-\u064A])\s*/g, '$1')
+    .replace(/\s+([،,؟؛])/g, '$1')
+    .replace(/\s{2,}/g, ' ');
 
   return cleaned.trim();
 }
@@ -1112,7 +1116,7 @@ export const dbService = {
         contactEmail: 'concierge@sulta.sa',
         shippingRates: [
           { regionAr: 'شحن سريع ومجاني لكافة مدن المملكة العربية السعودية 🇸🇦', regionEn: 'KSA Express Shipping', fee: 0 },
-          { regionAr: 'توصيل فاخر بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 40 }
+          { regionAr: 'توصيل بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 40 }
         ],
         defaultShippingFee: 40,
         instagram: 'https://www.instagram.com/sultabrand',
@@ -2353,7 +2357,7 @@ export const dbService = {
         salePriceSA: salePriceSA !== undefined ? salePriceSA : existing.salePriceSA
       } : {
         id: productId,
-        nameAr: 'منتج كوتور فاخر',
+        nameAr: 'منتج كوتور',
         nameEn: 'Couture Product',
         category: 'new',
         categoryAr: 'المجموعة الجديدة',
@@ -2610,7 +2614,7 @@ export const dbService = {
             const arabicStatusMap: Record<string, string> = {
               'paid': 'تم تأكيد الدفع بنجاح 💳',
               'confirmed': 'تم تأكيد طلبكِ وجاري التجهيز 🌸',
-              'processing': 'جاري تجهيز وتغليف طلبكِ الفاخر 🎁',
+              'processing': 'جاري تجهيز وتغليف طلبكِ 🎁',
               'packed': 'تم تغليف طلبكِ وجاهز للشحن 🎁',
               'shipped': 'تم تسليم الشحنة لشركة الشحن 🚚',
               'out_for_delivery': 'شحنتكِ مع المندوب للتوصيل اليوم ✨',
@@ -2802,7 +2806,7 @@ export const dbService = {
       categoryAr: 'ملابس نوم',
       priceEG: 850,
       priceSA: 120,
-      descriptionAr: 'بيجامة تجريبية مع فيونكات وردي ناعمة للتحقق وتجربة نظام الشراء الفاخر.',
+      descriptionAr: 'بيجامة تجريبية مع فيونكات وردي ناعمة للتحقق وتجربة نظام الشراء.',
       descriptionEn: 'Experimental pajama set with soft pink bows for purchasing flow testing.',
       fabricAr: 'قطن مبرد ناعم عالي الجودة',
       fabricEn: 'High quality soft premium cooling cotton',

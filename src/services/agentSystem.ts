@@ -223,7 +223,7 @@ export const agentSystem = {
     if (newStatus === 'shipped') {
       updateMessage += `\n\n🚚 رقم التتبع المخصص مع الناقل هو: ${trackingId}`;
     } else if (newStatus === 'delivered') {
-      updateMessage += `\n\n🎉 نأمل أن تلمسي السعادة المطلقة بقطع الكوتور الفاخرة المعبأة بخلطة عطور البوتيك الزكية! بعد 48 ساعة سنقوم بإرسال استطلاع جودة مبسط لنستمع لذوقك الرفيع.`;
+      updateMessage += `\n\n🎉 نأمل أن تلمسي السعادة المطلقة بقطع الكوتور المعبأة بخلطة عطور البوتيك الزكية! بعد 48 ساعة سنقوم بإرسال استطلاع جودة مبسط لنستمع لذوقك الرفيع.`;
     }
 
     const mockMessage: SimulatedWhatsAppMessage = {
@@ -406,7 +406,7 @@ export const agentSystem = {
           agentSystem.addLog(
             'vip_agent',
             'VIP Customer Agent',
-            `👑 ترقية ملكية استثنائية! تجاوزت قيمة مشتريات العميلة ${customerName} حاجز ${vipThreshold.toLocaleString()} ${currency} (الإجمالي: ${totalSpent.toLocaleString()} ${currency}). تم ترقيتها تلقائياً لدرجة Sulta VIP الفاخرة بنجاح.`,
+            `👑 ترقية ملكية استثنائية! تجاوزت قيمة مشتريات العميلة ${customerName} حاجز ${vipThreshold.toLocaleString()} ${currency} (الإجمالي: ${totalSpent.toLocaleString()} ${currency}). تم ترقيتها تلقائياً لدرجة Sulta VIP بنجاح.`,
             'success',
             newVip
           );
@@ -417,7 +417,7 @@ export const agentSystem = {
             `سيدتنا وأميرتنا الغالية: ${customerName} 👑\n` +
             `يسرنا ويشرفنا إشعاركِ بأنه تم ترقية ملفكِ التعريفي تلقائياً وبأقصى درجات الفخر إلى نخبة العميلات:\n` +
             `👑 [ Sulta VIP CUSTOMER ] 👑\n\n` +
-            `نظراً لولائكِ المرموق وثقتكِ الفائقة في قطعنا الفاخرة، ستحصلين الآن بشكل مستمر على:\n` +
+            `نظراً لولائكِ المرموق وثقتكِ الفائقة في قطعنا، ستحصلين الآن بشكل مستمر على:\n` +
             `✨ خصم ثابت بقيمة ١٥٪ على جميع التصاميم باستخدام الكود الخاص بكِ: [ ${vipCoupon} ]\n` +
             `✨ أولوية تامة وتفصيل مجاني مخصص بقسم الدعم والصالون وصيانة القطع.\n` +
             `✨ هدايا دورية وعينات عطور مع كل طلب.\n\n` +
