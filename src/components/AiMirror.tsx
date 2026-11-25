@@ -466,8 +466,7 @@ export default function AiMirror({
   const shareText = encodeURIComponent(`شاهدي تجربتي المذهلة لإطلالة Sulta الملكية! جربت موديل "${selectedProduct?.nameAr || 'بيجامات كوتور'}" افتراضياً وحصلت على استشارة المقاس 🪞🪄 وبدون أي تكاليف.`);
   const whatsappUrl = `https://api.whatsapp.com/send?text=${shareText}`;
   const snapchatUrl = `https://www.snapchat.com/`;
-  const instagramUrl = `https://www.instagram.com/sulta.sa`;
-  const tiktokUrl = `https://www.tiktok.com/@sulta.sa`;
+  const instagramUrl = `https://www.instagram.com/sultabrand`;
 
   // Get active lists matching criteria for the catalogue selector
   const activeProducts = products.filter(p => p.status === 'active' || !p.status);

@@ -23,11 +23,10 @@ export default function SocialLinksView({ className = "flex gap-3", settings }: 
 
   const activeSocials = [];
   
-  const instagramUrl = 'https://www.instagram.com/sulta.sa';
+  const instagramUrl = 'https://www.instagram.com/sultabrand';
   activeSocials.push({ id: 'instagram', platform: 'instagram', url: instagramUrl, label: 'Instagram' });
   
-  const tiktokUrl = 'https://www.tiktok.com/@sulta.sa';
-  activeSocials.push({ id: 'tiktok', platform: 'tiktok', url: tiktokUrl, label: 'TikTok' });
+  // TikTok is added here only once the store has a confirmed handle.
 
   // Add dummy placeholder if empty, but user thinks it's fake. So we just show empty or a fallback if there's none.
   if (activeSocials.length === 0) return null;
