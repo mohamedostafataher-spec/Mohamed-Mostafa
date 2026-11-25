@@ -13,15 +13,24 @@ interface SultaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   height?: number | string;
 }
 
-// Clean and resolve direct accessible URL with automatic srcSet generation
+// Resize Supabase storage images through the free wsrv.nl image CDN so phones
+// do not download 2000px originals for a 170px card. Falls back to the raw URL on error.
+const SIZE_PRESETS: Record<string, number> = { xs: 320, sm: 400, md: 640, lg: 1000, xl: 1400 };
+const resizedUrl = (url: string, w: number): string => {
+  const clean = cleanImgUrl(url, w);
+  if (!clean || !clean.includes('supabase.co/storage/v1/object/public/')) return clean;
+  return `https://wsrv.nl/?url=${encodeURIComponent(clean)}&w=${w}&q=78&output=webp`;
+};
+const pickWidth = (w: number | string | undefined): number => {
+  if (typeof w === 'string' && SIZE_PRESETS[w]) return SIZE_PRESETS[w];
+  return 640;
+};
+
 const getResponsiveSrcSet = (url: string): string => {
   if (!url || typeof url !== 'string' || !url.trim() || url.includes('base64')) return '';
-  
-  // Standard responsive widths for e-commerce
-  const widths = [400, 800, 1200];
-  return widths
-    .map(w => `${cleanImgUrl(url, w)} ${w}w`)
-    .join(', ');
+  const clean = cleanImgUrl(url, 640);
+  if (!clean.includes('supabase.co/storage/v1/object/public/')) return '';
+  return [320, 480, 640, 960, 1280].map(w => `${resizedUrl(url, w)} ${w}w`).join(', ');
 };
 
 export default function SultaImage({ 
@@ -39,7 +48,7 @@ export default function SultaImage({
   ...props 
 }: SultaImageProps) {
   const defaultWidth = width || 'md';
-  const initialUrl = src ? cleanImgUrl(src, defaultWidth) : fallbackSrc;
+  const initialUrl = src ? resizedUrl(src, pickWidth(typeof width === 'string' ? width : undefined)) : fallbackSrc;
   
   const [currentSrc, setCurrentSrc] = useState<string>(initialUrl);
   const [currentSrcSet, setCurrentSrcSet] = useState<string>(src ? getResponsiveSrcSet(src) : '');
@@ -50,7 +59,7 @@ export default function SultaImage({
 
   // Sync with prop changes
   useEffect(() => {
-    const newUrl = src ? cleanImgUrl(src, defaultWidth) : fallbackSrc;
+    const newUrl = src ? resizedUrl(src, pickWidth(typeof width === 'string' ? width : undefined)) : fallbackSrc;
     setCurrentSrc(newUrl);
     setCurrentSrcSet(src ? getResponsiveSrcSet(src) : '');
     setRetryStage(0);
