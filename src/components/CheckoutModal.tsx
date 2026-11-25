@@ -353,6 +353,7 @@ export default function CheckoutModal({
         try { trackPurchase(order); } catch (e) {}
         try { trackTikTokPurchase(order, 'SAR'); } catch (e) {}
         try { await agentSystem.onOrderCreated(order); } catch (e) {}
+        try { fetch('/api/notify/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: order.id, items: order.items.reduce((n: number, i: any) => n + (i.quantity || 1), 0), total: order.totalPrice, payment: String(order.paymentMethod).toLowerCase().includes('bank') ? 'bank' : 'cod' }), keepalive: true }).catch(() => {}); } catch (e) {}
         try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
 
         setPaymentStatus('pending');
@@ -382,6 +383,7 @@ export default function CheckoutModal({
         try { trackPurchase(order); } catch (e) {}
         try { trackTikTokPurchase(order, 'SAR'); } catch (e) {}
         try { await agentSystem.onOrderCreated(order); } catch (e) {}
+        try { fetch('/api/notify/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: order.id, items: order.items.reduce((n: number, i: any) => n + (i.quantity || 1), 0), total: order.totalPrice, payment: String(order.paymentMethod).toLowerCase().includes('bank') ? 'bank' : 'cod' }), keepalive: true }).catch(() => {}); } catch (e) {}
         try { WhatsAppService.sendInvoice(order, order.phone); } catch (e) {}
         
         return;
