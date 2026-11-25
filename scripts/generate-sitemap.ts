@@ -38,6 +38,7 @@ async function generateSitemaps() {
     { route: '/shipping', priority: '0.6', changefreq: 'monthly' },
     { route: '/بيجامات-كوريشة', priority: '0.8', changefreq: 'monthly' },
     { route: '/blog/how-to-track-your-sulta-order', priority: '0.6', changefreq: 'monthly' },
+    { route: '/blog/how-to-order-from-sulta-cash-on-delivery', priority: '0.7', changefreq: 'monthly' },
     { route: '/blog/pajama-gift-for-her-guide', priority: '0.7', changefreq: 'monthly' },
     { route: '/delivery/riyadh', priority: '0.6', changefreq: 'monthly' },
     { route: '/delivery/jeddah', priority: '0.6', changefreq: 'monthly' },
