@@ -39,7 +39,7 @@ export default function AdminAuthGate({
 }: AdminAuthGateProps) {
   const [authorizedUser, setAuthorizedUser] = useState<AuthorizedAdminUser | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [authMode, setAuthMode] = useState<'direct' | 'otp' | 'password'>('direct');
+  const [authMode, setAuthMode] = useState<'direct' | 'otp' | 'password'>('otp');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,7 +77,8 @@ export default function AdminAuthGate({
         }
       } catch {}
 
-      const candidateEmail = sessionEmail || storedEmail;
+      // Only a real Supabase session counts. A stored/typed email alone is never trusted.
+      const candidateEmail = sessionEmail;
       if (!candidateEmail) {
         if (isMounted) {
           setAuthorizedUser(null);
@@ -128,32 +129,7 @@ export default function AdminAuthGate({
 
   const handleDirectEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes('@')) {
-      setErrorMessage('يرجى إدخال بريد إلكتروني صالح.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    try {
-      const { authorized, member } = await dbService.checkIsEmailAuthorized(cleanEmail);
-      if (authorized && member) {
-        const verified: AuthorizedAdminUser = {
-          email: member.email,
-          name: member.name || member.email.split('@')[0],
-          role: normalizeAdminRole(member.role)
-        };
-        authorizeVerifiedUser(verified);
-      } else {
-        setErrorMessage('هذا البريد غير مدرج ضمن صلاحيات لوحة التحكم المعتمدة.');
-      }
-    } catch {
-      setErrorMessage('تعذر التحقق من البريد الإلكتروني حالياً.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    setErrorMessage('الدخول بالبريد فقط غير متاح. استخدمي رابط OTP أو كلمة المرور.');
   };
 
   const handleGoogleSignIn = async () => {
@@ -312,23 +288,7 @@ export default function AdminAuthGate({
         ) : (
           <div className="space-y-4">
             {/* Auth Method Switcher */}
-            <div className="grid grid-cols-3 gap-1.5 bg-[#FAF9F6] p-1 rounded-2xl border border-gray-200">
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('direct');
-                  setErrorMessage(null);
-                  setSuccessMessage(null);
-                }}
-                className={`min-h-[40px] rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  authMode === 'direct'
-                    ? 'bg-white text-[#A44C5C] shadow-2xs border border-gray-200'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Mail size={13} />
-                <span>بريد مباشر</span>
-              </button>
+            <div className="grid grid-cols-2 gap-1.5 bg-[#FAF9F6] p-1 rounded-2xl border border-gray-200">
               <button
                 type="button"
                 onClick={() => {
@@ -363,7 +323,7 @@ export default function AdminAuthGate({
               </button>
             </div>
 
-            {authMode === 'direct' && (
+            {false && authMode === 'direct' && (
               <form onSubmit={handleDirectEmailSignIn} className="space-y-3">
                 <div>
                   <label htmlFor="admin-email-direct" className="block text-xs font-bold text-gray-800 mb-1.5">

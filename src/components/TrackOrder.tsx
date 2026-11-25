@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import SEO from './SEO';
-import { dbService } from '../services/db';
+import { dbService, supabase } from '../services/db';
 import { Order } from '../types';
 import OrderDetailView from './OrderDetailView';
 
@@ -20,6 +20,8 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
   const [error, setError] = useState('');
   const [foundOrders, setFoundOrders] = useState<Order[] | null>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+  const [phone4, setPhone4] = useState('');
+  const [safeResult, setSafeResult] = useState<any | null>(null);
 
   useEffect(() => {
     if (initialOrderId) {
@@ -31,7 +33,7 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
     const params = new URLSearchParams(window.location.search);
     const trackingId = params.get('id') || params.get('track') || params.get('orderId') || params.get('order');
     if (trackingId) {
-      setActiveOrderId(trackingId);
+      setQuery(trackingId);
       return;
     }
 
@@ -40,7 +42,7 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
     if (pathMatch) {
       const idFromPath = decodeURIComponent(pathMatch[1]);
       if (idFromPath && idFromPath !== 'track-order') {
-        setActiveOrderId(idFromPath);
+        setQuery(idFromPath);
         return;
       }
     }
@@ -57,7 +59,30 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
+    setSafeResult(null);
+
+    // Secure lookup: order number + last 4 digits of the phone, via a database function.
+    // If the function is not installed yet (older database), fall back to the legacy search below.
+    if (method === 'id' && phone4.replace(/\D/g, '').length >= 4) {
+      try {
+        const { data, error: rpcErr } = await supabase.rpc('track_order', {
+          p_order: query.trim(),
+          p_phone_last4: phone4.replace(/\D/g, '').slice(-4)
+        });
+        if (!rpcErr) {
+          setLoading(false);
+          if (data) {
+            setSafeResult(data);
+          } else {
+            setError('تعذر العثور على الطلب. تأكدي من رقم الطلب وآخر 4 أرقام من جوالك.');
+          }
+          return;
+        }
+      } catch {
+        // fall through to legacy search
+      }
+    }
+
     try {
       const orders = await new Promise<Order[]>((resolve) => {
          const unsub = dbService.subscribeOrders(
@@ -279,6 +304,38 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
               />
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#DF8A9C] to-[#A44C5C] transition-all duration-500 group-focus-within:w-full" />
             </div>
+
+            {method === 'id' && (
+              <input
+                type="tel"
+                inputMode="numeric"
+                maxLength={4}
+                placeholder="آخر 4 أرقام من رقم جوالك"
+                value={phone4}
+                onChange={e => setPhone4(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                className="w-full border-b border-gray-200 px-4 py-4 bg-transparent focus:outline-none focus:border-[#A44C5C]/80 font-sans text-center text-lg text-gray-950 placeholder-gray-400 font-light tracking-wide"
+              />
+            )}
+
+            {safeResult && (() => {
+              const d = getStatusDetails(String(safeResult.status || ''));
+              const items: any[] = Array.isArray(safeResult.items) ? safeResult.items : [];
+              return (
+                <div className="rounded-2xl border border-gray-200 bg-white p-4 text-right space-y-2" role="status">
+                  <div className="text-xs text-gray-500">رقم الطلب: {safeResult.id}</div>
+                  <div className={`inline-block rounded-full border px-3 py-1 text-xs font-bold ${d.colorClass}`}>{d.label}</div>
+                  {items.length > 0 && (
+                    <ul className="text-sm text-gray-800 list-disc pr-5">
+                      {items.map((i, k) => <li key={k}>{i.productName || i.name} × {i.quantity || 1}</li>)}
+                    </ul>
+                  )}
+                  {safeResult.total && <div className="text-sm font-bold text-gray-900">الإجمالي: {safeResult.total} ر.س</div>}
+                  {safeResult.city && <div className="text-xs text-gray-600">المدينة: {safeResult.city}</div>}
+                  {safeResult.tracking_number && <div className="text-xs text-gray-600">رقم الشحنة: {safeResult.tracking_number}</div>}
+                  {safeResult.tracking_url && <a href={safeResult.tracking_url} target="_blank" rel="noopener noreferrer" className="text-xs underline text-[#A44C5C]">تتبع الشحنة لدى شركة الشحن</a>}
+                </div>
+              );
+            })()}
 
             {error && (
               <motion.div 
