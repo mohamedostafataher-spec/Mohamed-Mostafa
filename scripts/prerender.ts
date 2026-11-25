@@ -1,4 +1,5 @@
 import { INFO_PAGES } from '../src/data/infoPages.js';
+import { DELIVERY_CITIES, cityTitle, cityDesc } from '../src/data/deliveryCities.js';
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
@@ -504,6 +505,33 @@ async function runPrerender() {
         <p class="text-gray-700 mb-4">مقاس واحد يناسب من 45 إلى 80 كيلو. في الطلب اكتبي اسم وعنوان ورقم المستلمة. التوصيل 2 إلى 4 أيام عمل، والشحن 40 ر.س ومجاني فوق 299 ر.س.</p>
         <p><a href="/store" class="text-[#A44C5C] font-bold">تصفحي البيجامات</a></p>
       </main>`
+    },
+    ...DELIVERY_CITIES.map((c) => ({
+      path: `delivery/${c.slug}`,
+      title: cityTitle(c.ar),
+      description: cityDesc(c.ar),
+      bodyHtml: `<main dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-4">بيجامات سولته مع توصيل إلى ${c.ar}</h1>
+        <p class="text-gray-700 mb-4">نوصّل بيجامات سولته النسائية إلى ${c.ar} وإلى جميع مدن المملكة.</p>
+        <ul class="list-disc pr-6 space-y-2 text-gray-700">
+          <li>التوصيل خلال 2 إلى 4 أيام عمل.</li>
+          <li>الشحن 40 ر.س، ومجاني للطلبات فوق 299 ر.س.</li>
+          <li>الدفع عند الاستلام أو بالتحويل البنكي.</li>
+          <li>مقاس واحد يناسب من 45 إلى 80 كيلو.</li>
+          <li>استبدال واسترجاع خلال 14 يوم من الاستلام.</li>
+        </ul>
+        <p class="mt-4"><a href="/store" class="text-[#A44C5C] font-bold">تصفحي البيجامات</a> | <a href="/shipping" class="text-[#A44C5C] font-bold">تفاصيل الشحن</a></p>
+      </main>`
+    })),
+    {
+      path: 'blog/pajama-gift-for-her-guide',
+      title: 'كيف تختارين بيجامة هدية لها؟ | سولته',
+      description: 'نصائح بسيطة لاختيار بيجامة هدية من سولته: المقاس، اللون، وكيف تطلبينها وتوصل لعنوان المستلمة.',
+      bodyHtml: `<article dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-6">كيف تختارين بيجامة هدية لها؟</h1>
+        <p class="text-gray-700 mb-4">بيجامات سولته بمقاس واحد يناسب من 45 إلى 80 كيلو. في الطلب اكتبي اسم وعنوان ورقم المستلمة. التوصيل خلال 2 إلى 4 أيام عمل، والشحن 40 ر.س ومجاني فوق 299 ر.س. الدفع عند الاستلام أو بالتحويل البنكي، والاستبدال والاسترجاع خلال 14 يوم.</p>
+        <p><a href="/gift" class="text-[#A44C5C] font-bold">صفحة الهدايا</a></p>
+      </article>`
     },
     { path: 'contact', title: 'اتصلي بنا | متجر سولته', description: 'تواصلي مع خدمة عملاء متجر سولته للبيجامات النسائية عبر الواتساب أو الهاتف في السعودية.', bodyHtml: '' },
     { path: 'account', title: 'حسابي وطلباتي | متجر سولته', description: 'الملف الشخصي وإدارة وتتبع الطلبات في متجر سولته.', noindex: true, bodyHtml: '' },
