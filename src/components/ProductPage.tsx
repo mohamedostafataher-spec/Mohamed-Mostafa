@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Truck, ArrowRight, ChevronRight, ChevronLeft, Sparkles, Minus, Plus, 
   ShoppingBag, Heart, MessageCircle, ShieldCheck, RefreshCw, HelpCircle, Package,
-  Share2, Check
+  Share2, Check, Search
 } from 'lucide-react';
 import { Product } from '../types';
 import { getIdFromSlug, getProductSlug } from '../utils/slugify';
@@ -37,6 +37,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
   // Gallery & Media Interactive States
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
 
   // Countdown timer state
   const [countdownText, setCountdownText] = useState<string>('');
@@ -408,6 +410,16 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
+            {!onVideoSlide && currentMainImage && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); pauseGallery(); setZoomed(false); setZoomOpen(true); }}
+                aria-label="تكبير الصورة"
+                className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-white/85 text-gray-900 shadow-md flex items-center justify-center cursor-pointer backdrop-blur-sm"
+              >
+                <Search size={18} />
+              </button>
+            )}
             {galleryReel && (
               <ReelSlide reel={galleryReel} active={onVideoSlide} onEnded={() => setActiveImageIdx(0)} />
             )}
@@ -502,6 +514,21 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             <p className="text-[10px] text-gray-400 text-center" dir="ltr">{REELS_MUSIC_CREDIT}</p>
           )}
         </div>
+
+        {zoomOpen && currentMainImage && (
+          <div className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center" role="dialog" aria-label="تكبير الصورة" onClick={() => setZoomOpen(false)}>
+            <button type="button" aria-label="إغلاق" onClick={() => setZoomOpen(false)} className="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-white/90 text-gray-900 text-xl flex items-center justify-center">×</button>
+            <div className="w-full h-full overflow-auto flex items-center justify-center" style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
+              <img
+                src={currentMainImage}
+                alt={descriptiveAlt}
+                onClick={(e) => { e.stopPropagation(); setZoomed(z => !z); }}
+                className={zoomed ? 'max-w-none w-[220%] cursor-zoom-out' : 'max-h-full max-w-full object-contain cursor-zoom-in'}
+              />
+            </div>
+            <p className="absolute bottom-4 inset-x-0 text-center text-xs text-white/70 pointer-events-none">اضغطي على الصورة للتكبير أو التصغير</p>
+          </div>
+        )}
 
         {/* Product Details & Actions */}
         <div className="space-y-6 md:space-y-8">
