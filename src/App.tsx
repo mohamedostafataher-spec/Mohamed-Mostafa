@@ -1194,6 +1194,7 @@ function AppContent() {
               <a href="https://www.instagram.com/sultabrand" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#A44C5C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A44C5C] rounded-md p-1" aria-label="سولته على انستغرام">
                 <Instagram size={20} aria-hidden="true" />
               </a>
+              <a href="https://www.tiktok.com/@sulta.sultaa" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#A44C5C] transition-colors text-[11px] font-bold p-1" aria-label="سولته على تيك توك">TikTok</a>
             </div>
           </div>
 
