@@ -1115,9 +1115,9 @@ export const dbService = {
           { regionAr: 'توصيل فاخر بالموعد المحدد (الرياض وجدة والدمام)', regionEn: 'VIP White Glove Delivery', fee: 40 }
         ],
         defaultShippingFee: 40,
-        instagram: 'https://www.instagram.com/sulta.sa',
+        instagram: 'https://www.instagram.com/sultabrand',
         facebook: '',
-        tiktok: 'https://www.tiktok.com/@sulta.sa',
+        tiktok: '',
         tiktokPixelId: 'DBESRBJC77U4J2JQDUB0'
       };
     }
