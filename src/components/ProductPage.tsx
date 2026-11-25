@@ -805,6 +805,43 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
           <ProductReviews productId={product.id} productName={product.nameAr} />
 
+          {/* Complete the set: pairs this piece with another one (no sales claims) */}
+          {!isOutOfStock && (() => {
+            const partner = allProducts.find(p => p.id !== product.id && (p.stock ?? 1) > 0);
+            if (!partner) return null;
+            const pSlug = partner.slug || getProductSlug({ id: partner.id, nameEn: partner.nameEn, nameAr: partner.nameAr });
+            const p1 = dbService.getProductActualPrice(product, 'SA', settings).unitPrice;
+            const p2 = dbService.getProductActualPrice(partner, 'SA', settings).unitPrice;
+            return (
+              <div className="pt-6 border-t border-gray-200" dir="rtl">
+                <h2 className="text-lg font-bold text-gray-950 mb-3">أكملي طلبك بقطعة ثانية</h2>
+                <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-2xl p-3">
+                  <div className="w-16 h-20 shrink-0 rounded-xl overflow-hidden bg-gray-50">
+                    <SultaImage src={product.images?.[0]} alt={product.nameAr} className="w-full h-full" contain={true} width={200} imgClassName="w-full h-full object-contain" loading="lazy" />
+                  </div>
+                  <span className="text-xl font-black text-gray-400">+</span>
+                  <a href={`/product/${pSlug}`} onClick={(e) => { e.preventDefault(); navigate(`/product/${pSlug}`); }} className="w-16 h-20 shrink-0 rounded-xl overflow-hidden bg-gray-50 block">
+                    <SultaImage src={partner.images?.[0]} alt={partner.nameAr} className="w-full h-full" contain={true} width={200} imgClassName="w-full h-full object-contain" loading="lazy" />
+                  </a>
+                  <div className="flex-1 min-w-0 text-right">
+                    <p className="text-xs font-bold text-gray-900 line-clamp-1">{partner.nameAr}</p>
+                    <p className="text-sm font-black text-[#A44C5C] mt-1">المجموع {p1 + p2} ر.س</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onAddToCart(product, selectedColor || product.colors?.[0], 'One Size', 1);
+                    onAddToCart(partner, partner.colors?.[0], 'One Size', 1);
+                  }}
+                  className="mt-3 w-full bg-[#111827] text-white py-3.5 rounded-2xl font-bold text-sm"
+                >
+                  أضيفي القطعتين للسلة
+                </button>
+              </div>
+            );
+          })()}
+
           {/* Similar Products */}
           {similarProducts.length > 0 && (
             <div className="pt-6 border-t border-gray-200">

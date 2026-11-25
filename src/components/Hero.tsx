@@ -21,7 +21,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   const fallbackBanners = [
     {
       mediaUrl: '/img/sulta_hero_banner_real.webp',
-      title: 'أزياء النوم الفاخرة',
+      title: 'أزياء النوم',
       subtitle: 'بيجامات وأرواب الكوتور الفاخر المبرد',
       ctaText: 'تسوقي التشكيلة الآن',
       mediaType: 'image'
@@ -47,7 +47,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
   const slides = activeBanners.map((b: any) => ({
     url: cleanImgUrl(b.mediaUrl || b.url, 'sleepwear'),
     alt: b.title || 'Sulta',
-    title: b.title || 'أزياء النوم الفاخرة',
+    title: b.title || 'أزياء النوم',
     subtitle: b.subtitle || 'بيجامات وأرواب القطع الملكية',
     ctaText: b.ctaText || 'تسوقي الآن',
     mediaType: b.mediaType || 'image'

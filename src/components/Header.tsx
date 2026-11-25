@@ -223,7 +223,7 @@ export default function Header({
                 
               </div>
               <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-bold text-gray-500 font-sans -mt-0.5 hidden sm:block">
-                سولته · أزياء النوم الفاخرة
+                سولته · أزياء النوم
               </span>
             </div>
 
