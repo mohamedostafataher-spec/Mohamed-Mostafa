@@ -8,6 +8,7 @@ import {
 import { Product } from '../types';
 import { getIdFromSlug, getProductSlug } from '../utils/slugify';
 import ReelSlide from './ReelSlide';
+import StockAlertForm from './StockAlertForm';
 import { findReelForSlug, REELS_MUSIC_CREDIT } from '../data/reels';
 import { dbService, cleanImgUrl } from '../services/db';
 import { trackViewContent } from '../utils/analytics';
@@ -705,6 +706,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                 <Heart size={22} className={isFav ? "fill-current" : ""} />
               </button>
             </div>
+
+            {isOutOfStock && <StockAlertForm product={product} />}
 
             {/* Direct WhatsApp Ordering & Copy Link */}
             <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
