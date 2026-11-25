@@ -1,0 +1,104 @@
+import React from 'react';
+import { Link, useParams } from 'react-router-dom';
+import SEO from './SEO';
+
+type Block = { h?: string; p?: string; ul?: string[]; link?: { to: string; text: string } };
+interface Post { slug: string; title: string; desc: string; blocks: Block[] }
+
+const POSTS: Post[] = [
+  {
+    slug: 'one-size-pajama-45-80-kg-guide',
+    title: 'كيف تعرفين إن بيجامة سولته وان سايز تناسبك؟',
+    desc: 'بيجامات سولته بمقاس واحد (وان سايز) يناسب من 45 إلى 80 كيلو. تعرفي كيف تختارين وتتأكدين قبل الطلب.',
+    blocks: [
+      { p: 'كل بيجامات سولته بمقاس واحد (وان سايز)، وهو يناسب الوزن من 45 إلى 80 كيلو. يعني ما تحتاجين تحتارين بين S وM وL.' },
+      { h: 'قبل ما تطلبين', p: 'إذا وزنك بين 45 و80 كيلو، المقاس يناسبك. وإذا كنتِ قريبة من أحد الطرفين وعندك سؤال عن الطول أو القصّة، راسلينا على واتساب قبل الطلب ونرد عليك.' },
+      { h: 'ولو ما ناسبك المقاس؟', p: 'عندك استبدال واسترجاع خلال 14 يوم من استلام الطلب، بشرط تكون القطعة بحالتها الأصلية.' },
+      { link: { to: '/size-guide', text: 'شوفي دليل المقاسات الكامل' } }
+    ]
+  },
+  {
+    slug: 'how-to-wash-crinkle-cotton-pajamas',
+    title: 'طريقة غسيل بيجامة قطن كوريشة',
+    desc: 'تعليمات الغسيل اللطيف لبيجامات القطن الكوريشة من سولته عشان تحافظين على نعومتها وألوانها.',
+    blocks: [
+      { p: 'بيجامات سولته من قطن كوريشة ناعم. عشان تبقى ناعمة ومرتبة مع الغسيل، اتبعي هالخطوات البسيطة.' },
+      { h: 'الغسيل', ul: ['غسيل لطيف بماء بارد، وهذي تعليمات الغسيل المكتوبة في صفحة المنتج.', 'افصلي القطع الفاتحة (الأبيض العاجي والوردي) عن الألوان الغامقة والحمراء.', 'لا تتركينها مبللة لفترة طويلة داخل الغسالة أو السلة.'] },
+      { h: 'نصيحة', p: 'اقرئي تعليمات العناية في صفحة كل منتج قبل الغسيل، لأن التعليمات الخاصة بالقطعة هي الأساس.' },
+      { link: { to: '/store', text: 'تصفحي بيجامات سولته' } }
+    ]
+  },
+  {
+    slug: 'order-shipping-returns-sulta-saudi',
+    title: 'كيف تطلبين من سولته: الشحن والدفع والاسترجاع',
+    desc: 'كل ما تحتاجين تعرفينه قبل الطلب من سولته: الشحن داخل السعودية، طرق الدفع، الاسترجاع والاستبدال.',
+    blocks: [
+      { p: 'هنا ملخص واضح لخطوات الطلب من سولته داخل السعودية.' },
+      { h: 'الشحن', ul: ['نوصّل لجميع مدن المملكة، والتوصيل من 2 إلى 4 أيام عمل.', 'الشحن 40 ر.س، ومجاني للطلبات فوق 299 ر.س.'] },
+      { h: 'الدفع', p: 'الدفع عند الاستلام أو بالتحويل البنكي.' },
+      { h: 'الاستبدال والاسترجاع', ul: ['استبدال واسترجاع خلال 14 يوم من استلام الطلب، والقطعة بحالتها الأصلية.', 'إذا وصلتك القطعة فيها ضرر، بلغينا خلال 48 ساعة.'] },
+      { link: { to: '/shipping', text: 'تفاصيل الشحن' } }
+    ]
+  },
+  {
+    slug: 'ultimate-womens-sleepwear-cotton-guide',
+    title: 'دليل بيجامات النوم النسائية: القطن الطبيعي والقطن الكوريشة',
+    desc: 'دليل لاختيار بيجامات القطن والقطن الكوريشة ومقاس وان سايز 45-80 كجم من سولته.',
+    blocks: [
+      { p: 'تعتبر ملابس النوم والبيجامات النسائية ركيزة أساسية في الراحة والاسترخاء داخل المنزل. في هذا الدليل نتكلم عن قطن الكوريشة ومقاس سولته.' },
+      { h: 'ما هو قطن الكوريشة؟', p: 'نسيج الكوريشة فيه تموجات خفيفة تبعد القماش عن الالتصاق المباشر بالبشرة، ولا يحتاج كي مستمر.' },
+      { h: 'المقاس الموحد من 45 إلى 80 كجم', p: 'صُممت بيجامات سولته بقصّة انسيابية تلائم الأوزان من 45 إلى 80 كجم.' },
+      { link: { to: '/store', text: 'تصفحي تشكيلة سولته' } }
+    ]
+  }
+];
+
+export default function StaticBlog() {
+  const { slug } = useParams<{ slug?: string }>();
+  const post = slug ? POSTS.find(p => p.slug === slug) : undefined;
+
+  if (slug && !post) {
+    return (
+      <div className="max-w-3xl mx-auto px-6 py-20 text-center" dir="rtl">
+        <p className="mb-4">المقال غير موجود.</p>
+        <Link to="/blog" className="text-[#A44C5C] font-bold">كل المقالات</Link>
+      </div>
+    );
+  }
+
+  if (post) {
+    return (
+      <article className="max-w-3xl mx-auto px-6 py-12" dir="rtl">
+        <SEO title={post.title} description={post.desc} path={`/blog/${post.slug}`} type="article" />
+        <Link to="/blog" className="text-sm text-gray-500 hover:text-[#A44C5C]">← مجلة سولته</Link>
+        <h1 className="text-3xl font-extrabold text-gray-900 mt-4 mb-6 leading-snug">{post.title}</h1>
+        <div className="text-gray-700 leading-loose space-y-4">
+          {post.blocks.map((b, i) => (
+            <div key={i}>
+              {b.h && <h2 className="text-2xl font-bold text-gray-900 mt-4 mb-2">{b.h}</h2>}
+              {b.p && <p>{b.p}</p>}
+              {b.ul && <ul className="list-disc pr-6 space-y-2">{b.ul.map((x, j) => <li key={j}>{x}</li>)}</ul>}
+              {b.link && <Link to={b.link.to} className="text-[#A44C5C] font-bold">{b.link.text}</Link>}
+            </div>
+          ))}
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-12" dir="rtl">
+      <SEO title="مجلة سولته" description="مقالات قصيرة عن مقاس بيجامات سولته، العناية بالقطن الكوريشة، والشحن والاسترجاع." path="/blog" />
+      <h1 className="text-3xl font-extrabold text-gray-900 mb-8 text-center">مجلة سولته</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {POSTS.map(p => (
+          <Link key={p.slug} to={`/blog/${p.slug}`} className="block border border-gray-200 rounded-2xl p-5 bg-white hover:border-[#A44C5C] transition-colors">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">{p.title}</h2>
+            <p className="text-sm text-gray-600 leading-relaxed mb-3">{p.desc}</p>
+            <span className="text-[#A44C5C] font-bold text-sm">اقرئي المقال ←</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
