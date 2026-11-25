@@ -1172,7 +1172,7 @@ export default function CheckoutModal({
               </div>
 
               <div className="flex justify-between items-center text-gray-600">
-                <span>التغليف الملكي الفاخر:</span>
+                <span>التغليف الملكي:</span>
                 <span className="font-bold text-emerald-700">مجاناً 🎁</span>
               </div>
 

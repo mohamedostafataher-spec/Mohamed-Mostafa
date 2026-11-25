@@ -290,7 +290,7 @@ export default function ExecutiveCommandCenter({
 
         <div className="bg-[#FAF5F0] border border-[#DF8A9D]/15 p-6 rounded-2.5xl flex items-center justify-between shadow-xs">
           <div>
-            <span className="text-[#A44C5C] text-[10px] uppercase font-bold block mb-1">الطلبات الفاخرة المكتملة</span>
+            <span className="text-[#A44C5C] text-[10px] uppercase font-bold block mb-1">الطلبات المكتملة</span>
             <span className="text-2xl font-black text-[#A44C5C] font-sans">{report.completedOrdersCount} شحنات</span>
           </div>
           <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">

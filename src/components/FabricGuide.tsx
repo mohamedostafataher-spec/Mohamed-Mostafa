@@ -12,7 +12,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
 
   // Elegantly localized premium default fabric sections
   const sections = {
-    cottonTitleAr: savedSection?.cottonTitleAr || 'تشكيلة القطن الفاخرة (Cotton Collection)',
+    cottonTitleAr: savedSection?.cottonTitleAr || 'تشكيلة القطن (Cotton Collection)',
     cottonDescAr: savedSection?.cottonDescAr || 'مصنوعة من ألياف القطن الملكي طويل التيلة الفائق النعومة بنسبة 100%. يتميز بقدرته الفائقة على تنفس البشرة وامتصاص الرطوبة، مما يجعله مثالياً لليالي هادئة مريحة خالية من التعرق.',
     
     cottonLycraTitleAr: savedSection?.cottonLycraTitleAr || 'تشكيلة قطن ليكرا الإنشائية (Cotton Lycra Collection)',
@@ -28,7 +28,7 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
     winterDescAr: savedSection?.winterDescAr || 'مخمل دافئ وكثيف مع طواقم مبطنة حرارياً توفر العزل التام والدفء اللطيف داخل المنزل ليمنحكِ فخامة الأميرات مع حماية قصوى من تيارات الشتاء الباردة.',
     
     careTitleAr: savedSection?.careTitleAr || 'إرشادات العناية الخاصة والوقاية (Care Instructions)',
-    careDescAr: savedSection?.careDescAr || 'ننصح بتجنب درجات الحرارة المرتفعة أثناء الكي ويفضل الكي البخاري أو بدرجة حرارة معتدلة مخصصة للأقمشة الفاخرة. تجنبي المبيضات والمواد الكيميائية وحافظي على تهوية القطع وعطر الدار.',
+    careDescAr: savedSection?.careDescAr || 'ننصح بتجنب درجات الحرارة المرتفعة أثناء الكي ويفضل الكي البخاري أو بدرجة حرارة معتدلة مخصصة للأقمشة. تجنبي المبيضات والمواد الكيميائية وحافظي على تهوية القطع وعطر الدار.',
     
     benefitsTitleAr: savedSection?.benefitsTitleAr || 'مزايا فخامة خامات Sulta الممتازة (Fabric Benefits)',
     benefitsDescAr: savedSection?.benefitsDescAr || 'مضادة للحساسية، مقاومة للتجعد التلقائي، ثبات كلي للألوان الملكية حتى مع تكرار الغسيل، حياكة يدوية مزدوجة الحلقات تضمن عمرًا أطول للقطعة دون تلف للتمرير عبر الأجيال.',
@@ -46,11 +46,11 @@ export default function FabricGuide({ homepageSections = [] }: FabricGuideProps)
           Sulta COUTURE FABRICS
         </span>
         <h2 className="font-serif text-2xl md:text-4xl lg:text-5xl font-light text-[#0B0B0B] mb-2 uppercase tracking-wide">
-          دليل الخامات الملكي الفاخر
+          دليل الخامات الملكي
         </h2>
         <div className="w-16 h-[1.5px] bg-[#A44C5C]/50 mx-auto" />
         <p className="text-gray-500 text-xs md:text-sm pt-2 leading-relaxed font-serif italic">
-          ننتقي خيوط الدار من أرقى معالم الأنسجة الفاخرة العالمية لنحيك لكِ تجربة نوم ملكية تلامس الروح قبل الجسد.
+          ننتقي خيوط الدار من أرقى معالم الأنسجة العالمية لنحيك لكِ تجربة نوم ملكية تلامس الروح قبل الجسد.
         </p>
       </div>
 

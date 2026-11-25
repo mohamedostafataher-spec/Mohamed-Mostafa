@@ -22,7 +22,7 @@ export default function Hero({ onExplore, onDiscoverNew, settings, homepageSecti
     {
       mediaUrl: '/img/sulta_hero_banner_real.webp',
       title: 'أزياء النوم',
-      subtitle: 'بيجامات وأرواب الكوتور الفاخر المبرد',
+      subtitle: 'بيجامات وأرواب الكوتور المبرد',
       ctaText: 'تسوقي التشكيلة الآن',
       mediaType: 'image'
     },

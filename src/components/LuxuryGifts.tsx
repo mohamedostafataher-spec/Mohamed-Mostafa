@@ -34,7 +34,7 @@ export default function LuxuryGifts({
   const PACKAGING = {
     classic: {
       title: 'صندوق Sulta الكلاسيكي المطفي الأسود',
-      desc: 'صندوق كرتوني سميك فاخر باللون الأسود الملكي، مبطّن بورق مناديل وردي ناعم ومحكم بشريط ملوكي ذهبي عريض.',
+      desc: 'صندوق كرتوني سميك باللون الأسود الملكي، مبطّن بورق مناديل وردي ناعم ومحكم بشريط ملوكي ذهبي عريض.',
       fee: country === 'EG' ? 100 : 15,
       img: '/img/sulta_hero_banner_real.webp'
     },
@@ -45,7 +45,7 @@ export default function LuxuryGifts({
       img: '/img/sulta_hero_banner_real.webp'
     },
     pouch: {
-      title: 'حقيبة كوتور الملوكية الفاخرة للرحلات',
+      title: 'حقيبة كوتور الملوكية للرحلات',
       desc: 'حقيبة قماشية من النسيج المصقول برباط مخملي لتخزين القطع الثمينة والمحافظة عليها أثناء التنقل والسفر.',
       fee: country === 'EG' ? 50 : 8,
       img: '/img/sulta_hero_banner.png'
@@ -72,7 +72,7 @@ export default function LuxuryGifts({
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
-          امنحي من تحبين تجربة فتح بكج مذهلة لا غبار عليها. تغليف فاخر متوفر باللون الأسود المطفي مع شرائط ملكية وبطاقات التهنئة المفتوحة يدوياً لتخليد أرق اللحظات.
+          امنحي من تحبين تجربة فتح بكج مذهلة لا غبار عليها. تغليف متوفر باللون الأسود المطفي مع شرائط ملكية وبطاقات التهنئة المفتوحة يدوياً لتخليد أرق اللحظات.
         </p>
       </div>
 
@@ -98,7 +98,7 @@ export default function LuxuryGifts({
           {/* Golden Letter Card preview */}
           <div className="bg-[#FAF5F0] border-2 border-dashed border-[#A44C5C]/20 p-6 rounded-2xl relative">
             <div className="absolute top-3 left-3 text-2xs text-[#A44C5C]/40 font-serif italic">Sulta Card</div>
-            <h5 className="font-serif text-xs text-[#A44C5C] font-semibold mb-3">بطاقة التهنئة بالخط العربي الفاخر:</h5>
+            <h5 className="font-serif text-xs text-[#A44C5C] font-semibold mb-3">بطاقة التهنئة بالخط العربي:</h5>
             <div className="bg-white p-4 rounded-xl text-center min-h-[90px] flex items-center justify-center border border-[#DF8A9D]/10">
               {cardMessage ? (
                 <p className="font-serif italic text-xs leading-relaxed text-[#0B0B0B] whitespace-pre-line tracking-wide">
@@ -106,7 +106,7 @@ export default function LuxuryGifts({
                 </p>
               ) : (
                 <p className="text-gray-300 text-2xs italic">
-                  اكتبي هنا رسالتكِ الفاخرة للعروس أو الصديقة، وسيقوم خطاط سولته بنقشها بماء الذهب وعناية بالغة...
+                  اكتبي هنا رسالتكِ للعروس أو الصديقة، وسيقوم خطاط سولته بنقشها بماء الذهب وعناية بالغة...
                 </p>
               )}
             </div>
@@ -161,7 +161,7 @@ export default function LuxuryGifts({
               rows={3}
               className="w-full text-xs p-3.5 bg-[#FAF4F5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A44C5C]/20 border border-transparent focus:border-[#A44C5C] text-right"
             />
-            <div className="text-3xs text-gray-400">الحد الأقصى ١٥٠ حرفاً. سيتم نقشها يدوياً وبطابع فاخر بدقة وعناية.</div>
+            <div className="text-3xs text-gray-400">الحد الأقصى ١٥٠ حرفاً. سيتم نقشها يدوياً وبطابع بدقة وعناية.</div>
           </div>
 
           {/* Action apply button */}
@@ -210,7 +210,7 @@ export default function LuxuryGifts({
               >
                 <div className="absolute top-4 left-4 z-10">
                   <span className="bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-full text-[8.5px] text-[#A44C5C] font-semibold tracking-wide border border-rose-100">
-                    هدية فاخرة ✦ GIFT SUGGESTION
+                    هدية ✦ GIFT SUGGESTION
                   </span>
                 </div>
 

@@ -479,7 +479,7 @@ export default function PixelDiagnosticsView({ settings, toast }: PixelDiagnosti
           break;
 
         case 'CustomizeProduct':
-          trackCustomizeProduct(dummyProduct, { color: 'عنابي ملكي', size: 'M', wrap: 'تغليف هدايا فاخر' });
+          trackCustomizeProduct(dummyProduct, { color: 'عنابي ملكي', size: 'M', wrap: 'تغليف هدايا' });
           setTestSuccessMessage('تم إرسال حدث CustomizeProduct (تخصيص المنتج) بنجاح!');
           break;
 

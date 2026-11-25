@@ -15,7 +15,7 @@ export default function FabricRealityCenter() {
       thickness: 'ثقيل مترف (~95 gsm)',
       weaveAr: 'نسيج ملوكي ناعم منسوج بمغزل أحادي دقيق جداً (Royal Weave)',
       descriptionAr: 'أنعم ألياف طبيعية مكافحة للتجاعيد، مصبوغة بصبغات عضوية لا تسبب الحساسية للجلد، وتمنحكِ شعوراً بالبرودة والانتعاش الطارد للحرارة.',
-      originAr: 'أرقى مصانع النسيج الفاخر 🌸',
+      originAr: 'أرقى مصانع النسيج 🌸',
       airflow: 'مثالي نفاذ بنسبة 93%'
     },
     stretch: {
@@ -45,7 +45,7 @@ export default function FabricRealityCenter() {
   return (
     <div className="bg-white rounded-3.5xl border border-stone-150 p-6 md:p-8 space-y-8 text-right font-sans shadow-sm" id="fabric_reality_center">
       <div className="border-b border-gray-100 pb-5">
-        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">الأقمشة الملوكية الفاخرة • Sulta Fabric Reality Center</span>
+        <span className="bg-[#A44C5C]/5 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">الأقمشة الملوكية • Sulta Fabric Reality Center</span>
         <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold select-none">٥. مركز واقع وخامات المنسوجات (Fabric Reality Center)</h3>
         <p className="text-gray-500 text-xs mt-1 leading-relaxed">
           انغمسي في كواليس الألياف الطبيعية وخيوط الكوتور. حللي نعومة ومرونة وسمك الخامة المختارة لقطع pajamas الخاصة بكِ، وعايني الألياف الدقيقة الافتراضية.

@@ -861,7 +861,7 @@ export default function Dashboard({
     try {
       const sampleProduct = products[0] || {
         id: 'prod_luxury_1',
-        nameAr: 'بيجامة حرير ملكية فاخرة',
+        nameAr: 'بيجامة حرير ملكية',
         priceSA: 99
       };
       const testOrderId = crypto.randomUUID();
@@ -958,7 +958,7 @@ export default function Dashboard({
         <div class="header">
           <div>
             <div class="brand">Sulta · سُلطة</div>
-            <div class="sub">متجر ملابس وأزياء نوم نسائية فاخرة · المملكة العربية السعودية</div>
+            <div class="sub">متجر ملابس وأزياء نوم نسائية · المملكة العربية السعودية</div>
           </div>
           <div style="text-align: left;">
             <span class="badge">فاتورة ضريبية مبسطة</span>
@@ -1907,7 +1907,7 @@ export default function Dashboard({
                       <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
                         {abandonedLeads.filter(l => !l.converted).map((lead) => {
                           const cleanPhone = (lead.phone || '').replace(/\D/g, '');
-                          const itemsSummary = lead.items?.map((it: any) => `${it.productName || 'قطعة كوتور'} (${it.size || ''})`).join('، ') || 'منتجات كوتور فاخرة';
+                          const itemsSummary = lead.items?.map((it: any) => `${it.productName || 'قطعة كوتور'} (${it.size || ''})`).join('، ') || 'منتجات كوتور';
                           const leadMsg = `يا هلا بالسلطانة ${lead.customerName || 'الكريمة'} 🌸👑، معكِ خدمة عملاء متجر Sulta للأزياء وملابس النوم الملكية.
 
 لاحظنا وصولكِ لخطوة إتمام الطلب والتحويل البنكي لحساب الراجحي ولم يتم تأكيد التحويل بعد:

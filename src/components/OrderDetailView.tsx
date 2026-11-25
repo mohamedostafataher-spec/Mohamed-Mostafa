@@ -250,7 +250,7 @@ export default function OrderDetailView({
       {
         id: 'welcome',
         sender: 'ai',
-        text: `أهلاً بكِ يا أميرة Sulta الموقرة، ${order.customerName}! 🌸 أنا رفيقكِ الذكي لمساعد كوتور. ومستعد لمساعدتكِ فوراً في الإجابة عن أي استفسار يخص طلبيتكِ الفاخرة رقم #${order.id}. كيف يسعدني تدليل رغبات تساؤلاتكِ الكريمة اليوم؟ ✨`,
+        text: `أهلاً بكِ يا أميرة Sulta الموقرة، ${order.customerName}! 🌸 أنا رفيقكِ الذكي لمساعد كوتور. ومستعد لمساعدتكِ فوراً في الإجابة عن أي استفسار يخص طلبيتكِ رقم #${order.id}. كيف يسعدني تدليل رغبات تساؤلاتكِ الكريمة اليوم؟ ✨`,
         timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
       }
     ]);
@@ -390,7 +390,7 @@ export default function OrderDetailView({
         comment: satisfactionComment + (satisfactionPhoto ? ` [صورة مرفقة مضافة من العميل]` : ''),
         date: new Date().toISOString().split('T')[0],
         country: 'SA',
-        productName: order.items[0]?.productName || 'تصميم كوتور فاخر'
+        productName: order.items[0]?.productName || 'تصميم كوتور'
       };
 
       await dbService.saveReview(newReview);
@@ -739,7 +739,7 @@ export default function OrderDetailView({
             </h1>
             
             <p className="text-gray-300 text-xs font-sans leading-relaxed">
-              سعداء جداً بثقتكِ الفائقة. تم تسجيل طلبكِ بتاريخ <strong className="text-white font-medium">{order.date}</strong> وتخصيص خط معالجة تتبع فوري بمقاييس سولته الفاخرة لعلامتنا البوتيك الخاصة.
+              سعداء جداً بثقتكِ الفائقة. تم تسجيل طلبكِ بتاريخ <strong className="text-white font-medium">{order.date}</strong> وتخصيص خط معالجة تتبع فوري بمقاييس سولته لعلامتنا البوتيك الخاصة.
             </p>
           </div>
 
@@ -1071,7 +1071,7 @@ export default function OrderDetailView({
                     نعتذر لعميلتنا الكريمة عن التأخير 🌸
                   </h4>
                   <p className="text-[10px] text-rose-700 leading-relaxed font-sans mb-3">
-                    لحق بنا تأخر طفيف في تجهيز قطعة الكوتور الفاخرة الخاصة بكِ لضمان أدق تفاصيل فحص الخياطة. تم تخصيص هدية تعويض ملكية وكوبون خصم صالح لطلبكِ القادم:
+                    لحق بنا تأخر طفيف في تجهيز قطعة الكوتور الخاصة بكِ لضمان أدق تفاصيل فحص الخياطة. تم تخصيص هدية تعويض ملكية وكوبون خصم صالح لطلبكِ القادم:
                   </p>
                   <div className="bg-white/60 border border-rose-150 p-2.5 rounded-xl flex justify-between items-center flex-row-reverse">
                     <span className="text-xs font-mono font-bold text-rose-950">APOLOGY20</span>
@@ -1162,7 +1162,7 @@ export default function OrderDetailView({
                 </span>
               </div>
               <div className="flex justify-between items-center text-right flex-row-reverse">
-                <span className="text-gray-400">التعبئة وبكج Sulta الفاخر المزين بشريط الدانتيل:</span>
+                <span className="text-gray-400">التعبئة وبكج Sulta المزين بشريط الدانتيل:</span>
                 <span className="text-[#DF8A9C] font-semibold font-sans">مجانًا كليا (هدية)</span>
               </div>
               <div className="flex justify-between items-center text-right flex-row-reverse">
@@ -1363,7 +1363,7 @@ export default function OrderDetailView({
                 <span className="font-serif italic text-[#A44C5C] text-xs tracking-[0.2em] block mb-2 uppercase">تقييم تجربة سولته كوتور</span>
                 <h3 className="font-serif text-lg font-bold text-[#0B0B0B]">يسعدنا سماع رأيك الملكي 👑</h3>
                 <p className="text-xs text-gray-500 mt-2">
-                  بعد تسليم طلبيتكِ الفاخرة، يسرنا جداً معرفة لمساتكِ وتجربتكِ لقطعنا. تفضلي بتقييم الخدمة ورفع صورة لتجربة التغليف لربح مميزات الـ VIP.
+                  بعد تسليم طلبيتكِ، يسرنا جداً معرفة لمساتكِ وتجربتكِ لقطعنا. تفضلي بتقييم الخدمة ورفع صورة لتجربة التغليف لربح مميزات الـ VIP.
                 </p>
               </div>
 
@@ -1401,7 +1401,7 @@ export default function OrderDetailView({
 
                 {/* Right col in feedback: Drag and drop file upload */}
                 <div className="md:col-span-5">
-                  <label className="block text-xs font-bold text-gray-750 mb-2">ارفعي صورة من تجربتكِ الفاخرة (اختياري):</label>
+                  <label className="block text-xs font-bold text-gray-750 mb-2">ارفعي صورة من تجربتكِ (اختياري):</label>
                   
                   {satisfactionPhoto ? (
                     <div className="relative border border-amber-200 p-2 bg-amber-50/25 rounded-2xl flex flex-col items-center">
