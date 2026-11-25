@@ -4,7 +4,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { Sparkles, Heart, Star, ShoppingBag, Eye, ArrowRight, ArrowLeft, Mail, Phone, Check, Box, ShieldCheck, Instagram, Home, Package, User, X, Globe, Search, Truck, RefreshCw, Tag } from 'lucide-react';
 import { WhatsAppService } from './services/whatsappService';
 import { ToastProvider, useToast } from './components/Toast';
-import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, Navigate, Link } from 'react-router-dom';
+import { INFO_PAGES } from './data/infoPages';
 import Header from './components/Header';
 import RedirectHandler from './components/RedirectHandler';
 import SEO from './components/SEO';
@@ -28,6 +29,7 @@ const AccountView = React.lazy(() => import('./components/AccountView'));
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
 const AdminAuthGate = React.lazy(() => import('./components/AdminAuthGate'));
 const Faq = React.lazy(() => import('./components/Faq'));
+const InfoPage = React.lazy(() => import('./components/InfoPage'));
 const ReturnsExchanges = React.lazy(() => import('./components/ReturnsExchanges'));
 const DatabaseTest = React.lazy(() => import('./components/DatabaseTest'));
 const BlogView = React.lazy(() => import('./components/BlogView'));
@@ -898,6 +900,9 @@ function AppContent() {
             <Route path="/about" element={<AboutUs homepageSections={homepageSections} />} />
             <Route path="/contact" element={<ContactUs settings={settings} />} />
             <Route path="/track-order" element={<TrackOrder initialOrderId={autoTrackId} />} />
+            {INFO_PAGES.map(pg => (
+              <Route key={pg.path} path={`/${pg.path}`} element={<InfoPage page={pg} />} />
+            ))}
             <Route path="/account" element={
               <AccountView
                 session={session}
@@ -1222,6 +1227,8 @@ function AppContent() {
               <button type="button" onClick={() => setTab('faq')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">الأسئلة الشائعة</button>
               <button type="button" onClick={() => setTab('track-order')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">تتبع طلبيتكِ</button>
               <button type="button" onClick={() => setTab('returns')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">سياسة الاسترجاع والاستبدال</button>
+              <Link to="/size-guide" className="hover:text-[#A44C5C] transition-colors font-bold">دليل المقاسات</Link>
+              <Link to="/shipping" className="hover:text-[#A44C5C] transition-colors font-bold">الشحن والتوصيل</Link>
               <button type="button" onClick={() => setTab('about')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">من نحن</button>
               <button type="button" onClick={() => setTab('contact')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">اتصلي بنا</button>
             </div>
