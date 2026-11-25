@@ -5,6 +5,7 @@ import { Product, Country } from '../types';
 import SultaImage from './SultaImage';
 import { ProductPrice } from './ProductPrice';
 import { getProductSlug } from '../utils/slugify';
+import { matchesTokens } from '../utils/arabicSearch';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -61,11 +62,8 @@ export default function SearchOverlay({
 
     return products
       .filter((p) => {
-        const arMatch = p.nameAr?.toLowerCase().includes(trimmed);
-        const enMatch = p.nameEn?.toLowerCase().includes(trimmed);
-        const catMatch = p.categoryAr?.toLowerCase().includes(trimmed) || p.category?.toLowerCase().includes(trimmed);
-        const fabricMatch = p.fabricAr?.toLowerCase().includes(trimmed) || p.fabricEn?.toLowerCase().includes(trimmed);
-        return p.status === 'active' && (arMatch || enMatch || catMatch || fabricMatch);
+        const hay = [p.nameAr, p.nameEn, p.categoryAr, p.category, p.fabricAr, p.fabricEn, p.collection, p.tagAr].filter(Boolean).join(' ');
+        return p.status === 'active' && matchesTokens(hay, trimmed);
       })
       .slice(0, 6);
   }, [query, products]);

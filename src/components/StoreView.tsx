@@ -14,17 +14,7 @@ import { getProductSlug } from '../utils/slugify';
 import ProductCard from './ProductCard';
 import SEO from './SEO';
 
-// Arabic-friendly normalisation so "بجامه" finds "بيجامة", "كوريشه" finds "كوريشة", hamza and diacritics are ignored
-const normAr = (t: string) =>
-  (t || '')
-    .toLowerCase()
-    .replace(/[\u064B-\u0652\u0640]/g, '')
-    .replace(/[أإآٱ]/g, 'ا')
-    .replace(/ى/g, 'ي')
-    .replace(/ة/g, 'ه')
-    .replace(/بيجام/g, 'بجام')
-    .replace(/\s+/g, ' ')
-    .trim();
+import { normAr } from '../utils/arabicSearch';
 
 interface StoreViewProps {
   products: Product[];
