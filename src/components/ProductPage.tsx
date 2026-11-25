@@ -125,14 +125,6 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     return () => clearInterval(timer);
   }, [product, settings]);
 
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
   const galleryReel = product ? findReelForSlug(getProductSlug({ id: product.id, nameEn: product.nameEn, nameAr: product.nameAr, slug: product.slug })) : undefined;
   const galleryImgCount = Array.isArray(product?.images) ? product!.images.filter(i => i && typeof i === 'string' && i.trim() !== '').length : 0;
   const slideCount = galleryImgCount + (galleryReel ? 1 : 0);
@@ -148,6 +140,14 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     }, Math.max(4000, galleryPausedUntil - Date.now() + 1000));
     return () => clearTimeout(t);
   }, [activeImageIdx, slideCount, onVideoSlide, galleryPausedUntil]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (!product) return null;
 
