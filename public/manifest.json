@@ -1,22 +1,56 @@
 {
-  "name": "Sulta",
-  "short_name": "SULTA",
-  "description": "Luxury Pajamas & Loungewear Boutique",
-  "start_url": "/",
+  "name": "سولته | Sulta",
+  "short_name": "سولته",
+  "description": "بيجامات قطن كوريشة سعودية نسائية",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#FAF4F5",
+  "lang": "ar",
+  "dir": "rtl",
+  "background_color": "#FFFFFF",
   "theme_color": "#0B0B0B",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/img/sulta_default_1_1781140865386.webp",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/webp"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/img/sulta_default_1_1781140865386.webp",
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/webp"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "المتجر",
+      "url": "/store",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "تتبع الطلب",
+      "url": "/track-order",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
