@@ -261,7 +261,7 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="bg-white/90 backdrop-blur-md p-8 md:p-10 rounded-3.5xl shadow-xl shadow-amber-950/2 border border-amber-900/5 mb-8 text-right"
         >
-          <div className="flex gap-1.5 mb-8 p-1 bg-gray-100/70 rounded-2xl w-fit mx-auto border border-gray-200/40" dir="rtl">
+          <div className="hidden" dir="rtl">
             <button 
               onClick={() => { setMethod('id'); setQuery(''); setError(''); }} 
               className={`px-4.5 py-2.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer flex items-center gap-1.5 ${method === 'id' ? 'bg-white shadow-xs text-gray-950 border border-gray-150' : 'text-gray-500 hover:text-gray-800'}`}
@@ -349,7 +349,7 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
 
             <button 
               type="submit" 
-              disabled={loading || !query}
+              disabled={loading || !query || phone4.length < 4}
               className="w-full bg-[#A44C5C] text-white py-4.5 rounded-2.5xl font-sans text-xs font-bold tracking-widest uppercase hover:bg-[#A44C5C] hover:shadow-lg hover:shadow-[#A44C5C]/10 transition-all active:scale-[0.99] disabled:opacity-40 select-none mt-6 flex justify-center items-center gap-2 cursor-pointer shadow-md shadow-gray-950/5 border border-white/5"
             >
               {loading ? (
