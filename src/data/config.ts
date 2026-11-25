@@ -1,6 +1,6 @@
 export const SOCIAL_LINKS = {
   instagram: 'https://www.instagram.com/sultabrand',
-  tiktok: '',
+  tiktok: 'https://www.tiktok.com/@sulta.sultaa',
 };
 
 export const BRAND_NAME_AR = 'سولته';
