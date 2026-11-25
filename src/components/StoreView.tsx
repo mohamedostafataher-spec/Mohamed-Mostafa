@@ -113,7 +113,7 @@ export default function StoreView({
       { id: 'all', nameAr: 'جميع المنتجات', icon: '✦' },
       { id: 'offers', nameAr: 'عروض وتخفيضات 🏷️', icon: '🏷️' },
       { id: 'new', nameAr: 'وصل حديثاً ✨', icon: '✨' },
-      { id: 'bestseller', nameAr: 'الأكثر مبيعاً 🔥', icon: '👑' },
+      { id: 'bestseller', nameAr: 'الأكثر مبيعاً', icon: '👑' },
       ...categories
         .map(c => ({ id: c.id, nameAr: c.nameAr || c.name, icon: '🌸' }))
     ];
@@ -400,7 +400,7 @@ export default function StoreView({
                 aria-label="ترتيب المنتجات حسب"
               >
                 <option value="newest">الأحدث وصولاً ✨</option>
-                <option value="bestseller">الأكثر طلباً 🔥</option>
+                <option value="bestseller">الأكثر طلباً</option>
                 <option value="price-low">السعر: الأقل ➜ الأعلى</option>
                 <option value="price-high">السعر: الأعلى ➜ الأقل</option>
                 <option value="rating">التقييم الأعلى ⭐</option>
