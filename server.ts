@@ -605,26 +605,10 @@ async function startServer() {
   /**
    * 3. PAYPAL PAYMENT PROCESSING
    */
-  app.post("/api/payment/paypal/process", async (req, res) => {
-    const { order_id, amount_sar, amount_usd, customer_name, customer_email } = req.body;
-    console.log("[API] PayPal Process Request Received:", order_id, amount_usd, "USD");
-
-    const randomSuffix = Math.random().toString(36).substring(2, 9).toUpperCase();
-    const paypalOrderId = `PAYID-${Date.now().toString().slice(-6)}-${randomSuffix}`;
-    const transactionId = `TXN-PP-${randomSuffix}`;
-
-    res.json({
-      success: true,
-      order_id,
-      paypal_order_id: paypalOrderId,
-      transaction_id: transactionId,
-      amount_usd,
-      amount_sar,
-      status: "COMPLETED"
-    });
+  app.post("/api/payment/paypal/process", (_req, res) => {
+    // Disabled: online payment is not integrated. Never report a payment as completed here.
+    res.status(501).json({ success: false, error: "Online payment is not available" });
   });
-
-
 
   // Helper to fetch dynamic SEO metadata (Supabase Bridge)
   async function getSeoMetadata(query: any) {
