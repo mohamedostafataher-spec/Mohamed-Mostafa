@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Truck, CornerUpLeft, Clock, MessageCircle, Star, Sparkles, ChevronDown, CheckCircle2 } from 'lucide-react';
 import SEO from './SEO';
+import ReturnRequestForm from './ReturnRequestForm';
 
 export default function ReturnsExchanges() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -350,8 +351,9 @@ export default function ReturnsExchanges() {
           </div>
         </section>
 
+        <ReturnRequestForm />
+
       </div>
     </div>
   );
 }
-
