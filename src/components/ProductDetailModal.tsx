@@ -103,7 +103,7 @@ export default function ProductDetailModal({
 
   const [bundleItems, setBundleItems] = useState([
     { id: 'b1', name: product.nameAr, price: effectiveProductPrice, image: product.images?.[0] || '', checked: true },
-    { id: 'b2', name: 'شمعة Sulta العطرية الملكية للتوليفة الفاخرة', price: country === 'EG' ? 120 : 65, image: '', checked: true },
+    { id: 'b2', name: 'شمعة Sulta العطرية الملكية للتوليفة', price: country === 'EG' ? 120 : 65, image: '', checked: true },
     { id: 'b3', name: 'علبة هدايا كوتور الفخمة مع الختم الشمعي', price: country === 'EG' ? 150 : 80, image: '', checked: false }
   ]);
 
@@ -131,7 +131,7 @@ export default function ProductDetailModal({
           categoryAr: 'إضافات وهدايا',
           descriptionAr: item.name,
           descriptionEn: item.name,
-          fabricAr: 'عضوي فاخر',
+          fabricAr: 'عضوي',
           fabricEn: 'Luxury Organic',
           washInstructionsAr: 'غسيل لطيف',
           images: [item.image],
@@ -344,7 +344,7 @@ export default function ProductDetailModal({
       // Pear-shaped silhouettes need slightly more workspace at hip-line
       size = 'M / L';
       conf = 97;
-      note = 'نظراً لاختيارك (قوام الكمثرى)، مقاس M/L سيغطي محيط الورك براحة فاخرة.';
+      note = 'نظراً لاختيارك (قوام الكمثرى)، مقاس M/L سيغطي محيط الورك براحة.';
     }
 
     setFitCalculatedSize(size);
@@ -538,7 +538,7 @@ export default function ProductDetailModal({
                             <span className="text-[10px] text-[#F4B6C2] font-black tracking-[0.3em] uppercase block">Sulta HAUTE COUTURE</span>
                             <h4 className="text-xl font-serif text-white leading-tight">أناقة ملكية تتنفس الرقي</h4>
                             <div className="w-12 h-0.5 bg-[#F4B6C2] mx-auto my-3" />
-                            <p className="text-[10px] text-gray-300 max-w-[200px] mx-auto leading-relaxed">أقمشة فاخرة، حياكة يدوية دقيقة، وراحة تدوم طوال الليل 🌸</p>
+                            <p className="text-[10px] text-gray-300 max-w-[200px] mx-auto leading-relaxed">أقمشة، حياكة يدوية دقيقة، وراحة تدوم طوال الليل 🌸</p>
                           </motion.div>
                         </div>
 
@@ -758,7 +758,7 @@ export default function ProductDetailModal({
                     const isCotton = product.nameAr?.includes('قطن') || product.nameEn?.toLowerCase().includes('cotton') || product.fabricAr?.includes('قطن');
                     const isVelvet = product.nameAr?.includes('مخمل') || product.fabricAr?.includes('مخمل');
                     
-                    let fabricLabelAr = "نسيج فاخر ناعم معالج دقيق";
+                    let fabricLabelAr = "نسيج ناعم معالج دقيق";
                     let fabricThreadInfoAr = "ألياف فائقة النعومة بسماكة خيط كوتور تبلغ 0.08dtex";
                     let fabricSourceAr = "حياكة ناعمة لطيفة 100% مع غزل حراري واقي للبشرة";
                     
@@ -773,7 +773,7 @@ export default function ProductDetailModal({
                     } else if (isVelvet) {
                       fabricLabelAr = "مخمل وبيل ملكي فائق الرقة";
                       fabricThreadInfoAr = "نسج طولي مفعم بالنعومة والعمق للون دائم الترف والسطوع";
-                      fabricSourceAr = "عازل مريح وقائي بوزن ريشي رائع للنوم الفاخر";
+                      fabricSourceAr = "عازل مريح وقائي بوزن ريشي رائع للنوم";
                     }
 
                     // Dynamically generate texture based on style: scale changes based on slider.
@@ -884,7 +884,7 @@ export default function ProductDetailModal({
                               📐 <span className="text-gray-400">التفاصيل:</span> {fabricThreadInfoAr}
                             </p>
                             <p className="text-[9.5px] text-[#FFFFFF] leading-snug">
-                              💎 <span className="text-gray-400">الميزة الفاخرة:</span> {fabricSourceAr}
+                              💎 <span className="text-gray-400">الميزة:</span> {fabricSourceAr}
                             </p>
                           </div>
                         </div>
@@ -1272,7 +1272,7 @@ export default function ProductDetailModal({
                   <Zap className="text-amber-600 shrink-0 mt-0.5 animate-bounce" size={15} />
                   <div>
                     <strong className="text-amber-900 text-xs">خياطة خاصة - المقاس واللون نفد مؤقتاً!</strong>
-                    <span className="text-[10px] text-gray-500 block leading-relaxed">بسبب الإقبال الشديد على هذا الموديل، نقوم بصنع دفعات جديدة بورش Sulta الفاخرة حالياً.</span>
+                    <span className="text-[10px] text-gray-500 block leading-relaxed">بسبب الإقبال الشديد على هذا الموديل، نقوم بصنع دفعات جديدة بورش Sulta حالياً.</span>
                   </div>
                 </div>
 
@@ -1304,7 +1304,7 @@ export default function ProductDetailModal({
                 ) : (
                   <div className="bg-emerald-50 text-emerald-800 text-[10px] p-3 rounded-xl border border-emerald-250 font-sans text-center mt-2 flex items-center justify-center gap-1.5 flex-row-reverse">
                     <Check size={14} className="text-emerald-600 shrink-0" />
-                    <span>تم تفعيل الاشتراك بالتوفر! سنرسل إشعاراً ذكياً بمجرد خروج القطعة من ورشة الحياكة الفاخرة 🌸</span>
+                    <span>تم تفعيل الاشتراك بالتوفر! سنرسل إشعاراً ذكياً بمجرد خروج القطعة من ورشة الحياكة 🌸</span>
                   </div>
                 )}
               </div>
@@ -1353,7 +1353,7 @@ export default function ProductDetailModal({
                     <div className="space-y-1.5 text-xs text-gray-800">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-[#A44C5C]">🧵 الخامة:</span>
-                        <span>{product.fabricAr || 'قطن فاخر 100% ناعم ومسامي معالج ضد الانكماش'}</span>
+                        <span>{product.fabricAr || 'قطن 100% ناعم ومسامي معالج ضد الانكماش'}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-[#A44C5C]">📏 المقاس:</span>
@@ -1413,7 +1413,7 @@ export default function ProductDetailModal({
                         <span className="transition group-open:rotate-180">▾</span>
                       </summary>
                       <p className="mt-2 text-[11px] text-gray-600 leading-relaxed pr-2">
-                        التوصيل سريع لكافة مدن المملكة خلال 2 إلى 4 أيام عمل. الشحن مجاني للطلبات المؤهلة، مع تغليف فاخر هدية مجانية.
+                        التوصيل سريع لكافة مدن المملكة خلال 2 إلى 4 أيام عمل. الشحن مجاني للطلبات المؤهلة، مع تغليف هدية مجانية.
                       </p>
                     </details>
                     <details className="group border border-gray-150 rounded-lg p-2.5 cursor-pointer">
@@ -1586,7 +1586,7 @@ export default function ProductDetailModal({
                       <div className="bg-gray-50 p-3 rounded-lg border border-gray-150 text-[11px]">
                          <span className="font-bold text-gray-950 block mb-1">📏 المقاس:</span>
                          <p className="text-gray-700 font-sans">
-                            جميع قطع سولته مصممة بنظام القياس الموحد (One Size) لتناسب مختلف القوامات بانسدالية فاخرة ومريحة.
+                            جميع قطع سولته مصممة بنظام القياس الموحد (One Size) لتناسب مختلف القوامات بانسدالية ومريحة.
                          </p>
                       </div>
 
@@ -1602,7 +1602,7 @@ export default function ProductDetailModal({
                       <div className="bg-neutral-50 p-2.5 rounded-lg border border-neutral-150 text-[10px] space-y-0.5">
                         <span className="font-bold text-gray-800 block">👩🏻 قياسات العارضة الإرشادية (Model Measurements):</span>
                         <p className="text-gray-500 font-sans">
-                          العارضة ترتدي مقاس <strong className="text-neutral-950">One Size</strong> المعروض في الصور الملكية للأطقم الفاخرة.
+                          العارضة ترتدي مقاس <strong className="text-neutral-950">One Size</strong> المعروض في الصور الملكية للأطقم.
                         </p>
                         <p className="text-gray-550 font-sans">
                           • طول العارضة: <span className="font-semibold text-neutral-800">173 سم</span> • محيط الصدر: <span className="font-semibold text-neutral-800">34 بوصة</span> • الأرداف: <span className="font-semibold text-neutral-800">37 بوصة</span> • الوزن التقريبي: <span className="font-semibold text-neutral-800">62 كيلو</span>.
@@ -1655,7 +1655,7 @@ export default function ProductDetailModal({
 
                   {/* Review Submission Form Container */}
                   <div id="review-form-container" className="hidden bg-white p-4 rounded-xl border border-gray-150 shadow-sm space-y-3 font-sans">
-                    <h4 className="font-bold text-[#0B0B0B] text-xs">شاركينا رأيك وأرفقي صورة لقطعتكِ الفاخرة</h4>
+                    <h4 className="font-bold text-[#0B0B0B] text-xs">شاركينا رأيك وأرفقي صورة لقطعتكِ</h4>
                     
                     <div className="space-y-2">
                       <label className="text-[10px] text-gray-600 block">التقييم (النجوم)</label>
@@ -1722,7 +1722,7 @@ export default function ProductDetailModal({
                       }}
                       className="w-full bg-[#DF8A9C] text-white py-2 rounded-lg font-bold hover:bg-pink-500 transition-colors text-[11px]"
                     >
-                      إرسال المراجعة الفاخرة
+                      إرسال المراجعة
                     </button>
                   </div>
 
@@ -1787,7 +1787,7 @@ export default function ProductDetailModal({
                           {realReviews.length === 0 ? (
                             <div className="bg-white p-6 rounded-xl border border-gray-150 text-center shadow-4xs">
                               <h4 className="font-serif text-[#0B0B0B] mb-1">لا توجد مراجعات لهذه القطعة بعد</h4>
-                              <p className="text-xs text-gray-400 font-sans">كوني أول من يقيّم هذه القطعة الفاخرة</p>
+                              <p className="text-xs text-gray-400 font-sans">كوني أول من يقيّم هذه القطعة</p>
                             </div>
                           ) : (
                             realReviews.map((r, rIdx) => (
@@ -2036,7 +2036,7 @@ export default function ProductDetailModal({
                   </div>
                   <div>
                     <span className="block font-bold text-gray-900 leading-tight">ضمان كوتور 100%</span>
-                    <span className="block text-[9.5px] text-gray-400">أقمشة فاخرة مختارة بعناية فائقة</span>
+                    <span className="block text-[9.5px] text-gray-400">أقمشة مختارة بعناية فائقة</span>
                   </div>
                 </div>
 
@@ -2080,7 +2080,7 @@ export default function ProductDetailModal({
                 </div>
 
                 <p className="text-[11px] text-gray-600 font-sans leading-relaxed">
-                  شاركي هذا التصميم الفاخر مباشرةً عبر تطبيق واتساب أو انسخي رابط المنتج إلى الحافظة لمشاركته مع صديقاتكِ:
+                  شاركي هذا التصميم مباشرةً عبر تطبيق واتساب أو انسخي رابط المنتج إلى الحافظة لمشاركته مع صديقاتكِ:
                 </p>
 
                 {/* Grid of sharing methods */}
@@ -2091,7 +2091,7 @@ export default function ProductDetailModal({
                     onClick={() => {
                       const prodSlug = getProductSlug(product);
                       const shareUrl = `${window.location.origin}/product/${prodSlug}`;
-                      const text = `🌸 مرحباً! شاهدت هذا التصميم الراقي من Sulta للأزياء وملابس النوم الفاخرة:\n*${product.nameAr}*\n💰 السعر: ${price.toLocaleString()} ${currencyLabel}\n🎨 الألوان: ${product.colors.map(c => c.name).join(' - ')}\n🔗 رابط المنتج المباشر للاستعراض والطلب:\n${shareUrl}`;
+                      const text = `🌸 مرحباً! شاهدت هذا التصميم الراقي من Sulta للأزياء وملابس النوم:\n*${product.nameAr}*\n💰 السعر: ${price.toLocaleString()} ${currencyLabel}\n🎨 الألوان: ${product.colors.map(c => c.name).join(' - ')}\n🔗 رابط المنتج المباشر للاستعراض والطلب:\n${shareUrl}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
                     className="bg-[#25D366] hover:bg-[#20ba59] active:scale-98 text-white py-2.5 px-3 rounded-xl text-[11px] font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
@@ -2163,7 +2163,7 @@ export default function ProductDetailModal({
                     <button
                       type="button"
                       onClick={() => {
-                        const caption = `بيجامة Sulta لملابس النوم الفاخرة ✨ تصاميم خيالية تجمع النعومة الفائقة والرقي الملكي 🌸. الموديل المفضل لدي: "${product.nameAr}". تدرجات الألوان الفاخرة متاحة الآن!`;
+                        const caption = `بيجامة Sulta لملابس النوم ✨ تصاميم خيالية تجمع النعومة الفائقة والرقي الملكي 🌸. الموديل المفضل لدي: "${product.nameAr}". تدرجات الألوان متاحة الآن!`;
                         navigator.clipboard.writeText(caption);
                         setCaptionCopied(true);
                         setTimeout(() => setCaptionCopied(false), 2500);
@@ -2194,7 +2194,7 @@ export default function ProductDetailModal({
             {/* Credential Badge */}
             <p className="text-center text-[9px] text-gray-400 font-serif flex justify-center items-center gap-1 mt-1">
               <Shield size={9} className="text-gray-400" />
-              <span>تسوق آمن ومضمون من موقع Sulta لملابس النوم واللانجيري الفاخر.</span>
+              <span>تسوق آمن ومضمون من موقع Sulta لملابس النوم واللانجيري.</span>
             </p>
 
           </div>

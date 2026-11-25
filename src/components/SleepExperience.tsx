@@ -70,7 +70,7 @@ export default function SleepExperience({
               HEALTH & BEAUTY DICTATE | صحتك وجمالك في الليل
             </span>
             <h3 className="font-serif text-2xl font-light text-[#0B0B0B]">
-              لماذا الكوتور الفاخر من Sulta؟
+              لماذا الكوتور من Sulta؟
             </h3>
             <p className="text-gray-500 text-xs leading-relaxed">
               تصفحي الدليل التفصيلي والطقوس الموصى بها من أطباء البشرية والجلدية وخبراء الأزياء الملكية بباريس لتحصلي على أقصى سُموّ واسترخاء.
@@ -120,7 +120,7 @@ export default function SleepExperience({
           <div className="flex justify-center gap-6 pt-2 text-[#A44C5C] text-xs font-sans">
             <div className="flex flex-col items-center gap-1">
               <span className="font-bold">١٠٠٪</span>
-              <span className="text-[9px] text-gray-500 text-3xs uppercase">نسيج فاخر ناعم</span>
+              <span className="text-[9px] text-gray-500 text-3xs uppercase">نسيج ناعم</span>
             </div>
             <div className="h-8 w-[1px] bg-[#A44C5C]/20" />
             <div className="flex flex-col items-center gap-1">

@@ -384,7 +384,7 @@ export default function StoreView({
               ))}
             </div>
             <span className="text-xs font-black text-gray-900">
-              {filteredProducts.length} قطعة فاخرة
+              {filteredProducts.length} قطعة
             </span>
           </div>
 

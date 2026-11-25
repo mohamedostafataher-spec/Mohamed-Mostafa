@@ -185,7 +185,7 @@ export default function RoyalSensesSalon({
     setHarmonyScore(finalScore);
 
     if (finalScore >= 95) {
-      setHarmonyText("✦ توليفة ملوكية فاخرة تحبس الأنفاس! تزاوج الألوان والأقمشة في قمة التناغم والترف.");
+      setHarmonyText("✦ توليفة ملوكية تحبس الأنفاس! تزاوج الألوان والأقمشة في قمة التناغم والترف.");
     } else if (finalScore >= 85) {
       setHarmonyText("✦ تنسيق منسجم جداً ومناسب للمناسبات والزيارات الرسمية الراقية.");
     } else {
@@ -327,7 +327,7 @@ export default function RoyalSensesSalon({
             {/* Title / Packaging indicator */}
             <div className="relative z-10 flex justify-between items-center mb-6 font-sans">
               <div className="text-right">
-                <span className="text-[10px] text-[#A44C5C] font-extrabold uppercase tracking-widest block">جناح الحواس والتعبئة الفاخرة</span>
+                <span className="text-[10px] text-[#A44C5C] font-extrabold uppercase tracking-widest block">جناح الحواس والتعبئة</span>
                 <h4 className="text-sm font-bold text-gray-900">
                   {activeSuite === 'fabric' && "غرفة محاكاة فيزياء وهج الأقمشة والرياح 🌬️"}
                   {activeSuite === 'wax' && "مكبس مهر ختم الشمع الملكي وبطاقات Vintage الزيتية ✉️"}
@@ -448,7 +448,7 @@ export default function RoyalSensesSalon({
 
                     {/* Styled Ribbon colors */}
                     <div className="space-y-1 font-sans">
-                      <span className="text-[10px] text-gray-400 block pb-1">الشريط الملوكي الفاخر:</span>
+                      <span className="text-[10px] text-gray-400 block pb-1">الشريط الملوكي:</span>
                       <div className="flex gap-2 justify-center items-center">
                         <span className="w-16 h-3 rounded" style={{ backgroundColor: ribbonColor.hex }} />
                         <span className="text-[10px] text-white font-semibold">{ribbonColor.nameAr.split(' ')[1]}</span>

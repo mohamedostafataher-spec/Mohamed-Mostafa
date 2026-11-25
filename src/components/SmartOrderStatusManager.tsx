@@ -41,7 +41,7 @@ const STATUS_STEPS: { status: OrderStatus; label: string; icon: any; color: stri
     label: 'تم التسليم', 
     icon: CheckCircle2, 
     color: 'bg-emerald-600',
-    description: 'تم وصول الطلب بنجاح وتلقي العميلة لقطعها الفاخرة ✨'
+    description: 'تم وصول الطلب بنجاح وتلقي العميلة لقطعها ✨'
   }
 ];
 

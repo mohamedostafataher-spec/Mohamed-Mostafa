@@ -36,7 +36,7 @@ export default function SmartNotificationsCenter({
       list.push({
         id: 'new-reviews-alert',
         title: `لديك ${pendingReviews.length} تقييمات جديدة بانتظار الموافقة ⭐`,
-        desc: `قام عملاؤك بمشاركة لحظاتهم الفاخرة مع منتجات Sulta، راجعيها الآن.`,
+        desc: `قام عملاؤك بمشاركة لحظاتهم مع منتجات Sulta، راجعيها الآن.`,
         type: 'review',
         time: 'الآن',
         actionLabel: 'مركز المراجعات',
@@ -95,7 +95,7 @@ export default function SmartNotificationsCenter({
       list.push({
         id: 'milestone-revenue',
         title: `إنجاز ملكي: الطلبات المكتملة تحقق نجاحاً قياسياً ✨`,
-        desc: `لقد قمت بإيصال ${completedOrders.length} شحنة فاخرة بنجاح، محققاً مبيعات مطهرة عالية القيمة.`,
+        desc: `لقد قمت بإيصال ${completedOrders.length} شحنة بنجاح، محققاً مبيعات مطهرة عالية القيمة.`,
         type: 'success',
         time: 'اليوم',
         actionLabel: 'عرض التقارير',

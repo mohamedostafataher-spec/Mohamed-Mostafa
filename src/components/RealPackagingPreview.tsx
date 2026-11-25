@@ -39,7 +39,7 @@ export default function RealPackagingPreview() {
           titleAr: 'علبة الأرستقراطية الليلية السوداء',
           descAr: 'العلبة السوداء المطلية بلمسة مخملية مطفية عازلة مع شعار مبصوم من الذهب عيار ٢٤ قيراط.',
           url: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop',
-          tag: 'طبعة كبّار والشخصيات الفاخرة ✨'
+          tag: 'طبعة كبّار والشخصيات ✨'
         },
         {
           id: 'white-gold',
@@ -51,7 +51,7 @@ export default function RealPackagingPreview() {
         {
           id: 'silk-wrap',
           titleAr: 'لفات المناديل الملوكية',
-          descAr: 'لفائف مناديل حمائية ناعمة تحيط ببيجامتكِ الفاخرة بعبق عطر رويال مسك البولندي.',
+          descAr: 'لفائف مناديل حمائية ناعمة تحيط ببيجامتكِ بعبق عطر رويال مسك البولندي.',
           url: 'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=1200&auto=format&fit=crop',
           tag: 'تكييف داخلي معبق 🏵️'
         }
@@ -74,7 +74,7 @@ export default function RealPackagingPreview() {
       boxColor: '#171717',
       hex: '#171717',
       nameAr: 'أطقم الليل: أسود مطفي ملكي إرستقراطي',
-      descAr: 'علبة برستيج مطلية بلون الليل الملكي، بشعار مطبوع بالذهب اللامع وشريط كافيار فاخر مضلع عريض.',
+      descAr: 'علبة برستيج مطلية بلون الليل الملكي، بشعار مطبوع بالذهب اللامع وشريط كافيار مضلع عريض.',
       image: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop'
     }
   };
@@ -220,7 +220,7 @@ export default function RealPackagingPreview() {
                     </div>
                   </div>
                   <p className="text-[10px] text-gray-400 max-w-xs mx-auto leading-normal">
-                    تحصل كل عميلة على ربطة شعر (Scrunchie) من بقايا النسيج الفاخر لنظام الهدر الصفري، بالإضافة لبطاقة عينة عود للتجربة الاستحمامية.
+                    تحصل كل عميلة على ربطة شعر (Scrunchie) من بقايا النسيج لنظام الهدر الصفري، بالإضافة لبطاقة عينة عود للتجربة الاستحمامية.
                   </p>
                 </motion.div>
               )}
@@ -321,7 +321,7 @@ export default function RealPackagingPreview() {
             <div className="bg-[#FAF9F5]/70 p-5 rounded-2.5xl border border-[#FAFAF7] space-y-4 text-right">
               {activeTab === 'box' && (
                 <div className="space-y-3.5">
-                  <span className="text-xs font-bold text-[#0B0B0B] block">طراز وثيم العلبة الفاخرة المعتمدة بـ Sulta:</span>
+                  <span className="text-xs font-bold text-[#0B0B0B] block">طراز وثيم العلبة المعتمدة بـ Sulta:</span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div 
                       onClick={() => setBoxTheme('rose')}
@@ -388,7 +388,7 @@ export default function RealPackagingPreview() {
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-[#0B0B0B] block">الشنطة الورقية للتقديم كهدية (Luxury Gift Bag):</span>
                   <p className="text-[10.5px] text-gray-500 leading-normal">
-                    تحفظ العلبة الورقية بعيداً عن الغبار والأتربة في الرحلة، ونضعها بداخل هذا الكيس المكسو الفاخر بشريط منسق لتكون الباقة جاهزة للإبهار الفوري وقت التسليم المباشر.
+                    تحفظ العلبة الورقية بعيداً عن الغبار والأتربة في الرحلة، ونضعها بداخل هذا الكيس المكسو بشريط منسق لتكون الباقة جاهزة للإبهار الفوري وقت التسليم المباشر.
                   </p>
                   <div className="bg-[#FCFAF6] border border-amber-950/5 p-3 rounded-xl text-center">
                     <span className="text-[11px] text-[#A44C5C] font-bold block">« مصممة لتتسع للأرواب والأطقم كوتور لتقديم غاية في الشموخ والأثر »</span>
@@ -402,7 +402,7 @@ export default function RealPackagingPreview() {
             <div className="text-right">
               <span className="text-xs font-serif font-bold text-[#0B0B0B] block">طريقة صب الشمع وتحضير العلبة الملكية:</span>
               <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
-                يتم الكي البخاري الفاخر لملابسك ثم طيها بورق المناديل الأبيض ورشها بنذر عطر الدار، ثم صب الشمع الساخن وختمه باسمكِ مجاناً.
+                يتم الكي البخاري لملابسك ثم طيها بورق المناديل الأبيض ورشها بنذر عطر الدار، ثم صب الشمع الساخن وختمه باسمكِ مجاناً.
               </p>
             </div>
             <div className="bg-white border border-stone-150 px-4 py-2.5 rounded-xl text-center shrink-0 shadow-xs">

@@ -76,7 +76,7 @@ export default function PremiumLuxuryExperience({
       } else {
         // Fallback videos
         setVids([
-          { id: 'v1', title: 'مجموعة الكوتور الفاخرة لعام 2026', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-girl-in-satin-pajamas-stretching-in-bed-41618-large.mp4', productId: 'satin-blush' },
+          { id: 'v1', title: 'مجموعة الكوتور لعام 2026', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-girl-in-satin-pajamas-stretching-in-bed-41618-large.mp4', productId: 'satin-blush' },
           { id: 'v2', title: 'مجموعة العروس الملكية', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bride-in-white-silk-robe-getting-ready-40015-large.mp4', productId: 'ivory-dream' }
         ]);
       }
@@ -274,7 +274,7 @@ export default function PremiumLuxuryExperience({
   // =====================================
   const defaultMoods = [
     { slug: 'cozy', nameAr: 'ليالي مريحة ودافئة (Cozy Night)', icon: '🕯️', desc: 'بجايم وفساتين قطن مضلع معالج بنعومة عالية تمنحك استكناناً وهدوءاً.' },
-    { slug: 'luxury', nameAr: 'قمة الترف والوقار (Luxury Night)', icon: '👑', desc: 'أطقم كوتور فاخرة مع دانتيل راقي مطرز يدوياً لتكوني نجمة ساطعة.' },
+    { slug: 'luxury', nameAr: 'قمة الترف والوقار (Luxury Night)', icon: '👑', desc: 'أطقم كوتور مع دانتيل راقي مطرز يدوياً لتكوني نجمة ساطعة.' },
     { slug: 'bride', nameAr: 'جناح سولته للعروس (Bride Suite)', icon: '👰', desc: 'مزيج من الروز ناصع البياض والقطع الملكية للأوقات الخاصة الخالدة.' },
     { slug: 'travel', nameAr: 'سفر دائم الترطيب (Travel Collection)', icon: '✈️', desc: 'تصاميم خفيفة للتوضيب، مريحة وأنيقة في ردهات الفنادق العالمية.' }
   ];
@@ -325,7 +325,7 @@ export default function PremiumLuxuryExperience({
       onAddToCart(p, p.colors?.[0] || { name: 'Ivory', hex: '#FAF5F0' }, p.sizes?.[0] || 'M', 1);
     });
 
-    toast(`🎉 باقة التوفير الفاخرة بقيمة الخصم وعلب الدانتيل أضيفت بالكامل وبامتياز!`, 'success');
+    toast(`🎉 باقة التوفير بقيمة الخصم وعلب الدانتيل أضيفت بالكامل وبامتياز!`, 'success');
   };
 
 
@@ -427,7 +427,7 @@ export default function PremiumLuxuryExperience({
             🕯️ تسوق الأجواء (Moods)
           </button>
           <button onClick={() => setActiveSegment('bundle')} className={`px-4 py-2.5 rounded-xl transition-all ${activeSegment === 'bundle' ? 'bg-[#F6E7A6] text-black font-semibold' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}>
-            💐 باقات التوفير الفاخرة (Bundles)
+            💐 باقات التوفير (Bundles)
           </button>
           <button onClick={() => setActiveSegment('lookbook')} className={`px-4 py-2.5 rounded-xl transition-all ${activeSegment === 'lookbook' ? 'bg-[#F6E7A6] text-black font-semibold' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}>
             📕 لوك بوك السحر (Lookbook)
@@ -641,7 +641,7 @@ export default function PremiumLuxuryExperience({
                       >
                         <div className="text-xl mb-1">🖤</div>
                         <div className="text-xs font-bold text-gray-950">صندوق Sulta الأسود الملوكي</div>
-                        <p className="text-[10px] text-gray-400 mt-1">صندوق خشبي فاخر مكسو بالكتان المعطر برذاذ العود الخالص (60 ر.س)</p>
+                        <p className="text-[10px] text-gray-400 mt-1">صندوق خشبي مكسو بالكتان المعطر برذاذ العود الخالص (60 ر.س)</p>
                       </div>
 
                       <div 
@@ -765,7 +765,7 @@ export default function PremiumLuxuryExperience({
                     onClick={handleAddGiftBoxToCart}
                     className="w-full bg-[#A44C5C] text-white hover:bg-black py-4 rounded-xl font-bold text-xs flex justify-center items-center gap-2"
                   >
-                    💝 تسليم الهدية الفاخرة للسلة
+                    💝 تسليم الهدية للسلة
                   </button>
                 </div>
               </div>
@@ -1088,7 +1088,7 @@ export default function PremiumLuxuryExperience({
 
                   <div className="absolute bottom-4 right-4 bg-black/60 text-white p-3 rounded-xl text-3xs">
                     <span className="font-serif block text-xs">حملة الشتاء الكلاسيكية ❄️</span>
-                    <span>تم التصوير في قصر الأندلس الفاخر بجلسة ترف دائم.</span>
+                    <span>تم التصوير في قصر الأندلس بجلسة ترف دائم.</span>
                   </div>
                 </div>
 
@@ -1233,7 +1233,7 @@ export default function PremiumLuxuryExperience({
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-400 mb-1">انطباعك الأنيق عن خيارات سولته الفاخرة:</label>
+                      <label className="block text-gray-400 mb-1">انطباعك الأنيق عن خيارات سولته:</label>
                       <textarea 
                         value={galleryReview}
                         onChange={(e) => setGalleryReview(e.target.value)}

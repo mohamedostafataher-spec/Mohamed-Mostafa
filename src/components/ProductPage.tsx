@@ -169,7 +169,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
 
   const currentMainImage = displayImages[activeImageIdx] || displayImages[0] || '';
   const colorName = selectedColor?.name || product.colors?.[0]?.name || 'لون كلاسيكي';
-  const fabricName = product.fabricAr || product.material || 'قطن فاخر';
+  const fabricName = product.fabricAr || product.material || 'قطن';
   const descriptiveAlt = `${product.nameAr || 'منتج سولته'} - ${colorName} - ${fabricName}`;
 
   const handleNextImage = () => {

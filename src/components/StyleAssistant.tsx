@@ -67,7 +67,7 @@ export default function StyleAssistant({
                     <Heart size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-[#0B0B0B]">نوم فاخر ومريح</h4>
+                    <h4 className="font-bold text-[#0B0B0B]">نوم ومريح</h4>
                     <p className="text-xs text-gray-500">أبحث عن بيجامات قطنية باردة.</p>
                   </div>
                 </button>
