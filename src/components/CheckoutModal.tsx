@@ -103,7 +103,7 @@ export default function CheckoutModal({
           `تنبيه المخزون: الكمية المتاحة حالياً من "${c.productName}" هي ${c.availableQty} قطعة فقط (طلبتِ ${c.requestedQty}). يرجى تعديل السلة قبل إتمام الطلب.`
         );
       } else {
-        setReservationNotice('تم حجز قطع سلتكِ مؤقتاً لمدة 15 دقيقة لضمان توفرها أثناء الدفع 🔒');
+        setReservationNotice(null);
       }
     }).catch(() => {});
 
@@ -846,7 +846,7 @@ export default function CheckoutModal({
                   <div className="flex items-center gap-2">
                     <ShieldCheck size={16} className="text-emerald-700 shrink-0" />
                     <p className="text-[11px] text-emerald-900 font-bold leading-snug">
-                      تغليف فاخر مجاني مع كل طلب + شحن سريع وتوصيل آمن لكافة مناطق المملكة.
+                      الشحن لكافة مدن المملكة: 40 ر.س، ومجاني للطلبات فوق 299 ر.س.
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-[10px] text-emerald-800 font-semibold pt-1 border-t border-emerald-100">
