@@ -15,7 +15,14 @@ export default async function handler(req: Req, res: Res) {
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chat = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chat) return res.status(200).json({ ok: true, configured: false });
+  // Optional free WhatsApp alerts through CallMeBot (unofficial). Each number owner activates it once.
+  const wa: { phone: string; key: string }[] = [];
+  for (const sfx of ['', '_2']) {
+    const phone = process.env['CALLMEBOT_PHONE' + sfx];
+    const key = process.env['CALLMEBOT_APIKEY' + sfx];
+    if (phone && key) wa.push({ phone: phone.replace(/\D/g, ''), key });
+  }
+  if ((!token || !chat) && wa.length === 0) return res.status(200).json({ ok: true, configured: false });
 
   const b = req.body || {};
   const id = String(b.orderId || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 40);
@@ -31,13 +38,22 @@ export default async function handler(req: Req, res: Res) {
   const total = Math.max(0, Math.min(100000, Number(b.total) || 0));
   const pay = b.payment === 'bank' ? 'تحويل بنكي' : 'دفع عند الاستلام';
   const text = `🛍 طلب جديد في سولته\nرقم الطلب: ${id.slice(0, 8).toUpperCase()}\nعدد القطع: ${items}\nالإجمالي: ${total} ر.س\nالدفع: ${pay}\nالتفاصيل في لوحة التحكم.`;
+  let sent = false;
+  for (const w of wa) {
+    try {
+      const u = `https://api.callmebot.com/whatsapp.php?phone=${w.phone}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(w.key)}`;
+      const r = await fetch(u);
+      sent = sent || r.ok;
+    } catch {}
+  }
+  if (!token || !chat) return res.status(200).json({ ok: sent });
   try {
     const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chat, text }),
     });
-    return res.status(200).json({ ok: r.ok });
+    return res.status(200).json({ ok: r.ok || sent });
   } catch {
     return res.status(200).json({ ok: false });
   }
