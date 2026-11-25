@@ -1179,7 +1179,6 @@ export default function CheckoutModal({
               <div className="flex justify-between items-center text-gray-950 text-sm font-black pt-2 border-t border-gray-200">
                 <div className="flex flex-col text-right">
                   <span>الإجمالي النهائي المستحق:</span>
-                  <span className="text-[10px] text-emerald-700 font-bold">شامل ضريبة القيمة المضافة 15%</span>
                 </div>
                 <span className="font-mono text-base font-black text-[#A44C5C]">{totalAmount.toLocaleString()} {currencyLabel}</span>
               </div>

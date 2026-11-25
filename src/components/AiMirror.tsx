@@ -1180,7 +1180,6 @@ export default function AiMirror({
                       <span className="text-2xl font-serif font-black text-[#A44C5C] block">
                         {activePrice.toLocaleString()} {currencyLabel}
                       </span>
-                      <span className="text-[10px] text-gray-400 block font-sans">شامل ضريبة الرفاهية</span>
                     </div>
                   )}
                 </div>

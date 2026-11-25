@@ -322,11 +322,6 @@ export default function StoreView({
                   <ShieldCheck size={14} className="text-black" />
                   <span>خامة قطن مريحة واستبدال سهل</span>
                 </span>
-                <span className="text-gray-300">·</span>
-                <span className="flex items-center gap-1.5 text-gray-700">
-                  <Tag size={14} className="text-black" />
-                  <span>شامل الضريبة وبدون رسوم خفية</span>
-                </span>
               </div>
             </div>
 

@@ -565,10 +565,6 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                 <Package size={16} className="text-amber-700 shrink-0" />
                 <span>التوصيل خلال <strong>2 إلى 4 أيام عمل</strong> • الدفع عند الاستلام أو تحويل بنكي • استبدال واسترجاع خلال <strong>14 يوم</strong></span>
               </div>
-              <div className="flex items-center gap-2 text-emerald-900 font-bold text-[11px] pt-1 border-t border-amber-200/50">
-                <ShieldCheck size={15} className="text-emerald-700 shrink-0" />
-                <span>السعر شامل ضريبة القيمة المضافة 15% بالكامل • لا توجد رسوم إضافية</span>
-              </div>
             </div>
 
             {/* Countdown timer banner if active discount has endsAt */}
@@ -893,7 +889,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
       {/* Sticky Bottom Action Bar for Mobile Devices */}
       <div className="md:hidden fixed bottom-[64px] left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-2.5 shadow-lg flex items-center justify-between gap-3" dir="rtl">
         <div className="text-right">
-          <span className="text-[11px] text-gray-500 block">السعر شامل الضريبة</span>
+          <span className="text-[11px] text-gray-500 block">السعر</span>
           <span className="text-base font-black text-[#A44C5C]">{discountInfo.unitPrice} ر.س</span>
         </div>
         <div className="flex items-center gap-2 flex-1 max-w-[240px]">
