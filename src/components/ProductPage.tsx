@@ -11,6 +11,7 @@ import { dbService, cleanImgUrl } from '../services/db';
 import { trackViewContent } from '../utils/analytics';
 import { trackTikTokViewContent } from '../utils/tiktokPixel';
 import SEO from './SEO';
+import ProductReviews from './ProductReviews';
 import { ProductPrice } from './ProductPrice';
 import SultaImage from './SultaImage';
 import { formatStockBadge } from '../utils/discountUtils';
@@ -703,6 +704,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
               </details>
             </div>
           </div>
+
+          <ProductReviews productId={product.id} productName={product.nameAr} />
 
           {/* Similar Products */}
           {similarProducts.length > 0 && (
