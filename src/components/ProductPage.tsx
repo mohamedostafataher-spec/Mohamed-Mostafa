@@ -561,6 +561,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
                 <Truck size={16} className="text-amber-700 shrink-0" />
                 <span>الشحن: <strong>40 ر.س</strong> (شحن مجاني للطلبات بأكثر من <strong>299 ر.س</strong> 🇸🇦)</span>
               </div>
+              <div className="flex items-center gap-2 text-amber-950 font-bold">
+                <Package size={16} className="text-amber-700 shrink-0" />
+                <span>التوصيل خلال <strong>2 إلى 4 أيام عمل</strong> • الدفع عند الاستلام أو تحويل بنكي • استبدال واسترجاع خلال <strong>14 يوم</strong></span>
+              </div>
               <div className="flex items-center gap-2 text-emerald-900 font-bold text-[11px] pt-1 border-t border-amber-200/50">
                 <ShieldCheck size={15} className="text-emerald-700 shrink-0" />
                 <span>السعر شامل ضريبة القيمة المضافة 15% بالكامل • لا توجد رسوم إضافية</span>
