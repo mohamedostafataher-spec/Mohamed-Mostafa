@@ -37,6 +37,7 @@ async function generateSitemaps() {
     { route: '/size-guide', priority: '0.7', changefreq: 'monthly' },
     { route: '/shipping', priority: '0.6', changefreq: 'monthly' },
     { route: '/بيجامات-كوريشة', priority: '0.8', changefreq: 'monthly' },
+    { route: '/gift', priority: '0.6', changefreq: 'monthly' },
     { route: '/en', priority: '0.6', changefreq: 'monthly' },
     { route: '/blog', priority: '0.7', changefreq: 'weekly' },
     { route: '/blog/ultimate-womens-sleepwear-cotton-guide', priority: '0.8', changefreq: 'monthly' },
