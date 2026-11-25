@@ -36,6 +36,7 @@ const BlogView = React.lazy(() => import('./components/BlogView'));
 const StaticBlog = React.lazy(() => import('./components/StaticBlog'));
 const EnglishPage = React.lazy(() => import('./components/EnglishPage'));
 const GiftPage = React.lazy(() => import('./components/GiftPage'));
+const DeliveryCity = React.lazy(() => import('./components/DeliveryCity'));
 const BlogPostView = React.lazy(() => import('./components/BlogPostView'));
 const TrackOrder = React.lazy(() => import('./components/TrackOrder'));
 const SystemStatus = React.lazy(() => import('./components/SystemStatus'));
@@ -926,6 +927,7 @@ function AppContent() {
             <Route path="/returns" element={<ReturnsExchanges />} />
             <Route path="/en" element={<EnglishPage />} />
             <Route path="/gift" element={<GiftPage />} />
+            <Route path="/delivery/:city" element={<DeliveryCity />} />
             <Route path="/blog" element={<StaticBlog />} />
             <Route path="/blog/:slug" element={<StaticBlog />} />
             <Route path="/magazine" element={
