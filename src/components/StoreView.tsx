@@ -14,6 +14,18 @@ import { getProductSlug } from '../utils/slugify';
 import ProductCard from './ProductCard';
 import SEO from './SEO';
 
+// Arabic-friendly normalisation so "بجامه" finds "بيجامة", "كوريشه" finds "كوريشة", hamza and diacritics are ignored
+const normAr = (t: string) =>
+  (t || '')
+    .toLowerCase()
+    .replace(/[\u064B-\u0652\u0640]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .replace(/بيجام/g, 'بجام')
+    .replace(/\s+/g, ' ')
+    .trim();
+
 interface StoreViewProps {
   products: Product[];
   categories: Category[];
@@ -157,7 +169,7 @@ export default function StoreView({
     
     // Search query filter
     if (searchQuery) {
-      const q = searchQuery.toLowerCase().trim();
+      const tokens = normAr(searchQuery).split(' ').filter(Boolean);
       result = result.filter(p => {
         const searchable = `
           ${p.nameEn || ''} ${p.nameAr || ''} 
@@ -167,8 +179,9 @@ export default function StoreView({
           ${p.fabricAr || ''} ${p.fabricEn || ''}
           ${p.colors?.map(c => c.name).join(' ') || ''}
           ${p.tagAr || ''}
-        `.toLowerCase();
-        return searchable.includes(q);
+        `;
+        const hay = normAr(searchable);
+        return tokens.every(t => hay.includes(t));
       });
     }
 
