@@ -232,7 +232,7 @@ export default function TrackOrder({ initialOrderId }: TrackOrderProps) {
     <div className="py-24 px-4 bg-[#FCFAF7] min-h-screen relative overflow-hidden flex items-center justify-center">
       <SEO 
         title="تتبع الطلبية الملكية - سولته" 
-        description="تابعي حالة شحنتكِ الملكية من سولته مباشرة. أدخلي رقم الطلب أو الجوال لمعرفة أين وصلت باقتكِ الفاخرة." 
+        description="تابعي حالة شحنتكِ الملكية من سولته مباشرة. أدخلي رقم الطلب أو الجوال لمعرفة أين وصلت باقتكِ." 
         path="/track-order" 
       />
       {/* Decorative luxury vector highlights */}

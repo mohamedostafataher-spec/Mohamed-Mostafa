@@ -217,7 +217,7 @@ export default function SultaAiIntelligence({
     // F. Module 07: AI Review Sentiment Keyword Extraction
     const reviewCompAndComplaints = () => {
       const keywords: Record<string, number> = {
-        'كوتور رائع': 0, 'تغليف ملكي': 0, 'ناعم جداً': 0, 'مريح للنوم': 0, 'حياكة فاخرة': 0,
+        'كوتور رائع': 0, 'تغليف ملكي': 0, 'ناعم جداً': 0, 'مريح للنوم': 0, 'حياكة': 0,
         'يحتاج مقاسات أكبر': 0, 'زيادة درجات الوردي': 0, 'تأخير شحن طفيف': 0, 'عطر البوتيك فواح': 0
       };
 
@@ -226,7 +226,7 @@ export default function SultaAiIntelligence({
         if (text.includes('كوتور') || text.includes('ناعم') || text.includes('قماش')) keywords['كوتور رائع']++;
         if (text.includes('تغليف') || text.includes('بوكس') || text.includes('علبة')) keywords['تغليف ملكي']++;
         if (text.includes('مريح') || text.includes('استرخاء')) keywords['مريح للنوم']++;
-        if (text.includes('جميل') || text.includes('فاخر') || text.includes('راق')) keywords['حياكة فاخرة']++;
+        if (text.includes('جميل') || text.includes('فاخر') || text.includes('راق')) keywords['حياكة']++;
         if (text.includes('شحن') || text.includes('تأخر')) keywords['تأخير شحن طفيف']++;
         if (text.includes('مقاس') || text.includes('صغير') || text.includes('ضيق')) keywords['يحتاج مقاسات أكبر']++;
       });
@@ -273,9 +273,9 @@ export default function SultaAiIntelligence({
       let copy = '';
       if (promoChannel === 'instagram') {
         copy = `✨ المظهر الملكي الفريد الذي يسلب الألباب 👑
-رداء وملابس نوم *${targetProd.nameAr}* الفاخرة مصممة من أرقى كوتور مبرد لتطويق لياليكِ بالراحة المطلقة والنعومة الحانية.
+رداء وملابس نوم *${targetProd.nameAr}* مصممة من أرقى كوتور مبرد لتطويق لياليكِ بالراحة المطلقة والنعومة الحانية.
 
-🌸 صناعة يدوية خاصة بختم شمعي مميز وشريط فاخر.
+🌸 صناعة يدوية خاصة بختم شمعي مميز وشريط.
 🛍️ متاح للتسليم الفوري الآن في الرياض وجدة وكافة مدن المملكة!
 📦 استبدال مجاني مجنّد لباب دارك تيسيراً لأناقتك.
 
@@ -286,20 +286,20 @@ export default function SultaAiIntelligence({
 لكل عروس تبحث عن الكمال والنعومة الدائمة في الصيف والاسترخاء اليومي العذب. نقدم لكِ بيجامة وباقة نوم *${targetProd.nameAr}* المصممة بنهج رويال خاص يليق ببشرتكِ ليتنفس جسدكِ بحرية وتنامين بعمق ملكي رغيد 💤.
 
 💎 متوفر بجميع المقاسات (XS وحتى XXL) مع إمكانية تحديد المقاس التلقائي الذكي عبر موقعنا.
-🎁 يصلك في صندوق معطر فاخر ومختوم شمعياً - كهدية تودين تدليل ذاتك أو تهادي أحبابك بها.
+🎁 يصلك في صندوق معطر ومختوم شمعياً - كهدية تودين تدليل ذاتك أو تهادي أحبابك بها.
 
 اضغطي على الرابط التالي للشراء الفوري والطلب مع شحن رويال سريع وآمن:
 🔗 ${window.location.origin}?product=${targetProd.id}`;
       } else if (promoChannel === 'seo') {
-        copy = `عنوان الصفحة: ملابس نوم راقية للعرائس كوتور - بيجامة وباقة نوم ${targetProd.nameAr} الفاخرة
-وصف الميتا (Meta Description): تسوقي بيجامة ${targetProd.nameAr} الفاخرة من النسيج الملكي الطبيعي المعالج والجاهزة للتسليم الفوري والهدية الملكية بضمان استبدال منزلي مجاني من Sulta.
+        copy = `عنوان الصفحة: ملابس نوم راقية للعرائس كوتور - بيجامة وباقة نوم ${targetProd.nameAr}
+وصف الميتا (Meta Description): تسوقي بيجامة ${targetProd.nameAr} من النسيج الملكي الطبيعي المعالج والجاهزة للتسليم الفوري والهدية الملكية بضمان استبدال منزلي مجاني من Sulta.
 
 نص المقالة الأساسية (SEO Optimized Article):
-تتربع ملابس النوم الفاخرة على عرش الاسترخاء المنزلي وأناقة العرائس في ليلة العمر. وتعتبر قطعة "${targetProd.nameAr}" المنسوجة يدوياً بكوتور سولته نقلة نوعية في علم المنسوجات المترفة المصممة للتعامل اللطيف مع البشرة الحساسة لتقليل ذرات الحرارة المزعجة. تتميز هذه البيجامة بقصة فضفاضة وخياطة متينة ومقاومة للغسيل لضمان نعومة الملمس ولمعان النسيج الدائم.`;
+تتربع ملابس النوم على عرش الاسترخاء المنزلي وأناقة العرائس في ليلة العمر. وتعتبر قطعة "${targetProd.nameAr}" المنسوجة يدوياً بكوتور سولته نقلة نوعية في علم المنسوجات المترفة المصممة للتعامل اللطيف مع البشرة الحساسة لتقليل ذرات الحرارة المزعجة. تتميز هذه البيجامة بقصة فضفاضة وخياطة متينة ومقاومة للغسيل لضمان نعومة الملمس ولمعان النسيج الدائم.`;
       } else {
-        copy = `مرحباً بكِ في البوتيك الاستشاري الفاخر لبراند Sulta لملابس النوم الراقية 👑
+        copy = `مرحباً بكِ في البوتيك الاستشاري لبراند Sulta لملابس النوم الراقية 👑
 
-عزيزتنا الملكة، رصد نظامنا تفضيلك لقطعة النوم الفاخرة *"${targetProd.nameAr}"* ✨. يسعدنا أن نبلغكِ عودة المنتج بكامل مخزونه ومقاساته التلقائية مع تقديم توصيل مجاني سريع لباب دارك، وتغليف ملكي شمعي فاخر وبطاقة إهداء مخصصة.
+عزيزتنا الملكة، رصد نظامنا تفضيلك لقطعة النوم *"${targetProd.nameAr}"* ✨. يسعدنا أن نبلغكِ عودة المنتج بكامل مخزونه ومقاساته التلقائية مع تقديم توصيل مجاني سريع لباب دارك، وتغليف ملكي شمعي وبطاقة إهداء مخصصة.
 
 للطلب الذاتي السريع من الموقع المباشر:
 🔗 ${window.location.origin}?product=${targetProd.id}
@@ -424,7 +424,7 @@ export default function SultaAiIntelligence({
                 <span className="text-[9px] bg-[#A44C5C] text-white px-2 py-0.5 rounded-full font-serif font-black tracking-widest block w-fit">AI BUSINESS COMMAND SYSTEM ACTIVE</span>
                 <h4 className="font-serif text-lg font-bold text-stone-900">رادار المراقبة الملكية الفوري لـ Sulta</h4>
                 <p className="text-gray-500 text-xs leading-relaxed font-sans mt-1">
-                  أهلاً بكِ في مركز القيادة والذكاء الشامل. تدمج هذه شاشة بين تحليلات المبيعات اللحظية، وتنبؤات نفاد المخزون، وتنبيهات أداء القطع الفاخرة لتحققي أقصى كفاءة تشغيل.
+                  أهلاً بكِ في مركز القيادة والذكاء الشامل. تدمج هذه شاشة بين تحليلات المبيعات اللحظية، وتنبؤات نفاد المخزون، وتنبيهات أداء القطع لتحققي أقصى كفاءة تشغيل.
                 </p>
               </div>
 
@@ -457,7 +457,7 @@ export default function SultaAiIntelligence({
                     <span className="text-xs font-bold text-amber-900 font-sans">تنبؤات مستودعات المحزون</span>
                   </div>
                   <p className="text-[10.5px] text-amber-800 leading-relaxed font-sans">
-                    هنالك عدد <span className="font-bold text-amber-900">{aiStats.depletingSoon.length}</span> قطع كوتور فاخرة مميزة بمعدل سحب مرتفع ومخزون المتبقي أقل من 3 وحدات. نوصي بالتزويد الطارئ.
+                    هنالك عدد <span className="font-bold text-amber-900">{aiStats.depletingSoon.length}</span> قطع كوتور مميزة بمعدل سحب مرتفع ومخزون المتبقي أقل من 3 وحدات. نوصي بالتزويد الطارئ.
                   </p>
                 </div>
 
@@ -765,7 +765,7 @@ export default function SultaAiIntelligence({
                   <h5 className="font-serif text-xs font-bold text-emerald-900">👑 أكثر المزايا إشادة وتفضيلية:</h5>
                   <ul className="list-disc pr-4 space-y-1 text-[10.5px] text-emerald-800 font-sans">
                     <li>ملمس القطن الملكي الطبيعي الفائق والبارد في الصيف.</li>
-                    <li>التغليف الفاخر والشريط المرموق والختم الشمعي المرموق كخيار مثالي للهدايا واللانجري.</li>
+                    <li>التغليف والشريط المرموق والختم الشمعي المرموق كخيار مثالي للهدايا واللانجري.</li>
                     <li>رائحة وعطر البوتيك الحكيم المصاحب للصندوق.</li>
                   </ul>
                 </div>
@@ -883,7 +883,7 @@ export default function SultaAiIntelligence({
               <div>
                 <h4 className="font-serif text-sm font-black text-gray-900">🛒 نظام كشف واسترداد السِلات المتروكة (Abandoned Cart Recovery)</h4>
                 <p className="text-[10px] text-gray-400 font-sans mt-0.5 leading-relaxed">
-                  يقوم موقع Sulta بتسجيل المحاولات والعميلات اللواتي أضفن قطعاً فاخرة إلى حقيبة سلة المشتريات وتوقفن طويلاً قبل إكمال الدفع الآمن.
+                  يقوم موقع Sulta بتسجيل المحاولات والعميلات اللواتي أضفن قطعاً إلى حقيبة سلة المشتريات وتوقفن طويلاً قبل إكمال الدفع الآمن.
                 </p>
               </div>
 
@@ -908,7 +908,7 @@ export default function SultaAiIntelligence({
                         <td className="py-3.5 text-center">
                           <button
                             onClick={() => {
-                              const recoveryText = `مرحباً بكِ ملكتنا الجميلة ${cart.name} في Sulta لملابس النوم الفاخرة 🌸. رصدت مستشارتنا تفضيلك وحفظك لقطعة:
+                              const recoveryText = `مرحباً بكِ ملكتنا الجميلة ${cart.name} في Sulta لملابس النوم 🌸. رصدت مستشارتنا تفضيلك وحفظك لقطعة:
 💎 *${cart.item}*
 في سلتكِ. لنسعدكِ ونمنحك الرداء الملكي المناسب، متاح لدينا التوصيل الرويال السريع بمقاسك الفعلي المريح وضمان مجاني تام للاستبدال! يسرنا الرد على أي تطلع خاص بكِ ✨`;
                               const targetUrl = `https://wa.me/${cart.phone}?text=${encodeURIComponent(recoveryText)}`;
@@ -951,7 +951,7 @@ export default function SultaAiIntelligence({
                   <p className="text-xs text-stone-605 leading-relaxed">
                     ملكتنا الجميلة، نعلم أنك ترغبين في تجربة تغليف مبهرة تنافس علامات <span className="font-semibold text-[#A44C5C]">توليا ستوديو (Tulia Studio)</span> و <span className="font-semibold text-[#A44C5C]">ميثا ستايل (Maitha Style)</span> - كرتون بيتزا رائع، شيت ملصقات بنترست اللطيفة، وكارت شكر مخملي. 
                     <br />
-                    ولكن طلب مصنع خاص يفرض عليك <b>500 كرتونة كحد أدنى بمبلغ حوالي 8000 ج.م</b> هو قرار "يخطئ فيه 90% من رواد الأعمال المبتدئين"، لأنه يجمد السيولة النقدية التي يحتاجها القماش الفاخر والدانتيل الملكي لقطع الكوتور الخاصة بك. إليك الحل البديل الروتاري بميزانية تبدأ من <b>300 إلى 500 ج.م فقط!</b>
+                    ولكن طلب مصنع خاص يفرض عليك <b>500 كرتونة كحد أدنى بمبلغ حوالي 8000 ج.م</b> هو قرار "يخطئ فيه 90% من رواد الأعمال المبتدئين"، لأنه يجمد السيولة النقدية التي يحتاجها القماش والدانتيل الملكي لقطع الكوتور الخاصة بك. إليك الحل البديل الروتاري بميزانية تبدأ من <b>300 إلى 500 ج.م فقط!</b>
                   </p>
                 </div>
                 
@@ -1166,7 +1166,7 @@ export default function SultaAiIntelligence({
                           </div>
                         </div>
                         <span className="text-[8px] text-emerald-800 font-bold font-sans bg-emerald-50 px-1 py-0.5 rounded">
-                          طباعة فاخرة (عائق رأس المال 8000 ج.م)
+                          طباعة (عائق رأس المال 8000 ج.م)
                         </span>
                       </div>
                     )}
@@ -1277,7 +1277,7 @@ export default function SultaAiIntelligence({
               <div className="bg-white border border-stone-200/80 p-5 rounded-2.5xl space-y-3.5">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🏷️</span>
-                  <h4 className="text-xs font-bold text-stone-850">كارت الشكر المخملي الفاخر (Sulta Luxury Gift Card)</h4>
+                  <h4 className="text-xs font-bold text-stone-850">كارت الشكر المخملي (Sulta Luxury Gift Card)</h4>
                 </div>
                 
                 <p className="text-[11px] text-stone-605 leading-relaxed">
@@ -1288,7 +1288,7 @@ export default function SultaAiIntelligence({
                   <h5 className="text-[11px] font-bold text-stone-800">الحيلة الاقتصادية لطباعة كارت مذهل بدون ماكينات عملاقة:</h5>
                   <ul className="text-[10.5px] text-stone-650 space-y-1.5 list-disc list-inside">
                     <li>
-                      اختر المقاس الفاخر المطاطي (سمك كارت الفيزا العريض) ليكون ثابتاً ولا ينثني.
+                      اختر المقاس المطاطي (سمك كارت الفيزا العريض) ليكون ثابتاً ولا ينثني.
                     </li>
                     <li>
                       <b>سلوفان بلمس قطيفة مخملي (Velvet Lamination):</b> اطلبي من المطبعة الفورية عمل طبقة "سلوفان قطيفة" على وزن ورقة 350 جرام. يعطي الكارت ملمس شامواه مذهل.

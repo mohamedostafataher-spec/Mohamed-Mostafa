@@ -63,7 +63,7 @@ export default function SultaExperienceScore({
       issues.push({
         type: 'error',
         title: `اكتشاف تسعير خاطئ لـ ${zeroPrice.length} منتجات`,
-        desc: `لا يمكن نشر أسعار مجانية أو صفرية لمنتجات كوتور فاخرة.`,
+        desc: `لا يمكن نشر أسعار مجانية أو صفرية لمنتجات كوتور.`,
         fix: 'عدل سعر القطعة لتتناسب مع قيمتها الليرة والمصنعية الطبيعية.',
       });
     }
@@ -102,7 +102,7 @@ export default function SultaExperienceScore({
     }
     if (score < 75) {
       grade = 'بحاجة لمسات تحسينية 🛠️';
-      gradeDesc = 'المنصة مهيأة تقنياً، ولكن ينقصها ترميم وسائط وبيانات الـ SEO والوصف الفاخر.';
+      gradeDesc = 'المنصة مهيأة تقنياً، ولكن ينقصها ترميم وسائط وبيانات الـ SEO والوصف.';
       gradeColor = 'text-amber-600 bg-amber-50 border-amber-100';
     }
 
@@ -141,7 +141,7 @@ export default function SultaExperienceScore({
             مؤشر فخامة وجاذبية Sulta الرقمي
           </h3>
           <p className="text-gray-400 text-xs mt-1 leading-relaxed">
-            مقياس تقييمي رقمي ذكي يدمج بين تباينات السلاليد الفاخرة، سلامة الروابط، اكتمال بيانات الـ SEO ومعدلات الإغراء المظهرية للمنتجات.
+            مقياس تقييمي رقمي ذكي يدمج بين تباينات السلاليد، سلامة الروابط، اكتمال بيانات الـ SEO ومعدلات الإغراء المظهرية للمنتجات.
           </p>
         </div>
 
@@ -195,7 +195,7 @@ export default function SultaExperienceScore({
               {report.issues.length === 0 ? (
                 <div className="p-10 text-center bg-emerald-50 rounded-2xl border border-emerald-100 text-emerald-850 text-xs">
                   <CheckCircle size={32} className="mx-auto mb-2 text-emerald-500" />
-                  منصة Sulta في قمة وقارها وكمالها الفاخر! صفر مشاكل تشغيلية أو نواقص.
+                  منصة Sulta في قمة وقارها وكمالها! صفر مشاكل تشغيلية أو نواقص.
                 </div>
               ) : (
                 report.issues.map((iss, i) => (

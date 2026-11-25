@@ -30,7 +30,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
     {
       id: 'sulta-s1',
       title: 'ريلاكس يا عمري.. صولا تعتني بكِ 🌸',
-      description: 'شعار العناية الخاص بالملصقات الرسمية المرفقة بعلب المنتجات الفاخرة.',
+      description: 'شعار العناية الخاص بالملصقات الرسمية المرفقة بعلب المنتجات.',
       imageUrl: '',
       category: 'sticker',
       sharesCount: 389
@@ -38,7 +38,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
     {
       id: 'sulta-m2',
       title: 'عندما تكون بيجامتكِ أغلى من مستقبلي 💅',
-      description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الفاخر صالون صولا.',
+      description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور صالون صولا.',
       imageUrl: '',
       category: 'meme',
       sharesCount: 228
@@ -86,7 +86,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
   };
 
   const handleShare = (item: StickerItem, platform: 'whatsapp' | 'twitter' | 'copy') => {
-    const text = `شاهد هذا الملصق الإبداعي الفاخر من دار أزياء Sulta الملكية 🎭✨: "${item.title}" - ${item.description}`;
+    const text = `شاهد هذا الملصق الإبداعي من دار أزياء Sulta الملكية 🎭✨: "${item.title}" - ${item.description}`;
     const url = window.location.href;
 
     if (platform === 'whatsapp') {
@@ -127,7 +127,7 @@ export default function SultaStickersGallery({ setTab, settings }: { setTab?: (t
               ملصقات وميمز Sulta الملكية اللطيفة
             </h1>
             <p className="text-gray-500 text-xs mt-1 leading-relaxed max-w-2xl">
-              تمتّع بتحميل ومشاركة الملصقات الكوميدية والأنيقة المستخرجة من كواليس صالون Sulta الملكي الفاخر. انقر لتنزيل الملصق بخلفية شفافة فورية أو إرساله لصديقاتكِ على الواتساب!
+              تمتّع بتحميل ومشاركة الملصقات الكوميدية والأنيقة المستخرجة من كواليس صالون Sulta الملكي. انقر لتنزيل الملصق بخلفية شفافة فورية أو إرساله لصديقاتكِ على الواتساب!
             </p>
           </div>
 

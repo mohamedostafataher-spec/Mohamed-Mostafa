@@ -12,7 +12,7 @@ export default function SystemStatus() {
   });
 
   const [systems, setSystems] = useState([
-    { id: 1, name: 'Sulta Core Platform', status: 'operational', uptime: '100%', description: 'الواجهة الرئيسية لتسوق البيجامات الفاخرة' },
+    { id: 1, name: 'Sulta Core Platform', status: 'operational', uptime: '100%', description: 'الواجهة الرئيسية لتسوق البيجامات' },
     { id: 2, name: 'Secure Checkout Flow', status: 'operational', uptime: '100%', description: 'نظام الدفع المشفر والمرخص لعمليات الشراء' },
     { id: 3, name: 'Supabase PostgreSQL AI Engine', status: 'operational', uptime: '99.99%', description: 'قاعدة البيانات المركزية ومحرك الذكاء الاصطناعي' },
     { id: 4, name: 'Order Fulfillment & Logistics API', status: 'operational', uptime: '100%', description: 'نظام ربط شركات الشحن والتوصيل الداخلي' },

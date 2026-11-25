@@ -457,7 +457,7 @@ export default function SultaAutomationStudio({
       setBoxSideStamp(`علامة سعودية ملكية تليق بأميرتنا ⚜️`);
 
       setThankYouTitle(`شكراً لاختياركِ فخامة سُلطة`);
-      setThankYouMsg(`صُنعت هذه القطعة الفاخرة [${activeProduct.nameAr}] خصيصاً لتمنحكِ تجربة نوم ملكية دافئة وهادئة بالمملكة.`);
+      setThankYouMsg(`صُنعت هذه القطعة [${activeProduct.nameAr}] خصيصاً لتمنحكِ تجربة نوم ملكية دافئة وهادئة بالمملكة.`);
       setThankYouGreeting(`فريق سُلطة كوتور الملكي ❤️`);
       
       setStickerSub(`Sulta SAUDI SLEEPWEAR COUTURE`);
@@ -684,7 +684,7 @@ export default function SultaAutomationStudio({
   // Spec-Sheet Clipboard Share with Printer
   const sharePackagingWithPrinter = () => {
     const currentProduct = products.find(p => p.id === selectedProductId) || products[0];
-    const productName = currentProduct ? currentProduct.nameAr : 'منتجات سولا الفاخرة';
+    const productName = currentProduct ? currentProduct.nameAr : 'منتجات سولا';
     const specSheet = `*مواصفات طباعة كيت التغليف المؤتمت لبراند Sulta SLEEPWEAR*
 المنتج المختار: ${productName}
 كود البكج البصري (SKU): ${tagSku || 'SLT-MASTER'}
@@ -693,7 +693,7 @@ export default function SultaAutomationStudio({
 جهة التوريد التقنية: Sulta Packaging Studio Auto-Generate
 
 تفاصيل المقاسات والمواد المطلوبة لكل من العناصر الـ 8 الفنية:
-1- كارت الشكر الفاخر (Thank You Card): مقاس 14.8 × 10.5 سم | ورق محبب (Textured Cardstock) بوزن 350 جرام.
+1- كارت الشكر (Thank You Card): مقاس 14.8 × 10.5 سم | ورق محبب (Textured Cardstock) بوزن 350 جرام.
 2- الستيكر المستدير (Luxury Sticker): مقاس 6 × 6 سم | طباعة ورق مذهب مطفي أو فينيل شفاف محمي عيار Spot UV.
 3- كارت السعر والعلاقة (Hang Tag): مقاس 5 × 9 سم | فتحة شريط ملكي علوي 3.5 ملم | سلوفان مخملي مطفي.
 4- كارت رعاية النسيج الصديق (Care Instructions): مقاس 9 × 9 سم | طباعة حبرية آمنة على ورق كرافت ناعم.
@@ -1000,7 +1000,7 @@ export default function SultaAutomationStudio({
 
               {activeAssetId === 'sticker_logo' && (
                 <div className="space-y-3">
-                  <span className="text-xs font-black text-stone-800 block">🏷️ تعديل ملصق الهوية الفاخر:</span>
+                  <span className="text-xs font-black text-stone-800 block">🏷️ تعديل ملصق الهوية:</span>
                   <div className="space-y-2 text-xs">
                     <div className="space-y-1">
                       <label className="text-stone-500 block font-bold">النص الدائري السائد:</label>
@@ -1233,7 +1233,7 @@ export default function SultaAutomationStudio({
                   <div className="bg-[#FAF3F5] p-3 rounded-2xl border border-[#A44C5C]/15">
                     <span className="text-[12px] font-black text-[#A44C5C] block">🎨 تخصيص نوع وهيكل كرتونة التغليف (Packaging)</span>
                     <p className="text-[10px] text-stone-500 leading-normal mt-0.5">
-                      اختر شكل الصندوق وهيكل الطباعة المناسب لمنتجات سُلطة الفاخرة لتصديرها ومشاركتها مع مصانع الكرتون المحلية بالمملكة.
+                      اختر شكل الصندوق وهيكل الطباعة المناسب لمنتجات سُلطة لتصديرها ومشاركتها مع مصانع الكرتون المحلية بالمملكة.
                     </p>
                   </div>
 
@@ -1243,7 +1243,7 @@ export default function SultaAutomationStudio({
                     <div className="grid grid-cols-2 gap-1.5">
                       {[
                         { id: 'pizza_box', name: '📦 صندوق البيتزا المطوي', desc: 'مناسب للبجامات الكاملة' },
-                        { id: 'drawer_box', name: '🗄️ العلبة الدرج الفاخرة', desc: 'سحب جانبي بشريطة' },
+                        { id: 'drawer_box', name: '🗄️ العلبة الدرج', desc: 'سحب جانبي بشريطة' },
                         { id: 'rigid_shirt', name: '💼 علبة الهدايا المسطحة', desc: 'غطاء منفصل كلاسيكي' },
                         { id: 'shopping_bag', name: '🛍️ حقيبة الهدايا بالشرائط', desc: 'حبل قطني رفيع دافئ' }
                       ].map((item) => (

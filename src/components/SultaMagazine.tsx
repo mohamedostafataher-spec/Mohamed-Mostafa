@@ -61,7 +61,7 @@ export default function SultaMagazine({ onReadPost }: SultaMagazineProps) {
             Sulta JOURNAL
           </h1>
           <div className="flex justify-between items-center text-[9px] text-gray-500 font-mono tracking-widest mt-4 uppercase border-t border-gray-300 pt-2 px-1 max-w-2xl mx-auto">
-            <span>عدد الصيف الفاخر ٢٠٢٦</span>
+            <span>عدد الصيف ٢٠٢٦</span>
             <span className="font-serif italic text-[#A44C5C] font-bold">Where Art Meets Couture</span>
             <span>بلمسة ريفيرا الفرنسية</span>
           </div>

@@ -58,7 +58,7 @@ export default function SultaCollections({
         </h2>
         <div className="w-16 h-[1px] bg-[#A44C5C]/30 mx-auto my-3" />
         <p className="text-gray-500 text-xs leading-relaxed max-w-lg mx-auto">
-          تصفحي روائع الفخامة المصممة بعناية فائقة من نسيج الكوتور الملكي الفاخر والمخمل الصافي. أطقم وتصاميم تليق بوقارك وتمنحك ليالٍ ناعمة لا تضاهى.
+          تصفحي روائع الفخامة المصممة بعناية فائقة من نسيج الكوتور الملكي والمخمل الصافي. أطقم وتصاميم تليق بوقارك وتمنحك ليالٍ ناعمة لا تضاهى.
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export default function SultaCollections({
 
                   <div className="absolute inset-x-6 bottom-6 text-white text-right space-y-1">
                     <span className="text-[9px] tracking-widest text-[#F6E7A6] font-bold uppercase">
-                      COLLECTION ✦ {matchedCount} قطع فاخرة
+                      COLLECTION ✦ {matchedCount} قطع
                     </span>
                     <h4 className="font-serif text-lg sm:text-xl font-light">{coll.nameAr}</h4>
                     {coll.descriptionAr && (
