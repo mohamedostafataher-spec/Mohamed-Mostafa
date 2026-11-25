@@ -11,46 +11,29 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
   const featuresSection = homepageSections.find(s => s.section_key === 'features_list');
   const dynamicContent = featuresSection?.content_json;
 
-  const defaultQualities = [
+  // Only facts the store can stand behind (no payment gateways, no invented packaging claims).
+  const qualities = [
     {
       icon: <Truck size={22} className="text-black" />,
-      title: 'شحن ملكي فائق السرعة',
-      desc: 'توصيل مخصص لباب المنزل مغلّف بصندوق هدايا أسود فاخر بعناية.',
+      title: 'التوصيل لمدن المملكة',
+      desc: 'التوصيل خلال 2 إلى 4 أيام عمل بعد تجهيز الطلب. الشحن 40 ر.س ومجاني للطلبات فوق 299 ر.س. نشحن أيضاً لدول الخليج وتُؤكَّد التفاصيل عند الطلب.',
     },
     {
       icon: <ShieldCheck size={22} className="text-black" />,
-      title: 'تحويل بنكي مباشر وسريع',
-      desc: 'تحويل فوري لحساب مصرف الراجحي عبر الآيبان ورقم الحساب مع تأكيد الشحن الفوري.',
+      title: 'الدفع عند الاستلام أو تحويل بنكي',
+      desc: 'ادفعي عند الاستلام، أو حوّلي بنكياً وأرسلي الإيصال عبر واتساب لتأكيد الطلب.',
     },
     {
       icon: <Sparkles size={22} className="text-black" />,
-      title: 'خامات فاخرة فائقة النعومة',
-      desc: 'أقمشة معالجة بحرفية بنعومة تضاهي الغيوم، مع خامات نقية فاخرة ومريحة.',
+      title: 'قطن كوريشة مريح',
+      desc: 'بيجامات من القطن الكوريشة الناعم بمقاس واحد يناسب من 45 إلى 80 كجم.',
     },
     {
       icon: <RefreshCw size={22} className="text-black" />,
-      title: 'سياسة إرجاع بلا مشقة',
-      desc: 'لكِ كامل الراحة في الاستبدال والاسترجاع السهل في مصر والسعودية خلال حيز ١٤ يوماً.',
+      title: 'استبدال واسترجاع خلال 14 يوماً',
+      desc: 'للقطعة غير الملبوسة بتغليفها الأصلي. أبلغينا عن أي عيب خلال 48 ساعة من الاستلام.',
     },
-    {
-      icon: <Globe size={22} className="text-black" />,
-      title: 'التوصيل لمصر والمملكة 🇸🇦 🇪🇬',
-      desc: 'مخازن مجهزة بالكامل بالبلدين لضمان أسعار مرنة بدون جمارك إضافية.',
-    },
-    {
-      icon: <HeartHandshake size={22} className="text-black" />,
-      title: 'صندوق الهدايا الملكي 👑',
-      desc: 'كل شحنة تأتي في صندوق دلال فاخر ببطاقة مخصصة لتليق بالأميرات العرائس.',
-    }
   ];
-
-  const rawQualities = dynamicContent?.qualities || defaultQualities;
-  const qualities = rawQualities
-    .filter((q: any) => !q.title?.includes('إيطال') && !q.title?.includes('ايطال') && !q.title?.includes('عريقة'))
-    .map((q: any, idx: number) => ({
-      ...q,
-      icon: defaultQualities[idx % defaultQualities.length].icon
-    }));
 
   return (
     <section className="bg-white py-12 sm:py-16 border-y border-gray-150 font-sans">
@@ -62,7 +45,7 @@ export default function Features({ homepageSections = [] }: FeaturesProps) {
           <h2 className="text-2xl md:text-3xl font-extrabold text-[#111827] tracking-tight mt-4">
             لماذا تختارين التسوق من Sulta؟
           </h2>
-          <p className="text-gray-600 text-xs mt-2 font-bold tracking-wider">ضمان الجودة، سرعة الشحن، وراحة تليق بكِ</p>
+          <p className="text-gray-600 text-xs mt-2 font-bold tracking-wider">الشحن والدفع والاستبدال بوضوح</p>
         </div>
  
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
