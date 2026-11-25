@@ -658,6 +658,9 @@ export default function AiMirror({
                         <p className="text-[11px] text-gray-200 max-w-xs leading-relaxed">
                           أو التقاط صورة حية بكاميرا هاتفكِ لتجربة البيجامة الملكية فورياً وبخصوصية تامة!
                         </p>
+                        <p className="text-[10px] text-[#F6E7A6] max-w-xs leading-relaxed">
+                          🔒 صورتكِ تبقى على جهازكِ فقط: لا تُرفع إلى أي خادم ولا تُحفظ، وتُمسح عند إغلاق الصفحة. هذه معاينة تقريبية تضعين فيها صورة البيجامة فوق صورتكِ بتحريكها وتكبيرها، وليست قياساً دقيقاً.
+                        </p>
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-2 w-full justify-center">
