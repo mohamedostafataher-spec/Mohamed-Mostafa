@@ -281,6 +281,10 @@ export default function CheckoutModal({
   const handleSubmitOrder = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setErrorMsg('');
+    if (appliedCoupon?.expiresAt && new Date(appliedCoupon.expiresAt).getTime() < new Date().setHours(0, 0, 0, 0)) {
+      setErrorMsg('انتهت صلاحية كود الخصم. ارجعي للسلة وأزيليه ثم أعيدي المحاولة.');
+      return;
+    }
     setIsSubmitting(true);
 
     // Final atomic stock reservation verification before creating the order

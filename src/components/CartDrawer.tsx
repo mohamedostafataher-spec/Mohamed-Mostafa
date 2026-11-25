@@ -383,6 +383,13 @@ export default function CartDrawer({
                     تطبيق
                   </button>
                 </form>
+                {couponErr && <p className="mt-1.5 text-[11px] font-bold text-red-600" role="alert">{couponErr}</p>}
+                {couponSuccess && appliedCoupon && (
+                  <p className="mt-1.5 text-[11px] font-bold text-emerald-700">
+                    تم تطبيق الكود {appliedCoupon.code} (خصم {appliedCoupon.discountPercent}%)
+                    {appliedCoupon.expiresAt ? ` · ينتهي في ${new Date(appliedCoupon.expiresAt).toLocaleDateString('ar-SA')}` : ''}
+                  </p>
+                )}
               </div>
 
               {/* Unified Invoice breakdown Section */}
@@ -416,7 +423,15 @@ export default function CartDrawer({
 
               {/* Check out buttons */}
               <button
-                onClick={() => onCheckout(appliedCoupon)}
+                onClick={() => {
+                  if (appliedCoupon?.expiresAt && new Date(appliedCoupon.expiresAt).getTime() < new Date().setHours(0, 0, 0, 0)) {
+                    setCouponErr('انتهت صلاحية كود الخصم، تم إلغاؤه.');
+                    setCouponSuccess(false);
+                    setAppliedCoupon(null);
+                    return;
+                  }
+                  onCheckout(appliedCoupon);
+                }}
                 className="w-full bg-[#A44C5C] hover:bg-[#8e3e4d] text-white py-3.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#A44C5C]/10 cursor-pointer active:scale-[0.98]"
               >
                 <span>إتمام الطلب والدفع الآمن</span>
