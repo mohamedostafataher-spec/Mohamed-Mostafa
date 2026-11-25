@@ -35,6 +35,7 @@ const DatabaseTest = React.lazy(() => import('./components/DatabaseTest'));
 const BlogView = React.lazy(() => import('./components/BlogView'));
 const StaticBlog = React.lazy(() => import('./components/StaticBlog'));
 const EnglishPage = React.lazy(() => import('./components/EnglishPage'));
+const GiftPage = React.lazy(() => import('./components/GiftPage'));
 const BlogPostView = React.lazy(() => import('./components/BlogPostView'));
 const TrackOrder = React.lazy(() => import('./components/TrackOrder'));
 const SystemStatus = React.lazy(() => import('./components/SystemStatus'));
@@ -924,6 +925,7 @@ function AppContent() {
             <Route path="/faq" element={<Faq />} />
             <Route path="/returns" element={<ReturnsExchanges />} />
             <Route path="/en" element={<EnglishPage />} />
+            <Route path="/gift" element={<GiftPage />} />
             <Route path="/blog" element={<StaticBlog />} />
             <Route path="/blog/:slug" element={<StaticBlog />} />
             <Route path="/magazine" element={
@@ -1196,6 +1198,7 @@ function AppContent() {
               <a href="https://www.instagram.com/sultabrand" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#A44C5C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A44C5C] rounded-md p-1" aria-label="سولته على انستغرام">
                 <Instagram size={20} aria-hidden="true" />
               </a>
+              <a href="/gift" className="text-gray-400 hover:text-[#A44C5C] transition-colors text-[11px] font-bold p-1">هدية</a>
               <a href="/en" className="text-gray-400 hover:text-[#A44C5C] transition-colors text-[11px] font-bold p-1" aria-label="English">English</a>
               <a href="https://www.tiktok.com/@sulta.sultaa" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#A44C5C] transition-colors text-[11px] font-bold p-1" aria-label="سولته على تيك توك">TikTok</a>
             </div>
