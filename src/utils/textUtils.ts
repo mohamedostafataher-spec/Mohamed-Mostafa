@@ -27,7 +27,7 @@ export function parseCleanArabicDescription(rawDescription?: string): string {
  */
 export function truncateTo155Words(text?: string): string {
   const clean = parseCleanArabicDescription(text);
-  if (!clean) return 'متجر سولته للأزياء الراقية والبيجامات الفاخرة. تصاميم ملكية بخامات عالمية وتوصيل سريع لكل مدن المملكة.';
+  if (!clean) return 'متجر سولته للأزياء الراقية والبيجامات. تصاميم ملكية بخامات عالمية وتوصيل سريع لكل مدن المملكة.';
   
   if (clean.length <= 155) return clean;
 
@@ -43,7 +43,7 @@ export function truncateTo155Words(text?: string): string {
  * Formats product title to "{اسم المنتج} | سولته" ensuring brand appears once and length <= 60 chars.
  */
 export function formatProductTitle(productName?: string): string {
-  if (!productName) return 'قطعة ملكية فاخرة | سولته';
+  if (!productName) return 'قطعة ملكية | سولته';
   
   // Remove existing brand suffix if present to prevent double brand
   let cleanName = productName.replace(/\s*\|\s*سولته/g, '').replace(/\s*-\s*سولته/g, '').trim();

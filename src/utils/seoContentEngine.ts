@@ -5,7 +5,7 @@ import { Product, Category } from '../types';
 // ==========================================
 
 const FABRICS_AR: Record<string, string> = {
-  'couture': 'المنسوجات الملكية الفاخرة',
+  'couture': 'المنسوجات الملكية',
   'couture_soft': 'النسيج الناعم المنسوج',
   'قطن': 'القطن المصري الممتاز',
   'دانتيلا': 'الدانتيل الفرنسي الرقيق',
@@ -89,7 +89,7 @@ export const calculateSeoScore = (product: Product): { score: number, suggestion
 
 export const generateProductContent = (product: Product) => {
   const fabric = product.fabricEn || 'Couture';
-  const fabricAr = product.fabricAr || 'الأقمشة الفاخرة';
+  const fabricAr = product.fabricAr || 'الأقمشة';
   const nameAr = product.nameAr;
   const nameEn = product.nameEn || product.nameAr;
   const category = product.categoryAr || 'ملابس نوم';
@@ -97,13 +97,13 @@ export const generateProductContent = (product: Product) => {
 
   // --- ARABIC CONTENT ---
   const shortDescriptionAr = `تألقي براحة لا مثيل لها مع ${nameAr}. صُمم هذا الطقم بعناية فائقة من ${fabricAr} ليمنحكِ نعومة خيالية ونوماً هانئاً في موسم ${season}.`;
-  const seoTitleAr = `شراء ${nameAr} | Sulta لملابس النوم الفاخرة | ${category}`;
+  const seoTitleAr = `شراء ${nameAr} | Sulta لملابس النوم | ${category}`;
   const metaDescriptionAr = `اكتشفي فخامة ${nameAr} من Sulta. طقم نوم مصنوع من ${fabricAr} لراحة ونعومة مثالية. اطلبي الآن لتمتلكي قطعة كوتور فريدة من نوعها من أرقى بيوت الأزياء في مصر والسعودية.`;
-  const keywordsAr = `${nameAr}, ملابس نوم فاخرة, ${fabricAr}, Sulta, بيجامات عرايس, كوتور, ${category}`;
+  const keywordsAr = `${nameAr}, ملابس نوم, ${fabricAr}, Sulta, بيجامات عرايس, كوتور, ${category}`;
 
   const fullDescriptionAr = `
 رؤية Sulta للمنتج:
-ارتقي بتجربة نومكِ إلى مستوى الكوتور الفاخر مع طقم ${nameAr}. قطعة فنية تجمع بين الأناقة المطلقة والراحة الفائقة، مصممة خصيصاً للمرأة التي لا ترضى بأقل من الكمال.
+ارتقي بتجربة نومكِ إلى مستوى الكوتور مع طقم ${nameAr}. قطعة فنية تجمع بين الأناقة المطلقة والراحة الفائقة، مصممة خصيصاً للمرأة التي لا ترضى بأقل من الكمال.
 
 تفاصيل النسيج (Fabric Details):
 منسوج بكل حرفية من ${fabricAr} اللطيف على البشرة، والذي يسمح بتنفس المسام ويحافظ على برودة الجسم طوال الليل. نختار أرقى الخيوط لنضمن لكِ متانة تدوم طويلاً مع لمسة ملكية لا تذبل.
@@ -111,7 +111,7 @@ export const generateProductContent = (product: Product) => {
 مميزات التصميم (Design Features):
 • قصة مريحة (Relaxed Fit) تناسب انحناءات الجسم بأناقة.
 • خياطة يدوية مزدوجة لمتانة استثنائية.
-• تفاصيل فاخرة وأزرار مغلفة تعكس هوية Sulta الأصلية.
+• تفاصيل وأزرار مغلفة تعكس هوية Sulta الأصلية.
 • مناسب لـ ${season} ليمنحكِ التوازن المثالي بين الدفء والتهوية.
 
 لماذا تختارين Sulta؟:
@@ -144,7 +144,7 @@ At Sulta, we believe sleepwear is the most precious garment a woman wears in her
 
   // --- FAQ & Schema ---
   const faqs = [
-    { q: "ما هي خامات هذا المنتج؟", a: `يتم تصنيع ${nameAr} من ${fabricAr} الفاخر المخصص لماركة Sulta.` },
+    { q: "ما هي خامات هذا المنتج؟", a: `يتم تصنيع ${nameAr} من ${fabricAr} المخصص لماركة Sulta.` },
     { q: "هل يتوفر شحن للسعودية؟", a: "نعم، نشحن لجميع مدن المملكة العربية السعودية ومصر مع توفير خدمة الدفع عند الاستلام." },
     { q: "كيف أختار المقاس المناسب؟", a: "يمكنكِ استخدام حاسبة المقاسات الذكية في صفحة المنتج لضمان الملاءمة المثالية." }
   ];
@@ -174,7 +174,7 @@ At Sulta, we believe sleepwear is the most precious garment a woman wears in her
       keywords: keywordsAr,
       shortDescription: shortDescriptionAr,
       fullDescription: fullDescriptionAr,
-      altText: `طقم ${nameAr} من Sulta - ملابس نوم فاخرة`
+      altText: `طقم ${nameAr} من Sulta - ملابس نوم`
     },
     en: {
       seoTitle: seoTitleEn,
@@ -193,7 +193,7 @@ export const generateCategorySeo = (category: Category) => {
   const name = category.name;
   return {
     ar: {
-      title: `طقم ${name} فاخر | تسوقي مجموعة ${name} - Sulta`,
+      title: `طقم ${name} | تسوقي مجموعة ${name} - Sulta`,
       description: `اكتشفي أرقى تصاميم ${name} في مصر والسعودية. مجموعة مُختارة بعناية من Sulta لتمنحكِ الأناقة والراحة المطلقة.`,
       keywords: `${name}, تسوق ${name}, Sulta ${name}, ملابس نوم`
     },
@@ -216,13 +216,13 @@ export const generateBlogDrafts = () => {
     {
       title: "دليل العروس لإعداد جهاز ملابس النوم المثالي",
       excerpt: "اكتشفي القطع الأساسية التي لا غنى عنها في جهازكِ من Sulta لتتألقي في كل أيام زفافك.",
-      content: `إعداد جهاز العروس يتطلب ذكاءً واختيارات راقية. نحن في Sulta ننصح ببدء مجموعتك المكونة من: ٣ أطقم ملكية ناعمة للاستخدام اليومي، وقطعتين من الكوتور الملكي الفاخر للمناسبات، وروب دانتيل ملكي لاستقبال الصباحية...`,
+      content: `إعداد جهاز العروس يتطلب ذكاءً واختيارات راقية. نحن في Sulta ننصح ببدء مجموعتك المكونة من: ٣ أطقم ملكية ناعمة للاستخدام اليومي، وقطعتين من الكوتور الملكي للمناسبات، وروب دانتيل ملكي لاستقبال الصباحية...`,
       seo: "دليل العروس ملابس نوم, جهاز العروس, بيجامات عرايس, Sulta جهاز عروس"
     },
     {
       title: "كيفية اختيار المقاس الذهبي لملابس النوم؟",
       excerpt: "دليل شامل لكيفية استخدام مكتشف القياس الذكي واختيار ما يناسب شكل قوامك.",
-      content: `راحة ملابس النوم تعتمد بشكل كلي على المقاس. القاعدة الذهبية في ملابس النوم هي "مساحة التنفس". عند اختيار بيجامات النوم الفاخرة، احرصي دائماً على إضافة 2 سم لضمان حرية الحركة ليلاً...`,
+      content: `راحة ملابس النوم تعتمد بشكل كلي على المقاس. القاعدة الذهبية في ملابس النوم هي "مساحة التنفس". عند اختيار بيجامات النوم، احرصي دائماً على إضافة 2 سم لضمان حرية الحركة ليلاً...`,
       seo: "مقاس ملابس النوم, اختيار المقاس المثالي, دليل مقاسات Sulta"
     }
   ];

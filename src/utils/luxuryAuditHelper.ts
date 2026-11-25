@@ -6,7 +6,7 @@ export const BRAND_COLORS = [
   { name: 'Onyx Black (أسود سولته الملكي)', hex: '#0B0B0B', role: 'اللون الرئاسي والفاخر للمساحات والخطوط العريضة' },
   { name: 'Warm Gold (ذهب ملكي دافئ)', hex: '#F6E7A6', role: 'لون التمييز والأزرار الملكية ورموز الحسن' },
   { name: 'Pink Pearl (ورد حالم كوتور)', hex: '#DF8A9C', role: 'لون الأنسجة الرقيقة والأرواب الملكية المزركشة' },
-  { name: 'Crimson Velvet (أحمر مخملي عتيق)', hex: '#A44C5C', role: 'لون اللمسات الرومانسية وحواف الدانتيل الفاخر' },
+  { name: 'Crimson Velvet (أحمر مخملي عتيق)', hex: '#A44C5C', role: 'لون اللمسات الرومانسية وحواف الدانتيل' },
   { name: 'Soft Alabaster (عاجي ناصع)', hex: '#FAF5F0', role: 'الخلفية المريحة للنظر المعززة لشفافية النسيج' },
 ];
 
@@ -48,7 +48,7 @@ export const getCustomerJourneyData = (ordersCount: number): JourneyStep[] => {
       mockVisitors: baseVisitors,
       dropPercentage: 0,
       funnelStatus: 'excellent',
-      reasonAr: 'الزوار ينعمون بأجواء الموسيقى والدانتيل الفاخر بمجرد الدخول للصالون.',
+      reasonAr: 'الزوار ينعمون بأجواء الموسيقى والدانتيل بمجرد الدخول للصالون.',
       actionAr: 'الحفاظ على سرعة الاستجابة اللحظية لعرض الأرواب الملكية.'
     },
     {
@@ -119,7 +119,7 @@ export const getSiteMapTree = (
         type: 'group',
         children: [
           { nameAr: 'مسرح العرض الرئيسي (Home)', nameEn: 'Home Display', type: 'page' },
-          { nameAr: 'البوتيك الفاخر (Boutique)', nameEn: 'Luxury Boutique', type: 'page' },
+          { nameAr: 'البوتيك (Boutique)', nameEn: 'Luxury Boutique', type: 'page' },
           { nameAr: 'حكاية الدار وكوتور (Our Story)', nameEn: 'Our Story', type: 'page' },
           { nameAr: 'الدعم والمساعدة الأسئلة (FAQ)', nameEn: 'Faq', type: 'page' },
           { nameAr: 'تتبع طلبيات الصالون (Track Order)', nameEn: 'Track Order', type: 'page' },
@@ -177,7 +177,7 @@ export const generateAiAuditReport = (
 ---
 
 ## 📊 لوحة المؤشرات العامة للعلامة التجارية
-| المؤشر الفاخر | النسبة المئوية | التقييم الاستراتيجي | الإجراء المقترح |
+| المؤشر | النسبة المئوية | التقييم الاستراتيجي | الإجراء المقترح |
 | :--- | :---: | :---: | :---: |
 | **معدل صحة وتكامل المتجر** | ${healthScore}% | ${healthScore > 90 ? 'ممتاز واحترافي' : 'بحاجة لمعاينة مكثفة'} | ${healthScore > 90 ? 'مراقبة التحديثات الدورية' : 'إكمال الأوصاف والصور المفقودة فوراً'} |
 | **متوسط درجة جودة المنتجات**| ${qualityAvg}% | ${qualityAvg > 85 ? 'فخامة مطلقة (Elite)' : 'جودة متوسطة (Premium)'} | تعزيز الدلائل البصرية وصور الزوايا الأربعة |
@@ -203,7 +203,7 @@ export const generateAiAuditReport = (
 ---
 
 ## 📜 شهادة الجودة الرسمية المعتمدة لدار سولته
-**بناءً على هذا الفحص الرقمي الشامل، نعلن أن منصة Sulta الفاخرة المتربطة بقاعدة بيانات Supabase تعمل بكفاءة إنتاجية وهندسية بالغة، وتصنف البوابة كبنية تحتية ممتازة مهيأة لاستقبال وتجهيز طلبيات الكوتور الاستثنائية لجميع النبلاء.**`;
+**بناءً على هذا الفحص الرقمي الشامل، نعلن أن منصة Sulta المتربطة بقاعدة بيانات Supabase تعمل بكفاءة إنتاجية وهندسية بالغة، وتصنف البوابة كبنية تحتية ممتازة مهيأة لاستقبال وتجهيز طلبيات الكوتور الاستثنائية لجميع النبلاء.**`;
 };
 
 // 6. Luxury PDF Certificate Writer using jsPDF
