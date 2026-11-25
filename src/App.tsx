@@ -37,6 +37,7 @@ const StaticBlog = React.lazy(() => import('./components/StaticBlog'));
 const EnglishPage = React.lazy(() => import('./components/EnglishPage'));
 const GiftPage = React.lazy(() => import('./components/GiftPage'));
 const DeliveryCity = React.lazy(() => import('./components/DeliveryCity'));
+import { DELIVERY_CITIES } from './data/deliveryCities';
 const BlogPostView = React.lazy(() => import('./components/BlogPostView'));
 const TrackOrder = React.lazy(() => import('./components/TrackOrder'));
 const SystemStatus = React.lazy(() => import('./components/SystemStatus'));
@@ -1236,6 +1237,13 @@ function AppContent() {
               <button type="button" onClick={() => setTab('returns')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">سياسة الاسترجاع والاستبدال</button>
               <Link to="/size-guide" className="hover:text-[#A44C5C] transition-colors font-bold">دليل المقاسات</Link>
               <Link to="/shipping" className="hover:text-[#A44C5C] transition-colors font-bold">الشحن والتوصيل</Link>
+              <Link to="/blog" className="hover:text-[#A44C5C] transition-colors font-bold">المجلة</Link>
+              <Link to="/gift" className="hover:text-[#A44C5C] transition-colors font-bold">هدايا</Link>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-600 pt-1" aria-label="مدن التوصيل">
+                {DELIVERY_CITIES.map((c) => (
+                  <Link key={c.slug} to={`/delivery/${c.slug}`} className="hover:text-[#A44C5C] transition-colors">{c.ar}</Link>
+                ))}
+              </div>
               <button type="button" onClick={() => setTab('about')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">من نحن</button>
               <button type="button" onClick={() => setTab('contact')} className="hover:text-[#A44C5C] transition-colors cursor-pointer font-bold">اتصلي بنا</button>
             </div>
