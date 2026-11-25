@@ -479,6 +479,32 @@ async function runPrerender() {
         </div>
       </article>`
     },
+    {
+      path: 'en',
+      title: "Sulta | Women's pajamas, delivered across Saudi Arabia",
+      description: "Sulta sells women's crinkle cotton pajamas in one size (45-80 kg). Delivery across Saudi Arabia in 2-4 business days. Cash on delivery or bank transfer. 14-day returns.",
+      bodyHtml: `<main dir="ltr" lang="en" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Sulta women's pajamas</h1>
+        <p class="text-gray-700 mb-4">Crinkle cotton pajamas in one size (45 to 80 kg), delivered to cities across Saudi Arabia. The store itself is in Arabic.</p>
+        <ul class="list-disc ps-5 text-gray-700 space-y-1 text-sm">
+          <li>Delivery in 2 to 4 business days</li>
+          <li>Shipping 40 SAR, free over 299 SAR</li>
+          <li>Cash on delivery or bank transfer</li>
+          <li>Return or exchange within 14 days of receiving your order</li>
+        </ul>
+        <p class="mt-4"><a href="/store" class="text-[#A44C5C] font-bold">Shop pajamas</a> | <a href="/returns" class="text-[#A44C5C] font-bold">Returns</a></p>
+      </main>`
+    },
+    {
+      path: 'gift',
+      title: 'هدية بيجامة نسائية من سولته',
+      description: 'اطلبي بيجامة نسائية من سولته كهدية. وان سايز يناسب من 45 إلى 80 كيلو، توصيل لجميع مدن المملكة، واستبدال خلال 14 يوم.',
+      bodyHtml: `<main dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-4">بيجامة هدية من سولته</h1>
+        <p class="text-gray-700 mb-4">مقاس واحد يناسب من 45 إلى 80 كيلو. في الطلب اكتبي اسم وعنوان ورقم المستلمة. التوصيل 2 إلى 4 أيام عمل، والشحن 40 ر.س ومجاني فوق 299 ر.س.</p>
+        <p><a href="/store" class="text-[#A44C5C] font-bold">تصفحي البيجامات</a></p>
+      </main>`
+    },
     { path: 'contact', title: 'اتصلي بنا | متجر سولته', description: 'تواصلي مع خدمة عملاء متجر سولته للبيجامات النسائية عبر الواتساب أو الهاتف في السعودية.', bodyHtml: '' },
     { path: 'account', title: 'حسابي وطلباتي | متجر سولته', description: 'الملف الشخصي وإدارة وتتبع الطلبات في متجر سولته.', noindex: true, bodyHtml: '' },
     { path: 'track-order', title: 'تتبع الطلب | سولته', description: 'تتبعي حالة طلبك وشحنتك في سولته.', noindex: true, bodyHtml: '' },
