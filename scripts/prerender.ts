@@ -1,3 +1,4 @@
+import { INFO_PAGES } from '../src/data/infoPages.js';
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
@@ -470,6 +471,17 @@ async function runPrerender() {
     "description": "تخفيضات حصرية على تشكيلة واسعة من البيجامات النسائية الفاخرة وملابس النوم. جودة لا تُعوض بأسعار استثنائية."
   }
 ];
+  for (const ip of INFO_PAGES) {
+    const sections = ip.sections.map(sec => `<section><h2>${sec.h2}</h2>${(sec.paras || []).map(t => `<p>${t}</p>`).join('')}${sec.list ? `<ul>${sec.list.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}</section>`).join('');
+    const faqHtml = ip.faqs.map(f => `<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join('');
+    staticRoutes.push({
+      path: ip.path,
+      title: ip.title,
+      description: ip.description,
+      bodyHtml: `<main dir="rtl"><h1>${ip.h1}</h1><p>${ip.intro}</p>${sections}<h2>أسئلة شائعة</h2>${faqHtml}<p><a href="/store">تسوقي الآن</a> | <a href="/size-guide">دليل المقاسات</a> | <a href="/shipping">الشحن والتوصيل</a> | <a href="/returns">الاستبدال والاسترجاع</a></p></main>`
+    } as any);
+  }
+
   for (const c of categoryLandingPages) {
     const grid = rawProducts.map((p: any) => {
       const slug = p.slug || getProductSlug({ id: p.id, nameEn: p.name_en || p.nameEn, nameAr: p.name_ar || p.nameAr });
