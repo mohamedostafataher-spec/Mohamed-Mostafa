@@ -1185,7 +1185,7 @@ function AppContent() {
               
             </div>
             <span className="text-[11px] uppercase tracking-[0.2em] font-bold block text-gray-900 font-sans -mt-2">
-              سولته · أزياء النوم الفاخرة
+              سولته · أزياء النوم
             </span>
             <p className="text-gray-900 font-bold text-xs leading-relaxed max-w-xs pt-1">
               علامة سعودية فاخرة رائدة في تصميم وتقديم أرقى خامات البيجامات والملابس المنزلية المترفة للنساء في المملكة العربية السعودية.
