@@ -79,7 +79,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
           titleAr: 'علبة الأرستقراطية الليلية السوداء',
           descAr: 'العلبة السوداء المطلية بلمسة مخملية مطفية عازلة مع شعار مبصوم من الذهب عيار ٢٤ قيراط.',
           url: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop',
-          tag: 'طبعة كبّار والشخصيات الفاخرة ✨'
+          tag: 'طبعة كبّار والشخصيات ✨'
         },
         {
           id: 'white-gold',
@@ -91,7 +91,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
         {
           id: 'silk-wrap',
           titleAr: 'لفات المناديل الملوكية',
-          descAr: 'لفائف مناديل حمائية ناعمة تحيط ببيجامتكِ الفاخرة بعبق عطر رويال مسك البولندي.',
+          descAr: 'لفائف مناديل حمائية ناعمة تحيط ببيجامتكِ بعبق عطر رويال مسك البولندي.',
           url: 'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=1200&auto=format&fit=crop',
           tag: 'تكييف داخلي معبق 🏵️'
         }
@@ -412,7 +412,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
             <div className="inline-flex items-center gap-2 bg-[#A44C5C]/30 text-[#DF8A9D] px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wide">
               <span>👑 Sulta ENTERPRISE STUDIO</span>
               <span>•</span>
-              <span>مستشار تصميم وصناعة خط إنتاج التغليف الفاخر 2026</span>
+              <span>مستشار تصميم وصناعة خط إنتاج التغليف 2026</span>
             </div>
             
             <h1 className="text-2xl md:text-3.5xl font-serif text-[#F6E7A6] font-black tracking-tight" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.6)' }}>
@@ -570,10 +570,10 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
             <div>
               <h3 className="font-serif text-xl font-bold text-gray-950 mb-2 flex items-center gap-2 justify-start">
                 <Sparkles className="text-[#A44C5C]" size={20} />
-                معرض تجربة التغليف الملكي الفاخر (Luxury Unboxing Experience)
+                معرض تجربة التغليف الملكي (Luxury Unboxing Experience)
               </h3>
               <p className="text-gray-400 text-xs mt-1 leading-relaxed">
-                قم بإدارة وتحميل صور التغليف الفاخر مثل الكرتون الملكي، الحقائب الملوكية الناعمة، الفيونكات، وبطاقات الشمع لإلهام العميلات بمشهد فتح الصناديق الفاتن.
+                قم بإدارة وتحميل صور التغليف مثل الكرتون الملكي، الحقائب الملوكية الناعمة، الفيونكات، وبطاقات الشمع لإلهام العميلات بمشهد فتح الصناديق الفاتن.
               </p>
             </div>
 
@@ -592,7 +592,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-500 mb-1 font-bold text-right">رابط صورة التغليف الفاخر (Unsplash أو غيرها)</label>
+                  <label className="block text-stone-500 mb-1 font-bold text-right">رابط صورة التغليف (Unsplash أو غيرها)</label>
                   <input
                     type="text"
                     value={newUnboxingUrl}
@@ -762,7 +762,7 @@ export default function AdminPackagingCenter({ products: initialProducts, setPro
                 </span>
                 
                 <p className="text-[10px] text-stone-605 leading-relaxed">
-                  براند سولا الفاخر لا يحتاج لمطابع بآلاف الجنيهات لتقديم لمسة بنترست! إليك خطتنا الأوفست الأكثر توفيراً:
+                  براند سولا لا يحتاج لمطابع بآلاف الجنيهات لتقديم لمسة بنترست! إليك خطتنا الأوفست الأكثر توفيراً:
                 </p>
 
                 <div className="space-y-1.5 text-[9.5px] font-sans">

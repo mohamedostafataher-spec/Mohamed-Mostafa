@@ -135,7 +135,7 @@ export default function AdminMarketingCenter() {
         {
           id: 'sulta-s1',
           title: 'ريلاكس يا عمري.. صولا تعتني بكِ 🌸',
-          description: 'شعار العناية الخاص بالملصقات الرسمية المرفقة بعلب المنتجات الفاخرة.',
+          description: 'شعار العناية الخاص بالملصقات الرسمية المرفقة بعلب المنتجات.',
           imageUrl: '',
           category: 'sticker',
           sharesCount: 389
@@ -143,14 +143,14 @@ export default function AdminMarketingCenter() {
         {
           id: 'sulta-m2',
           title: 'عندما تكون بيجامتكِ أغلى من مستقبلي 💅',
-          description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور الفاخر صالون صولا.',
+          description: 'ميمز صيد الكواليس عند وصول أفخر مناديل ورق الزهور صالون صولا.',
           imageUrl: '',
           category: 'meme',
           sharesCount: 228
         },
         {
           id: 'sulta-s2',
-          title: 'سحر الملمس الفاخر الفاتن ✨',
+          title: 'سحر الملمس الفاتن ✨',
           description: 'تحذير ملكي: القطعة ناعمة جداً لدرجة تخدر الحواس فور ملامستها للبشرة.',
           imageUrl: '',
           category: 'sticker',
@@ -344,7 +344,7 @@ export default function AdminMarketingCenter() {
   });
   // Email template builder state
   const [emailSubject, setEmailSubject] = useState('مجموعتكِ الملكية القادمة من Sulta ✨');
-  const [emailBody, setEmailBody] = useState('<div style="font-family: sans-serif; text-align: right; direction: rtl; padding: 20px;"><h2>عزيزتي الملكة ✨</h2><p>نقدم لكِ أرقى مجموعة من ملابس النوم المصنوعة من القطن الفاخر...</p></div>');
+  const [emailBody, setEmailBody] = useState('<div style="font-family: sans-serif; text-align: right; direction: rtl; padding: 20px;"><h2>عزيزتي الملكة ✨</h2><p>نقدم لكِ أرقى مجموعة من ملابس النوم المصنوعة من القطن...</p></div>');
   const [selectedSegment, setSelectedSegment] = useState<'all' | 'vip' | 'new'>('all');
 
   // --- SHOW ALL SYSTEM ALERTS UTILITY ---
@@ -480,8 +480,8 @@ export default function AdminMarketingCenter() {
           setCalendarEvents(JSON.parse(localCal));
         } else {
           const defaults: ContentCalendarEvent[] = [
-            { id: 'cal-1', title: 'إعلان خط التشكيلة مع فيونكات وردية 🎀', platform: 'Instagram', scheduledTime: '2026-06-12T18:00', status: 'scheduled', notes: 'التركيز على ريب النسيج والخامات الفاخرة الفاخرة.' },
-            { id: 'cal-2', title: 'فيديو فتح صندوق العبوة الملكية والختم 📦', platform: 'TikTok', scheduledTime: '2026-06-15T21:00', status: 'draft', notes: 'فيديو ممتع يشرح تفاصيل الشحن الفاخر.' }
+            { id: 'cal-1', title: 'إعلان خط التشكيلة مع فيونكات وردية 🎀', platform: 'Instagram', scheduledTime: '2026-06-12T18:00', status: 'scheduled', notes: 'التركيز على ريب النسيج والخامات.' },
+            { id: 'cal-2', title: 'فيديو فتح صندوق العبوة الملكية والختم 📦', platform: 'TikTok', scheduledTime: '2026-06-15T21:00', status: 'draft', notes: 'فيديو ممتع يشرح تفاصيل الشحن.' }
           ];
           setCalendarEvents(defaults);
           localStorage.setItem('sulta_marketing_calendar', JSON.stringify(defaults));
@@ -659,7 +659,7 @@ export default function AdminMarketingCenter() {
     localStorage.setItem('sulta_marketing_influencers', JSON.stringify(updated));
     await supabase.from('influencers').insert([newInf]).select();
     setInfluencerForm({ name: '', platform: 'Instagram', handle: '', followers: 50000, engagement: 5.2, cost: 1500, campaignStatus: 'active' });
-    showToast('🌹 تم تسجيل نجم المؤثرات الفاخر في سجل Sulta CRM!');
+    showToast('🌹 تم تسجيل نجم المؤثرات في سجل Sulta CRM!');
   };
 
   const deleteInfluencer = async (id: string) => {
@@ -1423,7 +1423,7 @@ export default function AdminMarketingCenter() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-gray-500 mb-1">نص ومخطط الـ HTML الفاخر للبريد</label>
+                  <label className="block text-gray-500 mb-1">نص ومخطط الـ HTML للبريد</label>
                   <textarea
                     rows={8}
                     value={emailBody}
@@ -1521,8 +1521,8 @@ export default function AdminMarketingCenter() {
                   أوسمة الميتا في الصفحة الرئيسية
                 </h4>
                 <div className="space-y-2">
-                  <p>• <strong>العلامة:</strong> Sulta | بيجامات وملابس نوم العرائس الفاخرة بالرياض ومصر</p>
-                  <p>• <strong>الوصف الملكي:</strong> تسوقي أرقى تصاميم البيجامات المصنوعة يدوياً من القطن البارد والنسيج الفاخر مع فيونكات أنيقة لراحة تسكن أحلامكِ.</p>
+                  <p>• <strong>العلامة:</strong> Sulta | بيجامات وملابس نوم العرائس بالرياض ومصر</p>
+                  <p>• <strong>الوصف الملكي:</strong> تسوقي أرقى تصاميم البيجامات المصنوعة يدوياً من القطن البارد والنسيج مع فيونكات أنيقة لراحة تسكن أحلامكِ.</p>
                   <p>• <strong>أكواد التتبع المدمجة:</strong> Snapchat Pixel, TikTok Pixel, Facebook CAPI</p>
                 </div>
                 <div className="pt-2 border-t border-gray-200 flex justify-between items-center">
@@ -1791,7 +1791,7 @@ export default function AdminMarketingCenter() {
           <div className="bg-white border border-gray-150 rounded-2xl p-6">
             <h3 className="font-serif text-xl text-gray-950 mb-1 flex items-center gap-2">
               <Eye className="text-[#DF8A9D]" size={20} />
-              مركز المحتوى المُنشأ بواسطة العميلات الفاخرات (UGC)
+              مركز المحتوى المُنشأ بواسطة العميلات (UGC)
             </h3>
             <p className="text-gray-400 text-xs mb-6">إدارة صور ومراجعات وتغطيات العميلات لاستخدامها في زيادة الموثوقية والمبيعات.</p>
 
@@ -1827,7 +1827,7 @@ export default function AdminMarketingCenter() {
             <Sparkles className="text-[#DF8A9D] mb-4 animate-pulse" size={48} />
             <h3 className="font-serif text-2xl font-bold text-gray-950 mb-2">مساعد المحتوى الذكي قيد التجهيز</h3>
             <p className="text-gray-500 max-w-md text-sm leading-relaxed mb-6">
-              يتم ربط محرك الذكاء الاصطناعي مع Gemini AI لصياغة أوصاف المنتجات الفاخرة، ومقالات المدونة المهيأة للـ SEO، وكتابة كوبي إبداعي لمنشورات السوشيال ميديا تلقائياً. 
+              يتم ربط محرك الذكاء الاصطناعي مع Gemini AI لصياغة أوصاف المنتجات، ومقالات المدونة المهيأة للـ SEO، وكتابة كوبي إبداعي لمنشورات السوشيال ميديا تلقائياً. 
             </p>
             <button className="bg-black text-[#F6E7A6] px-8 py-3 rounded-xl font-bold text-sm shadow-xl hover:scale-105 transition-transform flex items-center gap-2">
               <RefreshCw size={16} /> تفعيل المحرك الذكي
@@ -1851,7 +1851,7 @@ export default function AdminMarketingCenter() {
                   <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600"><CheckCircle size={18} /></div>
                   <div>
                     <h4 className="font-bold text-emerald-900">منتجات بدون وصف تسويقي</h4>
-                    <p className="text-xs text-emerald-700 mt-0.5">جميع المنتجات تمتلك أوصافاً نصية فاخرة.</p>
+                    <p className="text-xs text-emerald-700 mt-0.5">جميع المنتجات تمتلك أوصافاً نصية.</p>
                   </div>
                 </div>
                 <span className="text-emerald-600 font-bold">0 خطأ</span>
@@ -1903,7 +1903,7 @@ export default function AdminMarketingCenter() {
               إدارة وملصقات وميمز Sulta الملكية 🎭
             </h3>
             <p className="text-gray-400 text-xs mt-1 leading-relaxed">
-              هنا يمكنك إضافة ميمز طريفة أو ملصقات رسمية لعرضها في معرض الواجهة الأمامية للعملاء لتسهيل الضحك الفاخر وتثبيت ملصقات تعبئة على هواتفهم أو سحبها لمجموعات التواصل.
+              هنا يمكنك إضافة ميمز طريفة أو ملصقات رسمية لعرضها في معرض الواجهة الأمامية للعملاء لتسهيل الضحك وتثبيت ملصقات تعبئة على هواتفهم أو سحبها لمجموعات التواصل.
             </p>
 
             {/* Upload/Add Form */}
@@ -1926,7 +1926,7 @@ export default function AdminMarketingCenter() {
                     type="text"
                     value={newStickerDesc}
                     onChange={(e) => setNewStickerDesc(e.target.value)}
-                    placeholder="مثال: ملصقات علب التعبئة الفاخرة..."
+                    placeholder="مثال: ملصقات علب التعبئة..."
                     className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs"
                   />
                 </div>

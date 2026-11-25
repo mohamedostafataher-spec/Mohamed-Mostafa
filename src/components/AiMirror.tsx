@@ -145,7 +145,7 @@ export default function AiMirror({
     if (selectedProduct.categoryAr?.includes('نوم') || selectedProduct.category?.toLowerCase().includes('sleep')) {
       adviceText = `قصة الكوتور هذه مصممة لتتدلى بنعومة فائقة حول القوام بحرية تامة. نقترح مقاس ${suggestedSize} لمزيد من الدلال عند الاستلقاء.`;
     } else {
-      adviceText = `أطقم الكوتور الفاخر تأتي بقصة مستوحاة من صالونات فلورنسا الكلاسيكية. مقاس ${suggestedSize} يبرز تفاصيل الأكمام المترفة.`;
+      adviceText = `أطقم الكوتور تأتي بقصة مستوحاة من صالونات فلورنسا الكلاسيكية. مقاس ${suggestedSize} يبرز تفاصيل الأكمام المترفة.`;
     }
 
     if (bodyType === 'hourglass') {
@@ -930,7 +930,7 @@ export default function AiMirror({
                     {[
                       { id: 'normal', name: 'عادي (مستقل)', desc: 'الألوان الأصلية كاملة' },
                       { id: 'multiply', name: 'مدمج ملوكي', desc: 'تطابق مع ظلال صورتك' },
-                      { id: 'overlay', name: 'مشع فاخر', desc: 'إضاءة مضاعفة ممتازة' },
+                      { id: 'overlay', name: 'مشع', desc: 'إضاءة مضاعفة ممتازة' },
                       { id: 'soft-light', name: 'ناعم جداً', desc: 'انعكاس خفيف للأقمشة' }
                     ].map((mode) => (
                       <button
@@ -1171,7 +1171,7 @@ export default function AiMirror({
                       {selectedProduct ? selectedProduct.nameAr : "جاري تحميل قطع Sulta..."}
                     </h3>
                     <p className="text-gray-400 text-xs mt-1">
-                      {selectedProduct ? selectedProduct.categoryAr : "التصنيف الفاخر"} | {selectedProduct?.sku || 'SKU-001'}
+                      {selectedProduct ? selectedProduct.categoryAr : "التصنيف"} | {selectedProduct?.sku || 'SKU-001'}
                     </p>
                   </div>
                   
@@ -1466,7 +1466,7 @@ export default function AiMirror({
                 🏬 بهو وبوتيك Sulta الافتراضي لملابس النوم
               </h2>
               <p className="text-gray-300 text-xs leading-relaxed max-w-lg mx-auto">
-                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع المنسوجات المنسدلة من المشغل الفاخر، واجلسي مع مستشارة سولته بلمسة واحدة.
+                غرفة عرض تفاعلية تليق بمقام جلالتكِ الملكي. تصفحي أحدث الماركات وروائع المنسوجات المنسدلة من المشغل، واجلسي مع مستشارة سولته بلمسة واحدة.
               </p>
             </div>
           </div>

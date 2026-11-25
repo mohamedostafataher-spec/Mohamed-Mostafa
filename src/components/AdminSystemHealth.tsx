@@ -118,7 +118,7 @@ export default function AdminSystemHealth({ toast }: AdminSystemHealthProps) {
               <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
                 <HardDrive size={17} />
               </div>
-              <span className="font-bold text-sm text-gray-900">تخزين الصور الفاخرة (Supabase Storage)</span>
+              <span className="font-bold text-sm text-gray-900">تخزين الصور (Supabase Storage)</span>
             </div>
             {healthData?.storage.status === 'healthy' ? (
               <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">

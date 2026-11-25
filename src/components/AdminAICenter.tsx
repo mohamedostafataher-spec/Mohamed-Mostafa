@@ -604,7 +604,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
             أكاديمية الذكاء الاصطناعي — AI CENTER
           </h2>
           <p className="text-gray-500 text-xs max-w-2xl leading-relaxed">
-            المنظومة التنفيذية الفاخرة للوكلاء الأذكياء. رصد تلقائي بالكامل، أتمتة ليلية، تفاعل مباشر مع قاعدة البيانات الموحدة لـ Supabase دون خوادم تجريبية أو بيانات وهمية.
+            المنظومة التنفيذية للوكلاء الأذكياء. رصد تلقائي بالكامل، أتمتة ليلية، تفاعل مباشر مع قاعدة البيانات الموحدة لـ Supabase دون خوادم تجريبية أو بيانات وهمية.
           </p>
         </div>
 
@@ -671,7 +671,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                 <span className="p-2 bg-[#FFF0F2] rounded-xl text-[#A44C5C]"><UserCheck size={14} /></span>
               </div>
               <h4 className="text-xl font-serif font-extrabold text-stone-900">{stats.totalCustomers} عميلة</h4>
-              <p className="text-[10px] text-gray-500">من ملفات وسجلات العضوية الفاخرة</p>
+              <p className="text-[10px] text-gray-500">من ملفات وسجلات العضوية</p>
             </div>
 
             <div className="bg-white border border-stone-200 p-5 rounded-3xl space-y-2 text-right">
@@ -766,7 +766,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
             {[
               { id: 'store_manager', desc: 'يقوم بمراقبة مستمرة للمبيعات والطلبات المعلقة وتوليد التقارير الإدارية المعتمدة.', icon: <Briefcase className="text-[#A44C5C]" /> },
               { id: 'customer_support', desc: 'يتفاعل مع تذاكر الدعم والواتساب ويرد بذكاء تكنولوجي على استفسارات المقاسات والشحن والموقع.', icon: <MessageSquare className="text-[#A44C5C]" /> },
-              { id: 'seo_agent', desc: 'يولد وسوم محركات البحث، العناوين الفاخرة، ومخططات الـ Schema لكل منتج بالمتجر.', icon: <Search className="text-[#A44C5C]" /> },
+              { id: 'seo_agent', desc: 'يولد وسوم محركات البحث، العناوين، ومخططات الـ Schema لكل منتج بالمتجر.', icon: <Search className="text-[#A44C5C]" /> },
               { id: 'content_agent', desc: 'يكتب مسودات ترويجية، مقالات مدونة، أفكار تيك توك، وبوستات تواصل ملوكية براقة.', icon: <Sparkles className="text-[#A44C5C]" /> },
               { id: 'marketing_agent', desc: 'يحلل السلال المهجورة وتفضيلات الأميرات لابتكار العروض والكوبونات التسويقية الذكية.', icon: <TrendingUp className="text-[#A44C5C]" /> },
               { id: 'inventory_agent', desc: 'يراقب المقاسات والألوان المعرضة للنفاد ويرسل تنبيهات حية ومستقبلية للمخزون.', icon: <Activity className="text-[#A44C5C]" /> },
@@ -967,7 +967,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                       <div>
                         <label className="block text-xs font-bold text-gray-700">النص المراد ترجمته</label>
                         <textarea
-                          placeholder="أدخل النص الفاخر للترجمة الملكية..."
+                          placeholder="أدخل النص للترجمة الملكية..."
                           value={agentInputPayload.text || ''}
                           onChange={(e) => setAgentInputPayload({ ...agentInputPayload, text: e.target.value })}
                           className="w-full border border-gray-200 bg-stone-50 rounded-xl px-4 py-3 text-xs text-right"
@@ -1323,7 +1323,7 @@ export default function AdminAICenter({ products: initialProducts, orders: paren
                   { id: 'marketing_agent', label: 'وكيل 05 — Marketing Agent (الكوبونات والعروض)' },
                   { id: 'inventory_agent', label: 'وكيل 06 — Inventory Agent (تنبيهات شح المخزون)' },
                   { id: 'reviews_agent', label: 'وكيل 07 — Reviews Agent (تحليل جودة المراجعات)' },
-                  { id: 'personal_shopper', label: 'وكيل 08 — Personal Shopper (منسق التسوق الفاخر)' },
+                  { id: 'personal_shopper', label: 'وكيل 08 — Personal Shopper (منسق التسوق)' },
                   { id: 'translation_agent', label: 'وكيل 09 — Translation Agent (الترجمة الملوكية)' },
                   { id: 'ceo_agent', label: 'وكيل 10 — CEO Agent (المستشار الاستراتيجي للمبيعات والنمو)' }
                 ].map((item) => {

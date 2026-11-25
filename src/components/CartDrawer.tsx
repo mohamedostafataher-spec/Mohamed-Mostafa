@@ -244,7 +244,7 @@ export default function CartDrawer({
                             )}
                             {(item as any).luxuryWrap && (
                               <span className="bg-amber-50 text-amber-800 border border-amber-100 px-2 py-1 rounded-lg flex items-center gap-1">
-                                🎁 تغليف فاخر
+                                🎁 تغليف
                               </span>
                             )}
                             {(item as any).giftMessage && (

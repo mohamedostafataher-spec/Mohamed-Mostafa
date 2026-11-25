@@ -18,7 +18,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
       id: 'touch',
       questionAr: '١. ما هو ملمس وثوب النوم المفضل لديكِ والأنسب لبشرتكِ؟',
       options: [
-        { key: 'cotton', titleAr: 'القطن الطبيعي الفاخر (Pure Cotton Luxury)', descAr: 'لمسة غنية دافئة، ولطيفة وحماية كاملة للجلد.' },
+        { key: 'cotton', titleAr: 'القطن الطبيعي (Pure Cotton Luxury)', descAr: 'لمسة غنية دافئة، ولطيفة وحماية كاملة للجلد.' },
         { key: 'jersey', titleAr: 'نسيج كوتور المرن الممتاز (Luxury Stretch Fabric)', descAr: 'لمعان متلالئ براق، انسيابية ارتدادية ومثالية للحركة.' },
         { key: 'cotton', titleAr: 'الكتان والقطن الملكي العضوي (Royal Luxury Cotton)', descAr: 'نعومة قطنية دافئة هادئة تمتص الرطوبة ومريحة جداً غسيل متكرر.' }
       ]
@@ -143,7 +143,7 @@ export default function AiProductAdvisor({ allProducts = [], onSelectProduct }: 
             <span className="text-[10px] uppercase font-bold tracking-widest text-[#A44C5C] block mb-1">AI Personal Styling Assistant</span>
             <h4 className="font-serif text-2xl font-bold text-gray-950">مستشارة الأناقة الرقمية من Sulta 👑</h4>
             <p className="text-gray-500 text-xs mt-2 max-w-md mx-auto leading-relaxed">
-              مرحباً بكِ في أتيلييه سولته للاستشارات الإرشادية الفاخرة. قومي بتوجيه خبيرتنا الرقمية للإجابة على ٤ تفضيلات ذوقية مخصصة، لنرسم لكِ البجامة والقطع الأنسب لجمالكِ الأخاذ.
+              مرحباً بكِ في أتيلييه سولته للاستشارات الإرشادية. قومي بتوجيه خبيرتنا الرقمية للإجابة على ٤ تفضيلات ذوقية مخصصة، لنرسم لكِ البجامة والقطع الأنسب لجمالكِ الأخاذ.
             </p>
           </div>
           <button

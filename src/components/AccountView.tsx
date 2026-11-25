@@ -493,7 +493,7 @@ export default function AccountView({
         items: [
           {
             productId: products[0]?.id || "demo-1",
-            productName: products[0]?.nameAr || "طقم نوم كوتور ملكي فاخر 🌸",
+            productName: products[0]?.nameAr || "طقم نوم كوتور ملكي 🌸",
             price: 1850,
             quantity: 1,
             color: products[0]?.colors?.[0]?.name || "وردي ملكي",
@@ -525,7 +525,7 @@ export default function AccountView({
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <SEO 
         title="حسابي الملكي - نادي سولته" 
-        description="إدارة طلبياتكِ الفاخرة، تتبع الشحنات، ونقاط الولاء في بوتيك سولته للأزياء الراقية." 
+        description="إدارة طلبياتكِ، تتبع الشحنات، ونقاط الولاء في بوتيك سولته للأزياء الراقية." 
         path="/account" 
       />
       {/* Introduction with Loyalty quick status banner */}
@@ -616,7 +616,7 @@ export default function AccountView({
             >
               <span className="flex items-center gap-2.5">
                 <Package size={16} />
-                <span>طلباتي الفاخرة</span>
+                <span>طلباتي</span>
               </span>
               <span className="bg-gray-150 text-gray-700 text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-mono">
                 {orders.length}
@@ -892,7 +892,7 @@ export default function AccountView({
                     </div>
                     <p className="text-[10px] text-gray-600">
                       من 10k وحتى 30k نقطة. تمنحك شحن مجاني دائم + تغليف هدايا
-                      فاخر بالكامل مجاناً لكل منتج.
+                      بالكامل مجاناً لكل منتج.
                     </p>
                   </div>
 
@@ -933,7 +933,7 @@ export default function AccountView({
               {/* Point History Ledger Table */}
               <div className="space-y-2.5">
                 <h4 className="font-serif text-sm font-light text-gray-900">
-                  سجل حركات كسب النقاط الفاخرة:
+                  سجل حركات كسب النقاط:
                 </h4>
                 <div className="border border-gray-150 rounded-xl overflow-hidden font-sans text-xs">
                   <table className="w-full text-right">
@@ -1697,15 +1697,15 @@ export default function AccountView({
                       <div className="flex gap-2 items-center justify-end font-bold text-gray-900 mb-2 font-serif text-sm">
                         <span>تقرير حالة الخط المباشر ({
                           activeStepTab === "new" ? "الاعتماد والتوثيق" :
-                          activeStepTab === "processing" ? "الكي والتغليف الفاخر" :
+                          activeStepTab === "processing" ? "الكي والتغليف" :
                           activeStepTab === "shipped" ? "رحلة الشحن والتوصيل" :
                           "الاستلام الملكي والتقييم"
                         })</span>
                         <span className="text-base">💎</span>
                       </div>
                       <p className="text-right">
-                        {activeStepTab === "new" && "تم استلام طلبيتكِ الفاخرة واعتمادها بنجاح في أنظمة Sulta المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
-                        {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الكوتور الفاخرة لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط ملكي كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
+                        {activeStepTab === "new" && "تم استلام طلبيتكِ واعتمادها بنجاح في أنظمة Sulta المركزية. قمنا بالتحقق من جودة الخياطة وتخصيص تفاصيل الدفع والتحضير الفوري الموجه من الإدارة لسرعة إخراج الطلب بنسبة جودة 100%."}
+                        {activeStepTab === "processing" && "يقوم الآن خبراء الجودة لدينا بالكي البخاري اللطيف لقطع الكوتور لضمان تعقيمها وتثبيت نسجها بدرجة 125 مئوية آمنة. تم تغليف الباقة بعناية بالغة داخل الصندوق الوردي المزين بشريط ملكي كوتور ومعطرة بلمسة خفيفة من زيت المسك واللافندر المنعش لفتح صندوق مبهج 🌸."}
                         {activeStepTab === "shipped" && "بشرى سارة! تم تسليم باقتك لـ Sulta Fast Express وهي بصحبة سفير توصيل الأناقة كابتن سفيان الآن. تم تحسين مسار الرحلة ذكياً للوصول في دقة فائقة، الجوال متاح لتسهيل الاتصال والوصول المباشر."}
                         {activeStepTab === "delivered" && "تم تسليم الطرد الملكي في منتهى الرقي. نتمنى لك دوماً تجربة نوم هانئة تملؤها السكينة والأناقة المفرطة مع منسوجات Sulta. سعدنا بثقتِك ونتشرف بزيارة تقيمية تذكرين فيها رأيك في القطعة!"}
                       </p>
@@ -1846,7 +1846,7 @@ export default function AccountView({
                           </div>
                           <div className="text-right">
                             <h5 className="font-bold text-gray-950 text-xs sm:text-sm">كابتن سفيان 👑</h5>
-                            <p className="text-[10.5px] text-gray-400 font-sans mt-0.5">سفير السعادة والتوصيل الفاخر</p>
+                            <p className="text-[10.5px] text-gray-400 font-sans mt-0.5">سفير السعادة والتوصيل</p>
                             <div className="flex gap-1 items-center justify-end font-sans text-[10px] text-amber-500 font-extrabold mt-1">
                               <span>4.9 ★ التقييم الممتاز</span>
                             </div>
@@ -2076,7 +2076,7 @@ export default function AccountView({
                           {trackedOrder.paymentMethod}
                         </p>
                         <p>
-                          <strong>قنوات الشحن الفاخرة:</strong> شحن وتوصيل Sulta Express
+                          <strong>قنوات الشحن:</strong> شحن وتوصيل Sulta Express
                         </p>
                         <p>
                           <strong>تاريخ وتوقيت المعاملة:</strong>{" "}
@@ -2086,7 +2086,7 @@ export default function AccountView({
                           <strong>تخليص المعاملة المالية:</strong> مدفوع ومكتمل تماماً
                         </p>
                         <p className="text-gray-950 font-black text-sm mt-3 pt-2 border-t border-gray-200 flex justify-between items-center flex-row-reverse text-right">
-                          <span>المجموع الكلي الفاخر:</span>
+                          <span>المجموع الكلي:</span>
                           <span className="font-mono text-base text-gray-950 font-bold">
                             {trackedOrder.totalPrice.toLocaleString()}{" "}
                             {trackedOrder.currency}
@@ -2168,7 +2168,7 @@ export default function AccountView({
                       تتبع الأناقة ومسار شحنتكِ الملكية
                     </h3>
                     <p className="text-xs text-gray-400 font-sans max-w-md mx-auto leading-relaxed text-center">
-                      أدخلي كود تتبع طلبيتكِ الخاص (مثال: SUL-...) أو رقم الجوال المسجل لمتابعة حالة التغليف، الكي الفاخر، وموقع المندوب الجغرافي الفوري.
+                      أدخلي كود تتبع طلبيتكِ الخاص (مثال: SUL-...) أو رقم الجوال المسجل لمتابعة حالة التغليف، الكي، وموقع المندوب الجغرافي الفوري.
                     </p>
                   </div>
 
@@ -2200,7 +2200,7 @@ export default function AccountView({
                         type="submit"
                         className="w-full bg-[#A44C5C] text-[#F6E7A6] hover:bg-zinc-800 py-2.5 rounded-xl transition-colors cursor-pointer text-xs font-bold font-sans shadow-xs text-center"
                       >
-                        تتبع جودة وحالة التوصيل للطلبية الفاخرة
+                        تتبع جودة وحالة التوصيل للطلبية
                       </button>
                     </form>
                   </div>
@@ -2292,7 +2292,7 @@ export default function AccountView({
                   تقييم ومراجعة القطعة الملكية
                 </h3>
                 <p className="text-[10px] text-gray-500 font-sans mt-0.5 leading-relaxed">
-                  مشاركة تجربتكِ الرائعة تساعد صاحبات نادي Sulta الفاخر على
+                  مشاركة تجربتكِ الرائعة تساعد صاحبات نادي Sulta على
                   اتجاهات الموضة واختيار القطعة المثالية.
                 </p>
               </div>

@@ -51,11 +51,11 @@ const LUXURY_TIPS = [
     desc: "نوصي بالنسيج الملكي المبرد المعالج لمقاومة الحرارة، فهو لطيف على البشرة ومقاوم للتعرق والخطوط الرفيعة لتنامي برفاهية تامة."
   },
   {
-    title: "📐 كيف تختارين قياسك الفاخر بدقة؟",
+    title: "📐 كيف تختارين قياسك بدقة؟",
     desc: "استخدمي دليلك الخاص في صفحة حسابك لتحديد المقاس عبر الوزن والطول. إن لم تكوني متأكدة، فإن السروال الفضفاض (Loose-fit) هو خيار مريح ممتاز دوماً."
   },
   {
-    title: "🧵 نصائح العناية بقطع الكوتور الفاخرة",
+    title: "🧵 نصائح العناية بقطع الكوتور",
     desc: "للحفاظ على الريش الطبيعي والدانتيل الفرنسي سليمين، نوصي دائماً بالغسيل اليدوي اللطيف بالماء الفاتر أو الغسيل الجاف (Dry Clean) والكي البخاري الخفيف."
   },
   {
@@ -353,7 +353,7 @@ export default function SultaAudioAtmosphere({
                 </div>
                 <div className="text-right min-w-0">
                   <h4 className="text-xs sm:text-[13px] font-bold text-[#F6E7A6] tracking-wide font-serif truncate">Sulta Concierge</h4>
-                  <span className="text-[9px] text-gray-300 font-serif italic block truncate">مرشد Sulta الملكي الفاخر</span>
+                  <span className="text-[9px] text-gray-300 font-serif italic block truncate">مرشد Sulta الملكي</span>
                 </div>
               </div>
 
@@ -485,7 +485,7 @@ export default function SultaAudioAtmosphere({
                       </div>
 
                       <p className="text-[9.5px] text-gray-300 leading-relaxed font-sans font-light relative z-10">
-                        عيشي تجربة تفاعلية غامرة وكأنكِ داخل الأتيلييه الفعلي! يمكنكِ تشغيل الموسيقى الهادئة المصممة للراحة النفسية أثناء تسوقكِ الفاخر.
+                        عيشي تجربة تفاعلية غامرة وكأنكِ داخل الأتيلييه الفعلي! يمكنكِ تشغيل الموسيقى الهادئة المصممة للراحة النفسية أثناء تسوقكِ.
                       </p>
 
                       <div className="flex justify-between items-center flex-row-reverse pt-2 border-t border-white/5 relative z-10">
@@ -514,7 +514,7 @@ export default function SultaAudioAtmosphere({
                       <span className="text-[9.5px] uppercase font-bold tracking-widest text-[#A44C5C] block border-b border-gray-50 pb-1">لماذا تتألقين مع Sulta؟ ✨</span>
                       <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold text-gray-700">
                         <div className="flex items-center gap-1.5 justify-end">
-                          <span>خامات فاخرة</span>
+                          <span>خامات</span>
                           <Award size={11} className="text-[#A44C5C]" />
                         </div>
                         <div className="flex items-center gap-1.5 justify-end">
@@ -522,7 +522,7 @@ export default function SultaAudioAtmosphere({
                           <Truck size={11} className="text-[#A44C5C]" />
                         </div>
                         <div className="flex items-center gap-1.5 justify-end">
-                          <span>جودة كوتور فاخرة</span>
+                          <span>جودة كوتور</span>
                           <Star size={11} className="text-[#A44C5C]" />
                         </div>
                         <div className="flex items-center gap-1.5 justify-end">
@@ -550,7 +550,7 @@ export default function SultaAudioAtmosphere({
                     {spotlightProduct && (
                       <div className="bg-white border border-[#DF8A9D]/18 rounded-2.5xl p-3 shadow-3xs space-y-3">
                         <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                          <span className="text-[9px] text-[#A44C5C] font-extrabold uppercase tracking-wider bg-[#FAF4F5] px-2 py-0.5 rounded-full block">👑 نجم اليوم الفاخر</span>
+                          <span className="text-[9px] text-[#A44C5C] font-extrabold uppercase tracking-wider bg-[#FAF4F5] px-2 py-0.5 rounded-full block">👑 نجم اليوم</span>
                           <span className="text-[8.5px] text-gray-400">توصية المستشار الشخصي</span>
                         </div>
 
@@ -601,7 +601,7 @@ export default function SultaAudioAtmosphere({
                           📌 <span className="font-bold text-gray-950">التشكيلة الجديدة:</span> تم توفير قطع صيفية جديدة من المنسوجات المعالجة مضافة للتو فحصي "أحدث المنتجات".
                         </div>
                         <div className="bg-white/80 p-2 rounded-lg border border-gray-100 leading-relaxed">
-                          📌 <span className="font-bold text-gray-950">الحالة العامة:</span> خامات فخمة بأرقى درجات الخياطة مع توفر {products.filter(p => p.stock > 0).length} قطعة فاخرة جاهزة للتجهيز والتغليف اليومي.
+                          📌 <span className="font-bold text-gray-950">الحالة العامة:</span> خامات فخمة بأرقى درجات الخياطة مع توفر {products.filter(p => p.stock > 0).length} قطعة جاهزة للتجهيز والتغليف اليومي.
                         </div>
                       </div>
                     </div>
@@ -614,7 +614,7 @@ export default function SultaAudioAtmosphere({
                           <span className="text-[8px] text-gray-400 bg-pink-50 text-[#A44C5C] px-1.5 py-0.5 rounded">موصى به</span>
                         </div>
                         <p className="text-[9.5px] text-gray-550 leading-relaxed text-right font-light">
-                          قطع فاخرة مصممة خصيصاً باللون الأبيض والوردي مع ريش طبيعي ودانتيل فاخر لتخليد أجمل زفاف وصباحية:
+                          قطع مصممة خصيصاً باللون الأبيض والوردي مع ريش طبيعي ودانتيل لتخليد أجمل زفاف وصباحية:
                         </p>
                         
                         <div className="grid grid-cols-2 gap-2 pt-1">
@@ -754,7 +754,7 @@ export default function SultaAudioAtmosphere({
             layoutId="Sulta-radio-btn"
             onClick={() => setIsOpen(true)}
             className="hidden md:flex items-center gap-2 bg-[#DF8A9D] text-white hover:bg-[#A44C5C] px-3 py-2 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all z-40 select-none cursor-pointer group active:scale-95 border border-white/20 ring-4 ring-neutral-500/10"
-            title="افتح مرشد Sulta الملكي الفاخر 👑"
+            title="افتح مرشد Sulta الملكي 👑"
           >
             <div className="relative flex items-center justify-center">
               <span className="text-xs sm:text-sm group-hover:scale-110 transition-transform">👑</span>

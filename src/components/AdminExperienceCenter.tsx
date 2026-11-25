@@ -111,7 +111,7 @@ export default function AdminExperienceCenter({
         { id: 'oud', nameAr: 'بخور العود الساطح (Elite Pure Oud)', descAr: 'نوتات عود كمبودي ملكي دافئة تمنح ثوبك هيبة وجاذبية تدوم لأسابيع.', color: '#78350F' },
         { id: 'musk', nameAr: 'مسك الأناقة الأبيض (Royal White Musk)', descAr: 'عبير البودرة الناعم مع المسك المنعش، يثير إحساساً بالنقاء والدلال المطلق.', color: '#D4D4D4' },
         { id: 'jasmine', nameAr: 'الياسمين الدمشقي والورد (Jasmine Rose)', descAr: 'رائحة قطرات الندى على بتلات الورد وصالونات كوتور فلورنسا المنعشة.', color: '#FCE7F3' },
-        { id: 'cambodi', nameAr: 'خلطة سلطانة الخاصة (Sultana Elixir)', descAr: 'مزيج فاخر سري يجمع بين ترانيم العنبر الملكي وقشور البرغموت المبردة.', color: '#B45309' }
+        { id: 'cambodi', nameAr: 'خلطة سلطانة الخاصة (Sultana Elixir)', descAr: 'مزيج سري يجمع بين ترانيم العنبر الملكي وقشور البرغموت المبردة.', color: '#B45309' }
       ];
     } catch {
       return [];
@@ -315,11 +315,11 @@ export default function AdminExperienceCenter({
       subtitleAr = 'COZY MIDNIGHT CHIEF';
       miniAlert = 'أرواب مخمل ثقيلة عازلة للبرد';
     } else if (campaignName === 'Ramadan Campaign') {
-      bannerAr = 'أناقة السحور والغبقة الفاخرة - خصم رمضان ٢٥٪ على فساتين العرائس الملكية 🕌';
+      bannerAr = 'أناقة السحور والغبقة - خصم رمضان ٢٥٪ على فساتين العرائس الملكية 🕌';
       subtitleAr = 'RAMADAN COUTURE LUMINARY';
       miniAlert = 'تصاميم رمضانية فضفاضة صالحة للاستقبال';
     } else {
-      bannerAr = 'فرحة العيد بلمسات ملكية كوتور - بكج الهدايا الفاخر مجاني مع كل طلبية عيدية عيد مبارك 🌟';
+      bannerAr = 'فرحة العيد بلمسات ملكية كوتور - بكج الهدايا مجاني مع كل طلبية عيدية عيد مبارك 🌟';
       subtitleAr = 'ROYAL EID CELEBRATION';
       miniAlert = 'علبة العيد المخملية متضمنة مع مجوهرات مهدى';
     }
@@ -444,7 +444,7 @@ export default function AdminExperienceCenter({
 
         let desc = p.descriptionAr;
         if (!desc || desc.trim().length === 0) {
-          desc = `قطعة ملكية متفردة مصممة بعناية فائقة من نسيج ملوكي طبيعي فاخر بارد بخصائص انسياب عالية ملائمة لصالون الاستقبالات.`;
+          desc = `قطعة ملكية متفردة مصممة بعناية فائقة من نسيج ملوكي طبيعي بارد بخصائص انسياب عالية ملائمة لصالون الاستقبالات.`;
           modified = true;
         }
 
@@ -881,7 +881,7 @@ export default function AdminExperienceCenter({
                 <div className="space-y-4">
                   {/* Download PDF button (Utilizes requirement of pdf export) */}
                   <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 flex justify-between items-center">
-                    <span className="text-xs font-semibold text-amber-900">👑 التقرير جاهز للتنزيل كشهادة جودة رسمية فاخرة بنظام كوتور:</span>
+                    <span className="text-xs font-semibold text-amber-900">👑 التقرير جاهز للتنزيل كشهادة جودة رسمية بنظام كوتور:</span>
                     <button 
                       onClick={() => downloadLuxuryCertificatePDF(computedStoreHealthScore, averageProductsQualityScore, brandComplianceReport?.complianceScore || 95, products.length, orders.length)}
                       className="bg-[#A44C5C] hover:bg-pink-700 text-white px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-2"
@@ -1299,7 +1299,7 @@ export default function AdminExperienceCenter({
               <div>
                 <span className="bg-amber-50 text-[#A44C5C] border border-[#F6E7A6] text-[9px] font-bold px-3 py-1 rounded-full">👑 الهيبة والاعتزاز للعلامة</span>
                 <h3 className="font-serif text-2xl text-gray-950 mt-2">06. نظام فحص مطابقة الهوية البصرية والنبرة (Brand Consistency Checker)</h3>
-                <p className="text-gray-500 text-xs mt-1">تأمين حماية فحص النبرة الإملائية الفاخرة لمنع استعمال العبارات السوقية التي تحط من مهابة الصالون.</p>
+                <p className="text-gray-500 text-xs mt-1">تأمين حماية فحص النبرة الإملائية لمنع استعمال العبارات السوقية التي تحط من مهابة الصالون.</p>
               </div>
 
               {/* Brand Guidelines view */}
@@ -1356,7 +1356,7 @@ export default function AdminExperienceCenter({
                     </div>
                   ) : (
                     <div className="p-4 bg-green-50 text-green-700 font-bold text-center text-xs rounded-xl">
-                      ✔ تهانينا الملكية كوتور! الكتالوج والبنرات وبنية النصوص تتبع دليل المفردات الفاخر لدار سولته بالامتياز بنسبة ١٠٠٪.
+                      ✔ تهانينا الملكية كوتور! الكتالوج والبنرات وبنية النصوص تتبع دليل المفردات لدار سولته بالامتياز بنسبة ١٠٠٪.
                     </div>
                   )}
                 </div>
@@ -1468,7 +1468,7 @@ export default function AdminExperienceCenter({
                 {[
                   { id: 'Summer Campaign', name: 'حملة الصيف (Summer Luxury)', icon: '☀️', color: 'border-amber-200 bg-amber-50/30 text-amber-900', desc: 'لتنشيط خامات النسيج البارد والمجموعات المريحة.' },
                   { id: 'Winter Campaign', name: 'حملة الشتاء (Winter Cozy)', icon: '❄️', color: 'border-blue-200 bg-blue-50/30 text-blue-900', desc: 'حملات للأرواب القطيفة الكثيفة والدافئة.' },
-                  { id: 'Ramadan Campaign', name: 'موسم رمضان الكريم', icon: '🕌', color: 'border-emerald-200 bg-emerald-50/30 text-emerald-900', desc: 'أجواء الحشمة والغبقات والاستقبالات الفاخرة.' },
+                  { id: 'Ramadan Campaign', name: 'موسم رمضان الكريم', icon: '🕌', color: 'border-emerald-200 bg-emerald-50/30 text-emerald-900', desc: 'أجواء الحشمة والغبقات والاستقبالات.' },
                   { id: 'Eid Campaign', name: 'تجهيزات العرس وعيد الفطر', icon: '🌟', color: 'border-purple-200 bg-purple-50/30 text-purple-900', desc: 'أطقم هدايا معطرة ومجوهراتها المحددة.' },
                 ].map(camp => (
                   <div 
@@ -1688,7 +1688,7 @@ export default function AdminExperienceCenter({
 
                 <div className="bg-neutral-50 p-4 border rounded-2xl space-y-2 text-gray-600 leading-relaxed pr-6 list-disc text-3xs flex flex-col justify-center">
                   <p>• ضغط الصور بترميز WebP يوفر لزائر الخليج ما يعادل ٦٥٪ من باقات الجوال المتنقل مقتبلاً أبعاد انسياب فائقة السرعة.</p>
-                  <p>• يوصى برفع تصاميم الأرواب بأبعاد طولية عمودية (Aspect Ratio 3:4) لإظهار انسيابية ذيل فساتين العرايس الفاخرة.</p>
+                  <p>• يوصى برفع تصاميم الأرواب بأبعاد طولية عمودية (Aspect Ratio 3:4) لإظهار انسيابية ذيل فساتين العرايس.</p>
                 </div>
               </div>
             </div>
@@ -1702,7 +1702,7 @@ export default function AdminExperienceCenter({
                 <span className="bg-pink-100 text-[#A44C5C] text-[10px] font-bold px-3 py-1 rounded-full font-sans">👑 الـتـغـلـيـف الـفـاخـر كـوتـور • Sulta Luxury Couture Wrapping Suite</span>
                 <h3 className="font-serif text-2xl text-gray-950 mt-2 font-bold">15. لوحة التحكم وجناح التعبئة كوتور (Couture Wrapping Control Panel)</h3>
                 <p className="text-gray-500 text-xs mt-1 leading-relaxed">
-                  تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش والأشرطة الملوكية التي تختارها العرائس لتزيين الصناديق الفاخرة للبيجامات وأطقم المنسوجات.
+                  تحكم كامل في مخرجات صالون التعبئة والتغليف كوتور. حددي ألوان ختم الشمع الساخن والريش والأشرطة الملوكية التي تختارها العرائس لتزيين الصناديق للبيجامات وأطقم المنسوجات.
                 </p>
               </div>
 
@@ -1884,7 +1884,7 @@ export default function AdminExperienceCenter({
                   <span>💡 نصيحة أخصائي تجارب الأوتيليه الملكي:</span>
                 </h4>
                 <div className="text-gray-650 leading-relaxed pr-6 list-disc space-y-1">
-                  <p>• يتم فحص وتجهيز البجامات والملابس الملوكية بالبخار لزيادة دقة فرد الخيوط ومنع التجعد قبل الطي والتثبيت داخل علبة الشحن الفاخرة.</p>
+                  <p>• يتم فحص وتجهيز البجامات والملابس الملوكية بالبخار لزيادة دقة فرد الخيوط ومنع التجعد قبل الطي والتثبيت داخل علبة الشحن.</p>
                   <p>• الشمع المستعمل هو شمع عسل طبيعي مصفى ١٠٠٪ وخالي من الإضافات الكيميائية لضمان تماسك مثالي ونقش ختم دقيق فخم عند صبه بالختم النحاسي المصبوب.</p>
                   <p>• يوصى بالنحت ومصادقة الطلب بختم الشمع في حضور فريق فحص الجودة المترأس لتأكيد الباركود وسريان رحلة شحن البوتيك بجدة والرياض وباقي عواصم الخليج.</p>
                 </div>
