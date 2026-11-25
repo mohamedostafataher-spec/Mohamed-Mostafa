@@ -598,12 +598,12 @@ function AppContent() {
     setAppliedCoupon(null);
     setIsCheckoutOpen(false);
 
-    // Automatically send invoice to customer WhatsApp
-    WhatsAppService.sendInvoice(newOrder, newOrder.phone);
+    // Open WhatsApp with the order summary addressed to the STORE number (customer taps send)
+    WhatsAppService.sendOrderToStore(newOrder, settings?.whatsappSaudi || settings?.whatsapp || '966552823677');
 
     // Switch view to customer cabinet to track orders instantly
     setTab('account');
-    toast(`تهانينا! 🎉 تم حجز طلبك الفاخر بنجاح برقم الاستعلام: ${newOrder.id}. تم إرسال تفاصيل الفاتورة عبر واتساب.`, 'success');
+    toast(`تهانينا! 🎉 تم حجز طلبك الفاخر بنجاح برقم الاستعلام: ${newOrder.id}. اضغطي إرسال في واتساب لتأكيد طلبك مع المتجر.`, 'success');
   };
 
   const handleTrackOrderFromModal = (orderId: string) => {
