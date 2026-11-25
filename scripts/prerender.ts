@@ -383,13 +383,13 @@ async function runPrerender() {
     },
     {
       path: 'blog',
-      title: 'مجلة ومقالات أزياء النوم والبيجامات الفاخرة | سولته',
+      title: 'مجلة ومقالات أزياء النوم والبيجامات | سولته',
       description: truncateWordBoundary('مقالات وأدلة متخصصة في أزياء النوم، العناية بأقمشة القطن الطبيعي والقطن الكوريشة، ونصائح اختيار بيجامات وان سايز من سولته.'),
       bodyHtml: `<main dir="rtl" class="max-w-4xl mx-auto px-4 py-12">
         <h1 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">مجلة سولته لأزياء النوم والراحة المنزلية</h1>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <article class="border border-gray-200 rounded-2xl p-6 bg-white shadow-xs">
-            <h2 class="text-xl font-bold text-gray-900 mb-2"><a href="/blog/ultimate-womens-sleepwear-cotton-guide" class="hover:text-[#A44C5C]">دليل بيجامات النوم النسائية الفاخرة — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟</a></h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-2"><a href="/blog/ultimate-womens-sleepwear-cotton-guide" class="hover:text-[#A44C5C]">دليل بيجامات النوم النسائية — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟</a></h2>
             <p class="text-gray-600 text-sm leading-relaxed mb-4">دليل شامل ومفصل لاختيار بيجامات النوم القطنية والقطن الكوريشة ومقاس وان سايز من دار سولته في السعودية.</p>
             <a href="/blog/ultimate-womens-sleepwear-cotton-guide" class="text-[#A44C5C] font-bold text-sm">اقرئي الدليل الكامل ←</a>
           </article>
@@ -413,10 +413,10 @@ async function runPrerender() {
     },
     {
       path: 'blog/ultimate-womens-sleepwear-cotton-guide',
-      title: 'دليل بيجامات النوم النسائية الفاخرة — قطن طبيعي وكوريشة | سولته',
+      title: 'دليل بيجامات النوم النسائية — قطن طبيعي وكوريشة | سولته',
       description: truncateWordBoundary('دليل شامل ومفصل لاختيار بيجامات النوم القطنية والقطن الكوريشة ومقاس وان سايز 45-80 كجم من دار سولته للأزياء في السعودية.'),
       bodyHtml: `<article dir="rtl" class="max-w-3xl mx-auto px-4 py-12">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6">دليل بيجامات النوم النسائية الفاخرة — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟</h1>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6">دليل بيجامات النوم النسائية — كيف تختارين بين القطن الطبيعي والقطن الكوريشة؟</h1>
         <div class="prose prose-lg text-gray-700 leading-relaxed space-y-4">
           <p>تعتبر ملابس النوم والبيجامات النسائية ركيزة أساسية في جودة الراحة والاسترخاء اليومي داخل المنزل. في هذا الدليل التخصصي من دار سولته، نستعرض الفروقات الجوهرية بين القطن الطبيعي المعالج عالي النعومة وأقمشة قطن الكوريشة (Seersucker Crinkle Cotton) الباردة المقاومة للحرارة.</p>
           <h2 class="text-2xl font-bold text-gray-900 mt-6">1. ما هو قطن الكوريشة (Seersucker) ولماذا يناسب صيف السعودية؟</h2>
@@ -516,8 +516,8 @@ async function runPrerender() {
   {
     "path": "بيجامات-نسائية",
     "keyword": "بيجامات نسائية",
-    "title": "أفضل بيجامات نسائية فاخرة في السعودية | متجر سولته",
-    "description": "استكشفي تشكيلتنا الواسعة من البيجامات النسائية الفاخرة. تصاميم عصرية، أقمشة ناعمة، ومقاسات مريحة. شحن مجاني للطلبات فوق 299 ريال."
+    "title": "أفضل بيجامات نسائية في السعودية | متجر سولته",
+    "description": "استكشفي تشكيلتنا الواسعة من البيجامات النسائية. تصاميم عصرية، أقمشة ناعمة، ومقاسات مريحة. شحن مجاني للطلبات فوق 299 ريال."
   },
   {
     "path": "بيجامات-قطن",
@@ -528,7 +528,7 @@ async function runPrerender() {
   {
     "path": "ملابس-نوم",
     "keyword": "ملابس نوم",
-    "title": "ملابس نوم نسائية فاخرة — كوليكشن الموسم | متجر سولته",
+    "title": "ملابس نوم نسائية — كوليكشن الموسم | متجر سولته",
     "description": "دليلي نفسك بأجمل ملابس نوم نسائية. أناقة ملكية وراحة لا تضاهى. تشكيلة متنوعة من الألوان والتصاميم التي تليق بكِ."
   },
   {
@@ -540,14 +540,14 @@ async function runPrerender() {
   {
     "path": "ملابس-استرخاء",
     "keyword": "ملابس استرخاء",
-    "title": "ملابس استرخاء منزلية فاخرة للنساء — راحة تامة | سولته",
+    "title": "ملابس استرخاء منزلية للنساء — راحة تامة | سولته",
     "description": "تشكيلة ملابس استرخاء منزلية راقية تجمع بين الأناقة والنعومة المطلقة. اختاري ما يعبر عن ذوقكِ الرفيع من صالات سولته."
   },
   {
     "path": "تخفيضات-سولته",
     "keyword": "تخفيضات",
     "title": "تخفيضات وعروض بيجامات وملابس نوم نسائية | سولته",
-    "description": "تخفيضات حصرية على تشكيلة واسعة من البيجامات النسائية الفاخرة وملابس النوم. جودة لا تُعوض بأسعار استثنائية."
+    "description": "تخفيضات حصرية على تشكيلة واسعة من البيجامات النسائية وملابس النوم. جودة لا تُعوض بأسعار استثنائية."
   }
 ];
   for (const ip of INFO_PAGES) {
