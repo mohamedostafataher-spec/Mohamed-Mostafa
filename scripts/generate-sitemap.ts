@@ -29,8 +29,6 @@ async function generateSitemaps() {
     { route: '/ملابس-نوم', priority: '0.9', changefreq: 'weekly' },
     { route: '/بيجامات-عروس', priority: '0.9', changefreq: 'weekly' },
     { route: '/ملابس-استرخاء', priority: '0.9', changefreq: 'weekly' },
-    { route: '/قمصان-نوم', priority: '0.9', changefreq: 'weekly' },
-    { route: '/أرواب-استحمام', priority: '0.8', changefreq: 'weekly' },
     { route: '/تخفيضات-سولته', priority: '0.9', changefreq: 'daily' },
     { route: '/about', priority: '0.6', changefreq: 'monthly' },
     { route: '/contact', priority: '0.6', changefreq: 'monthly' },
