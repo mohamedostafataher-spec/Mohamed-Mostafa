@@ -9,9 +9,9 @@ export const SAMPLE_REVIEWS: Review[] = [];
 export const SAMPLE_COUPONS: DiscountCoupon[] = [];
 
 export const PACKAGING_INFO = {
-  boxColorAr: 'أسود مطفي فاخر (Matte Black)',
+  boxColorAr: 'أسود مطفي (Matte Black)',
   logoColorAr: 'ذهبي شامبين لامع (Champagne Gold)',
   ribbonColorAr: 'وردي ناعم مخملي (Soft Rose Pink)',
-  paperTypeAr: 'ورق مناديل تغليف رقيق وفاخر لحماية المنسوجات',
+  paperTypeAr: 'ورق مناديل تغليف رقيق لحماية المنسوجات',
   cardAr: 'رسالة شكر وبطاقة ترحيب منسوجة يدوياً وتوضع في كل علبة بخصوصية.'
 };
