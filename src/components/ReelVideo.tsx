@@ -10,12 +10,23 @@ interface ReelVideoProps {
 /** Vertical 9:16 reel: muted loop, plays only while in view, tap toggles sound. Video bytes load only when needed. */
 export default function ReelVideo({ reel, className = '' }: ReelVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(false);
   const [muted, setMuted] = useState(true);
   const [failed, setFailed] = useState(false);
 
+  // Do not download the poster or video until the reel is close to the screen
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') { setNear(true); return; }
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { setNear(true); io.disconnect(); } }, { rootMargin: '300px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   useEffect(() => {
     const v = ref.current;
-    if (!v || typeof IntersectionObserver === 'undefined') return;
+    if (!near || !v || typeof IntersectionObserver === 'undefined') return;
     const io = new IntersectionObserver(
       entries => {
         entries.forEach(e => {
@@ -30,7 +41,7 @@ export default function ReelVideo({ reel, className = '' }: ReelVideoProps) {
     );
     io.observe(v);
     return () => io.disconnect();
-  }, []);
+  }, [near]);
 
   const toggleSound = () => {
     const v = ref.current;
@@ -44,8 +55,8 @@ export default function ReelVideo({ reel, className = '' }: ReelVideoProps) {
   if (failed) return null;
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-black aspect-[9/16] ${className}`}>
-      <video
+    <div ref={boxRef} className={`relative overflow-hidden rounded-2xl bg-black aspect-[9/16] ${className}`}>
+      {near && <video
         ref={ref}
         src={`/reels/${reel.file}.mp4`}
         poster={`/reels/${reel.file}-poster.jpg`}
@@ -57,7 +68,7 @@ export default function ReelVideo({ reel, className = '' }: ReelVideoProps) {
         onClick={toggleSound}
         aria-label={reel.title}
         className="w-full h-full object-cover cursor-pointer"
-      />
+      />}
       <button
         type="button"
         onClick={toggleSound}
