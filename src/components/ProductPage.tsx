@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import { Product } from '../types';
 import { getIdFromSlug, getProductSlug } from '../utils/slugify';
+import ReelVideo from './ReelVideo';
+import { findReelForSlug, REELS_MUSIC_CREDIT } from '../data/reels';
 import { dbService, cleanImgUrl } from '../services/db';
 import { trackViewContent } from '../utils/analytics';
 import { trackTikTokViewContent } from '../utils/tiktokPixel';
@@ -705,6 +707,16 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
             </div>
           </div>
 
+          {(() => {
+            const reel = findReelForSlug(product.slug, productSlug, slug);
+            return reel ? (
+              <div className="max-w-xs mx-auto my-8">
+                <h3 className="text-sm font-bold text-center mb-3">شاهديها في فيديو</h3>
+                <ReelVideo reel={reel} />
+                <p className="text-[10px] text-gray-400 text-center mt-2" dir="ltr">{REELS_MUSIC_CREDIT}</p>
+              </div>
+            ) : null;
+          })()}
           <ProductReviews productId={product.id} productName={product.nameAr} />
 
           {/* Similar Products */}

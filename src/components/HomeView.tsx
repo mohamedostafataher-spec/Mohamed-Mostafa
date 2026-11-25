@@ -7,6 +7,7 @@ import { ProductPrice } from './ProductPrice';
 import ProductCard from './ProductCard';
 import SEO from './SEO';
 import Features from './Features';
+import ReelsSection from './ReelsSection';
 import SeasonalCampaign from './SeasonalCampaign';
 
 interface HomeViewProps {
@@ -193,6 +194,9 @@ const HomeView: React.FC<HomeViewProps> = ({
           )}
         </React.Fragment>
       ))}
+
+      {/* REELS */}
+      <ReelsSection />
 
       {/* FEATURES & UNBOXING */}
       <Features homepageSections={homepageSections} />
