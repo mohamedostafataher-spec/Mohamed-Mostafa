@@ -431,7 +431,7 @@ function AppContent() {
   // Handle Favorites toggle
   const toggleFavorite = (productId: string) => {
     const matchedProduct = products.find(p => p.id === productId);
-    const prodName = matchedProduct ? matchedProduct.nameAr : 'المنتج الفاخر';
+    const prodName = matchedProduct ? matchedProduct.nameAr : 'المنتج';
 
     setFavorites(prev => {
       const isFav = prev.includes(productId);
@@ -606,7 +606,7 @@ function AppContent() {
 
     // Switch view to customer cabinet to track orders instantly
     setTab('account');
-    toast(`تهانينا! 🎉 تم حجز طلبك الفاخر بنجاح برقم الاستعلام: ${newOrder.id}. اضغطي إرسال في واتساب لتأكيد طلبك مع المتجر.`, 'success');
+    toast(`تهانينا! 🎉 تم حجز طلبك بنجاح برقم الاستعلام: ${newOrder.id}. اضغطي إرسال في واتساب لتأكيد طلبك مع المتجر.`, 'success');
   };
 
   const handleTrackOrderFromModal = (orderId: string) => {
@@ -983,8 +983,8 @@ function AppContent() {
             <Route path="/بيجامات-نسائية" element={
               <SEOLandingPage 
                 keyword="بيجامات نسائية"
-                titleAr="أفضل بيجامات نسائية فاخرة في السعودية | متجر سولته"
-                descriptionAr="استكشفي تشكيلتنا الواسعة من البيجامات النسائية الفاخرة. تصاميم عصرية، أقمشة ناعمة، ومقاسات مريحة. شحن مجاني للطلبات فوق 299 ريال."
+                titleAr="أفضل بيجامات نسائية في السعودية | متجر سولته"
+                descriptionAr="استكشفي تشكيلتنا الواسعة من البيجامات النسائية. تصاميم عصرية، أقمشة ناعمة، ومقاسات مريحة. شحن مجاني للطلبات فوق 299 ريال."
                 products={products}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
@@ -1009,7 +1009,7 @@ function AppContent() {
             <Route path="/ملابس-نوم" element={
               <SEOLandingPage 
                 keyword="ملابس نوم"
-                titleAr="ملابس نوم نسائية فاخرة — كوليكشن الموسم | متجر سولته"
+                titleAr="ملابس نوم نسائية — كوليكشن الموسم | متجر سولته"
                 descriptionAr="دليلي نفسك بأجمل ملابس نوم نسائية. أناقة ملكية وراحة لا تضاهى. تشكيلة متنوعة من الألوان والتصاميم التي تليق بكِ."
                 products={products}
                 favorites={favorites}
@@ -1022,8 +1022,8 @@ function AppContent() {
             <Route path="/بيجامات-عروس" element={
               <SEOLandingPage 
                 keyword="بيجامات عروس"
-                titleAr="بيجامات عروس فاخرة وأطقم ليلة الدخلة في السعودية | سولته"
-                descriptionAr="تألقي في ليلة عمركِ وأجمل أوقاتكِ مع تشكيلة بيجامات عروس فاخرة ومصممة بعناية فائقة. أقمشة بيضاء ووردية ناصعة مع تفاصيل كوتور راقية."
+                titleAr="بيجامات عروس وأطقم ليلة الدخلة في السعودية | سولته"
+                descriptionAr="تألقي في ليلة عمركِ وأجمل أوقاتكِ مع تشكيلة بيجامات عروس ومصممة بعناية فائقة. أقمشة بيضاء ووردية ناصعة مع تفاصيل كوتور راقية."
                 products={products}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
@@ -1035,7 +1035,7 @@ function AppContent() {
             <Route path="/ملابس-استرخاء" element={
               <SEOLandingPage 
                 keyword="ملابس استرخاء"
-                titleAr="ملابس استرخاء منزلية فاخرة للنساء — راحة تامة | سولته"
+                titleAr="ملابس استرخاء منزلية للنساء — راحة تامة | سولته"
                 descriptionAr="تشكيلة ملابس استرخاء منزلية راقية تجمع بين الأناقة والنعومة المطلقة. اختاري ما يعبر عن ذوقكِ الرفيع من صالات سولته."
                 products={products}
                 favorites={favorites}
@@ -1048,7 +1048,7 @@ function AppContent() {
             <Route path="/قمصان-نوم" element={
               <SEOLandingPage 
                 keyword="قمصان نوم"
-                titleAr="قمصان نوم نسائية ناعمة وفاخرة — تصاميم ملكية | سولته"
+                titleAr="قمصان نوم نسائية ناعمة — تصاميم ملكية | سولته"
                 descriptionAr="اكتشفي أجمل قمصان النوم النسائية الطويلة والقصيرة المصنوعة من أجود الأنسجة الناعمة. أناقة لا توصف للياليكِ الخاصة."
                 products={products}
                 favorites={favorites}
@@ -1061,7 +1061,7 @@ function AppContent() {
             <Route path="/أرواب-استحمام" element={
               <SEOLandingPage 
                 keyword="أرواب"
-                titleAr="أرواب نسائية فاخرة ومنشفة استرخاء ملكية | سولته"
+                titleAr="أرواب نسائية ومنشفة استرخاء ملكية | سولته"
                 descriptionAr="أرواب استحيام واستقبال منزلية مصممة بأعلى معايير النعومة والامتصاص. أناقة متكاملة بعد الاستحمام."
                 products={products}
                 favorites={favorites}
@@ -1075,7 +1075,7 @@ function AppContent() {
               <SEOLandingPage 
                 keyword="تخفيضات"
                 titleAr="تخفيضات وعروض بيجامات وملابس نوم نسائية | سولته"
-                descriptionAr="تخفيضات حصرية على تشكيلة واسعة من البيجامات النسائية الفاخرة وملابس النوم. جودة لا تُعوض بأسعار استثنائية."
+                descriptionAr="تخفيضات حصرية على تشكيلة واسعة من البيجامات النسائية وملابس النوم. جودة لا تُعوض بأسعار استثنائية."
                 products={products}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
