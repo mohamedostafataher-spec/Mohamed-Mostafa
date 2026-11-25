@@ -249,6 +249,38 @@ const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, toggleFavorite, 
     }
   };
 
+  // Real, verified store policies only (KSA shipping 40 SAR, free over 299, 2-4 business days, 14-day returns)
+  productJsonLd.offers.shippingDetails = {
+    "@type": "OfferShippingDetails",
+    "shippingRate": { "@type": "MonetaryAmount", "value": 40, "currency": "SAR" },
+    "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "SA" },
+    "deliveryTime": {
+      "@type": "ShippingDeliveryTime",
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
+      "transitTime": { "@type": "QuantitativeValue", "minValue": 2, "maxValue": 4, "unitCode": "DAY" }
+    }
+  };
+  productJsonLd.offers.hasMerchantReturnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    "applicableCountry": "SA",
+    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+    "merchantReturnDays": 14,
+    "returnMethod": "https://schema.org/ReturnByMail"
+  };
+  {
+    const rl = findReelForSlug(productSlug);
+    if (rl) {
+      productJsonLd.video = {
+        "@type": "VideoObject",
+        "name": rl.title,
+        "description": rl.title + ' - سولته',
+        "thumbnailUrl": `https://sulta.vercel.app/reels/${rl.file}-poster.jpg`,
+        "contentUrl": `https://sulta.vercel.app/reels/${rl.file}.mp4`,
+        "uploadDate": "2026-11-25"
+      };
+    }
+  }
+
   // Only attach optional fields if genuine data exists
   if (rawMaterial && typeof rawMaterial === 'string' && rawMaterial.trim() !== '') {
     productJsonLd.material = rawMaterial.trim();
