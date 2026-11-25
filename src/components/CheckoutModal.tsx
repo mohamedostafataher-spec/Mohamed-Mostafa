@@ -767,7 +767,7 @@ export default function CheckoutModal({
                   <div className="relative">
                     <input
                       type="tel"
-                      placeholder="0552823677"
+                      placeholder="05XXXXXXXX"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       autoComplete="tel"
