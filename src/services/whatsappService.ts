@@ -292,6 +292,25 @@ export const WhatsAppService = {
     window.open(url, '_blank', 'noopener,noreferrer');
   },
 
+  // The customer sends their own order summary to the STORE number (free click-to-chat).
+  getStoreOrderLink: (order: Order, storePhone: string) => {
+    const ctx = WhatsAppService.buildOrderContext(order);
+    const message = [
+      'طلب جديد من موقع سولته',
+      `رقم الطلب: ${order.id}`,
+      ctx.itemsList,
+      `الإجمالي: ${ctx.totalPrice} ${ctx.currency}`,
+      `الاسم: ${order.customerName}`,
+      `المدينة: ${order.city}`,
+      `تتبع الطلب: ${ctx.trackUrl}`
+    ].join('\n');
+    return WhatsAppService.buildWhatsAppUrl(storePhone, message);
+  },
+
+  sendOrderToStore: (order: Order, storePhone: string) => {
+    window.open(WhatsAppService.getStoreOrderLink(order, storePhone), '_blank', 'noopener,noreferrer');
+  },
+
   sendStatusUpdate: (order: Order, statusLabel: string, phoneNumber: string) => {
     const url = WhatsAppService.getStatusUpdateLink(order, statusLabel, phoneNumber);
     window.open(url, '_blank', 'noopener,noreferrer');
