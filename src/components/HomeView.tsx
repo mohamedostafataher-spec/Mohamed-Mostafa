@@ -72,7 +72,7 @@ const HomeView: React.FC<HomeViewProps> = ({
         "name": "ما هي مدة وتكلفة الشحن داخل السعودية؟",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "الشحن يستغرق من 2 إلى 5 أيام عمل لكافة مدن المملكة، مع شحن مجاني تماماً للطلبات التي تتجاوز 299 ريال سعودي."
+          "text": "الشحن يستغرق من 2 إلى 4 أيام عمل لكافة مدن المملكة، مع شحن مجاني تماماً للطلبات التي تتجاوز 299 ريال سعودي."
         }
       }
     ]
@@ -170,13 +170,13 @@ const HomeView: React.FC<HomeViewProps> = ({
                 <div className="text-right space-y-1.5 max-w-xl">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-black font-bold text-[11px]">
                     <Sparkles size={11} />
-                    <span>تغليف ملكي وتوصيل سريع لجميع مدن المملكة 🇸🇦</span>
+                    <span>توصيل لجميع مدن المملكة 🇸🇦</span>
                   </div>
                   <h2 className="text-base sm:text-xl font-black tracking-tight text-white font-serif">
                     تشكيلة السلطانة الحصرية — أناقة تليق بكِ
                   </h2>
                   <p className="text-gray-300 text-xs leading-relaxed">
-                    أرقى تصاميم ملابس النوم والبيجامات القطنية المريحة بضمان الجودة والاستبدال السهل. تسوقي الآن واستمتعي بتغليف ملكي.
+                    أرقى تصاميم ملابس النوم والبيجامات القطنية المريحة بضمان الجودة والاستبدال السهل.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
@@ -253,7 +253,7 @@ const HomeView: React.FC<HomeViewProps> = ({
               <Truck size={18} />
             </div>
             <div className="text-right">
-              <span className="block font-bold text-gray-950 text-xs sm:text-sm">شحن سريع ومجاني</span>
+              <span className="block font-bold text-gray-950 text-xs sm:text-sm">توصيل لكل المملكة</span>
               <span className="text-[10px] sm:text-[11px] text-gray-500">لكافة مدن المملكة للطلبات فوق 299 ر.س 🇸🇦</span>
             </div>
           </div>

@@ -1173,10 +1173,7 @@ export default function CheckoutModal({
                 </span>
               </div>
 
-              <div className="flex justify-between items-center text-gray-600">
-                <span>التغليف الملكي:</span>
-                <span className="font-bold text-emerald-700">مجاناً 🎁</span>
-              </div>
+              
 
               <div className="flex justify-between items-center text-gray-950 text-sm font-black pt-2 border-t border-gray-200">
                 <div className="flex flex-col text-right">

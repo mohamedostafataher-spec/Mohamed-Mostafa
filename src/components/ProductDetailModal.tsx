@@ -103,8 +103,6 @@ export default function ProductDetailModal({
 
   const [bundleItems, setBundleItems] = useState([
     { id: 'b1', name: product.nameAr, price: effectiveProductPrice, image: product.images?.[0] || '', checked: true },
-    { id: 'b2', name: 'شمعة Sulta العطرية الملكية للتوليفة', price: country === 'EG' ? 120 : 65, image: '', checked: true },
-    { id: 'b3', name: 'علبة هدايا كوتور الفخمة مع الختم الشمعي', price: country === 'EG' ? 150 : 80, image: '', checked: false }
   ]);
 
   const toggleBundleItem = (idx: number) => {
@@ -412,7 +410,7 @@ export default function ProductDetailModal({
 • السعر الإجمالي: ${(price * quantity).toLocaleString()} ${currencyLabel}
 • الدولة: المملكة العربية السعودية 🇸🇦
 
-الرجاء تأكيد الحجز وتجهيز التغليف الملكي والشحن السريع. شكراً لكم ✨`;
+الرجاء تأكيد الحجز. شكراً لكم ✨`;
     
     const encodedText = encodeURIComponent(text);
     const url = `https://wa.me/${phoneNumber}?text=${encodedText}`;
@@ -1413,7 +1411,7 @@ export default function ProductDetailModal({
                         <span className="transition group-open:rotate-180">▾</span>
                       </summary>
                       <p className="mt-2 text-[11px] text-gray-600 leading-relaxed pr-2">
-                        التوصيل سريع لكافة مدن المملكة خلال 2 إلى 4 أيام عمل. الشحن مجاني للطلبات المؤهلة، مع تغليف هدية مجانية.
+                        التوصيل سريع لكافة مدن المملكة خلال 2 إلى 4 أيام عمل. الشحن 40 ر.س، ومجاني للطلبات فوق 299 ر.س.
                       </p>
                     </details>
                     <details className="group border border-gray-150 rounded-lg p-2.5 cursor-pointer">
@@ -1443,7 +1441,7 @@ export default function ProductDetailModal({
                   {isQuizMode ? (
                     <div className="space-y-3">
                       <div className="flex justify-between items-center bg-gray-50 p-2 rounded-lg">
-                        <span className="text-[10px] text-gray-400 font-sans">بدقة %95 بضمان الاستبدال المجاني 🛡️</span>
+                        <span className="text-[10px] text-gray-400 font-sans">اقتراح تقريبي</span>
                         <h6 className="font-bold text-gray-800 text-[11px] flex items-center gap-1">
                           <Sparkles size={11} className="text-[#DF8A9C]" />
                           <span>مكتشف المقاس الذكي من Sulta</span>
@@ -1563,7 +1561,7 @@ export default function ProductDetailModal({
                           <div className="flex justify-center items-center gap-2 text-[9.5px] text-emerald-700 bg-emerald-100/40 p-1.5 rounded-md">
                             <span className="font-black">درجة الثقة: {fitConfidenceScore}%</span>
                             <span className="text-emerald-300">•</span>
-                            <span className="font-bold">استبدال مجاني مجنّد بالمنزل 🛡️</span>
+                            <span className="font-bold">اقتراح تقريبي</span>
                           </div>
                           
                           <p className="text-[9px] text-emerald-800/60 pt-1 border-t border-emerald-200/50">تم اختيار وتنشيط المقاس لكِ في الأعلى تلقائياً لتسهيل الشراء.</p>
