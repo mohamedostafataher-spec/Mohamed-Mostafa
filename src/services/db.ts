@@ -206,6 +206,8 @@ export const SEED_INVENTORY_LOGS: any[] = [
 // Sulta COUTURE SUPABASE CONNECTION
 // ==========================================
 
+export const SITE_PRICE_SA = 99;
+
 export function cleanText(text: any): any {
   if (typeof text !== 'string') return text;
   let cleaned = text
@@ -213,6 +215,7 @@ export function cleanText(text: any): any {
     .replace(/سولته\s+أتيليه|سولته\s+اتيليه/g, 'سولته')
     .replace(/أتيليه\s+سولته|اتيليه\s+سولته/g, 'سولته')
     .replace(/zoria/ig, 'Sulta')
+    .replace(/عطر الدار/g, 'ناعم')
     .replace(/زوريا/g, 'سولته')
     .replace(/كوتور ساتان/g, 'كوتور ناعم')
     .replace(/الساتان/g, 'الأنسجة')
@@ -514,6 +517,10 @@ function mapProduct(data: any): Product {
     resolvedSalePriceSA = rawSaleSA;
   }
 
+  // One consistent public price (owner decision): every product sells at the same SAR price, no fake strike-through.
+  resolvedPriceSA = SITE_PRICE_SA;
+  resolvedSalePriceSA = undefined;
+
   const resolvedPriceEG = Number(data.price_eg) > 0 
     ? Number(data.price_eg) 
     : (fallbackProduct ? fallbackProduct.priceEG : 899);
@@ -550,9 +557,9 @@ function mapProduct(data: any): Product {
     categoryAr: cleanText(data.category_ar || ''),
     priceEG: resolvedPriceEG,
     priceSA: resolvedPriceSA,
-    regularPrice: Number(data.regular_price || data.regularPrice || resolvedPriceSA),
+    regularPrice: resolvedPriceSA,
     regularPriceSince: data.regular_price_since || data.regularPriceSince || undefined,
-    discountPercent: Number(data.discount_percent ?? data.discountPercent ?? 0),
+    discountPercent: 0,
     discountStartsAt: data.discount_starts_at || data.discountStartsAt || undefined,
     discountEndsAt: data.discount_ends_at || data.discountEndsAt || undefined,
     discountStatus: data.discount_status || data.discountStatus || (data.is_discount_active === false || data.isDiscountActive === false ? 'inactive' : 'active'),
@@ -631,7 +638,7 @@ function mapReview(data: any): Review {
 function mapCoupon(data: any): DiscountCoupon {
   return {
     code: data.code || '',
-    discountPercent: Number(data.discount_percent ?? data.discountPercent ?? 0),
+    discountPercent: 0,
     description: data.description || '',
     expiresAt: data.expires_at || data.expiresAt || undefined,
     isActive: data.active !== undefined ? Boolean(data.active) : (data.isActive !== undefined ? Boolean(data.isActive) : true)
