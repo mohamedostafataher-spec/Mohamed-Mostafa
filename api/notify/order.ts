@@ -1,3 +1,4 @@
+import { limited } from '../_lib/rateLimit';
 // Free new-order alert to the store owner on Telegram.
 // Sends only: short order number, item count, total. No name, phone, address or photos.
 // Needs two Vercel env vars: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID. Without them it does nothing.
@@ -12,6 +13,7 @@ export default async function handler(req: Req, res: Res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
+  if (limited(req.headers, 'order', 10)) return res.status(429).json({ ok: false });
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chat = process.env.TELEGRAM_CHAT_ID;
