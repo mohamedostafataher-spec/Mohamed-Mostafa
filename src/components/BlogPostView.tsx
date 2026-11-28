@@ -1,4 +1,5 @@
 import SultaImage from "./SultaImage";
+import { sanitizeHtml } from '../utils/sanitizeHtml';
 import React from 'react';
 import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 import { BlogPost } from '../types';
@@ -59,7 +60,7 @@ export default function BlogPostView({ post, onBack }: BlogPostViewProps) {
               prose-headings:font-serif prose-headings:font-normal prose-headings:text-[#0B0B0B]
               prose-a:text-[#A44C5C] prose-a:no-underline hover:prose-a:underline
               prose-img:rounded-sm prose-img:shadow-sm"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           />
 
           <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-6">
