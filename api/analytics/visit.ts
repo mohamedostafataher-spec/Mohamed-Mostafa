@@ -1,3 +1,4 @@
+import { limited } from '../_lib/rateLimit';
 export interface VercelRequest {
   method?: string;
   body?: any;
@@ -24,6 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
+  if (limited(req.headers, 'visit', 120)) return res.status(429).json({ ok: false });
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
