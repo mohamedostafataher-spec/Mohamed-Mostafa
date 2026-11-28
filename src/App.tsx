@@ -804,7 +804,8 @@ function AppContent() {
       <RedirectHandler />
 
       {/* CORE DYNAMIC LAYOUT BASED ON ROUTES */}
-      <main className={isDashboardRoute ? '' : 'animate-fade-in-rapid overflow-x-hidden'}>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-[999] focus:bg-white focus:text-[#A44C5C] focus:px-4 focus:py-2 focus:rounded">تخطي إلى المحتوى</a>
+      <main id="main-content" className={isDashboardRoute ? '' : 'animate-fade-in-rapid overflow-x-hidden'}>
         <Suspense fallback={
           <div className="min-h-[60vh] flex items-center justify-center">
             <div className="w-10 h-10 border-4 border-gray-200 border-t-[#A44C5C] rounded-full animate-spin"></div>
